@@ -23,8 +23,8 @@ Het onderwerp van de proftaak is het ontwikkelen van een medische netwerkapplica
 | **Lucas** de Jong | [@Somfic](https://github.com/Somfic) | Codebeheerder | 2158725 |
 | **Richard** Elean | [@NotDutchy](https://github.com/NotDutchy) | Secretaris | idk |
 | **Nick** Wijnings | [@Gecfai](https://github.com/Gecfai) | Tester | idk |
-| **Redouan** idk | [@idk](https://github.com/idk) | Planner | idk |
-| **Midas** Filius | [@redouan778](https://github.com/redouan778) | Evaluator | idk |
+| **Redouan** idk | [@redouan778](https://github.com/redouan778) | Planner | idk |
+| **Midas** Filius | [@midzz1234](https://github.com/midzz1234) | Evaluator | idk |
 
 ## Installatie
 Clone de repository om de broncode te downloaden.
