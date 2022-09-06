@@ -5,39 +5,39 @@ namespace RemoteHealthcare.Data.Providers.Bike;
 
 public class SimulationBikeDataProvider : BikeDataProvider
 {
-    private readonly Random _random = new();
-    private readonly Stopwatch _timer = Stopwatch.StartNew();
-    private readonly Stopwatch _totalElapsed = Stopwatch.StartNew();
+	private readonly Random _random = new();
+	private readonly Stopwatch _timer = Stopwatch.StartNew();
+	private readonly Stopwatch _totalElapsed = Stopwatch.StartNew();
 
-    private int _totalReset;
+	private int _totalReset;
 
-    public override async Task Process()
-    {
-        // Id
-        SetId("Simulation");
-        
-        // Device type
-        SetDeviceType(DeviceType.Bike);
-        
-        // Elapsed
-        if (_timer.Elapsed.TotalSeconds >= 64)
-            _timer.Restart();
-        
-        SetElapsed(_timer.Elapsed); // todo: rond af op 0,25 seconden
-        
-        // Total elapsed
-        SetTotalElapsed(_totalElapsed.Elapsed); ;
-        
-        // Speed
-        var deltaSpeed = _random.NextDouble() * 2f - 1f;
-        var newSpeed = GetData().Speed + deltaSpeed;
-        SetSpeed((float)Math.Max(5, Math.Min(234, newSpeed)));
-        
-        // Distance
-        var newDistance = (GetData().Distance + GetData().Speed * 0.25f) % 256;
-        SetDistance(newDistance);
-        
-        // Heart rate
-        SetHeartRate((int)Math.Round(newSpeed + 80));
-    }
+	public override async Task ProcessRawData()
+	{
+		// Id
+		SetId("Simulation");
+
+		// Device type
+		SetDeviceType(DeviceType.Bike);
+
+		// Elapsed
+		if (_timer.Elapsed.TotalSeconds >= 64)
+			_timer.Restart();
+
+		SetElapsed(_timer.Elapsed); // todo: rond af op 0,25 seconden
+
+		// Total elapsed
+		SetTotalElapsed(_totalElapsed.Elapsed); ;
+
+		// Speed
+		var deltaSpeed = _random.NextDouble() * 2f - 1f;
+		var newSpeed = GetData().Speed + deltaSpeed;
+		SetSpeed((float)Math.Max(5, Math.Min(234, newSpeed)));
+
+		// Distance
+		var newDistance = (GetData().Distance + GetData().Speed * 0.25f) % 256;
+		SetDistance(newDistance);
+
+		// Heart rate
+		SetHeartRate((int)Math.Round(newSpeed + 80));
+	}
 }
