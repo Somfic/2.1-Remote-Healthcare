@@ -23,6 +23,11 @@ public abstract class BikeDataProvider : IDataProvider<BikeData>
     {
         _data.Elapsed = elapsed;
     }
+    
+    protected void SetTotalElapsed(TimeSpan elapsed)
+    {
+        _data.TotalElapsed = elapsed;
+    }
 
     protected void SetDeviceType(DeviceType deviceType)
     {

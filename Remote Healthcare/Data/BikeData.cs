@@ -10,6 +10,8 @@ public class BikeData : IData
 
     public TimeSpan Elapsed { get; set; }
 
+    public TimeSpan TotalElapsed { get; set; }
+    
     public DeviceType DeviceType { get; set; }
 
     public string Id { get; set; } = "";
