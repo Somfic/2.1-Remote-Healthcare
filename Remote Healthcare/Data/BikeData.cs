@@ -11,6 +11,8 @@ public class BikeData : IData
     public int HeartRate { get; set; }
         
     public TimeSpan Elapsed { get; set; }
+    
+    public TimeSpan TotalElapsed { get; set; }
         
     public DeviceType DeviceType { get; set; }
 
