@@ -3,8 +3,9 @@ using Newtonsoft.Json;
 using RemoteHealthcare.Data.Providers.Bike;
 using RemoteHealthcare.Data.Providers.Heart;
 
+
 BikeDataProvider bike = new SimulationBikeDataProvider();
-HeartDataProvider heart = new SimulationHeartDataProvider();
+HeartDataProvider heart = new BluetoothHeartDataProvider();
 
 while (true)
 {
