@@ -29,9 +29,9 @@ public class SimulationBikeDataProvider : BikeDataProvider
         SetTotalElapsed(_totalElapsed.Elapsed); ;
         
         // Speed
-        var deltaSpeed = _random.NextSingle() * 2f - 1f;
+        var deltaSpeed = _random.NextDouble() * 2f - 1f;
         var newSpeed = GetData().Speed + deltaSpeed;
-        SetSpeed(Math.Clamp(newSpeed, 5, 234));
+        SetSpeed((float)Math.Max(5, Math.Min(234, newSpeed)));
         
         // Distance
         var newDistance = (GetData().Distance + GetData().Speed * 0.25f) % 256;
