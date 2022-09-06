@@ -2,17 +2,18 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
         <RootNamespace>RemoteHealthcare</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
+        <TargetFrameworks>net472;net6.0</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
       <Reference Include="BLELibrary">
         <HintPath>BLELibrary.dll</HintPath>
       </Reference>
+      <Reference Include="System.Net.Http" Condition="'$(TargetFramework)' == 'net472'" />
     </ItemGroup>
 
     <ItemGroup>
