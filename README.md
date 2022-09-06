@@ -31,11 +31,11 @@ Clone de repository om de broncode te downloaden.
 ```
 git clone https://github.com/Somfic/2.1-Remote-Healthcare.git "Remote Healthcare"
 ```
-Ga naar het `Remote Healthcare` mapje
+Ga naar het `Remote Healthcare` mapje.
 ```
 cd "Remote Healthcare"
 ```
-Start het project
+Start het project.
 ```
 dotnet run
 ```
