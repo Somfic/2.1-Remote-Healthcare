@@ -3,6 +3,11 @@ using RemoteHealthcare.Data.Providers.Bike;
 using RemoteHealthcare.Data.Providers.Heart;
 
 internal class Program
+
+BikeDataProvider bike = new SimulationBikeDataProvider();
+HeartDataProvider heart = new BluetoothHeartDataProvider();
+
+while (true)
 {
     private static async Task Main(string[] args)
     {
