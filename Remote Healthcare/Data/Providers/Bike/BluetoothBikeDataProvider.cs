@@ -14,7 +14,13 @@ public class BluetoothBikeDataProvider : BikeDataProvider
     public async Task Connect()
     {
         int errorCode = 0;
-        BLEBike = new BLE();
+        try
+        {
+            BLEBike = new BLE();
+        } catch
+        {
+            throw new NotImplementedException("Windows not found");
+        }
         Thread.Sleep(1000);
         List<String> bleBikeList = BLEBike.ListDevices();
         Console.WriteLine("Devices found: ");
@@ -34,6 +40,8 @@ public class BluetoothBikeDataProvider : BikeDataProvider
 
         Console.Read();
     }
+
+
     static String ID;
     static float Speed;
     static float Distance;
