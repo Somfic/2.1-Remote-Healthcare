@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace RemoteHealthcare.Data.Providers.Heart;
 
 public class BluetoothHeartDataProvider : HeartDataProvider
