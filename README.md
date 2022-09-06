@@ -31,4 +31,11 @@ Clone de repository om de broncode te downloaden.
 ```
 git clone https://github.com/Somfic/2.1-Remote-Healthcare.git "Remote Healthcare"
 ```
-Open het project met [Visual Studio](https://visualstudio.microsoft.com) of [Rider](https://www.jetbrains.com/rider/) en start the *Program* klasse om de applicatie te runnen.
+Ga naar het `Remote Healthcare` mapje
+```
+cd "Remote Healthcare"
+```
+Start het project
+```
+dotnet run
+```
