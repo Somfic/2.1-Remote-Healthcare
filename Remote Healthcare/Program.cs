@@ -10,11 +10,11 @@ while (true)
 {
     await heart.Process();
     var heartData = heart.GetData();
-    var heartJson = JsonConvert.SerializeObject(heartData);
+    var heartJson = JsonConvert.SerializeObject(heartData, Formatting.Indented);
     
     await bike.Process();
     var bikeData = bike.GetData();
-    var bikeJson = JsonConvert.SerializeObject(bikeData);
+    var bikeJson = JsonConvert.SerializeObject(bikeData, Formatting.Indented);
 
     Console.Clear();
     Console.WriteLine($"Heart: {heartJson}");
