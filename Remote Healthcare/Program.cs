@@ -2,26 +2,26 @@
 using RemoteHealthcare.Data.Providers.Bike;
 using RemoteHealthcare.Data.Providers.Heart;
 
-internal class Program
+internal class Program {
 
-BikeDataProvider bike = new SimulationBikeDataProvider();
-HeartDataProvider heart = new BluetoothHeartDataProvider();
-
-while (true)
-{
+    static BikeDataProvider bike;
+    static HeartDataProvider heart = new BluetoothHeartDataProvider();
+    
     private static async Task Main(string[] args)
     {
         BluetoothBikeDataProvider btbike = new BluetoothBikeDataProvider("Tacx Flux 00438");
-        BikeDataProvider bike;
+        
         try
         {
             await btbike.Connect();
             bike = btbike;
         } catch (Exception)
         {
+            Console.WriteLine("Switching to simulation");
+            Thread.Sleep(5000);
             bike = new SimulationBikeDataProvider();
         }
-        HeartDataProvider heart = new SimulationHeartDataProvider();
+        HeartDataProvider heart = new BluetoothHeartDataProvider();
         while (true)
         {
             await heart.Process();
