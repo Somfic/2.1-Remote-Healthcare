@@ -7,8 +7,15 @@ internal class Program
     private static async Task Main(string[] args)
     {
         BluetoothBikeDataProvider btbike = new BluetoothBikeDataProvider("Tacx Flux 00438");
-        await btbike.Connect();
-        BikeDataProvider bike = btbike;
+        BikeDataProvider bike;
+        try
+        {
+            await btbike.Connect();
+            bike = btbike;
+        } catch (Exception)
+        {
+            bike = new SimulationBikeDataProvider();
+        }
         HeartDataProvider heart = new SimulationHeartDataProvider();
         while (true)
         {
