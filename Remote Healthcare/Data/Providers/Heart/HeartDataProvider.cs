@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace RemoteHealthcare.Data.Providers.Heart;
 
 public abstract class HeartDataProvider : IDataProvider<HeartData>
@@ -18,4 +20,6 @@ public abstract class HeartDataProvider : IDataProvider<HeartData>
     {
         return _data;
     }
+
+    public abstract Task Process();
 }

@@ -1,9 +1,11 @@
+using System.Threading.Tasks;
+
 namespace RemoteHealthcare.Data.Providers.Bike;
 
 public class BluetoothBikeDataProvider : BikeDataProvider
 {
-    public void Process(byte[] data)
+    public override async Task Process()
     {
-        // Todo: decode data and set properties
+        await Task.CompletedTask;
     }
 }

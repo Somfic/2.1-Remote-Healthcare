@@ -1,9 +1,12 @@
+using System.Threading.Tasks;
+
 namespace RemoteHealthcare.Data.Providers.Heart;
 
-public class SimulationHeartDataProvider
+public class SimulationHeartDataProvider : HeartDataProvider
 {
-    public void Generate()
+    public override async Task Process()
     {
-        // Todo: generate new data and set properties
+        SetId("Simulation");
+        SetHeartRate(new Random().Next(60, 100));
     }
 }
