@@ -9,24 +9,29 @@ public class BluetoothHeartDataProvider : HeartDataProvider
     static string id = "";
     public override async Task Process()
     {
+        try
+        {
+            int errorCode = 0;
+            BLE bleHeart = new BLE();
+            Thread.Sleep(1000);
+            await Task.CompletedTask;
 
-        int errorCode = 0;
-        BLE bleHeart = new BLE();
-        Thread.Sleep(1000);
-        await Task.CompletedTask;
+            var services = bleHeart.GetServices;
 
-        var services = bleHeart.GetServices;
+            errorCode = await bleHeart.OpenDevice("Decathlon Dual HR");
 
-        errorCode = await bleHeart.OpenDevice("Decathlon Dual HR");
+            await bleHeart.SetService("HeartRate");
 
-        await bleHeart.SetService("HeartRate");
-       
 
-        bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
-        await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
-        SetId(id);
-        SetHeartRate(heartRate);
-        
+            bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
+            SetId(id);
+            SetHeartRate(heartRate);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
     private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
     {
