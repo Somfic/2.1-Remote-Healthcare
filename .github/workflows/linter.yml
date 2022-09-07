@@ -1,8 +1,6 @@
 name: Format code
 
 on:
-  push:
-    branches-ignore: [main, dev]
   pull_request:
     branches: [main, dev]
 
