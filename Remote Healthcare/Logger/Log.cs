@@ -31,10 +31,6 @@ public static class Log
         
         var builder = new StringBuilder();
         var stack = new StackTrace();
-
-        const int startingStackIndex = 3;
-        
-        var stacks = stack.GetFrames().Skip(startingStackIndex).ToList();
         
         // [FATAL]
         builder.Append(Gray);
@@ -47,7 +43,7 @@ public static class Log
         // [Class.Method:line]
         builder.Append(Gray);
         builder.Append('[');
-        builder.Append(BuildStackTraceElement(stacks[startingStackIndex]));
+        builder.Append(BuildStackTraceElement(stack.GetFrame(5)));
         builder.Append(Gray);
         builder.Append("] ");
         
