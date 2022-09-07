@@ -24,6 +24,8 @@ public class BluetoothDevice
 
     public async Task Connect()
     {
+        var errorCode = -1;
+        
         try
         {
             Log.Debug($"Connecting to bluetooth device {_deviceName} ... ");
@@ -33,8 +35,8 @@ public class BluetoothDevice
             
             _bluetoothConnection = new BLE();
 
-            await _bluetoothConnection.OpenDevice(_deviceName);
-            await _bluetoothConnection.SetService(_serviceName);
+            errorCode = await _bluetoothConnection.OpenDevice(_deviceName);
+            errorCode = await _bluetoothConnection.SetService(_serviceName);
 
             _bluetoothConnection.SubscriptionValueChanged += (sender, e) =>
             {
@@ -44,11 +46,11 @@ public class BluetoothDevice
                 ReceivedData = e.Data;
             };
 
-            await _bluetoothConnection.SubscribeToCharacteristic(_serviceName);
+            errorCode = await _bluetoothConnection.SubscribeToCharacteristic(_serviceName);
         }
         catch (Exception ex)
         {
-            Log.Error(ex, $"Could not connect to bluetooth device {_deviceName}");
+            Log.Error(ex, $"Could not connect to bluetooth device {_deviceName} (Error code: {errorCode})");
         }
     }
 }
