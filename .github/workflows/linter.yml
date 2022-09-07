@@ -1,12 +1,11 @@
-name: Format code
+name: Linter
 
 on:
   pull_request:
     branches: [main, dev]
 
 jobs:
-  lint:
-    name: Format code
+  format:
     runs-on: ubuntu-latest
 
     steps:
