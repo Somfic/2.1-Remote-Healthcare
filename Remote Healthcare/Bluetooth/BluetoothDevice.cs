@@ -51,6 +51,7 @@ public class BluetoothDevice
         catch (Exception ex)
         {
             Log.Error(ex, $"Could not connect to bluetooth device {_deviceName} (Error code: {errorCode})");
+            throw;
         }
     }
 }
