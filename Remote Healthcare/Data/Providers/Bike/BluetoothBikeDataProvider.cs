@@ -6,7 +6,7 @@ public class BluetoothBikeDataProvider : BikeDataProvider
 {
 	private readonly BluetoothDevice _bikeSensor = new("Tacx Flux 00438", "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e", data => data[4] == 16);
 
-	public override Task Initialise() => _bikeSensor.Connect();
+	public override async Task Initialise() => await _bikeSensor.Connect();
 
 	public override async Task ProcessRawData()
 	{
