@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace RemoteHealthcare.Logger;
@@ -13,9 +14,21 @@ public static class Log
     private const string Magenta = "\u001B[35m";
     private const string Cyan = "\u001B[36m";
     public const string White = "\u001B[37m";
+
+    private static bool hasEnabledColorSupport = false;
     
     private static void LogMessage(LogLevel level, Exception? exception, string message)
     {
+        if (!hasEnabledColorSupport)
+        {
+            // Get the STD handle
+            IntPtr iStdOut = GetStdHandle(StdOutputHandle);
+
+            // Try to enable the use of ANSI codes
+            bool colorSupported = GetConsoleMode(iStdOut, out uint outConsoleMode) &&
+                                  SetConsoleMode(iStdOut, outConsoleMode | EnableVirtualTerminalProcessing);
+        }
+        
         var builder = new StringBuilder();
         var stack = new StackTrace();
 
@@ -119,6 +132,18 @@ public static class Log
 
         return builder.ToString();
     }
+    
+    private const int StdOutputHandle = -11;
+    private const uint EnableVirtualTerminalProcessing = 0x0004;
+
+    [DllImport("kernel32.dll")]
+    private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
+
+    [DllImport("kernel32.dll")]
+    private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern IntPtr GetStdHandle(int nStdHandle);
 }
 
 public enum LogLevel
