@@ -16,7 +16,7 @@ public abstract class HeartDataProvider : IDataProvider<HeartData>
 
 	public HeartData GetData() => _data;
 
-	public virtual Task Initialise() => Task.CompletedTask;
+	public abstract Task Initialise();
 
 	public abstract Task ProcessRawData();
 }

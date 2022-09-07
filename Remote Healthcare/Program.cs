@@ -1,9 +1,20 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.InteropServices;
+using Newtonsoft.Json;
 using RemoteHealthcare.Data.Providers.Bike;
 using RemoteHealthcare.Data.Providers.Heart;
+using RemoteHealthcare.Logger;
 
-var heart = new BluetoothHeartDataProvider();
-var bike = new BluetoothBikeDataProvider();
+HeartDataProvider heart = new BluetoothHeartDataProvider();
+BikeDataProvider bike = new BluetoothBikeDataProvider();
+
+if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+{
+	heart = new SimulationHeartDataProvider();
+	bike = new SimulationBikeDataProvider();
+}
+
+await heart.Initialise();
+await bike.Initialise();
 
 while (true)
 {
@@ -15,9 +26,7 @@ while (true)
 	var bikeData = bike.GetData();
 	var bikeJson = JsonConvert.SerializeObject(bikeData);
 
-	Console.Clear();
-	Console.WriteLine($"Heart: {heartJson}");
-	Console.WriteLine($" Bike: {bikeJson}");
-
-	await Task.Delay(250);
+	Log.Information(bikeJson);
+	
+	await Task.Delay(1000);
 }

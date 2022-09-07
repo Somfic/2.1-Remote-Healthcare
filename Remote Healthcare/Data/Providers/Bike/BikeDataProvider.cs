@@ -39,7 +39,7 @@ public abstract class BikeDataProvider : IDataProvider<BikeData>
 		_data.Id = id;
 	}
 
-	public virtual Task Initialise() => Task.CompletedTask;
+	public abstract Task Initialise();
 
 	public abstract Task ProcessRawData();
 

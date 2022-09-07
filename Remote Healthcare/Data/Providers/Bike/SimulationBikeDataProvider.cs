@@ -8,8 +8,11 @@ public class SimulationBikeDataProvider : BikeDataProvider
 	private readonly Random _random = new();
 	private readonly Stopwatch _timer = Stopwatch.StartNew();
 	private readonly Stopwatch _totalElapsed = Stopwatch.StartNew();
+	private readonly Stopwatch _timerSinceLastProcess = Stopwatch.StartNew();
 
 	private int _totalReset;
+
+	public override Task Initialise() => Task.CompletedTask;
 
 	public override async Task ProcessRawData()
 	{
@@ -34,10 +37,12 @@ public class SimulationBikeDataProvider : BikeDataProvider
 		SetSpeed((float)Math.Max(5, Math.Min(234, newSpeed)));
 
 		// Distance
-		var newDistance = (GetData().Distance + GetData().Speed * 0.25f) % 256;
+		var newDistance = (float)(GetData().Distance + GetData().Speed * _timerSinceLastProcess.Elapsed.TotalSeconds) % 256f;
 		SetDistance(newDistance);
 
 		// Heart rate
 		SetHeartRate((int)Math.Round(newSpeed + 80));
+		
+		_timerSinceLastProcess.Restart();
 	}
 }
