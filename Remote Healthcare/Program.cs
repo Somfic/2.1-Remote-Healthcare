@@ -3,23 +3,64 @@ using RemoteHealthcare.Data.Providers.Bike;
 using RemoteHealthcare.Data.Providers.Heart;
 using RemoteHealthcare.Logger;
 
-HeartDataProvider heart = new BluetoothHeartDataProvider();
-BikeDataProvider bike = new BluetoothBikeDataProvider();
+namespace RemoteHealthcare;
 
-await heart.Initialise();
-await bike.Initialise();
-
-while (true)
+public class Program
 {
-	await heart.ProcessRawData();
-	var heartData = heart.GetData();
-	var heartJson = JsonConvert.SerializeObject(heartData);
+	public static async Task Main(string[] args)
+	{
+		var heart = await GetHeartDataProvider();
 
-	await bike.ProcessRawData();
-	var bikeData = bike.GetData();
-	var bikeJson = JsonConvert.SerializeObject(bikeData);
+		var bike = await GetBikeDataProvider();
 
-	Log.Information(bikeJson);
-	
-	await Task.Delay(1000);
+		while (true)
+		{
+			await heart.ProcessRawData();
+			var heartData = heart.GetData();
+			var heartJson = JsonConvert.SerializeObject(heartData);
+
+			await bike.ProcessRawData();
+			var bikeData = bike.GetData();
+			var bikeJson = JsonConvert.SerializeObject(bikeData);
+
+			Log.Information(bikeJson);
+			Log.Information(heartJson);
+
+			await Task.Delay(1000);
+		}
+	}
+
+	private static async Task<HeartDataProvider> GetHeartDataProvider()
+	{
+		try
+		{
+			var provider = new BluetoothHeartDataProvider();
+			await provider.Initialise();
+			return provider;
+		}
+		catch (PlatformNotSupportedException)
+		{
+			Log.Debug("Switching to simulated heart provider");
+			var provider = new SimulationHeartDataProvider();
+			await provider.Initialise();
+			return provider;
+		}
+	}
+
+	private static async Task<BikeDataProvider> GetBikeDataProvider()
+	{
+		try
+		{
+			var provider = new BluetoothBikeDataProvider();
+			await provider.Initialise();
+			return provider;
+		}
+		catch (PlatformNotSupportedException)
+		{
+			Log.Debug("Switching to simulated bike provider");
+			var provider = new SimulationBikeDataProvider();
+			await provider.Initialise();
+			return provider;
+		}
+	}
 }
