@@ -19,7 +19,7 @@ public static class Log
     
     private static void LogMessage(LogLevel level, Exception? exception, string message)
     {
-        if (!hasEnabledColorSupport)
+        if (!hasEnabledColorSupport && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             // Get the STD handle
             IntPtr iStdOut = GetStdHandle(StdOutputHandle);
@@ -128,7 +128,7 @@ public static class Log
 
         return builder.ToString();
     }
-    
+
     private const int StdOutputHandle = -11;
     private const uint EnableVirtualTerminalProcessing = 0x0004;
 
