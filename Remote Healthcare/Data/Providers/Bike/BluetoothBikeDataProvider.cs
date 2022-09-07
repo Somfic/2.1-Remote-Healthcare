@@ -1,4 +1,3 @@
-using Avans.TI.BLE;
 using RemoteHealthcare.Bluetooth;
 
 namespace RemoteHealthcare.Data.Providers.Bike;

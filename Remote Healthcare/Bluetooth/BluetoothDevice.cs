@@ -26,6 +26,8 @@ public class BluetoothDevice
     {
         try
         {
+            Log.Debug($"Connecting to bluetooth device {_deviceName} ... ");
+            
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                Log.Warning("Bluetooth is only supported on Windows");
             

@@ -1,17 +1,10 @@
-﻿using System.Runtime.InteropServices;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RemoteHealthcare.Data.Providers.Bike;
 using RemoteHealthcare.Data.Providers.Heart;
 using RemoteHealthcare.Logger;
 
 HeartDataProvider heart = new BluetoothHeartDataProvider();
 BikeDataProvider bike = new BluetoothBikeDataProvider();
-
-if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-{
-	heart = new SimulationHeartDataProvider();
-	bike = new SimulationBikeDataProvider();
-}
 
 await heart.Initialise();
 await bike.Initialise();
