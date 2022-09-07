@@ -5,31 +5,29 @@ namespace RemoteHealthcare.Logger;
 
 public static class Log
 {
-    private static readonly string Gray = "\u001B[90m";
-    private static readonly string Red = "\u001B[31m";
-    private static readonly string Green = "\u001B[32m";
-    private static readonly string Yellow = "\u001B[33m";
-    private static readonly string Blue = "\u001B[34m";
-    private static readonly string Magenta = "\u001B[35m";
-    private static readonly string Cyan = "\u001B[36m";
-    private static readonly string White = "\u001B[37m";
+    private const string Gray = "\u001B[90m";
+    private const string Red = "\u001B[31m";
+    private const string Green = "\u001B[32m";
+    private const string Yellow = "\u001B[33m";
+    private const string Blue = "\u001B[34m";
+    private const string Magenta = "\u001B[35m";
+    private const string Cyan = "\u001B[36m";
+    public const string White = "\u001B[37m";
     
     private static void LogMessage(LogLevel level, Exception? exception, string message)
     {
         var builder = new StringBuilder();
         var stack = new StackTrace();
 
-        const int startingStackIndex = 1;
+        const int startingStackIndex = 3;
         
         var stacks = stack.GetFrames().Skip(startingStackIndex).ToList();
-        var callingMethod = stack.GetFrame(startingStackIndex);
-        var callingClass = callingMethod?.GetMethod()?.DeclaringType;
         
         // [FATAL]
         builder.Append(Gray);
         builder.Append('[');
         builder.Append(GetColorCode(level));
-        builder.Append(level.ToString().PadRight(5));
+        builder.Append(level.ToString().PadRight(5).ToUpper());
         builder.Append(Gray);
         builder.Append("] ");
         
@@ -43,6 +41,38 @@ public static class Log
         // Message
         builder.Append(GetColorCode(level));
         builder.Append(message);
+
+        if (exception != null)
+        {
+            var ex = exception;
+
+            while (ex != null)
+            {
+                builder.AppendLine();
+                builder.Append("         ");
+                builder.Append(Red);
+                builder.Append(exception.GetType().Name.Replace("Exception", string.Empty));
+                builder.Append(Gray);
+                builder.Append(": ");
+                builder.Append(GetColorCode(level));
+                builder.Append(exception.Message);
+                
+                ex = ex.InnerException;
+            }
+            
+            if(exception.StackTrace != null)
+            {
+                var stackTraceElements = exception.StackTrace.Split('\n').Select(x => x.Trim()).ToList();
+
+                foreach (var stackTraceElement in stackTraceElements)
+                {
+                    builder.AppendLine();
+                    builder.Append(Gray);
+                    builder.Append("          ");
+                    builder.Append(stackTraceElement);
+                }
+            }
+        }
 
         Console.WriteLine(builder.ToString());
     }
