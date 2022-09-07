@@ -2,47 +2,46 @@ namespace RemoteHealthcare.Data.Providers.Bike;
 
 public abstract class BikeDataProvider : IDataProvider<BikeData>
 {
-    private readonly BikeData _data = new();
+	private readonly BikeData _data = new();
 
-    protected void SetDistance(float distance)
-    {
-        _data.Distance = distance;
-    }
+	protected void SetDistance(float distance)
+	{
+		_data.Distance = distance;
+	}
 
-    protected void SetSpeed(float speed)
-    {
-        _data.Speed = speed;
-    }
+	protected void SetSpeed(float speed)
+	{
+		_data.Speed = speed;
+	}
 
-    protected void SetHeartRate(int heartRate)
-    {
-        _data.HeartRate = heartRate;
-    }
+	protected void SetHeartRate(int heartRate)
+	{
+		_data.HeartRate = heartRate;
+	}
 
-    protected void SetElapsed(TimeSpan elapsed)
-    {
-        _data.Elapsed = elapsed;
-    }
-    
-    protected void SetTotalElapsed(TimeSpan elapsed)
-    {
-        _data.TotalElapsed = elapsed;
-    }
+	protected void SetElapsed(TimeSpan elapsed)
+	{
+		_data.Elapsed = elapsed;
+	}
 
-    protected void SetDeviceType(DeviceType deviceType)
-    {
-        _data.DeviceType = deviceType;
-    }
+	protected void SetTotalElapsed(TimeSpan elapsed)
+	{
+		_data.TotalElapsed = elapsed;
+	}
 
-    protected void SetId(string id)
-    {
-        _data.Id = id;
-    }
+	protected void SetDeviceType(DeviceType deviceType)
+	{
+		_data.DeviceType = deviceType;
+	}
 
-    public abstract Task Process();
+	protected void SetId(string id)
+	{
+		_data.Id = id;
+	}
 
-    public BikeData GetData()
-    {
-        return _data;
-    }
+	public abstract Task Initialise();
+
+	public abstract Task ProcessRawData();
+
+	public BikeData GetData() => _data;
 }

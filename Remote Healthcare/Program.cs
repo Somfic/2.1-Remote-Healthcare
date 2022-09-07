@@ -1,42 +1,66 @@
 ﻿using Newtonsoft.Json;
 using RemoteHealthcare.Data.Providers.Bike;
 using RemoteHealthcare.Data.Providers.Heart;
+using RemoteHealthcare.Logger;
 
-internal class Program {
+namespace RemoteHealthcare;
 
-    static BikeDataProvider bike;
-    static HeartDataProvider heart = new BluetoothHeartDataProvider();
-    
-    private static async Task Main(string[] args)
-    {
-        BluetoothBikeDataProvider btbike = new BluetoothBikeDataProvider("Tacx Flux 00438");
-        
-        try
-        {
-            await btbike.Connect();
-            bike = btbike;
-        } catch (Exception)
-        {
-            Console.WriteLine("Switching to simulation");
-            Thread.Sleep(5000);
-            bike = new SimulationBikeDataProvider();
-        }
-        HeartDataProvider heart = new BluetoothHeartDataProvider();
-        while (true)
-        {
-            await heart.Process();
-            var heartData = heart.GetData();
-            var heartJson = JsonConvert.SerializeObject(heartData);
+public class Program
+{
+	public static async Task Main(string[] args)
+	{
+		var heart = await GetHeartDataProvider();
 
-            await bike.Process();
-            var bikeData = bike.GetData();
-            var bikeJson = JsonConvert.SerializeObject(bikeData);
+		var bike = await GetBikeDataProvider();
 
-            Console.Clear();
-            Console.WriteLine($"Heart: {heartJson}");
-            Console.WriteLine($" Bike: {bikeJson}");
+		while (true)
+		{
+			await heart.ProcessRawData();
+			var heartData = heart.GetData();
+			var heartJson = JsonConvert.SerializeObject(heartData);
 
-            await Task.Delay(250);
-        }
-    }
+			await bike.ProcessRawData();
+			var bikeData = bike.GetData();
+			var bikeJson = JsonConvert.SerializeObject(bikeData);
+
+			Log.Information(bikeJson);
+			Log.Information(heartJson);
+
+			await Task.Delay(1000);
+		}
+	}
+
+	private static async Task<HeartDataProvider> GetHeartDataProvider()
+	{
+		try
+		{
+			var provider = new BluetoothHeartDataProvider();
+			await provider.Initialise();
+			return provider;
+		}
+		catch (PlatformNotSupportedException)
+		{
+			Log.Debug("Switching to simulated heart provider");
+			var provider = new SimulationHeartDataProvider();
+			await provider.Initialise();
+			return provider;
+		}
+	}
+
+	private static async Task<BikeDataProvider> GetBikeDataProvider()
+	{
+		try
+		{
+			var provider = new BluetoothBikeDataProvider();
+			await provider.Initialise();
+			return provider;
+		}
+		catch (PlatformNotSupportedException)
+		{
+			Log.Debug("Switching to simulated bike provider");
+			var provider = new SimulationBikeDataProvider();
+			await provider.Initialise();
+			return provider;
+		}
+	}
 }

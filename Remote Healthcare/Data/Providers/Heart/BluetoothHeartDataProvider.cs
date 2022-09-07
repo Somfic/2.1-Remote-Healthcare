@@ -1,64 +1,16 @@
-using System.Threading.Tasks;
-using Avans.TI.BLE;
+using RemoteHealthcare.Bluetooth;
 
 namespace RemoteHealthcare.Data.Providers.Heart;
 
 public class BluetoothHeartDataProvider : HeartDataProvider
 {
-    static int heartRate = 0;
-    static string id = "";
-    public override async Task Process()
-    {
-        try
-        {
-            int errorCode = 0;
-            BLE bleHeart = new BLE();
-            Thread.Sleep(1000);
-            await Task.CompletedTask;
+	private readonly BluetoothDevice _heartSensor = new("Decathlon Dual HR", "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+	
+	public override async Task Initialise() => await _heartSensor.Connect();
 
-            var services = bleHeart.GetServices;
-
-            errorCode = await bleHeart.OpenDevice("Decathlon Dual HR");
-
-            await bleHeart.SetService("HeartRate");
-
-
-            bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
-            await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
-            SetId(id);
-            SetHeartRate(heartRate);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
-    }
-    private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
-    {
-        
-
-
-        if (e.ServiceName != "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e")
-        {
-
-            try
-            {
-                id = e.ServiceName;
-                heartRate = e.Data[1];
-                
-
-                
-
-            }
-            catch
-            {
-                heartRate = 0;
-                id = "";
-            }
-
-        }
-        
-
-
-    }
+	public override async Task ProcessRawData()
+	{
+		SetId(_heartSensor.ServiceName);
+		SetHeartRate(_heartSensor.ReceivedData[1]);
+	}
 }
