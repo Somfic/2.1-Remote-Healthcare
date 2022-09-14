@@ -2,15 +2,21 @@
 using RemoteHealthcare.Data.Providers.Bike;
 using RemoteHealthcare.Data.Providers.Heart;
 using RemoteHealthcare.Logger;
+using RemoteHealthcare.Socket;
 
 namespace RemoteHealthcare;
 
 public class Program
 {
+	
+	
+	
 	public static async Task Main(string[] args)
 	{
+		var engine = new EngineConnection();
+		await engine.ConnectAsync();
+		
 		var heart = await GetHeartDataProvider();
-
 		var bike = await GetBikeDataProvider();
 
 		while (true)
