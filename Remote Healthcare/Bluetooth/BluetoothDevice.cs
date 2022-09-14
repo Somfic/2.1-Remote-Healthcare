@@ -6,6 +6,8 @@ namespace RemoteHealthcare.Bluetooth;
 
 public class BluetoothDevice
 {
+    private readonly Log _log = new(typeof(BluetoothDevice));
+    
     private BLE _bluetoothConnection;
 
     private readonly string _deviceName;
@@ -28,10 +30,10 @@ public class BluetoothDevice
         
         try
         {
-            Log.Debug($"Connecting to bluetooth device {_deviceName} ... ");
+            _log.Debug($"Connecting to bluetooth device {_deviceName} ... ");
             
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-               Log.Warning("Bluetooth is only supported on Windows");
+                _log.Warning("Bluetooth is only supported on Windows");
             
             _bluetoothConnection = new BLE();
 
@@ -50,7 +52,7 @@ public class BluetoothDevice
         }
         catch (Exception ex)
         {
-            Log.Error(ex, $"Could not connect to bluetooth device {_deviceName} (Error code: {errorCode})");
+            _log.Error(ex, $"Could not connect to bluetooth device {_deviceName} (Error code: {errorCode})");
             throw;
         }
     }

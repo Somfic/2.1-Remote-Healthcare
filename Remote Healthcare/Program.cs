@@ -8,31 +8,40 @@ namespace RemoteHealthcare;
 
 public class Program
 {
-	
-	
+	private static readonly Log Log = new Log(typeof(Program));
 	
 	public static async Task Main(string[] args)
 	{
-		var engine = new EngineConnection();
-		await engine.ConnectAsync();
-		
-		var heart = await GetHeartDataProvider();
-		var bike = await GetBikeDataProvider();
-
-		while (true)
+		try
 		{
-			await heart.ProcessRawData();
-			var heartData = heart.GetData();
-			var heartJson = JsonConvert.SerializeObject(heartData);
+			var engine = new EngineConnection();
+			await engine.ConnectAsync("Lucas");
 
-			await bike.ProcessRawData();
-			var bikeData = bike.GetData();
-			var bikeJson = JsonConvert.SerializeObject(bikeData);
+			await Task.Delay(-1);
 
-			Log.Information(bikeJson);
-			Log.Information(heartJson);
+			// var heart = await GetHeartDataProvider();
+			// var bike = await GetBikeDataProvider();
+			//
+			// while (true)
+			// {
+			// 	await heart.ProcessRawData();
+			// 	var heartData = heart.GetData();
+			// 	var heartJson = JsonConvert.SerializeObject(heartData);
+			//
+			// 	await bike.ProcessRawData();
+			// 	var bikeData = bike.GetData();
+			// 	var bikeJson = JsonConvert.SerializeObject(bikeData);
+			//
+			// 	Log.Information(bikeJson);
+			// 	Log.Information(heartJson);
+			//
+			// 	await Task.Delay(1000);
+			// }
 
-			await Task.Delay(1000);
+		}
+		catch (Exception ex)
+		{
+			Log.Error(ex, "Application terminated unexpectedly");
 		}
 	}
 

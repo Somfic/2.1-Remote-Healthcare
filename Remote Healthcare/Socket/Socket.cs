@@ -11,26 +11,31 @@ public class Socket
     private byte[] _totalBuffer = Array.Empty<byte>();
     private readonly byte[] _buffer = new byte[1024];
 
+    private readonly Log _log = new(typeof(Socket));
     private readonly TcpClient _socket = new();
     private NetworkStream _stream;
 
     public async Task ConnectAsync(string host, int port)
     {
+        if (_socket.Connected)
+            return;
+        
         try
         {
             var ip = IPAddress.Parse(host);
             
-            Log.Debug($"Connecting to {ip}:{port}");
+            _log.Debug($"Connecting to {ip}:{port} ... ");
+            
             await _socket.ConnectAsync(ip, port);
 
             _stream = _socket.GetStream();
             _stream.BeginRead(_buffer, 0, 1024, OnRead, null);
 
-            Log.Debug($"Connected to {ip}:{port}");
+            _log.Debug($"Connected to {ip}:{port}");
         }
         catch (Exception ex)
         {
-            Log.Warning(ex, $"Could not connect to {host}:{port}");
+            _log.Warning(ex, $"Could not connect to {host}:{port}");
             throw;
         }
     }
@@ -44,27 +49,36 @@ public class Socket
         }
         catch (Exception ex)
         {
-           Log.Warning(ex, "Could not read from stream");
+            _log.Warning(ex, "Could not read from stream");
            return;
         }
 
         while (_totalBuffer.Length >= 4)
         {
             var packetSize = BitConverter.ToInt32(_totalBuffer, 0);
+            
             if (_totalBuffer.Length >= packetSize + 4)
             {
                 var json = Encoding.UTF8.GetString(_totalBuffer, 4, packetSize);
-                Log.Debug(json);
-                
                 OnMessage?.Invoke(this, json);
-                _totalBuffer = _totalBuffer.Skip(4).ToArray();
+                
+                var newBuffer = new byte[_totalBuffer.Length - packetSize - 4];
+                Array.Copy(_totalBuffer, packetSize + 4, newBuffer, 0, newBuffer.Length);
+                _totalBuffer = newBuffer;
             }
             
             else
                 break;
         }
-
+        
         _stream.BeginRead(_buffer, 0, 1024, OnRead, null);
+    }
+    
+    public static T[] SubArray<T>(T[] data, int index, int length)
+    {
+        var result = new T[length];
+        Array.Copy(data, index, result, 0, length);
+        return result;
     }
 
     public async Task SendAsync(string id, dynamic data = null)

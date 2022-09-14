@@ -1,11 +1,19 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace RemoteHealthcare.Logger;
 
-public static class Log
+public class Log
 {
+    private readonly Type _callerType;
+
+    public Log(Type callerType)
+    {
+        _callerType = callerType;
+    }
+    
     private const string Gray = "\u001B[90m";
     private const string Red = "\u001B[31m";
     private const string Green = "\u001B[32m";
@@ -13,24 +21,21 @@ public static class Log
     private const string Blue = "\u001B[34m";
     private const string Magenta = "\u001B[35m";
     private const string Cyan = "\u001B[36m";
-    public const string White = "\u001B[37m";
+    private const string White = "\u001B[37m";
 
-    private static bool hasEnabledColorSupport = false;
-    
-    private static void LogMessage(LogLevel level, Exception? exception, string message)
+    private void LogMessage(LogLevel level, Exception? exception, string message)
     {
-        if (!hasEnabledColorSupport && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             // Get the STD handle
-            IntPtr iStdOut = GetStdHandle(StdOutputHandle);
+            var iStdOut = GetStdHandle(StdOutputHandle);
 
             // Try to enable the use of ANSI codes
-            bool colorSupported = GetConsoleMode(iStdOut, out uint outConsoleMode) &&
+            var colorSupported = GetConsoleMode(iStdOut, out var outConsoleMode) &&
                                   SetConsoleMode(iStdOut, outConsoleMode | EnableVirtualTerminalProcessing);
         }
         
         var builder = new StringBuilder();
-        var stack = new StackTrace();
         
         // [FATAL]
         builder.Append(Gray);
@@ -43,7 +48,7 @@ public static class Log
         // [Class.Method:line]
         builder.Append(Gray);
         builder.Append('[');
-        builder.Append(BuildStackTraceElement(stack.GetFrame(5)));
+        builder.Append(BuildStackTraceElement());
         builder.Append(Gray);
         builder.Append("] ");
         
@@ -83,10 +88,12 @@ public static class Log
             }
         }
 
+        builder.Append(White);
+        
         Console.WriteLine(builder.ToString());
     }
 
-    private static string GetLevel(LogLevel level)
+    private string GetLevel(LogLevel level)
     {
         switch (level)
         {
@@ -105,22 +112,22 @@ public static class Log
         }
     }
 
-    public static void Debug(Exception exception, string message) => LogMessage(LogLevel.Debug, exception, message);
-    public static void Debug(string message) => LogMessage(LogLevel.Debug, null, message);
+    public void Debug(Exception exception, string message) => LogMessage(LogLevel.Debug, exception, message);
+    public void Debug(string message) => LogMessage(LogLevel.Debug, null, message);
     
-    public static void Information(Exception exception, string message) => LogMessage(LogLevel.Information, exception, message);
-    public static void Information(string message) => LogMessage(LogLevel.Information, null, message);
+    public void Information(Exception exception, string message) => LogMessage(LogLevel.Information, exception, message);
+    public void Information(string message) => LogMessage(LogLevel.Information, null, message);
     
-    public static void Warning(Exception exception, string message) => LogMessage(LogLevel.Warning, exception, message);
-    public static void Warning(string message) => LogMessage(LogLevel.Warning, null, message);
+    public void Warning(Exception exception, string message) => LogMessage(LogLevel.Warning, exception, message);
+    public void Warning(string message) => LogMessage(LogLevel.Warning, null, message);
     
-    public static void Error(Exception exception, string message) => LogMessage(LogLevel.Error, exception, message);
-    public static void Error(string message) => LogMessage(LogLevel.Error, null, message);
+    public void Error(Exception exception, string message) => LogMessage(LogLevel.Error, exception, message);
+    public void Error(string message) => LogMessage(LogLevel.Error, null, message);
     
-    public static void Critical(Exception exception, string message) => LogMessage(LogLevel.Critical, exception, message);
-    public static void Critical(string message) => LogMessage(LogLevel.Critical, null, message);
+    public void Critical(Exception exception, string message) => LogMessage(LogLevel.Critical, exception, message);
+    public void Critical(string message) => LogMessage(LogLevel.Critical, null, message);
     
-    private static string GetColorCode(LogLevel level)
+    private string GetColorCode(LogLevel level)
     {
         return level switch
         {
@@ -133,17 +140,12 @@ public static class Log
         };
     }
     
-    private static string BuildStackTraceElement(StackFrame stack) {
+    private string BuildStackTraceElement()
+    {
         var builder = new StringBuilder();
-
-        builder.Append(Cyan);
-        builder.Append(stack.GetMethod()?.DeclaringType?.Name);
-        builder.Append(Gray);
-        builder.Append('.');
+        
         builder.Append(Green);
-        builder.Append(stack.GetMethod()?.Name);
-        builder.Append(Gray);
-        builder.Append("()");
+        builder.Append(_callerType.Name);
 
         return builder.ToString();
     }
