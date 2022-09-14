@@ -36,7 +36,7 @@ public static class Log
         builder.Append(Gray);
         builder.Append('[');
         builder.Append(GetColorCode(level));
-        builder.Append(level.ToString().PadRight(5).ToUpper());
+        builder.Append(GetLevel(level));
         builder.Append(Gray);
         builder.Append("] ");
         
@@ -84,6 +84,25 @@ public static class Log
         }
 
         Console.WriteLine(builder.ToString());
+    }
+
+    private static string GetLevel(LogLevel level)
+    {
+        switch (level)
+        {
+            case LogLevel.Debug:
+                return "DEBUG";
+            case LogLevel.Information:
+                return " INFO";
+            case LogLevel.Warning:
+                return " WARN";
+            case LogLevel.Error:
+                return "ERROR";
+            case LogLevel.Critical:
+                return "FATAL";
+            default:
+                throw new ArgumentOutOfRangeException(nameof(level), level, null);
+        }
     }
 
     public static void Debug(Exception exception, string message) => LogMessage(LogLevel.Debug, exception, message);
