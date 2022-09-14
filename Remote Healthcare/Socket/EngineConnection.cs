@@ -35,7 +35,7 @@ public class EngineConnection
         }
     }
 
-    public async Task ConnectAsync(string user)
+    public async Task ConnectAsync(string user, string? password = null)
     {
         await CreateConnectionAsync();
         await FindAvailableUsersAsync();
@@ -50,7 +50,7 @@ public class EngineConnection
         _userId = foundUser.uid;
         _log.Debug($"Connecting to {foundUser.user} ({foundUser.uid}) ... ");
         
-        await _socket.SendAsync($"tunnel/create", new { session = _userId });
+        await _socket.SendAsync($"tunnel/create", new { session = _userId, key = password });
     }
 
     private async Task ProcessMessageAsync(string json)
