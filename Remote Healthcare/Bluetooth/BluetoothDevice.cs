@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using Avans.TI.BLE;
+using RemoteHealthcare.Data;
 using RemoteHealthcare.Logger;
 
 namespace RemoteHealthcare.Bluetooth;
@@ -10,16 +11,16 @@ public class BluetoothDevice
 
     private readonly string _deviceName;
     private readonly string _serviceName;
-    private readonly Predicate<byte[]>? _predicate;
+    private readonly string _serviceCharacteristic;
 
     public byte[] ReceivedData { get; private set; } = new byte[12];
     public string ServiceName { get; private set; } = string.Empty;
     
-    public BluetoothDevice(string deviceName, string serviceName, Predicate<byte[]>? predicate = null)
+    public BluetoothDevice(string deviceName, string serviceName, string serviceCharacteristic)
     {
         _deviceName = deviceName;
         _serviceName = serviceName;
-        _predicate = predicate;
+        _serviceCharacteristic = serviceCharacteristic;
     }
 
     public async Task Connect()
@@ -34,19 +35,20 @@ public class BluetoothDevice
                Log.Warning("Bluetooth is only supported on Windows");
             
             _bluetoothConnection = new BLE();
+            await Task.Delay(1000);
 
             errorCode = await _bluetoothConnection.OpenDevice(_deviceName);
+            
+            var services = _bluetoothConnection.GetServices;
             errorCode = await _bluetoothConnection.SetService(_serviceName);
-
+            
             _bluetoothConnection.SubscriptionValueChanged += (sender, e) =>
             {
-                if (_predicate != null && !_predicate.Invoke(e.Data)) return;
-                
                 ServiceName = e.ServiceName;
                 ReceivedData = e.Data;
             };
 
-            errorCode = await _bluetoothConnection.SubscribeToCharacteristic(_serviceName);
+            errorCode = await _bluetoothConnection.SubscribeToCharacteristic(_serviceCharacteristic);
         }
         catch (Exception ex)
         {
