@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Logger;
 
 namespace RemoteHealthcare.Socket;
@@ -80,6 +81,22 @@ public class Socket
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(command));
         await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
+    }
+
+    public async Task SendTerrain(string id, dynamic? data = null)
+    {
+        JObject jObject =
+            JObject.Parse(File.ReadAllText(
+                @"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/Terrain.json"));
+        jObject["dest"] = id;
+        JArray heights = jObject["data"]["data"]["data"]["heights"] as JArray;
+        for (int i = 0; i < 256; i++)
+        {
+            for (int j = 0; j < 256; j++)
+            {
+                heights.Add(0);
+            }
+        }
     }
     
     public event EventHandler<string> OnMessage;
