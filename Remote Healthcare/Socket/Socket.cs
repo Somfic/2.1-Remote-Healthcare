@@ -73,15 +73,8 @@ public class Socket
         
         _stream.BeginRead(_buffer, 0, 1024, OnRead, null);
     }
-    
-    public static T[] SubArray<T>(T[] data, int index, int length)
-    {
-        var result = new T[length];
-        Array.Copy(data, index, result, 0, length);
-        return result;
-    }
 
-    public async Task SendAsync(string id, dynamic data = null)
+    public async Task SendAsync(string id, dynamic? data = null)
     {
         var command = new { id = id, data = data };
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(command));
