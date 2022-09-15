@@ -39,10 +39,16 @@ public class EngineConnection
     {
         await CreateConnectionAsync();
         await FindAvailableUsersAsync();
+
+        if (_clients == null)
+        {   
+            _log.Warning("No clients are available");
+            throw new Exception("No clients were found");
+        }
         
         if (!_clients.Any(x => x.user.ToLower().Contains(user.ToLower())))
         {
-            _log.Warning($"User {user} could not be found. Available users: {string.Join(", ", _clients.Select(x => x.user))}");
+            _log.Warning($"User '{user}' could not be found. Available users: {string.Join(", ", _clients.Select(x => x.user))}");
             throw new ArgumentException("User could not be found");
         }
 
@@ -50,38 +56,53 @@ public class EngineConnection
         _userId = foundUser.uid;
         _log.Debug($"Connecting to {foundUser.user} ({foundUser.uid}) ... ");
         
-        await _socket.SendAsync($"tunnel/create", new { session = _userId, key = password });
+        await _socket.SendAsync("tunnel/create", new { session = _userId, key = password });
     }
 
     private async Task ProcessMessageAsync(string json)
     {
-        dynamic raw = JsonConvert.DeserializeObject(json) ?? throw new InvalidOperationException("Json was null");
-        string id = raw.id;
-        switch (id)
+        try
         {
-            case "session/list":
+            dynamic raw = JsonConvert.DeserializeObject(json) ?? throw new InvalidOperationException("Json was null");
+            string id = raw.id;
+            switch (id)
             {
-                var result = JsonConvert.DeserializeObject<DataResponses<SessionList>>(json);
-                _clients = result.Data.Select(x => (user: $"{x.Client.Host}/{x.Client.User}", uid: x.Id)).ToArray();
-                _log.Debug($"Found {_clients.Length} clients: {string.Join(", ", _clients.Select(x => x.user))}");
-                break;
-            }
+                case "session/list":
+                {
+                    var result = JsonConvert.DeserializeObject<DataResponses<SessionList>>(json);
+                    _clients = result.Data.Select(x => (user: $"{x.Client.Host}/{x.Client.User}", uid: x.Id)).ToArray();
+                    _log.Debug($"Found {_clients.Length} clients: {string.Join(", ", _clients.Select(x => x.user))}");
+                    break;
+                }
 
-            case "tunnel/create":
-            {
-                var result = JsonConvert.DeserializeObject<DataResponse<TunnelCreate>>(json);
-                _tunnelId = result.Data.Id;
-                var user = _clients?.First(x => x.uid == _userId).user;
-                _log.Information($"Connected to {user}");
-                break;
-            }
+                case "tunnel/create":
+                {
+                    var result = JsonConvert.DeserializeObject<DataResponse<TunnelCreate>>(json);
+                    var user = _clients?.First(x => x.uid == _userId).user;
 
-            default:
-            {
-                _log.Warning($"Unhandled incoming message with id '{id}'");
-                Console.WriteLine(json);
-                break;
+                    if (result.Data.Status != "ok")
+                    {
+                        _log.Warning($"Could not establish tunnel connection with {user} ({result.Data.Status})");
+                        throw new Exception("Could not create tunnel connection");
+                    }
+
+                    _tunnelId = result.Data.Id;
+                    _log.Information($"Connected to {user}");
+                    break;
+                }
+
+                default:
+                {
+                    _log.Warning($"Unhandled incoming message with id '{id}'");
+                    Console.WriteLine(json);
+                    break;
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error while processing incoming message");
+            _log.Debug($"Message JSON: {json}");
         }
     }
 
