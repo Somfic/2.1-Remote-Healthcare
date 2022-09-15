@@ -37,6 +37,14 @@ public class BluetoothDevice
             
             _bluetoothConnection = new BLE();
 
+            var devices = _bluetoothConnection.ListDevices();
+            
+            if(!devices.Contains(_deviceName))
+            {
+                _log.Warning($"Device '{_deviceName}' could not be found");
+                throw new ArgumentException("Device could not be found");
+            }
+
             errorCode = await _bluetoothConnection.OpenDevice(_deviceName);
             errorCode = await _bluetoothConnection.SetService(_serviceName);
 
@@ -52,7 +60,7 @@ public class BluetoothDevice
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"Could not connect to bluetooth device {_deviceName} (Error code: {errorCode})");
+            _log.Error(ex, $"Could not connect to bluetooth device '{_deviceName}', error code: {errorCode}");
             throw;
         }
     }
