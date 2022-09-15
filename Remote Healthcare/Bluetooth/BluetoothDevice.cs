@@ -49,7 +49,6 @@ public class BluetoothDevice
             };
 
             errorCode = await _bluetoothConnection.SubscribeToCharacteristic(_serviceCharacteristic);
-            Console.WriteLine($"{_deviceName} connected");
         }
         catch (Exception ex)
         {
