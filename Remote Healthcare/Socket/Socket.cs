@@ -83,20 +83,39 @@ public class Socket
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
 
-    public async Task SendTerrain(string id, dynamic? data = null)
+    public async Task SendTerrain(string dest, dynamic? data = null)
     {
         JObject jObject =
             JObject.Parse(File.ReadAllText(
                 @"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/Terrain.json"));
-        jObject["dest"] = id;
+        jObject["data"]["dest"] = dest;
         JArray heights = jObject["data"]["data"]["data"]["heights"] as JArray;
+        var random = 0;
         for (int i = 0; i < 256; i++)
         {
             for (int j = 0; j < 256; j++)
             {
-                heights.Add(0);
+                heights.Add(random);
+                random++;
             }
         }
+        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
+        _log.Debug(JsonConvert.SerializeObject(jObject));
+        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
+        await _stream.WriteAsync(bytes, 0, bytes.Length);
+    }
+
+    public async Task AddNode(string dest, dynamic? data = null)
+    {
+        JObject jObject =
+            JObject.Parse(File.ReadAllText(
+                @"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/SendNodeAdd.json"));
+        jObject["data"]["dest"] = dest;
+        
+        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
+        _log.Debug(JsonConvert.SerializeObject(jObject));
+        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
+        await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
     
     public event EventHandler<string> OnMessage;
