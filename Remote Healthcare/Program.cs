@@ -1,81 +1,22 @@
-﻿using Newtonsoft.Json;
-using RemoteHealthcare.Data.Providers.Bike;
-using RemoteHealthcare.Data.Providers.Heart;
+﻿using RemoteHealthcare.Data.Providers;
 using RemoteHealthcare.Logger;
 using RemoteHealthcare.Socket;
 
-namespace RemoteHealthcare;
-
-public class Program
+try
 {
-	private static readonly Log Log = new Log(typeof(Program));
-	
-	public static async Task Main(string[] args)
-	{
-		try
-		{
-			var engine = new EngineConnection();
-			await engine.ConnectAsync("Lucas");
+    var engine = new EngineConnection();
+    await engine.ConnectAsync("Johan", "abc");
 
-			await Task.Delay(-1);
+    var bike = await DataProvider.GetBike();
+    await bike.Initialise();
 
-			// var heart = await GetHeartDataProvider();
-			// var bike = await GetBikeDataProvider();
-			//
-			// while (true)
-			// {
-			// 	await heart.ProcessRawData();
-			// 	var heartData = heart.GetData();
-			// 	var heartJson = JsonConvert.SerializeObject(heartData);
-			//
-			// 	await bike.ProcessRawData();
-			// 	var bikeData = bike.GetData();
-			// 	var bikeJson = JsonConvert.SerializeObject(bikeData);
-			//
-			// 	Log.Information(bikeJson);
-			// 	Log.Information(heartJson);
-			//
-			// 	await Task.Delay(1000);
-			// }
+    var heart = await DataProvider.GetHeart();
+    await heart.Initialise();
 
-		}
-		catch (Exception ex)
-		{
-			Log.Error(ex, "Application terminated unexpectedly");
-		}
-	}
-
-	private static async Task<HeartDataProvider> GetHeartDataProvider()
-	{
-		try
-		{
-			var provider = new BluetoothHeartDataProvider();
-			await provider.Initialise();
-			return provider;
-		}
-		catch (PlatformNotSupportedException)
-		{
-			Log.Debug("Switching to simulated heart provider");
-			var provider = new SimulationHeartDataProvider();
-			await provider.Initialise();
-			return provider;
-		}
-	}
-
-	private static async Task<BikeDataProvider> GetBikeDataProvider()
-	{
-		try
-		{
-			var provider = new BluetoothBikeDataProvider();
-			await provider.Initialise();
-			return provider;
-		}
-		catch (PlatformNotSupportedException)
-		{
-			Log.Debug("Switching to simulated bike provider");
-			var provider = new SimulationBikeDataProvider();
-			await provider.Initialise();
-			return provider;
-		}
-	}
+    await Task.Delay(-1);
+}
+catch (Exception ex)
+{
+    var log = new Log(typeof(Program));
+    log.Critical(ex, "Program stopped because of exception");
 }
