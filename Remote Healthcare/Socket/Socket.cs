@@ -88,7 +88,7 @@ public class Socket
         /* Getting the path of the current directory and then adding the path of the testSave folder and the Time.json 
         file to it. */
         string path = System.Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Time.json";
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "/Time.json";
 
         /* This is a method that is used to set the time of the skybox. It is used to set the time of the skybox to the
         time that is given by the user. */
@@ -112,29 +112,13 @@ public class Socket
             newTime = (double)23 + ((double)59.00 / 60.00);
 
         JObject jObject = JObject.Parse(File.ReadAllText(path));
-        jObject["dest"] = id;
-        jObject["time"] = newTime;
+        jObject["data"]["dest"] = id;
+        jObject["data"]["data"]["data"]["time"] = newTime;
 
-
-        /*
-        SendData($@"
-             {{
-	                 ""id"" : ""tunnel/send"",
-	                 ""data"" :
-	                 {{
-		                     ""dest"" : ""{destID}"",
-		                     ""data"" : 
-		                     {{
-			                      ""id"" : ""scene/skybox/settime"",
-			                      ""data"" : 
-                                 {{
-                                     ""time"" : {newTime}
-                                 }}
-		                     }}
-	                 }}
-             }}");
-             */
-        
+        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
+        _log.Debug(JsonConvert.SerializeObject(jObject));
+        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
+        await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
 
     public event EventHandler<string> OnMessage;
