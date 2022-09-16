@@ -105,10 +105,10 @@ public class EngineConnection
 
                 case "tunnel/send":
                 {
-                    JObject response = JObject.Parse(json);
-                    _groundPlaneId = response["data"]["data"]["data"]["children"][5]["uuid"].ToObject<string>();
-                    File.WriteAllText(@"C:\Users\Richa\Documents\Repositories\Guus Chess\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json", response.ToString());
-                    _log.Debug("Groundplane Id = :" + _groundPlaneId);
+                    var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
+                    _groundPlaneId = result.Data.Data.Data.Children.First(x => x.Name == "GroundPlane").Uuid;
+                    //File.WriteAllText(@"C:\Users\Richa\Documents\Repositories\Guus Chess\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json", json);
+                    _log.Critical("Groundplane Id = " + _groundPlaneId);
                     break;
                 }
 
