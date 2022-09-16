@@ -90,13 +90,11 @@ public class Socket
         JObject jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
         JArray heights = jObject["data"]["data"]["data"]["heights"] as JArray;
-        var random = 0;
         for (int i = 0; i < 256; i++)
         {
             for (int j = 0; j < 256; j++)
             {
-                heights.Add(random);
-                random++;
+                heights.Add(0);
             }
         }
 
@@ -113,6 +111,19 @@ public class Socket
         JObject jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
 
+        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
+        _log.Debug(JsonConvert.SerializeObject(jObject));
+        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
+        await _stream.WriteAsync(bytes, 0, bytes.Length);
+    }
+
+    public async Task GetScene(string dest, dynamic? data = null)
+    {
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\GetScene.json";
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = dest;
+        
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
         _log.Debug(JsonConvert.SerializeObject(jObject));
         await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
