@@ -130,6 +130,20 @@ public class Socket
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
 
+    public async Task RemoveGroundPlane(string dest, string groundPlaneID)
+    {
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\RemoveNode.json";
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = dest;
+        jObject["data"]["data"]["data"]["id"] = groundPlaneID;
+        
+        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
+        _log.Debug(JsonConvert.SerializeObject(jObject));
+        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
+        await _stream.WriteAsync(bytes, 0, bytes.Length);
+    }
+
     public event EventHandler<string> OnMessage;
 
     private static byte[] Concat(byte[] b1, byte[] b2, int count)

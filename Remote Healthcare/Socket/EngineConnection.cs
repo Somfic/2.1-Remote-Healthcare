@@ -69,6 +69,9 @@ public class EngineConnection
         
         _log.Debug("Getting scene");
         await _socket.GetScene(_tunnelId);
+        
+        Thread.Sleep(1000);
+        await _socket.RemoveGroundPlane(_tunnelId, _groundPlaneId);
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -107,7 +110,6 @@ public class EngineConnection
                 {
                     var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
                     _groundPlaneId = result.Data.Data.Data.Children.First(x => x.Name == "GroundPlane").Uuid;
-                    //File.WriteAllText(@"C:\Users\Richa\Documents\Repositories\Guus Chess\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json", json);
                     _log.Critical("Groundplane Id = " + _groundPlaneId);
                     break;
                 }
