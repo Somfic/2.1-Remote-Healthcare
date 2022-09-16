@@ -20,13 +20,13 @@ public class Socket
     {
         if (_socket.Connected)
             return;
-        
+
         try
         {
             var ip = IPAddress.Parse(host);
-            
+
             _log.Debug($"Connecting to {ip}:{port} ... ");
-            
+
             await _socket.ConnectAsync(ip, port);
 
             _stream = _socket.GetStream();
@@ -51,27 +51,27 @@ public class Socket
         catch (Exception ex)
         {
             _log.Warning(ex, "Could not read from stream");
-           return;
+            return;
         }
 
         while (_totalBuffer.Length >= 4)
         {
             var packetSize = BitConverter.ToInt32(_totalBuffer, 0);
-            
+
             if (_totalBuffer.Length >= packetSize + 4)
             {
                 var json = Encoding.UTF8.GetString(_totalBuffer, 4, packetSize);
                 OnMessage?.Invoke(this, json);
-                
+
                 var newBuffer = new byte[_totalBuffer.Length - packetSize - 4];
                 Array.Copy(_totalBuffer, packetSize + 4, newBuffer, 0, newBuffer.Length);
                 _totalBuffer = newBuffer;
             }
-            
+
             else
                 break;
         }
-        
+
         _stream.BeginRead(_buffer, 0, 1024, OnRead, null);
     }
 
@@ -85,9 +85,9 @@ public class Socket
 
     public async Task SendTerrain(string dest, dynamic? data = null)
     {
-        JObject jObject =
-            JObject.Parse(File.ReadAllText(
-                @"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/Terrain.json"));
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Terrain.json";
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
         JArray heights = jObject["data"]["data"]["data"]["heights"] as JArray;
         var random = 0;
@@ -99,6 +99,7 @@ public class Socket
                 random++;
             }
         }
+
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
         _log.Debug(JsonConvert.SerializeObject(jObject));
         await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
@@ -107,17 +108,17 @@ public class Socket
 
     public async Task AddNode(string dest, dynamic? data = null)
     {
-        JObject jObject =
-            JObject.Parse(File.ReadAllText(
-                @"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/SendNodeAdd.json"));
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\SendNodeAdd.json";
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
-        
+
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
         _log.Debug(JsonConvert.SerializeObject(jObject));
         await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
-    
+
     public event EventHandler<string> OnMessage;
 
     private static byte[] Concat(byte[] b1, byte[] b2, int count)
