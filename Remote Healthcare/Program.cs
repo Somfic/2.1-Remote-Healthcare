@@ -5,11 +5,7 @@ using RemoteHealthcare.Socket;
 try
 {
     var engine = new EngineConnection();
-<<<<<<< HEAD
     await engine.ConnectAsync("richa");
-=======
-    await engine.ConnectAsync("owena", "abc");
->>>>>>> skybox-time
 
     var bike = await DataProvider.GetBike();
     await bike.Initialise();
