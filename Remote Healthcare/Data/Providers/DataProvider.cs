@@ -12,7 +12,7 @@ public static class DataProvider
     {
         try
         {
-            var provider = new BluetoothHeartDataProvider();
+            var provider = new SimulationHeartDataProvider();
             await provider.Initialise();
             return provider;
         }
@@ -29,7 +29,7 @@ public static class DataProvider
     {
         try
         {
-            var provider = new BluetoothBikeDataProvider("00438");
+            var provider = new SimulationBikeDataProvider();
             await provider.Initialise();
             return provider;
         }

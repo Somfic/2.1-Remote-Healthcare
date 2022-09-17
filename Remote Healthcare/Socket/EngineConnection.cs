@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Logger;
 using RemoteHealthcare.Socket.Models;
 using RemoteHealthcare.Socket.Models.Response;
@@ -13,6 +14,7 @@ public class EngineConnection
     
     private string _tunnelId;
     private string _userId;
+    private string _groundPlaneId;
 
     public EngineConnection()
     {
@@ -57,6 +59,19 @@ public class EngineConnection
         _log.Debug($"Connecting to {foundUser.user} ({foundUser.uid}) ... ");
         
         await _socket.SendAsync("tunnel/create", new { session = _userId, key = password });
+        
+        Thread.Sleep(2000);
+        
+        await _socket.SendTerrain(_tunnelId);
+        await _socket.AddNode(_tunnelId);
+        
+        Thread.Sleep(1000);
+        
+        _log.Debug("Getting scene");
+        await _socket.GetScene(_tunnelId);
+        
+        Thread.Sleep(1000);
+        await _socket.RemoveGroundPlane(_tunnelId, _groundPlaneId);
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -88,6 +103,14 @@ public class EngineConnection
 
                     _tunnelId = result.Data.Id;
                     _log.Information($"Connected to {user}");
+                    break;
+                }
+
+                case "tunnel/send":
+                {
+                    var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
+                    _groundPlaneId = result.Data.Data.Data.Children.First(x => x.Name == "GroundPlane").Uuid;
+                    _log.Critical("Groundplane Id = " + _groundPlaneId);
                     break;
                 }
 
