@@ -15,6 +15,7 @@ public class EngineConnection
     private string _tunnelId;
     private string _userId;
     private string _groundPlaneId;
+    private string _routeId;
 
     public EngineConnection()
     {
@@ -67,11 +68,13 @@ public class EngineConnection
         
         Thread.Sleep(1000);
         
-        _log.Debug("Getting scene");
         await _socket.GetScene(_tunnelId);
         
         Thread.Sleep(1000);
         await _socket.RemoveGroundPlane(_tunnelId, _groundPlaneId);
+        
+        Thread.Sleep(1000);
+        await _socket.AddRoute(_tunnelId);
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -109,8 +112,27 @@ public class EngineConnection
                 case "tunnel/send":
                 {
                     var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
-                    _groundPlaneId = result.Data.Data.Data.Children.First(x => x.Name == "GroundPlane").Uuid;
-                    _log.Critical("Groundplane Id = " + _groundPlaneId);
+                    string? resultCommand = result.Data.Data.Id;
+
+                    switch (resultCommand)
+                    {
+                        case "route/add":
+                        {
+                            _routeId = result.Data.Data.Data.Uuid;
+                            File.WriteAllText(@"C:\Users\Richa\Documents\Repositories\Guus Chess\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json", JObject.Parse(json).ToString());
+                            _log.Information("Route ID is: " + _routeId);
+                            break;
+                        }
+
+                        default:
+                        {
+                            _log.Information(JObject.Parse(json).ToString());
+                            File.WriteAllText(@"C:\Users\Richa\Documents\Repositories\Guus Chess\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json", JObject.Parse(json).ToString());
+                            _groundPlaneId = result.Data.Data.Data.Children.First(x => x.Name == "GroundPlane").Uuid;
+                            _log.Critical("Groundplane Id = " + _groundPlaneId);
+                            break;
+                        }
+                    }
                     break;
                 }
 

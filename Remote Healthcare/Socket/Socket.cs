@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -144,6 +145,18 @@ public class Socket
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
 
+    public async Task AddRoute(string dest)
+    {
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\AddRoute.json";
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = dest;
+        
+        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
+        _log.Debug(JsonConvert.SerializeObject(jObject));
+        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
+        await _stream.WriteAsync(bytes, 0, bytes.Length);
+    }
     public event EventHandler<string> OnMessage;
 
     private static byte[] Concat(byte[] b1, byte[] b2, int count)
