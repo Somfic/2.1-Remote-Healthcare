@@ -100,7 +100,7 @@ public class Socket
         }
 
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
-        _log.Debug(JsonConvert.SerializeObject(jObject));
+        _log.Debug(JsonConvert.SerializeObject(jObject.ToString()));
         await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
@@ -113,7 +113,7 @@ public class Socket
         jObject["data"]["dest"] = dest;
 
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
-        _log.Debug(JsonConvert.SerializeObject(jObject));
+        _log.Debug(JsonConvert.SerializeObject(jObject.ToString()));
         await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
@@ -126,7 +126,7 @@ public class Socket
         jObject["data"]["dest"] = dest;
         
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
-        _log.Debug(JsonConvert.SerializeObject(jObject));
+        _log.Debug(JsonConvert.SerializeObject(jObject.ToString()));
         await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
@@ -140,7 +140,7 @@ public class Socket
         jObject["data"]["data"]["data"]["id"] = groundPlaneID;
         
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
-        _log.Debug(JsonConvert.SerializeObject(jObject));
+        _log.Debug(JsonConvert.SerializeObject(jObject.ToString()));
         await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
@@ -153,7 +153,21 @@ public class Socket
         jObject["data"]["dest"] = dest;
         
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
-        _log.Debug(JsonConvert.SerializeObject(jObject));
+        _log.Debug(JsonConvert.SerializeObject(jObject.ToString()));
+        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
+        await _stream.WriteAsync(bytes, 0, bytes.Length);
+    }
+
+    public async Task AddRoad(string dest, string routeId)
+    {
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\AddRoad.json";
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = dest;
+        jObject["data"]["data"]["data"]["route"] = routeId;
+        
+        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
+        _log.Debug(JsonConvert.SerializeObject(jObject.ToString()));
         await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
