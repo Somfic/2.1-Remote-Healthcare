@@ -57,6 +57,8 @@ public class EngineConnection
         _log.Debug($"Connecting to {foundUser.user} ({foundUser.uid}) ... ");
         
         await _socket.SendAsync("tunnel/create", new { session = _userId, key = password });
+        Thread.Sleep(1000);
+        await _socket.SendSkyboxTime(_tunnelId, 19.5);
     }
 
     private async Task ProcessMessageAsync(string json)

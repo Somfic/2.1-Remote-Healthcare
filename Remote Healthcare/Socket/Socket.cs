@@ -83,37 +83,16 @@ public class Socket
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
 
-    public async Task SendSkyboxTime(string id, int? hour = null, int? minute = null)
+    public async Task SendSkyboxTime(string id, double time)
     {
         /* Getting the path of the current directory and then adding the path of the testSave folder and the Time.json 
         file to it. */
         string path = System.Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "/Time.json";
-
-        /* This is a method that is used to set the time of the skybox. It is used to set the time of the skybox to the
-        time that is given by the user. */
-        double? newTime = null;
-
-        if (hour == null)
-            hour = 0;
-
-        if (hour >= 0 && hour <= 24)
-        {
-            if (minute > 0 && minute < 60)
-                newTime = (double)hour + ((double)minute / 60.00);
-            else if (minute <= 0 || minute == null)
-                newTime = (double)hour + ((double)1 / 60.00);
-            else if (minute >= 60)
-                newTime = (double)hour + ((double)59 / 60.00);
-        }
-        else if (hour > 0)
-            newTime = (double)0 + ((double)minute / 60.00);
-        else if (hour >= 24)
-            newTime = (double)23 + ((double)59.00 / 60.00);
-
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Time.json";
+        
         JObject jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = id;
-        jObject["data"]["data"]["data"]["time"] = newTime;
+        jObject["data"]["data"]["data"]["time"] = time;
 
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
         _log.Debug(JsonConvert.SerializeObject(jObject));

@@ -5,7 +5,7 @@ using RemoteHealthcare.Socket;
 try
 {
     var engine = new EngineConnection();
-    await engine.ConnectAsync("owena", "abc");
+    await engine.ConnectAsync("richa");
 
     var bike = await DataProvider.GetBike();
     await bike.Initialise();
