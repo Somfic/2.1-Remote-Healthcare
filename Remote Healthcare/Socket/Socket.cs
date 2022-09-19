@@ -76,117 +76,20 @@ public class Socket
         _stream.BeginRead(_buffer, 0, 1024, OnRead, null);
     }
 
-    public async Task SendAsync(string id, dynamic? data = null)
+    public async Task SendAsync(string id, dynamic? data)
     {
         var command = new { id = id, data = data };
-        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(command));
-        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
-        await _stream.WriteAsync(bytes, 0, bytes.Length);
+        var json = JsonConvert.SerializeObject(command);
+        await SendAsync(json);
     }
     
-    public async Task AddNode(string dest, dynamic? data = null)
+    public async Task SendAsync(string json)
     {
-        string path = System.Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\SendNodeAdd.json";
-        JObject jObject = JObject.Parse(File.ReadAllText(path));
-        jObject["data"]["dest"] = dest;
-
-        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
-        _log.Debug(JsonConvert.SerializeObject(jObject.ToString()));
+        var bytes = Encoding.UTF8.GetBytes(json);
         await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
 
-    public async Task GetScene(string dest, dynamic? data = null)
-    {
-        string path = System.Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\GetScene.json";
-        JObject jObject = JObject.Parse(File.ReadAllText(path));
-        jObject["data"]["dest"] = dest;
-        
-        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
-        _log.Debug(JsonConvert.SerializeObject(jObject.ToString()));
-        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
-        await _stream.WriteAsync(bytes, 0, bytes.Length);
-    }
-
-    public async Task RemoveGroundPlane(string dest, string groundPlaneID)
-    {
-        string path = System.Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\RemoveNode.json";
-        JObject jObject = JObject.Parse(File.ReadAllText(path));
-        jObject["data"]["dest"] = dest;
-        jObject["data"]["data"]["data"]["id"] = groundPlaneID;
-        
-        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
-        _log.Debug(JsonConvert.SerializeObject(jObject.ToString()));
-        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
-        await _stream.WriteAsync(bytes, 0, bytes.Length);
-    }
-
-    public async Task SendSkyboxTime(string id, double time)
-    {
-        /* Getting the path of the current directory and then adding the path of the testSave folder and the Time.json 
-        file to it. */
-        string path = System.Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Time.json";
-        
-        JObject jObject = JObject.Parse(File.ReadAllText(path));
-        jObject["data"]["dest"] = id;
-        jObject["data"]["data"]["data"]["time"] = time;
-
-        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
-        _log.Debug(JsonConvert.SerializeObject(jObject));
-    }
-        
-    public async Task SendTerrain(string dest, dynamic? data = null)
-    {
-        string path = System.Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Terrain.json";
-        JObject jObject = JObject.Parse(File.ReadAllText(path));
-        jObject["data"]["dest"] = dest;
-        JArray heights = jObject["data"]["data"]["data"]["heights"] as JArray;
-        for (int i = 0; i < 256; i++)
-        {
-            for (int j = 0; j < 256; j++)
-            {
-                heights.Add(0);
-            }
-        }
-
-        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
-        _log.Debug(JsonConvert.SerializeObject(jObject.ToString()));
-        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
-        await _stream.WriteAsync(bytes, 0, bytes.Length);
-    }
-    
-    public async Task AddRoute(string dest)
-    {
-        string path = System.Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\AddRoute.json";
-        JObject jObject = JObject.Parse(File.ReadAllText(path));
-        jObject["data"]["dest"] = dest;
-        
-        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
-        _log.Debug(JsonConvert.SerializeObject(jObject.ToString()));
-        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
-        await _stream.WriteAsync(bytes, 0, bytes.Length);
-    }
-
-    public async Task AddRoad(string dest, string routeId)
-    {
-        string path = System.Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\AddRoad.json";
-        JObject jObject = JObject.Parse(File.ReadAllText(path));
-        jObject["data"]["dest"] = dest;
-        jObject["data"]["data"]["data"]["route"] = routeId;
-        
-        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
-        _log.Debug(JsonConvert.SerializeObject(jObject.ToString()));
-        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
-        await _stream.WriteAsync(bytes, 0, bytes.Length);
-    }
-    
     public event EventHandler<string> OnMessage;
 
     private static byte[] Concat(byte[] b1, byte[] b2, int count)

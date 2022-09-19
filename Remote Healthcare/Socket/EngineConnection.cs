@@ -27,7 +27,7 @@ public class EngineConnection
         _clients = null;
         
         await CreateConnectionAsync();
-        await _socket.SendAsync("session/list");
+        await _socket.SendAsync("session/list", null);
 
         while (true)
         {
@@ -64,27 +64,25 @@ public class EngineConnection
         
         await _socket.SendAsync("tunnel/create", new { session = _userId, key = password });
         
-        Thread.Sleep(1000);
-        await _socket.SendSkyboxTime(_tunnelId, 19.5);
+        await Task.Delay(1000);
+        await SendSkyboxTime(_tunnelId, 19.5);
         
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
+        await SendTerrain(_tunnelId);
+        await AddNode(_tunnelId);
         
-        await _socket.SendTerrain(_tunnelId);
-        await _socket.AddNode(_tunnelId);
+        await Task.Delay(1000);
         
-        Thread.Sleep(1000);
+        await GetScene(_tunnelId);
         
-        await _socket.GetScene(_tunnelId);
+        await Task.Delay(1000);
+        await RemoveGroundPlane(_tunnelId, _groundPlaneId);
         
-        Thread.Sleep(1000);
-        await _socket.RemoveGroundPlane(_tunnelId, _groundPlaneId);
+        await Task.Delay(1000);
+        await AddRoute(_tunnelId);
         
-        Thread.Sleep(1000);
-        await _socket.AddRoute(_tunnelId);
-        
-        Thread.Sleep(1000);
-
-        await _socket.AddRoad(_tunnelId, _routeId);
+        await Task.Delay(1000);
+        await AddRoad(_tunnelId, _routeId);
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -164,5 +162,98 @@ public class EngineConnection
     private async Task CreateConnectionAsync()
     {
         await _socket.ConnectAsync("145.48.6.10", 6666);
+    }
+    
+    // COMMANDS
+    
+    public async Task AddNode(string dest, dynamic? data = null)
+    {
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\SendNodeAdd.json";
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = dest;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task GetScene(string dest, dynamic? data = null)
+    {
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\GetScene.json";
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = dest;
+        
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task RemoveGroundPlane(string dest, string groundPlaneID)
+    {
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\RemoveNode.json";
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = dest;
+        jObject["data"]["data"]["data"]["id"] = groundPlaneID;
+        
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task SendSkyboxTime(string id, double time)
+    {
+        /* Getting the path of the current directory and then adding the path of the testSave folder and the Time.json 
+        file to it. */
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Time.json";
+        
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = id;
+        jObject["data"]["data"]["data"]["time"] = time;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+        
+    public async Task SendTerrain(string dest, dynamic? data = null)
+    {
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Terrain.json";
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = dest;
+        JArray heights = jObject["data"]["data"]["data"]["heights"] as JArray;
+        for (int i = 0; i < 256; i++)
+        {
+            for (int j = 0; j < 256; j++)
+            {
+                heights.Add(0);
+            }
+        }
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+    
+    public async Task AddRoute(string dest)
+    {
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\AddRoute.json";
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = dest;
+        
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task AddRoad(string dest, string routeId)
+    {
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\AddRoad.json";
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = dest;
+        jObject["data"]["data"]["data"]["route"] = routeId;
+        
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
     }
 }
