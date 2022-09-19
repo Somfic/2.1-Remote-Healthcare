@@ -10,6 +10,7 @@ try
     var bike = await DataProvider.GetBike();
     await bike.Initialise();
 
+    var bike = await DataProvider.GetBike("00438");
     var heart = await DataProvider.GetHeart();
     await heart.Initialise();
 

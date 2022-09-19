@@ -12,7 +12,7 @@ public static class DataProvider
     {
         try
         {
-            var provider = new SimulationHeartDataProvider();
+            var provider = new BluetoothHeartDataProvider();
             await provider.Initialise();
             return provider;
         }
@@ -25,11 +25,11 @@ public static class DataProvider
         }
     }
 
-    public static async Task<BikeDataProvider> GetBike()
+    public static async Task<BikeDataProvider> GetBike(string serial)
     {
         try
         {
-            var provider = new SimulationBikeDataProvider();
+            var provider = new BluetoothBikeDataProvider(serial);
             await provider.Initialise();
             return provider;
         }

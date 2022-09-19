@@ -6,7 +6,7 @@ public class BluetoothBikeDataProvider : BikeDataProvider
 {
 	public BluetoothBikeDataProvider(string serial)
 	{
-		_bikeSensor = new BluetoothDevice($"Tacx Flux {serial}", "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e", data => data[4] == 16);
+		_bikeSensor = new BluetoothDevice($"Tacx Flux {serial}",  "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e", "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
 	}
 
 	private readonly BluetoothDevice _bikeSensor;

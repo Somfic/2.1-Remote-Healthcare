@@ -1,27 +1,27 @@
 ﻿using System.Runtime.InteropServices;
 using Avans.TI.BLE;
+using RemoteHealthcare.Data;
 using RemoteHealthcare.Logger;
 
 namespace RemoteHealthcare.Bluetooth;
 
 public class BluetoothDevice
 {
-    private readonly Log _log = new(typeof(BluetoothDevice));
-    
     private BLE _bluetoothConnection;
+    private readonly Log _log = new Log(typeof(BluetoothDevice));
 
     private readonly string _deviceName;
     private readonly string _serviceName;
-    private readonly Predicate<byte[]>? _predicate;
+    private readonly string _serviceCharacteristic;
 
     public byte[] ReceivedData { get; private set; } = new byte[12];
     public string ServiceName { get; private set; } = string.Empty;
     
-    public BluetoothDevice(string deviceName, string serviceName, Predicate<byte[]>? predicate = null)
+    public BluetoothDevice(string deviceName, string serviceName, string serviceCharacteristic)
     {
         _deviceName = deviceName;
         _serviceName = serviceName;
-        _predicate = predicate;
+        _serviceCharacteristic = serviceCharacteristic;
     }
 
     public async Task Connect()
@@ -36,31 +36,24 @@ public class BluetoothDevice
                 _log.Warning("Bluetooth is only supported on Windows");
             
             _bluetoothConnection = new BLE();
-
-            var devices = _bluetoothConnection.ListDevices();
-            
-            if(!devices.Contains(_deviceName))
-            {
-                _log.Warning($"Device '{_deviceName}' could not be found");
-                throw new ArgumentException("Device could not be found");
-            }
+            await Task.Delay(1000);
 
             errorCode = await _bluetoothConnection.OpenDevice(_deviceName);
+            
+            var services = _bluetoothConnection.GetServices;
             errorCode = await _bluetoothConnection.SetService(_serviceName);
-
+            
             _bluetoothConnection.SubscriptionValueChanged += (sender, e) =>
             {
-                if (_predicate != null && !_predicate.Invoke(e.Data)) return;
-                
                 ServiceName = e.ServiceName;
                 ReceivedData = e.Data;
             };
 
-            errorCode = await _bluetoothConnection.SubscribeToCharacteristic(_serviceName);
+            errorCode = await _bluetoothConnection.SubscribeToCharacteristic(_serviceCharacteristic);
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"Could not connect to bluetooth device '{_deviceName}', error code: {errorCode}");
+            _log.Error(ex, $"Could not connect to bluetooth device {_deviceName} (Error code: {errorCode})");
             throw;
         }
     }
