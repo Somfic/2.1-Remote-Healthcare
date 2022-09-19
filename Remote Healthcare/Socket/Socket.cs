@@ -83,28 +83,7 @@ public class Socket
         await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
-
-    public async Task SendTerrain(string dest, dynamic? data = null)
-    {
-        string path = System.Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Terrain.json";
-        JObject jObject = JObject.Parse(File.ReadAllText(path));
-        jObject["data"]["dest"] = dest;
-        JArray heights = jObject["data"]["data"]["data"]["heights"] as JArray;
-        for (int i = 0; i < 256; i++)
-        {
-            for (int j = 0; j < 256; j++)
-            {
-                heights.Add(0);
-            }
-        }
-
-        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
-        _log.Debug(JsonConvert.SerializeObject(jObject.ToString()));
-        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
-        await _stream.WriteAsync(bytes, 0, bytes.Length);
-    }
-
+    
     public async Task AddNode(string dest, dynamic? data = null)
     {
         string path = System.Environment.CurrentDirectory;
@@ -145,6 +124,42 @@ public class Socket
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
 
+    public async Task SendSkyboxTime(string id, double time)
+    {
+        /* Getting the path of the current directory and then adding the path of the testSave folder and the Time.json 
+        file to it. */
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Time.json";
+        
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = id;
+        jObject["data"]["data"]["data"]["time"] = time;
+
+        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
+        _log.Debug(JsonConvert.SerializeObject(jObject));
+    }
+        
+    public async Task SendTerrain(string dest, dynamic? data = null)
+    {
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Terrain.json";
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = dest;
+        JArray heights = jObject["data"]["data"]["data"]["heights"] as JArray;
+        for (int i = 0; i < 256; i++)
+        {
+            for (int j = 0; j < 256; j++)
+            {
+                heights.Add(0);
+            }
+        }
+
+        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
+        _log.Debug(JsonConvert.SerializeObject(jObject.ToString()));
+        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
+        await _stream.WriteAsync(bytes, 0, bytes.Length);
+    }
+    
     public async Task AddRoute(string dest)
     {
         string path = System.Environment.CurrentDirectory;
@@ -171,24 +186,7 @@ public class Socket
         await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
-
-    public async Task SendSkyboxTime(string id, double time)
-    {
-        /* Getting the path of the current directory and then adding the path of the testSave folder and the Time.json 
-        file to it. */
-        string path = System.Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Time.json";
-        
-        JObject jObject = JObject.Parse(File.ReadAllText(path));
-        jObject["data"]["dest"] = id;
-        jObject["data"]["data"]["data"]["time"] = time;
-
-        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
-        _log.Debug(JsonConvert.SerializeObject(jObject));
-        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
-        await _stream.WriteAsync(bytes, 0, bytes.Length);
-    }
-
+    
     public event EventHandler<string> OnMessage;
 
     private static byte[] Concat(byte[] b1, byte[] b2, int count)

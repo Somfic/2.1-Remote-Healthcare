@@ -62,6 +62,9 @@ public class EngineConnection
         await _socket.SendAsync("tunnel/create", new { session = _userId, key = password });
         
         Thread.Sleep(1000);
+        await _socket.SendSkyboxTime(_tunnelId, 19.5);
+        
+        Thread.Sleep(1000);
         
         await _socket.SendTerrain(_tunnelId);
         await _socket.AddNode(_tunnelId);
@@ -79,8 +82,6 @@ public class EngineConnection
         Thread.Sleep(1000);
 
         await _socket.AddRoad(_tunnelId, _routeId);
-        Thread.Sleep(1000);
-        await _socket.SendSkyboxTime(_tunnelId, 19.5);
     }
 
     private async Task ProcessMessageAsync(string json)
