@@ -1,21 +1,19 @@
-using System.IO.Compression;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Logger;
 
 namespace RemoteHealthcare.Socket;
 
 public class Socket
 {
-    private byte[] _totalBuffer = Array.Empty<byte>();
     private readonly byte[] _buffer = new byte[1024];
 
     private readonly Log _log = new(typeof(Socket));
     private readonly TcpClient _socket = new();
     private NetworkStream _stream;
+    private byte[] _totalBuffer = Array.Empty<byte>();
 
     public async Task ConnectAsync(string host, int port)
     {
@@ -70,7 +68,9 @@ public class Socket
             }
 
             else
+            {
                 break;
+            }
         }
 
         _stream.BeginRead(_buffer, 0, 1024, OnRead, null);
@@ -78,11 +78,11 @@ public class Socket
 
     public async Task SendAsync(string id, dynamic? data)
     {
-        var command = new { id = id, data = data };
+        var command = new { id, data };
         var json = JsonConvert.SerializeObject(command);
         await SendAsync(json);
     }
-    
+
     public async Task SendAsync(string json)
     {
         var bytes = Encoding.UTF8.GetBytes(json);

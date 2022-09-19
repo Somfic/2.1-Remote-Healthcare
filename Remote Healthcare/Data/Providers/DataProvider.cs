@@ -7,7 +7,7 @@ namespace RemoteHealthcare.Data.Providers;
 public static class DataProvider
 {
     private static readonly Log Log = new(typeof(DataProvider));
-	
+
     public static async Task<HeartDataProvider> GetHeart()
     {
         try

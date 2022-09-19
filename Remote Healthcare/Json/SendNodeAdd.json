@@ -1,19 +1,14 @@
 {
-  "id" : "tunnel/send",
-  "data" :
-  {
-    "dest" : "",
-    "data" :
-    {
-      "id" : "scene/node/add",
-      "data" :
-      {
-        "name" : "Terrain",
-        "components" : 
-        {
-          "terrain" :
-          {
-            "smoothnormals" : true
+  "id": "tunnel/send",
+  "data": {
+    "dest": "",
+    "data": {
+      "id": "scene/node/add",
+      "data": {
+        "name": "Terrain",
+        "components": {
+          "terrain": {
+            "smoothnormals": true
           }
         }
       }

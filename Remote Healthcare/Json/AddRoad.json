@@ -1,15 +1,12 @@
 ﻿{
-  "id" : "tunnel/send",
-  "data" :
-  {
-    "dest" : "",
-    "data" :
-    {
-      "id" : "scene/road/add",
-      "data" :
-      {
-        "route" : "",
-        "heightoffset" : 0.01
+  "id": "tunnel/send",
+  "data": {
+    "dest": "",
+    "data": {
+      "id": "scene/road/add",
+      "data": {
+        "route": "",
+        "heightoffset": 0.01
       }
     }
   }
