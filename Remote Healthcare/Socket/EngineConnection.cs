@@ -79,6 +79,8 @@ public class EngineConnection
         Thread.Sleep(1000);
 
         await _socket.AddRoad(_tunnelId, _routeId);
+        Thread.Sleep(1000);
+        await _socket.SendSkyboxTime(_tunnelId, 19.5);
     }
 
     private async Task ProcessMessageAsync(string json)

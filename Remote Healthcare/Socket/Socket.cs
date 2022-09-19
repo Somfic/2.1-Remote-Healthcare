@@ -171,6 +171,24 @@ public class Socket
         await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
+
+    public async Task SendSkyboxTime(string id, double time)
+    {
+        /* Getting the path of the current directory and then adding the path of the testSave folder and the Time.json 
+        file to it. */
+        string path = System.Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Time.json";
+        
+        JObject jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = id;
+        jObject["data"]["data"]["data"]["time"] = time;
+
+        var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jObject));
+        _log.Debug(JsonConvert.SerializeObject(jObject));
+        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
+        await _stream.WriteAsync(bytes, 0, bytes.Length);
+    }
+
     public event EventHandler<string> OnMessage;
 
     private static byte[] Concat(byte[] b1, byte[] b2, int count)
