@@ -1,14 +1,11 @@
 ﻿{
-  "id" : "tunnel/send",
-  "data" :
-  {
-    "dest" : "",
-    "data" :
-    {
-      "id" : "scene/node/delete",
-      "data" :
-      {
-        "id" : ""
+  "id": "tunnel/send",
+  "data": {
+    "dest": "",
+    "data": {
+      "id": "scene/node/delete",
+      "data": {
+        "id": ""
       }
     }
   }

@@ -2,21 +2,24 @@ namespace RemoteHealthcare.Data.Providers.Heart;
 
 public abstract class HeartDataProvider : IDataProvider<HeartData>
 {
-	private readonly HeartData _data = new();
+    private readonly HeartData _data = new();
 
-	protected void SetHeartRate(int heartRate)
-	{
-		_data.HeartRate = heartRate;
-	}
+    public HeartData GetData()
+    {
+        return _data;
+    }
 
-	protected void SetId(string id)
-	{
-		_data.Id = id;
-	}
+    public abstract Task Initialise();
 
-	public HeartData GetData() => _data;
+    public abstract Task ProcessRawData();
 
-	public abstract Task Initialise();
+    protected void SetHeartRate(int heartRate)
+    {
+        _data.HeartRate = heartRate;
+    }
 
-	public abstract Task ProcessRawData();
+    protected void SetId(string id)
+    {
+        _data.Id = id;
+    }
 }

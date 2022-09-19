@@ -2,9 +2,9 @@ namespace RemoteHealthcare.Data.Providers;
 
 public interface IDataProvider<out TData> where TData : IData
 {
-	Task Initialise();
+    Task Initialise();
 
-	TData GetData();
+    TData GetData();
 
-	Task ProcessRawData();
+    Task ProcessRawData();
 }
