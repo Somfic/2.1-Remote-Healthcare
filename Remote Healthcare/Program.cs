@@ -5,14 +5,10 @@ using RemoteHealthcare.Socket;
 try
 {
     var engine = new EngineConnection();
-    await engine.ConnectAsync("richa");
-
-    var bike = await DataProvider.GetBike();
-    await bike.Initialise();
+    await engine.ConnectAsync();
 
     var bike = await DataProvider.GetBike("00438");
     var heart = await DataProvider.GetHeart();
-    await heart.Initialise();
 
     await Task.Delay(-1);
 }
