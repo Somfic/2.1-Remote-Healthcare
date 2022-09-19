@@ -38,7 +38,7 @@ public class EngineConnection
         }
     }
 
-    public async Task ConnectAsync(string user, string? password = null)
+    public async Task ConnectAsync(string? user = null, string? password = null)
     {
         await CreateConnectionAsync();
         await FindAvailableUsersAsync();
@@ -49,12 +49,15 @@ public class EngineConnection
             throw new Exception("No clients were found");
         }
         
+        if (user == null)
+            user = Environment.UserName;
+        
         if (!_clients.Any(x => x.user.ToLower().Contains(user.ToLower())))
         {
             _log.Warning($"User '{user}' could not be found. Available users: {string.Join(", ", _clients.Select(x => x.user))}");
             throw new ArgumentException("User could not be found");
         }
-
+        
         var foundUser = _clients.First(x => x.user.ToLower().Contains(user.ToLower()));
         _userId = foundUser.uid;
         _log.Debug($"Connecting to {foundUser.user} ({foundUser.uid}) ... ");
@@ -126,7 +129,7 @@ public class EngineConnection
                         case "route/add":
                         {
                             _routeId = result.Data.Data.Data.Uuid;
-                            File.WriteAllText(@"C:\Users\Richa\Documents\Repositories\Guus Chess\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json", JObject.Parse(json).ToString());
+                            //File.WriteAllText(@"C:\Users\Richa\Documents\Repositories\Guus Chess\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json", JObject.Parse(json).ToString());
                             _log.Information("Route ID is: " + _routeId);
                             break;
                         }
@@ -134,7 +137,7 @@ public class EngineConnection
                         default:
                         {
                             _log.Information(JObject.Parse(json).ToString());
-                            File.WriteAllText(@"C:\Users\Richa\Documents\Repositories\Guus Chess\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json", JObject.Parse(json).ToString());
+                            //File.WriteAllText(@"C:\Users\Richa\Documents\Repositories\Guus Chess\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json", JObject.Parse(json).ToString());
                             _groundPlaneId = result.Data.Data.Data.Children.First(x => x.Name == "GroundPlane").Uuid;
                             _log.Critical("Groundplane Id = " + _groundPlaneId);
                             break;
@@ -146,7 +149,7 @@ public class EngineConnection
                 default:
                 {
                     _log.Warning($"Unhandled incoming message with id '{id}'");
-                    Console.WriteLine(json);
+                    _log.Debug(json);
                     break;
                 }
             }
