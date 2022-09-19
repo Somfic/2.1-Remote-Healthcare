@@ -1,0 +1,13 @@
+{
+  "id": "tunnel/send",
+  "data": {
+    "id": "c04441f3-9ffa-4be9-94eb-e3bb5b8a2285",
+    "data": {
+      "data": {
+        "uuid": "89c7dc8d-aa78-46a4-8b13-1ed9d3e34daf"
+      },
+      "id": "scene/road/add",
+      "status": "ok"
+    }
+  }
+}
