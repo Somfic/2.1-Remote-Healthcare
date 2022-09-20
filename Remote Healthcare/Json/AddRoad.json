@@ -4,6 +4,7 @@
     "dest": "",
     "data": {
       "id": "scene/road/add",
+      "serial": "4",
       "data": {
         "route": "",
         "heightoffset": 0.01
