@@ -75,11 +75,11 @@ public class EngineConnection
         await SendTerrain(_tunnelId);
         await CreateTerrainNode(_tunnelId);
 
-        /*await Task.Delay(1000);
+        await Task.Delay(1000);
         await GetScene(_tunnelId);
 
         await Task.Delay(1000);
-        await RemoveGroundPlane(_tunnelId, _groundPlaneId);*/
+        await RemoveGroundPlane(_tunnelId, _groundPlaneId);
 
         await Task.Delay(1000);
         await AddRoute(_tunnelId);
