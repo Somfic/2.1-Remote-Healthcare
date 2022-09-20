@@ -3,7 +3,8 @@
   "data": {
     "dest": "",
     "data": {
-      "id": "scene/get"
+      "id": "scene/get",
+      "serial": "1"
     }
   }
 }

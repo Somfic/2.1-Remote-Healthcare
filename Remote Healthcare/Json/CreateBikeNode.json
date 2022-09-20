@@ -1,0 +1,21 @@
+﻿{
+  "id": "tunnel/send",
+  "data": {
+    "dest": "",
+    "data": {
+      "id": "scene/node/add",
+      "serial": "2",
+      "data": {
+        "name": "Bike",
+        "parent": "",
+        "components": {
+          "model": {
+            "file": "",
+            "animated": true,
+            "animation": ""
+          }
+        }
+      }
+    }
+  }
+}
