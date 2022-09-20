@@ -69,21 +69,27 @@ public class EngineConnection
         await _socket.SendAsync("tunnel/create", new { session = _userId, key = password });
 
         await Task.Delay(1000);
+        await SendSkyboxTime(_tunnelId, 10.5);
+
         await ResetScene(_tunnelId);
         
         await Task.Delay(1000);
+        await heightmap(_tunnelId);
+        await AddNode(_tunnelId);
+        
         await SendTerrain(_tunnelId);
         await CreateTerrainNode(_tunnelId);
 
         await Task.Delay(1000);
+        
         await GetScene(_tunnelId);
-
+        
         await Task.Delay(1000);
         await RemoveGroundPlane(_tunnelId, _groundPlaneId);
-
+        
         await Task.Delay(1000);
         await AddRoute(_tunnelId);
-
+        
         await Task.Delay(1000);
         await AddRoad(_tunnelId, _routeId);
         
@@ -105,7 +111,9 @@ public class EngineConnection
                 case "session/list":
                 {
                     var result = JsonConvert.DeserializeObject<DataResponses<SessionList>>(json);
-                    _clients = result.Data.OrderByDescending(x => x.LastPing).Select(x => (user: $"{x.Client.Host}/{x.Client.User} ({Math.Round((DateTime.Now - x.LastPing).TotalSeconds)}s)", uid: x.Id)).ToArray();
+                    _clients = result.Data.OrderByDescending(x => x.LastPing).Select(x =>
+                        (user: $"{x.Client.Host}/{x.Client.User} ({Math.Round((DateTime.Now - x.LastPing).TotalSeconds)}s)",
+                            uid: x.Id)).ToArray();
                     _log.Debug($"Found {_clients.Length} clients: {string.Join(", ", _clients.Select(x => x.user))}");
                     break;
                 }
@@ -250,12 +258,47 @@ public class EngineConnection
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
         var heights = jObject["data"]["data"]["data"]["heights"] as JArray;
-        for (var i = 0; i < 256; i++)
-        for (var j = 0; j < 256; j++)
-            heights.Add(0);
+
+        if (data == null)
+        {
+            for (var i = 0; i < 256; i++)
+            for (var j = 0; j < 256; j++)
+                heights.Add(1);
+        }
+        else
+        {
+            double[] heightmap = data;
+            int x = 0;
+            for (var i = 0; i < 256; i++)
+            {
+                for (var j = 0; j < 256; j++)
+                {
+                    heights.Add(heightmap[x]);
+                    x++;
+                }
+            }
+        }
+
+        _log.Debug(jObject.ToString());
 
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
+    }
+
+    public async Task heightmap(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Image" + "\\Heightmap.png";
+
+        using (Bitmap heightmap = new Bitmap(Image.FromFile(path)))
+        {
+            double[,] heights = new double[heightmap.Width, heightmap.Height];
+            for (int x = 0; x < heightmap.Width; x++)
+                for (int y = 0; y < heightmap.Height; y++)
+                    heights[x, y] = (heightmap.GetPixel(x, y).R / 256.0f) * 50.0f;
+
+            SendTerrain(dest, heights.Cast<double>().ToArray());
+        }
     }
 
     public async Task AddRoute(string dest)
