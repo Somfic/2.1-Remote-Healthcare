@@ -1,3 +1,4 @@
+using System.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Logger;
@@ -65,25 +66,26 @@ public class EngineConnection
 
         await _socket.SendAsync("tunnel/create", new { session = _userId, key = password });
 
-        await Task.Delay(1000);
-        await SendSkyboxTime(_tunnelId, 19.5);
+        // await Task.Delay(1000);
+        // await SendSkyboxTime(_tunnelId, 19.5);
 
         await Task.Delay(1000);
         await SendTerrain(_tunnelId);
-        await AddNode(_tunnelId);
-
-        await Task.Delay(1000);
-
-        await GetScene(_tunnelId);
-
-        await Task.Delay(1000);
-        await RemoveGroundPlane(_tunnelId, _groundPlaneId);
-
-        await Task.Delay(1000);
-        await AddRoute(_tunnelId);
-
-        await Task.Delay(1000);
-        await AddRoad(_tunnelId, _routeId);
+        await heightmap(_tunnelId);
+        // await AddNode(_tunnelId);
+        //
+        // await Task.Delay(1000);
+        //
+        // await GetScene(_tunnelId);
+        //
+        // await Task.Delay(1000);
+        // await RemoveGroundPlane(_tunnelId, _groundPlaneId);
+        //
+        // await Task.Delay(1000);
+        // await AddRoute(_tunnelId);
+        //
+        // await Task.Delay(1000);
+        // await AddRoad(_tunnelId, _routeId);
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -224,12 +226,43 @@ public class EngineConnection
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
         var heights = jObject["data"]["data"]["data"]["heights"] as JArray;
-        for (var i = 0; i < 256; i++)
-        for (var j = 0; j < 256; j++)
-            heights.Add(0);
 
+        if (data == null)
+        {
+            for (var i = 0; i < 256; i++)
+                for (var j = 0; j < 256; j++)
+                    heights.Add(1);
+        }
+        else
+        {
+            Bitmap heightmap = new Bitmap(data);
+            for (var i = 0; i < 256; i++)
+                for (var j = 0; j < 256; j++)
+                    heights.Add(10);
+        }
+        
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
+    }
+
+    public async Task heightmap(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Image" + "\\Heightmap.png";
+        using (Bitmap heightmap = new Bitmap(path))
+        {
+            float[,] heights = new float[heightmap.Width, heightmap.Height];
+            for (int x = 0; x < heightmap.Width; x++)
+                for (int y = 0; y < heightmap.Height; y++)
+                    heights[x, y] = (heightmap.GetPixel(x, y).R / 256.0f) * 25.0f;
+            _log.Debug(heights.ToString());
+            SendTerrain(dest,
+                new
+                {
+                    size = new[] {heightmap.Width, heightmap.Height },
+                    heights = heights.Cast<float>().ToArray()
+                });
+        }
     }
 
     public async Task AddRoute(string dest)
