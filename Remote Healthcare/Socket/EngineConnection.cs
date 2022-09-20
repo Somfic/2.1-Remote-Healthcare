@@ -66,26 +66,25 @@ public class EngineConnection
 
         await _socket.SendAsync("tunnel/create", new { session = _userId, key = password });
 
-        // await Task.Delay(1000);
-        // await SendSkyboxTime(_tunnelId, 19.5);
+        await Task.Delay(1000);
+        await SendSkyboxTime(_tunnelId, 19.5);
 
         await Task.Delay(1000);
-        await SendTerrain(_tunnelId);
         await heightmap(_tunnelId);
-        // await AddNode(_tunnelId);
-        //
-        // await Task.Delay(1000);
-        //
-        // await GetScene(_tunnelId);
-        //
-        // await Task.Delay(1000);
-        // await RemoveGroundPlane(_tunnelId, _groundPlaneId);
-        //
-        // await Task.Delay(1000);
-        // await AddRoute(_tunnelId);
-        //
-        // await Task.Delay(1000);
-        // await AddRoad(_tunnelId, _routeId);
+        await AddNode(_tunnelId);
+        
+        await Task.Delay(1000);
+        
+        await GetScene(_tunnelId);
+        
+        await Task.Delay(1000);
+        await RemoveGroundPlane(_tunnelId, _groundPlaneId);
+        
+        await Task.Delay(1000);
+        await AddRoute(_tunnelId);
+        
+        await Task.Delay(1000);
+        await AddRoad(_tunnelId, _routeId);
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -99,7 +98,9 @@ public class EngineConnection
                 case "session/list":
                 {
                     var result = JsonConvert.DeserializeObject<DataResponses<SessionList>>(json);
-                    _clients = result.Data.OrderByDescending(x => x.LastPing).Select(x => (user: $"{x.Client.Host}/{x.Client.User} ({Math.Round((DateTime.Now - x.LastPing).TotalSeconds)}s)", uid: x.Id)).ToArray();
+                    _clients = result.Data.OrderByDescending(x => x.LastPing).Select(x =>
+                        (user: $"{x.Client.Host}/{x.Client.User} ({Math.Round((DateTime.Now - x.LastPing).TotalSeconds)}s)",
+                            uid: x.Id)).ToArray();
                     _log.Debug($"Found {_clients.Length} clients: {string.Join(", ", _clients.Select(x => x.user))}");
                     break;
                 }
@@ -230,17 +231,25 @@ public class EngineConnection
         if (data == null)
         {
             for (var i = 0; i < 256; i++)
-                for (var j = 0; j < 256; j++)
-                    heights.Add(1);
+            for (var j = 0; j < 256; j++)
+                heights.Add(1);
         }
         else
         {
-            Bitmap heightmap = new Bitmap(data);
+            double[] heightmap = data;
+            int x = 0;
             for (var i = 0; i < 256; i++)
+            {
                 for (var j = 0; j < 256; j++)
-                    heights.Add(10);
+                {
+                    heights.Add(heightmap[x]);
+                    x++;
+                }
+            }
         }
-        
+
+        _log.Debug(jObject.ToString());
+
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
@@ -249,19 +258,15 @@ public class EngineConnection
     {
         var path = Environment.CurrentDirectory;
         path = path.Substring(0, path.LastIndexOf("bin")) + "Image" + "\\Heightmap.png";
-        using (Bitmap heightmap = new Bitmap(path))
+
+        using (Bitmap heightmap = new Bitmap(Image.FromFile(path)))
         {
-            float[,] heights = new float[heightmap.Width, heightmap.Height];
+            double[,] heights = new double[heightmap.Width, heightmap.Height];
             for (int x = 0; x < heightmap.Width; x++)
                 for (int y = 0; y < heightmap.Height; y++)
-                    heights[x, y] = (heightmap.GetPixel(x, y).R / 256.0f) * 25.0f;
-            _log.Debug(heights.ToString());
-            SendTerrain(dest,
-                new
-                {
-                    size = new[] {heightmap.Width, heightmap.Height },
-                    heights = heights.Cast<float>().ToArray()
-                });
+                    heights[x, y] = (heightmap.GetPixel(x, y).R / 256.0f) * 50.0f;
+
+            SendTerrain(dest, heights.Cast<double>().ToArray());
         }
     }
 
