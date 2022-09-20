@@ -97,7 +97,7 @@ public class EngineConnection
                 case "session/list":
                 {
                     var result = JsonConvert.DeserializeObject<DataResponses<SessionList>>(json);
-                    _clients = result.Data.Select(x => (user: $"{x.Client.Host}/{x.Client.User}", uid: x.Id)).ToArray();
+                    _clients = result.Data.OrderByDescending(x => x.LastPing).Select(x => (user: $"{x.Client.Host}/{x.Client.User} ({Math.Round((DateTime.Now - x.LastPing).TotalSeconds)}s)", uid: x.Id)).ToArray();
                     _log.Debug($"Found {_clients.Length} clients: {string.Join(", ", _clients.Select(x => x.user))}");
                     break;
                 }
