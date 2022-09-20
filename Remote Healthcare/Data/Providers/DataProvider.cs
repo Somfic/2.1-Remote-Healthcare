@@ -7,35 +7,35 @@ namespace RemoteHealthcare.Data.Providers;
 public static class DataProvider
 {
     private static readonly Log Log = new(typeof(DataProvider));
-	
+
     public static async Task<HeartDataProvider> GetHeart()
     {
         try
         {
-            var provider = new SimulationHeartDataProvider();
+            var provider = new BluetoothHeartDataProvider();
             await provider.Initialise();
             return provider;
         }
-        catch (PlatformNotSupportedException)
+        catch (Exception)
         {
-            Log.Debug("Switching to simulated heart provider");
+            Log.Information("Switching to simulated heart provider");
             var provider = new SimulationHeartDataProvider();
             await provider.Initialise();
             return provider;
         }
     }
 
-    public static async Task<BikeDataProvider> GetBike()
+    public static async Task<BikeDataProvider> GetBike(string serial)
     {
         try
         {
-            var provider = new SimulationBikeDataProvider();
+            var provider = new BluetoothBikeDataProvider(serial);
             await provider.Initialise();
             return provider;
         }
-        catch (PlatformNotSupportedException)
+        catch (Exception)
         {
-            Log.Debug("Switching to simulated bike provider");
+            Log.Information("Switching to simulated bike provider");
             var provider = new SimulationBikeDataProvider();
             await provider.Initialise();
             return provider;

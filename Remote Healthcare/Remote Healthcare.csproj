@@ -10,15 +10,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Reference Include="BLELibrary">
-        <HintPath>BLELibrary.dll</HintPath>
-      </Reference>
-      <Reference Include="System.Net.Http" Condition="'$(TargetFramework)' == 'net472'" />
+        <Reference Include="BLELibrary">
+            <HintPath>BLELibrary.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Net.Http" Condition="'$(TargetFramework)' == 'net472'" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 
 </Project>

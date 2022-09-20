@@ -3,7 +3,7 @@ using RemoteHealthcare.Socket.Models.Response;
 
 namespace RemoteHealthcare.Socket.Models;
 
-public class DataResponses<TData> where TData : IDataResponse 
+public class DataResponses<TData> where TData : IDataResponse
 {
     [JsonProperty("id")] public string Id { get; set; }
 

@@ -14,8 +14,8 @@ public class SessionList : IDataResponse
 
     [JsonProperty("features")] public string[] Features { get; set; }
     [JsonProperty("clientinfo")] public ClientInfo Client { get; set; }
-    
-    
+
+
     public class ClientInfo
     {
         [JsonProperty("host")] public string Host { get; set; }

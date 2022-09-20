@@ -1,15 +1,15 @@
 {
-  "id" : "tunnel/send",
-  "data" :
-  {
-    "dest" : "",
-    "data" :
-    {
-      "id" : "scene/terrain/add",
-      "data" : 
-      {
-        "size" : [ 256, 256 ],
-        "heights" : []
+  "id": "tunnel/send",
+  "data": {
+    "dest": "",
+    "data": {
+      "id": "scene/terrain/add",
+      "data": {
+        "size": [
+          256,
+          256
+        ],
+        "heights": []
       }
     }
   }

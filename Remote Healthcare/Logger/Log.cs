@@ -1,19 +1,10 @@
-﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
-using Newtonsoft.Json;
 
 namespace RemoteHealthcare.Logger;
 
 public class Log
 {
-    private readonly Type _callerType;
-
-    public Log(Type callerType)
-    {
-        _callerType = callerType;
-    }
-    
     private const string Gray = "\u001B[90m";
     private const string Red = "\u001B[31m";
     private const string Green = "\u001B[32m";
@@ -22,6 +13,15 @@ public class Log
     private const string Magenta = "\u001B[35m";
     private const string Cyan = "\u001B[36m";
     private const string White = "\u001B[37m";
+
+    private const int StdOutputHandle = -11;
+    private const uint EnableVirtualTerminalProcessing = 0x0004;
+    private readonly Type _callerType;
+
+    public Log(Type callerType)
+    {
+        _callerType = callerType;
+    }
 
     private void LogMessage(LogLevel level, Exception? exception, string message)
     {
@@ -32,11 +32,11 @@ public class Log
 
             // Try to enable the use of ANSI codes
             var colorSupported = GetConsoleMode(iStdOut, out var outConsoleMode) &&
-                                  SetConsoleMode(iStdOut, outConsoleMode | EnableVirtualTerminalProcessing);
+                                 SetConsoleMode(iStdOut, outConsoleMode | EnableVirtualTerminalProcessing);
         }
-        
+
         var builder = new StringBuilder();
-        
+
         // [FATAL]
         builder.Append(Gray);
         builder.Append('[');
@@ -44,14 +44,14 @@ public class Log
         builder.Append(GetLevel(level));
         builder.Append(Gray);
         builder.Append("] ");
-        
+
         // [Class.Method:line]
         builder.Append(Gray);
         builder.Append('[');
         builder.Append(BuildStackTraceElement());
         builder.Append(Gray);
         builder.Append("] ");
-        
+
         // Message
         builder.Append(GetColorCode(level));
         builder.Append(message);
@@ -70,11 +70,11 @@ public class Log
                 builder.Append(": ");
                 builder.Append(GetColorCode(level));
                 builder.Append(exception.Message);
-                
+
                 ex = ex.InnerException;
             }
-            
-            if(exception.StackTrace != null)
+
+            if (exception.StackTrace != null)
             {
                 var stackTraceElements = exception.StackTrace.Split('\n').Select(x => x.Trim()).ToList();
 
@@ -89,7 +89,7 @@ public class Log
         }
 
         builder.Append(White);
-        
+
         Console.WriteLine(builder.ToString());
     }
 
@@ -112,21 +112,56 @@ public class Log
         }
     }
 
-    public void Debug(Exception exception, string message) => LogMessage(LogLevel.Debug, exception, message);
-    public void Debug(string message) => LogMessage(LogLevel.Debug, null, message);
-    
-    public void Information(Exception exception, string message) => LogMessage(LogLevel.Information, exception, message);
-    public void Information(string message) => LogMessage(LogLevel.Information, null, message);
-    
-    public void Warning(Exception exception, string message) => LogMessage(LogLevel.Warning, exception, message);
-    public void Warning(string message) => LogMessage(LogLevel.Warning, null, message);
-    
-    public void Error(Exception exception, string message) => LogMessage(LogLevel.Error, exception, message);
-    public void Error(string message) => LogMessage(LogLevel.Error, null, message);
-    
-    public void Critical(Exception exception, string message) => LogMessage(LogLevel.Critical, exception, message);
-    public void Critical(string message) => LogMessage(LogLevel.Critical, null, message);
-    
+    public void Debug(Exception exception, string message)
+    {
+        LogMessage(LogLevel.Debug, exception, message);
+    }
+
+    public void Debug(string message)
+    {
+        LogMessage(LogLevel.Debug, null, message);
+    }
+
+    public void Information(Exception exception, string message)
+    {
+        LogMessage(LogLevel.Information, exception, message);
+    }
+
+    public void Information(string message)
+    {
+        LogMessage(LogLevel.Information, null, message);
+    }
+
+    public void Warning(Exception exception, string message)
+    {
+        LogMessage(LogLevel.Warning, exception, message);
+    }
+
+    public void Warning(string message)
+    {
+        LogMessage(LogLevel.Warning, null, message);
+    }
+
+    public void Error(Exception exception, string message)
+    {
+        LogMessage(LogLevel.Error, exception, message);
+    }
+
+    public void Error(string message)
+    {
+        LogMessage(LogLevel.Error, null, message);
+    }
+
+    public void Critical(Exception exception, string message)
+    {
+        LogMessage(LogLevel.Critical, exception, message);
+    }
+
+    public void Critical(string message)
+    {
+        LogMessage(LogLevel.Critical, null, message);
+    }
+
     private string GetColorCode(LogLevel level)
     {
         return level switch
@@ -139,19 +174,16 @@ public class Log
             _ => throw new ArgumentOutOfRangeException(nameof(level), level, null)
         };
     }
-    
+
     private string BuildStackTraceElement()
     {
         var builder = new StringBuilder();
-        
+
         builder.Append(Green);
         builder.Append(_callerType.Name);
 
         return builder.ToString();
     }
-
-    private const int StdOutputHandle = -11;
-    private const uint EnableVirtualTerminalProcessing = 0x0004;
 
     [DllImport("kernel32.dll")]
     private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
