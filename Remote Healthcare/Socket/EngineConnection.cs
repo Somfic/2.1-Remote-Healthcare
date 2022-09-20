@@ -307,49 +307,7 @@ public class EngineConnection
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
-
-    public async Task UpdateBikeNode(string dest)
-    {
-        var path = Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\UpdateNode.json";
-        var jObject = JObject.Parse(File.ReadAllText(path));
-        
-        jObject["data"]["dest"] = dest;
-        jObject["data"]["data"]["data"]["id"] = _bikeId;
-        jObject["data"]["data"]["data"]["parent"] = _roadNodeId;
-        
-        _log.Debug(jObject.ToString());
-
-        var json = JsonConvert.SerializeObject(jObject);
-        await _socket.SendAsync(json);
-
-    }
-
-    public async Task PauseEngine(string dest)
-    {
-        var path = Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Pause.json";
-        var jObject = JObject.Parse(File.ReadAllText(path));
-        
-        jObject["data"]["dest"] = dest;
-
-        var json = JsonConvert.SerializeObject(jObject);
-        _log.Debug(jObject.ToString());
-        await _socket.SendAsync(json);
-    }
-
-    public async Task PlayEngine(string dest)
-    {
-        var path = Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Play.json";
-        var jObject = JObject.Parse(File.ReadAllText(path));
-        
-        jObject["data"]["dest"] = dest;
-
-        var json = JsonConvert.SerializeObject(jObject);
-        await _socket.SendAsync(json);
-    }
-
+    
     public async Task ResetScene(string dest)
     {
         var path = Environment.CurrentDirectory;
