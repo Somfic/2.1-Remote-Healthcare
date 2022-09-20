@@ -16,9 +16,9 @@ public static class DataProvider
             await provider.Initialise();
             return provider;
         }
-        catch (PlatformNotSupportedException)
+        catch (Exception)
         {
-            Log.Debug("Switching to simulated heart provider");
+            Log.Information("Switching to simulated heart provider");
             var provider = new SimulationHeartDataProvider();
             await provider.Initialise();
             return provider;
@@ -33,9 +33,9 @@ public static class DataProvider
             await provider.Initialise();
             return provider;
         }
-        catch (PlatformNotSupportedException)
+        catch (Exception)
         {
-            Log.Debug("Switching to simulated bike provider");
+            Log.Information("Switching to simulated bike provider");
             var provider = new SimulationBikeDataProvider();
             await provider.Initialise();
             return provider;
