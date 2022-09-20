@@ -1,3 +1,4 @@
+using System.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Logger;
@@ -67,15 +68,13 @@ public class EngineConnection
 
         await _socket.SendAsync("tunnel/create", new { session = _userId, key = password });
 
-        // /**/await Task.Delay(1000);
-        // //await SendSkyboxTime(_tunnelId, 19.5);
-
+        await Task.Delay(1000);
+        await ResetScene(_tunnelId);
         await Task.Delay(1000);
         await SendTerrain(_tunnelId);
         await CreateTerrainNode(_tunnelId);
 
         await Task.Delay(1000);
-
         await GetScene(_tunnelId);
 
         await Task.Delay(1000);
@@ -88,7 +87,7 @@ public class EngineConnection
         await AddRoad(_tunnelId, _routeId);
         
         await Task.Delay(2000);
-        await AddBikeModel(_tunnelId, _roadNodeId);
+        await AddBikeModel(_tunnelId);
 
         await Task.Delay(1000);
         await PlaceBikeOnRoute(_tunnelId);
@@ -281,23 +280,20 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
-    public async Task AddBikeModel(string dest, string roadNodeId)
+    public async Task AddBikeModel(string dest)
     {
         var path = Environment.CurrentDirectory;
         path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\CreateBikeNode.json";
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         var modelPath = Environment.CurrentDirectory;
-        modelPath = modelPath.Substring(0, modelPath.LastIndexOf("bin")) + "3DModels" + "\\bike.fbx";
-
-        var animationPath = Environment.CurrentDirectory;
-        animationPath = animationPath.Substring(0, animationPath.LastIndexOf("bin")) + "3DModels" + "\\bike_anim.fbx";
-        jObject["data"]["dest"] = dest;
-        jObject["data"]["data"]["data"]["parent"] = roadNodeId;
-        jObject["data"]["data"]["data"]["components"]["model"]["file"] = modelPath;
-        jObject["data"]["data"]["data"]["components"]["model"]["animation"] = animationPath;
-        _log.Debug(modelPath);
+        modelPath = modelPath.Substring(0, modelPath.LastIndexOf("bin")) + "3DModels" + "\\bike_anim.fbx";
         
+        jObject["data"]["dest"] = dest;
+        jObject["data"]["data"]["data"]["parent"] = _roadNodeId;
+        jObject["data"]["data"]["data"]["components"]["model"]["file"] = modelPath;
+        _log.Debug(modelPath);
+
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
@@ -311,6 +307,60 @@ public class EngineConnection
         jObject["data"]["dest"] = dest;
         jObject["data"]["data"]["data"]["route"] = _routeId;
         jObject["data"]["data"]["data"]["node"] = _bikeId;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task UpdateBikeNode(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\UpdateNode.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        
+        jObject["data"]["dest"] = dest;
+        jObject["data"]["data"]["data"]["id"] = _bikeId;
+        jObject["data"]["data"]["data"]["parent"] = _roadNodeId;
+        
+        _log.Debug(jObject.ToString());
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+
+    }
+
+    public async Task PauseEngine(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Pause.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        
+        jObject["data"]["dest"] = dest;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        _log.Debug(jObject.ToString());
+        await _socket.SendAsync(json);
+    }
+
+    public async Task PlayEngine(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Play.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        
+        jObject["data"]["dest"] = dest;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task ResetScene(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\ResetScene.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        
+        jObject["data"]["dest"] = dest;
 
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);

@@ -9,10 +9,14 @@
         "name": "Bike",
         "parent": "",
         "components": {
+          "transform" : {
+            "position" : [ 0, 0.15, 0 ],
+            "scale" : 0.01
+          },
           "model": {
             "file": "",
             "animated": true,
-            "animation": ""
+            "animation": "Armature|Fietsen"
           }
         }
       }
