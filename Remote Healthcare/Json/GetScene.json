@@ -1,11 +1,10 @@
 ﻿{
-  "id" : "tunnel/send",
-  "data" :
-  {
-    "dest" : "",
-    "data" :
-    {
-      "id" : "scene/get"
+  "id": "tunnel/send",
+  "data": {
+    "dest": "",
+    "data": {
+      "id": "scene/get",
+      "serial": "1"
     }
   }
 }

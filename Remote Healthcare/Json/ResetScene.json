@@ -3,10 +3,7 @@
   "data": {
     "dest": "",
     "data": {
-      "id": "scene/node/delete",
-      "data": {
-        "id": ""
-      }
+      "id" : "scene/reset"
     }
   }
 }
