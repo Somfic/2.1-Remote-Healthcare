@@ -67,7 +67,7 @@ public class EngineConnection
         await _socket.SendAsync("tunnel/create", new { session = _userId, key = password });
 
         await Task.Delay(1000);
-        await SendSkyboxTime(_tunnelId, 19.5);
+        await SendSkyboxTime(_tunnelId, 10.5);
 
         await Task.Delay(1000);
         await heightmap(_tunnelId);
