@@ -12,7 +12,7 @@
         "offset" : 0.0,
         "rotate" : "XZ",
         "smoothing" : 1.0,
-        "followHeight" : false,
+        "followHeight" : true,
         "rotateOffset" : [ 0, 0, 0 ],
         "positionOffset" : [ 0, 0, 0]
       }

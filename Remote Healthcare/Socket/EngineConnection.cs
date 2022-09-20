@@ -69,19 +69,16 @@ public class EngineConnection
         await _socket.SendAsync("tunnel/create", new { session = _userId, key = password });
 
         await Task.Delay(1000);
-        await SendSkyboxTime(_tunnelId, 10.5);
-
         await ResetScene(_tunnelId);
         
         await Task.Delay(1000);
-        await heightmap(_tunnelId);
-        await AddNode(_tunnelId);
+        await SendSkyboxTime(_tunnelId, 10.5);
         
-        await SendTerrain(_tunnelId);
+        await Task.Delay(1000);
+        await Heightmap(_tunnelId);
         await CreateTerrainNode(_tunnelId);
 
         await Task.Delay(1000);
-        
         await GetScene(_tunnelId);
         
         await Task.Delay(1000);
@@ -93,11 +90,11 @@ public class EngineConnection
         await Task.Delay(1000);
         await AddRoad(_tunnelId, _routeId);
         
-        /*await Task.Delay(2000);
+        await Task.Delay(1000);
         await AddBikeModel(_tunnelId);
 
         await Task.Delay(1000);
-        await PlaceBikeOnRoute(_tunnelId);*/
+        await PlaceBikeOnRoute(_tunnelId);
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -285,7 +282,7 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
-    public async Task heightmap(string dest)
+    public async Task Heightmap(string dest)
     {
         var path = Environment.CurrentDirectory;
         path = path.Substring(0, path.LastIndexOf("bin")) + "Image" + "\\Heightmap.png";
@@ -295,7 +292,7 @@ public class EngineConnection
             double[,] heights = new double[heightmap.Width, heightmap.Height];
             for (int x = 0; x < heightmap.Width; x++)
                 for (int y = 0; y < heightmap.Height; y++)
-                    heights[x, y] = (heightmap.GetPixel(x, y).R / 256.0f) * 50.0f;
+                    heights[x, y] = (heightmap.GetPixel(x, y).R / 256.0f) * 50.0f - 5;
 
             SendTerrain(dest, heights.Cast<double>().ToArray());
         }
