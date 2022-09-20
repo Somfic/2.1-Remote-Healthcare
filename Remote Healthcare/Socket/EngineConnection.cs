@@ -1,3 +1,4 @@
+using System.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Logger;
@@ -13,9 +14,11 @@ public class EngineConnection
     private (string user, string uid)[]? _clients;
     private string _groundPlaneId;
     private string _routeId;
+    private string _roadNodeId;
 
     private string _tunnelId;
     private string _userId;
+    private string _bikeId;
 
     public EngineConnection()
     {
@@ -66,24 +69,29 @@ public class EngineConnection
         await _socket.SendAsync("tunnel/create", new { session = _userId, key = password });
 
         await Task.Delay(1000);
-        await SendSkyboxTime(_tunnelId, 19.5);
-
+        await ResetScene(_tunnelId);
+        
         await Task.Delay(1000);
         await SendTerrain(_tunnelId);
-        await AddNode(_tunnelId);
+        await CreateTerrainNode(_tunnelId);
 
-        await Task.Delay(1000);
-
+        /*await Task.Delay(1000);
         await GetScene(_tunnelId);
 
         await Task.Delay(1000);
-        await RemoveGroundPlane(_tunnelId, _groundPlaneId);
+        await RemoveGroundPlane(_tunnelId, _groundPlaneId);*/
 
         await Task.Delay(1000);
         await AddRoute(_tunnelId);
 
         await Task.Delay(1000);
         await AddRoad(_tunnelId, _routeId);
+        
+        /*await Task.Delay(2000);
+        await AddBikeModel(_tunnelId);
+
+        await Task.Delay(1000);
+        await PlaceBikeOnRoute(_tunnelId);*/
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -97,7 +105,7 @@ public class EngineConnection
                 case "session/list":
                 {
                     var result = JsonConvert.DeserializeObject<DataResponses<SessionList>>(json);
-                    _clients = result.Data.Select(x => (user: $"{x.Client.Host}/{x.Client.User}", uid: x.Id)).ToArray();
+                    _clients = result.Data.OrderByDescending(x => x.LastPing).Select(x => (user: $"{x.Client.Host}/{x.Client.User} ({Math.Round((DateTime.Now - x.LastPing).TotalSeconds)}s)", uid: x.Id)).ToArray();
                     _log.Debug($"Found {_clients.Length} clients: {string.Join(", ", _clients.Select(x => x.user))}");
                     break;
                 }
@@ -121,28 +129,46 @@ public class EngineConnection
                 case "tunnel/send":
                 {
                     var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
-                    var resultCommand = result.Data.Data.Id;
+                    var resultSerial = result.Data.Data.Serial;
 
-                    switch (resultCommand)
+                    switch (resultSerial)
                     {
-                        case "route/add":
+                        case "1":
                         {
-                            _routeId = result.Data.Data.Data.Uuid;
-                            //File.WriteAllText(@"C:\Users\Richa\Documents\Repositories\Guus Chess\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json", JObject.Parse(json).ToString());
-                            _log.Information("Route ID is: " + _routeId);
-                            break;
-                        }
-
-                        default:
-                        {
-                            _log.Information(JObject.Parse(json).ToString());
-                            //File.WriteAllText(@"C:\Users\Richa\Documents\Repositories\Guus Chess\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json", JObject.Parse(json).ToString());
                             _groundPlaneId = result.Data.Data.Data.Children.First(x => x.Name == "GroundPlane").Uuid;
                             _log.Critical("Groundplane Id = " + _groundPlaneId);
                             break;
                         }
-                    }
 
+                        case "2":
+                        {
+                            _bikeId = result.Data.Data.Data.Uuid;
+                            _log.Critical("Bike Id = " + _bikeId);
+                            _log.Information(JObject.Parse(json).ToString());
+                            break;
+                        }
+                        
+                        case "3":
+                        {
+                            _routeId = result.Data.Data.Data.Uuid;
+                            _log.Information("Route ID is: " + _routeId);
+                            _log.Information(JObject.Parse(json).ToString());
+                            break;
+                        }
+
+                        case "4":
+                        {
+                            _roadNodeId = result.Data.Data.Data.Uuid;
+                            _log.Information("Road Node ID is: " + _roadNodeId);
+                            break;
+                        }
+                        
+                        default:
+                        {
+                            _log.Information(JObject.Parse(json).ToString());
+                            break;
+                        }
+                    }
                     break;
                 }
 
@@ -168,10 +194,10 @@ public class EngineConnection
 
     // COMMANDS
 
-    public async Task AddNode(string dest, dynamic? data = null)
+    public async Task CreateTerrainNode(string dest, dynamic? data = null)
     {
         var path = Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\SendNodeAdd.json";
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\CreateTerrainNode.json";
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
 
@@ -250,6 +276,87 @@ public class EngineConnection
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
         jObject["data"]["data"]["data"]["route"] = routeId;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task AddBikeModel(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\CreateBikeNode.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+
+        jObject["data"]["dest"] = dest;
+        jObject["data"]["data"]["data"]["parent"] = _roadNodeId;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task PlaceBikeOnRoute(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\FollowRoute.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        
+        jObject["data"]["dest"] = dest;
+        jObject["data"]["data"]["data"]["route"] = _routeId;
+        jObject["data"]["data"]["data"]["node"] = _bikeId;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task UpdateBikeNode(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\UpdateNode.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        
+        jObject["data"]["dest"] = dest;
+        jObject["data"]["data"]["data"]["id"] = _bikeId;
+        jObject["data"]["data"]["data"]["parent"] = _roadNodeId;
+        
+        _log.Debug(jObject.ToString());
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+
+    }
+
+    public async Task PauseEngine(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Pause.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        
+        jObject["data"]["dest"] = dest;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        _log.Debug(jObject.ToString());
+        await _socket.SendAsync(json);
+    }
+
+    public async Task PlayEngine(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Play.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        
+        jObject["data"]["dest"] = dest;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task ResetScene(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\ResetScene.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        
+        jObject["data"]["dest"] = dest;
 
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);

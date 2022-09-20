@@ -1,0 +1,18 @@
+﻿{
+  "id": "tunnel/send",
+  "data": {
+    "dest": "",
+    "data": {
+      "id": "scene/node/update",
+      "data": {
+        "id": "",
+        "parent": "",
+        "animation": {
+          "name": "walk",
+          "speed": 0.5
+        }
+      }
+    }
+  }
+}
+  

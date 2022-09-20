@@ -3,8 +3,10 @@
   "data": {
     "dest": "",
     "data": {
-      "id": "scene/get",
-      "serial": "1"
+      "id" : "play",
+      "data" :
+      {
+      }
     }
   }
 }

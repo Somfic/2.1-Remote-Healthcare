@@ -4,12 +4,11 @@ using RemoteHealthcare.Socket;
 
 try
 {
-    var engine = new EngineConnection();
-    await engine.ConnectAsync();
-
     var bike = await DataProvider.GetBike("00438");
     var heart = await DataProvider.GetHeart();
-
+    var engine = new EngineConnection();
+    await engine.ConnectAsync();
+    
     await Task.Delay(-1);
 }
 catch (Exception ex)
