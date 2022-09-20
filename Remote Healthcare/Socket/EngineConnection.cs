@@ -19,6 +19,7 @@ public class EngineConnection
     private string _tunnelId;
     private string _userId;
     private string _bikeId;
+    private string _terrainNodeId;
 
     public EngineConnection()
     {
@@ -73,10 +74,11 @@ public class EngineConnection
         
         await Task.Delay(1000);
         await SendSkyboxTime(_tunnelId, 10.5);
-        
-        await Task.Delay(1000);
         await Heightmap(_tunnelId);
         await CreateTerrainNode(_tunnelId);
+
+        await Task.Delay(1000);
+        await AddTerrainLayer(_tunnelId);
 
         await Task.Delay(1000);
         await GetScene(_tunnelId);
@@ -165,6 +167,13 @@ public class EngineConnection
                         {
                             _roadNodeId = result.Data.Data.Data.Uuid;
                             _log.Information("Road Node ID is: " + _roadNodeId);
+                            break;
+                        }
+
+                        case "5":
+                        {
+                            _terrainNodeId = result.Data.Data.Data.Uuid;
+                            _log.Information("Terrain Node ID is: " + _terrainNodeId);
                             break;
                         }
                         
@@ -356,6 +365,19 @@ public class EngineConnection
         
         jObject["data"]["dest"] = dest;
 
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task AddTerrainLayer(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\AddTerrainLayer.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        
+        jObject["data"]["dest"] = dest;
+        jObject["data"]["data"]["data"]["id"] = _terrainNodeId;
+        
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
