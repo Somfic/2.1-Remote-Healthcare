@@ -286,13 +286,8 @@ public class EngineConnection
         path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\CreateBikeNode.json";
         var jObject = JObject.Parse(File.ReadAllText(path));
 
-        var modelPath = Environment.CurrentDirectory;
-        modelPath = modelPath.Substring(0, modelPath.LastIndexOf("bin")) + "3DModels" + "\\bike_anim.fbx";
-        
         jObject["data"]["dest"] = dest;
         jObject["data"]["data"]["data"]["parent"] = _roadNodeId;
-        jObject["data"]["data"]["data"]["components"]["model"]["file"] = modelPath;
-        _log.Debug(modelPath);
 
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
