@@ -7,14 +7,13 @@
       "serial": "2",
       "data": {
         "name": "Bike",
-        "parent": "",
         "components": {
           "transform" : {
             "position" : [ 0, 0.15, 0 ],
             "scale" : 0.01
           },
           "model": {
-            "file": "",
+            "file": "data/NetworkEngine/models/bike/bike_anim.fbx",
             "animated": true,
             "animation": "Armature|Fietsen"
           }
