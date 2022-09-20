@@ -70,15 +70,16 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await ResetScene(_tunnelId);
+        
         await Task.Delay(1000);
         await SendTerrain(_tunnelId);
         await CreateTerrainNode(_tunnelId);
 
-        await Task.Delay(1000);
+        /*await Task.Delay(1000);
         await GetScene(_tunnelId);
 
         await Task.Delay(1000);
-        await RemoveGroundPlane(_tunnelId, _groundPlaneId);
+        await RemoveGroundPlane(_tunnelId, _groundPlaneId);*/
 
         await Task.Delay(1000);
         await AddRoute(_tunnelId);
@@ -86,11 +87,11 @@ public class EngineConnection
         await Task.Delay(1000);
         await AddRoad(_tunnelId, _routeId);
         
-        await Task.Delay(2000);
+        /*await Task.Delay(2000);
         await AddBikeModel(_tunnelId);
 
         await Task.Delay(1000);
-        await PlaceBikeOnRoute(_tunnelId);
+        await PlaceBikeOnRoute(_tunnelId);*/
     }
 
     private async Task ProcessMessageAsync(string json)
