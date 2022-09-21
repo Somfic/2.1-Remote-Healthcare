@@ -1,7 +1,7 @@
 using System.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RemoteHealthcare.Logger;
+using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Socket.Models;
 using RemoteHealthcare.Socket.Models.Response;
 
