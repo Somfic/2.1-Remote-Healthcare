@@ -5,6 +5,7 @@ using RemoteHealthcare.Logger;
 using RemoteHealthcare.Socket.Models;
 using RemoteHealthcare.Socket.Models.Response;
 
+
 namespace RemoteHealthcare.Socket;
 
 public class EngineConnection
@@ -19,13 +20,11 @@ public class EngineConnection
     private string _tunnelId;
     private string _userId;
     private string _bikeId;
-    private string _terrainNodeId;
-    private string _filePath;
+
+
 
     public EngineConnection()
     {
-        _filePath = Environment.CurrentDirectory;
-        _filePath = Path.Combine(_filePath.Substring(0, _filePath.LastIndexOf("bin")));
         _socket.OnMessage += async (_, json) => await ProcessMessageAsync(json);
     }
 
@@ -74,28 +73,23 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await ResetScene(_tunnelId);
-        
         await Task.Delay(1000);
-        await SendSkyboxTime(_tunnelId, 10.5);
         await SendTerrain(_tunnelId);
         await CreateTerrainNode(_tunnelId);
 
         await Task.Delay(1000);
-        await AddTerrainLayer(_tunnelId);
+        await GetScene(_tunnelId);
 
         await Task.Delay(1000);
-        await GetScene(_tunnelId);
-        
-        await Task.Delay(1000);
         await RemoveGroundPlane(_tunnelId, _groundPlaneId);
-        
+
         await Task.Delay(1000);
         await AddRoute(_tunnelId);
-        
+
         await Task.Delay(1000);
         await AddRoad(_tunnelId, _routeId);
         
-        await Task.Delay(1000);
+        await Task.Delay(2000);
         await AddBikeModel(_tunnelId);
 
         await Task.Delay(1000);
@@ -113,9 +107,7 @@ public class EngineConnection
                 case "session/list":
                 {
                     var result = JsonConvert.DeserializeObject<DataResponses<SessionList>>(json);
-                    _clients = result.Data.OrderByDescending(x => x.LastPing).Select(x =>
-                        (user: $"{x.Client.Host}/{x.Client.User} ({Math.Round((DateTime.Now - x.LastPing).TotalSeconds)}s)",
-                            uid: x.Id)).ToArray();
+                    _clients = result.Data.OrderByDescending(x => x.LastPing).Select(x => (user: $"{x.Client.Host}/{x.Client.User} ({Math.Round((DateTime.Now - x.LastPing).TotalSeconds)}s)", uid: x.Id)).ToArray();
                     _log.Debug($"Found {_clients.Length} clients: {string.Join(", ", _clients.Select(x => x.user))}");
                     break;
                 }
@@ -172,13 +164,6 @@ public class EngineConnection
                             _log.Information("Road Node ID is: " + _roadNodeId);
                             break;
                         }
-
-                        case "5":
-                        {
-                            _terrainNodeId = result.Data.Data.Data.Uuid;
-                            _log.Information("Terrain Node ID is: " + _terrainNodeId);
-                            break;
-                        }
                         
                         default:
                         {
@@ -213,7 +198,8 @@ public class EngineConnection
 
     public async Task CreateTerrainNode(string dest, dynamic? data = null)
     {
-        string path = Path.Combine(_filePath, "Json", "CreateTerrainNode.json");
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\CreateTerrainNode.json";
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
 
@@ -223,7 +209,8 @@ public class EngineConnection
 
     public async Task GetScene(string dest, dynamic? data = null)
     {
-        string path = Path.Combine(_filePath, "Json", "GetScene.json");
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\GetScene.json";
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
 
@@ -233,7 +220,8 @@ public class EngineConnection
 
     public async Task RemoveGroundPlane(string dest, string groundPlaneID)
     {
-        string path = Path.Combine(_filePath, "Json", "RemoveNode.json");
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\RemoveNode.json";
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
         jObject["data"]["data"]["data"]["id"] = groundPlaneID;
@@ -246,7 +234,9 @@ public class EngineConnection
     {
         /* Getting the path of the current directory and then adding the path of the testSave folder and the Time.json 
         file to it. */
-        string path = Path.Combine(_filePath, "Json", "Time.json");
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Time.json";
+
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = id;
         jObject["data"]["data"]["data"]["time"] = time;
@@ -257,56 +247,23 @@ public class EngineConnection
 
     public async Task SendTerrain(string dest, dynamic? data = null)
     {
-        string path = Path.Combine(_filePath, "Json", "Terrain.json");
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Terrain.json";
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
         var heights = jObject["data"]["data"]["data"]["heights"] as JArray;
-
-        if (data == null)
-        {
-            for (var i = 0; i < 256; i++)
-            for (var j = 0; j < 256; j++)
-                heights.Add(1);
-        }
-        else
-        {
-            double[] heightmap = data;
-            int x = 0;
-            for (var i = 0; i < 256; i++)
-            {
-                for (var j = 0; j < 256; j++)
-                {
-                    heights.Add(heightmap[x]);
-                    x++;
-                }
-            }
-        }
-
-        _log.Debug(jObject.ToString());
+        for (var i = 0; i < 256; i++)
+        for (var j = 0; j < 256; j++)
+            heights.Add(0);
 
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
-    }
-
-    public async Task Heightmap(string dest)
-    {
-        var path = Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Image" + "\\Heightmap.png";
-
-        using (Bitmap heightmap = new Bitmap(Image.FromFile(path)))
-        {
-            double[,] heights = new double[heightmap.Width, heightmap.Height];
-            for (int x = 0; x < heightmap.Width; x++)
-                for (int y = 0; y < heightmap.Height; y++)
-                    heights[x, y] = (heightmap.GetPixel(x, y).R / 256.0f) * 50.0f - 5;
-
-            SendTerrain(dest, heights.Cast<double>().ToArray());
-        }
     }
 
     public async Task AddRoute(string dest)
     {
-        string path = Path.Combine(_filePath, "Json", "AddRoute.json");
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\AddRoute.json";
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
 
@@ -314,9 +271,12 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
+    
+
     public async Task AddRoad(string dest, string routeId)
     {
-        string path = Path.Combine(_filePath, "Json", "AddRoad.json");
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\AddRoad.json";
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
         jObject["data"]["data"]["data"]["route"] = routeId;
@@ -327,19 +287,28 @@ public class EngineConnection
 
     public async Task AddBikeModel(string dest)
     {
-        string path = Path.Combine(_filePath, "Json", "CreateBikeNode.json");
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\CreateBikeNode.json";
         var jObject = JObject.Parse(File.ReadAllText(path));
 
+        var modelPath = Environment.CurrentDirectory;
+        modelPath = modelPath.Substring(0, modelPath.LastIndexOf("bin")) + "3DModels" + "\\bike_anim.fbx";
+        
         jObject["data"]["dest"] = dest;
         jObject["data"]["data"]["data"]["parent"] = _roadNodeId;
+        jObject["data"]["data"]["data"]["components"]["model"]["file"] = modelPath;
+        _log.Debug(modelPath);
 
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
 
+
+
     public async Task PlaceBikeOnRoute(string dest)
     {
-        string path = Path.Combine(_filePath, "Json", "FollowRoute.json");
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\FollowRoute.json";
         var jObject = JObject.Parse(File.ReadAllText(path));
         
         jObject["data"]["dest"] = dest;
@@ -349,10 +318,59 @@ public class EngineConnection
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
-    
-    public async Task ResetScene(string dest)
+
+    public async Task ChangeBikeSpeed(double speed)
     {
-        string path = Path.Combine(_filePath, "Json", "ResetScene.json");
+        Console.WriteLine("Hallo");
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\ChangeBikeSpeed.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = _tunnelId;
+        jObject["data"]["data"]["data"]["node"] = _bikeId;
+        jObject["data"]["data"]["data"]["speed"] = speed;
+        Console.WriteLine("Hallo2");
+
+        Console.WriteLine(jObject.ToString());
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task UpdateBikeNode(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\UpdateNode.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        
+        jObject["data"]["dest"] = dest;
+        jObject["data"]["data"]["data"]["id"] = _bikeId;
+        jObject["data"]["data"]["data"]["parent"] = _roadNodeId;
+        
+        _log.Debug(jObject.ToString());
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+
+    }
+
+   
+
+    public async Task PauseEngine(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Pause.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        
+        jObject["data"]["dest"] = dest;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        _log.Debug(jObject.ToString());
+        await _socket.SendAsync(json);
+    }
+
+    public async Task PlayEngine(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\Play.json";
         var jObject = JObject.Parse(File.ReadAllText(path));
         
         jObject["data"]["dest"] = dest;
@@ -361,14 +379,14 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
-    public async Task AddTerrainLayer(string dest)
+    public async Task ResetScene(string dest)
     {
-        string path = Path.Combine(_filePath, "Json", "AddTerrainLayer.json");
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\ResetScene.json";
         var jObject = JObject.Parse(File.ReadAllText(path));
         
         jObject["data"]["dest"] = dest;
-        jObject["data"]["data"]["data"]["id"] = _terrainNodeId;
-        
+
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
