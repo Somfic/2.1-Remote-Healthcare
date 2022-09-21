@@ -290,8 +290,7 @@ public class EngineConnection
 
     public async Task Heightmap(string dest)
     {
-        var path = Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Image" + "\\Heightmap.png";
+        string path = Path.Combine(_filePath, "Image", "Terrain.json");
 
         using (Bitmap heightmap = new Bitmap(Image.FromFile(path)))
         {
