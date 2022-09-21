@@ -100,6 +100,7 @@ public class EngineConnection
         await Task.Delay(1000);
         await Addhouses(_tunnelId, 1000);
 
+      
 
     }
 
@@ -375,7 +376,18 @@ public class EngineConnection
             var path = Environment.CurrentDirectory;
             path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\AddHouses.json";
             var jObject = JObject.Parse(File.ReadAllText(path));
-            String s = $"data/NetworkEngine/models/houses/set1/house{r.Next(1,27)}.obj";
+            String s = "";
+            switch (r.Next(2))
+            {
+                case 0:
+                   s  = $"data/NetworkEngine/models/houses/set1/house{r.Next(1,27)}.obj"; 
+                    break;
+                case 1: 
+                    s = $"data/NetworkEngine/models/trees/fantasy/tree{r.Next(1,10)}.obj"; 
+                    break;
+                
+            }
+           
             jObject["data"]["data"]["data"]["components"]["model"]["file"] = s;
 
             int x = r.Next(1, 256);
@@ -395,6 +407,7 @@ public class EngineConnection
             
 
             var json = JsonConvert.SerializeObject(jObject);
+            
             await _socket.SendAsync(json);
            
         }
