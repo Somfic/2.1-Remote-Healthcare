@@ -15,6 +15,7 @@ public class EngineConnection
     private string _groundPlaneId;
     private string _routeId;
     private string _roadNodeId;
+    private JArray hoogte;
 
     private string _tunnelId;
     private string _userId;
@@ -95,6 +96,12 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await PlaceBikeOnRoute(_tunnelId);
+
+        await Task.Delay(1000);
+        await Addhouses(_tunnelId, 1000);
+
+      
+
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -277,7 +284,7 @@ public class EngineConnection
         }
 
         _log.Debug(jObject.ToString());
-
+        hoogte = heights;
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
@@ -359,4 +366,54 @@ public class EngineConnection
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
+    public async Task Addhouses(string dest,int amount)
+    {
+        
+        Random r = new Random();
+        
+        for (int i = 0; i < amount; i++)
+        {
+            var path = Environment.CurrentDirectory;
+            path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\AddHouses.json";
+            var jObject = JObject.Parse(File.ReadAllText(path));
+            String s = "";
+            switch (r.Next(2))
+            {
+                case 0:
+                   s  = $"data/NetworkEngine/models/houses/set1/house{r.Next(1,27)}.obj"; 
+                    break;
+                case 1: 
+                    s = $"data/NetworkEngine/models/trees/fantasy/tree{r.Next(1,10)}.obj"; 
+                    break;
+                
+            }
+           
+            jObject["data"]["data"]["data"]["components"]["model"]["file"] = s;
+
+            int x = r.Next(1, 256);
+            int z = r.Next(1, 256);
+            int y = (int)hoogte[z * 256 + x];
+            
+            
+            var postpar = jObject["data"]["data"]["data"]["components"]["transform"]["position"] as JArray;
+            jObject["data"]["dest"] = dest;
+            postpar.Insert(0, x);
+            postpar.Insert(1,y);
+            postpar.Insert(2, z);
+            
+           
+            
+            
+            
+
+            var json = JsonConvert.SerializeObject(jObject);
+            
+            await _socket.SendAsync(json);
+           
+        }
+    }
+
+
+
+    
 }
