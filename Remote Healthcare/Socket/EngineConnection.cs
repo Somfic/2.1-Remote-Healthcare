@@ -288,10 +288,24 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
+    public async Task Heightmap(string dest)
+    {
+        string path = Path.Combine(_filePath, "Image", "Terrain.json");
+
+        using (Bitmap heightmap = new Bitmap(Image.FromFile(path)))
+        {
+            double[,] heights = new double[heightmap.Width, heightmap.Height];
+            for (int x = 0; x < heightmap.Width; x++)
+                for (int y = 0; y < heightmap.Height; y++)
+                    heights[x, y] = (heightmap.GetPixel(x, y).R / 256.0f) * 50.0f - 5;
+
+            SendTerrain(dest, heights.Cast<double>().ToArray());
+        }
+    }
+
     public async Task AddRoute(string dest)
     {
-        var path = Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\AddRoute.json";
+        string path = Path.Combine(_filePath, "Json", "AddRoute.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
 
