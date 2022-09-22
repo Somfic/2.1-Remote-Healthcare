@@ -24,10 +24,7 @@ public class BluetoothBikeDataProvider : BikeDataProvider
         for (int i = 0; i < 12; i++)
         {
             checkSum ^= _bikeSensor.ReceivedData[i];
-
-
         }
-
         if (checkSum % 255 == _bikeSensor.ReceivedData[12])
         {
             SetId(_bikeSensor.ServiceName);
