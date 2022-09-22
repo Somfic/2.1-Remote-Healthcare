@@ -7,7 +7,7 @@ try
     var bike = await DataProvider.GetBike("00438");
     var heart = await DataProvider.GetHeart();
     var engine = new EngineConnection();
-    await engine.ConnectAsync("nickw");
+    await engine.ConnectAsync();
     
     await Task.Delay(-1);
 }
