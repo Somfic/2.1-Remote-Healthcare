@@ -1,9 +1,9 @@
-using System.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Logger;
 using RemoteHealthcare.Socket.Models;
 using RemoteHealthcare.Socket.Models.Response;
+using System.Drawing;
 
 namespace RemoteHealthcare.Socket;
 
@@ -15,6 +15,7 @@ public class EngineConnection
     private string _groundPlaneId;
     private string _routeId;
     private string _roadNodeId;
+    private JArray hoogte;
 
     private string _tunnelId;
     private string _userId;
@@ -78,7 +79,7 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await ResetScene(_tunnelId);
-        
+
         await Task.Delay(1000);
         await SendSkyboxTime(_tunnelId, 10.5);
         await SendTerrain(_tunnelId);
@@ -89,7 +90,7 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await GetScene(_tunnelId);
-        
+
         await Task.Delay(1000);
         await RemoveNode(_tunnelId, _groundPlaneId);
         await RemoveNode(_tunnelId, _leftControllerId);
@@ -97,10 +98,10 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await AddRoute(_tunnelId);
-        
+
         await Task.Delay(1000);
         await AddRoad(_tunnelId, _routeId);
-        
+
         await Task.Delay(1000);
         await AddBikeModel(_tunnelId);
 
@@ -108,9 +109,15 @@ public class EngineConnection
         await PlaceBikeOnRoute(_tunnelId);
 
         await Task.Delay(1000);
+        await ChangeBikeSpeed(0);
+
+        await Task.Delay(1000);
         await MoveCameraPosition();
         await Task.Delay(1000);
         await MoveHeadPosition();
+
+        await Task.Delay(1000);
+        await Addhouses(_tunnelId,100);
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -122,38 +129,35 @@ public class EngineConnection
             switch (id)
             {
                 case "session/list":
-                {
-                    var result = JsonConvert.DeserializeObject<DataResponses<SessionList>>(json);
-                    _clients = result.Data.OrderByDescending(x => x.LastPing).Select(x =>
-                        (user: $"{x.Client.Host}/{x.Client.User} ({Math.Round((DateTime.Now - x.LastPing).TotalSeconds)}s)",
-                            uid: x.Id)).ToArray();
-                    _log.Debug($"Found {_clients.Length} clients: {string.Join(", ", _clients.Select(x => x.user))}");
-                    break;
-                }
-
-                case "tunnel/create":
-                {
-                    var result = JsonConvert.DeserializeObject<DataResponse<TunnelCreate>>(json);
-                    var user = _clients?.First(x => x.uid == _userId).user;
-
-                    if (result.Data.Status != "ok")
                     {
-                        _log.Warning($"Could not establish tunnel connection with {user} ({result.Data.Status})");
-                        throw new Exception("Could not create tunnel connection");
+                        var result = JsonConvert.DeserializeObject<DataResponses<SessionList>>(json);
+                        _clients = result.Data.OrderByDescending(x => x.LastPing).Select(x =>
+                            (user: $"{x.Client.Host}/{x.Client.User} ({Math.Round((DateTime.Now - x.LastPing).TotalSeconds)}s)",
+                                uid: x.Id)).ToArray();
+                        _log.Debug($"Found {_clients.Length} clients: {string.Join(", ", _clients.Select(x => x.user))}");
+                        break;
                     }
 
-                    _tunnelId = result.Data.Id;
-                    _log.Information($"Connected to {user}");
-                    break;
-                }
+                case "tunnel/create":
+                    {
+                        var result = JsonConvert.DeserializeObject<DataResponse<TunnelCreate>>(json);
+                        var user = _clients?.First(x => x.uid == _userId).user;
+
+                        if (result.Data.Status != "ok")
+                        {
+                            _log.Warning($"Could not establish tunnel connection with {user} ({result.Data.Status})");
+                            throw new Exception("Could not create tunnel connection");
+                        }
+
+                        _tunnelId = result.Data.Id;
+                        _log.Information($"Connected to {user}");
+                        break;
+                    }
 
                 case "tunnel/send":
-                {
-                    var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
-                    var resultSerial = result.Data.Data.Serial;
-
-                    switch (resultSerial)
                     {
+                        var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
+                        var resultSerial = result.Data.Data.Serial;
                         case "1":
                         {
                             _groundPlaneId = result.Data.Data.Data.Children.First(x => x.Name == "GroundPlane").Uuid;
@@ -166,51 +170,62 @@ public class EngineConnection
                             break;
                         }
 
-                        case "2":
+                        switch (resultSerial)
                         {
-                            _bikeId = result.Data.Data.Data.Uuid;
-                            _log.Critical("Bike Id = " + _bikeId);
-                            _log.Information(JObject.Parse(json).ToString());
-                            break;
-                        }
-                        
-                        case "3":
-                        {
-                            _routeId = result.Data.Data.Data.Uuid;
-                            _log.Information("Route ID is: " + _routeId);
-                            _log.Information(JObject.Parse(json).ToString());
-                            break;
-                        }
+                            case "1":
+                                {
+                                    _groundPlaneId = result.Data.Data.Data.Children.First(x => x.Name == "GroundPlane").Uuid;
+                                    _cameraId = result.Data.Data.Data.Children.First(x => x.Name == "Camera").Uuid;
+                                    File.WriteAllText(@"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/Response.json", JObject.Parse(json).ToString());
+                                    _log.Critical("Groundplane Id = " + _groundPlaneId);
+                                    break;
+                                }
 
-                        case "4":
-                        {
-                            _roadNodeId = result.Data.Data.Data.Uuid;
-                            _log.Information("Road Node ID is: " + _roadNodeId);
-                            break;
-                        }
+                            case "2":
+                                {
+                                    _bikeId = result.Data.Data.Data.Uuid;
+                                    _log.Critical("Bike Id = " + _bikeId);
+                                    _log.Information(JObject.Parse(json).ToString());
+                                    break;
+                                }
 
-                        case "5":
-                        {
-                            _terrainNodeId = result.Data.Data.Data.Uuid;
-                            _log.Information("Terrain Node ID is: " + _terrainNodeId);
-                            break;
-                        }
+                            case "3":
+                                {
+                                    _routeId = result.Data.Data.Data.Uuid;
+                                    _log.Information("Route ID is: " + _routeId);
+                                    _log.Information(JObject.Parse(json).ToString());
+                                    break;
+                                }
 
-                        default:
-                        {
-                            _log.Information(JObject.Parse(json).ToString());
-                            break;
+                            case "4":
+                                {
+                                    _roadNodeId = result.Data.Data.Data.Uuid;
+                                    _log.Information("Road Node ID is: " + _roadNodeId);
+                                    break;
+                                }
+
+                            case "5":
+                                {
+                                    _terrainNodeId = result.Data.Data.Data.Uuid;
+                                    _log.Information("Terrain Node ID is: " + _terrainNodeId);
+                                    break;
+                                }
+
+                            default:
+                                {
+                                    _log.Information(JObject.Parse(json).ToString());
+                                    break;
+                                }
                         }
+                        break;
                     }
-                    break;
-                }
 
                 default:
-                {
-                    _log.Warning($"Unhandled incoming message with id '{id}'");
-                    _log.Debug(json);
-                    break;
-                }
+                    {
+                        _log.Warning($"Unhandled incoming message with id '{id}'");
+                        _log.Debug(json);
+                        break;
+                    }
             }
         }
         catch (Exception ex)
@@ -246,8 +261,32 @@ public class EngineConnection
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
-
+    public async Task ChangeBikeSpeed(double speed)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\ChangeBikeSpeed.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = _tunnelId;
+        jObject["data"]["data"]["data"]["node"] = _bikeId;
+        jObject["data"]["data"]["data"]["speed"] = speed;
+    }
+    
     public async Task RemoveNode(string dest, string nodeId)
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+
+        path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\ChangeAnimationSpeed.json";
+        jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = _tunnelId;
+        jObject["data"]["data"]["data"]["id"] = _bikeId;
+        jObject["data"]["data"]["data"]["animation"]["speed"] = speed / 10;
+
+        json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task RemoveGroundPlane(string dest, string groundPlaneID)
     {
         string path = Path.Combine(_filePath, "Json", "RemoveNode.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
@@ -281,8 +320,8 @@ public class EngineConnection
         if (data == null)
         {
             for (var i = 0; i < 256; i++)
-            for (var j = 0; j < 256; j++)
-                heights.Add(1);
+                for (var j = 0; j < 256; j++)
+                    heights.Add(1);
         }
         else
         {
@@ -299,7 +338,7 @@ public class EngineConnection
         }
 
         _log.Debug(jObject.ToString());
-
+        hoogte = heights;
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
@@ -356,7 +395,7 @@ public class EngineConnection
     {
         string path = Path.Combine(_filePath, "Json", "FollowRoute.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
-        
+
         jObject["data"]["dest"] = dest;
         jObject["data"]["data"]["data"]["route"] = _routeId;
         jObject["data"]["data"]["data"]["node"] = _bikeId;
@@ -364,12 +403,12 @@ public class EngineConnection
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
-    
+
     public async Task ResetScene(string dest)
     {
         string path = Path.Combine(_filePath, "Json", "ResetScene.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
-        
+
         jObject["data"]["dest"] = dest;
 
         var json = JsonConvert.SerializeObject(jObject);
@@ -380,14 +419,61 @@ public class EngineConnection
     {
         string path = Path.Combine(_filePath, "Json", "AddTerrainLayer.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
-        
+
         jObject["data"]["dest"] = dest;
         jObject["data"]["data"]["data"]["id"] = _terrainNodeId;
-        
+
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
 
+    public async Task Addhouses(string dest, int amount)
+    {
+
+        Random r = new Random();
+
+        for (int i = 0; i < amount; i++)
+        {
+            var path = Environment.CurrentDirectory;
+            path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\AddHouses.json";
+            var jObject = JObject.Parse(File.ReadAllText(path));
+            String s = "";
+            switch (r.Next(2))
+            {
+                case 0:
+                    s = $"data/NetworkEngine/models/houses/set1/house{r.Next(1, 27)}.obj";
+                    break;
+                case 1:
+                    s = $"data/NetworkEngine/models/trees/fantasy/tree{r.Next(1, 10)}.obj";
+                    break;
+
+            }
+
+            jObject["data"]["data"]["data"]["components"]["model"]["file"] = s;
+
+
+            int x = r.Next(1, 256);
+            int z = r.Next(1, 256);
+            int y = (int)hoogte[z * 256 + x];
+
+
+            var postpar = jObject["data"]["data"]["data"]["components"]["transform"]["position"] as JArray;
+            jObject["data"]["dest"] = dest;
+            postpar.Insert(0, x);
+            postpar.Insert(1, y);
+            postpar.Insert(2, z);
+
+
+
+
+
+
+            var json = JsonConvert.SerializeObject(jObject);
+
+            await _socket.SendAsync(json);
+
+        }
+    }
     public async Task MoveCameraPosition()
     {
         string path = Path.Combine(_filePath, "Json", "UpdateCameraNode.json");
@@ -396,7 +482,7 @@ public class EngineConnection
         jObject["data"]["dest"] = _tunnelId;
         jObject["data"]["data"]["data"]["id"] = _cameraId;
         jObject["data"]["data"]["data"]["parent"] = _bikeId;
-        
+
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
