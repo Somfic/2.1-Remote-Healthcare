@@ -22,6 +22,9 @@ public class EngineConnection
     private string _terrainNodeId;
     private string _filePath;
     private string _cameraId;
+    private string _leftControllerId;
+    private string _rightControllerId;
+    private string _monkeyHeadId;
 
     public EngineConnection()
     {
@@ -88,8 +91,10 @@ public class EngineConnection
         await GetScene(_tunnelId);
         
         await Task.Delay(1000);
-        await RemoveGroundPlane(_tunnelId, _groundPlaneId);
-        
+        await RemoveNode(_tunnelId, _groundPlaneId);
+        await RemoveNode(_tunnelId, _leftControllerId);
+        await RemoveNode(_tunnelId, _rightControllerId);
+
         await Task.Delay(1000);
         await AddRoute(_tunnelId);
         
@@ -104,6 +109,7 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await MoveCameraPosition();
+        await MoveHeadPosition();
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -151,8 +157,11 @@ public class EngineConnection
                         {
                             _groundPlaneId = result.Data.Data.Data.Children.First(x => x.Name == "GroundPlane").Uuid;
                             _cameraId = result.Data.Data.Data.Children.First(x => x.Name == "Camera").Uuid;
-                            File.WriteAllText(@"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/Response.json", JObject.Parse(json).ToString());
-                            _log.Critical("Groundplane Id = " + _groundPlaneId);
+                            _leftControllerId = result.Data.Data.Data.Children.First(x => x.Name == "LeftHand").Uuid;
+                            _rightControllerId = result.Data.Data.Data.Children.First(x => x.Name == "RightHand").Uuid;
+                            _monkeyHeadId = result.Data.Data.Data.Children.First(x => x.Name == "Head").Uuid;
+                            File.WriteAllText(@"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/SecondResponse.json", JObject.Parse(json).ToString());
+                            _log.Information("Head Id = " + _monkeyHeadId);
                             break;
                         }
 
@@ -237,12 +246,12 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
-    public async Task RemoveGroundPlane(string dest, string groundPlaneID)
+    public async Task RemoveNode(string dest, string nodeId)
     {
         string path = Path.Combine(_filePath, "Json", "RemoveNode.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
-        jObject["data"]["data"]["data"]["id"] = groundPlaneID;
+        jObject["data"]["data"]["data"]["id"] = nodeId;
 
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
@@ -386,6 +395,20 @@ public class EngineConnection
         jObject["data"]["dest"] = _tunnelId;
         jObject["data"]["data"]["data"]["id"] = _cameraId;
         jObject["data"]["data"]["data"]["parent"] = _bikeId;
+        
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task MoveHeadPosition()
+    {
+        string path = Path.Combine(_filePath, "Json", "UpdateHeadNode.json");
+        var jObject = JObject.Parse(File.ReadAllText(path));
+
+        jObject["data"]["dest"] = _tunnelId;
+        jObject["data"]["data"]["data"]["id"] = _monkeyHeadId;
+        jObject["data"]["data"]["data"]["parent"] = _bikeId;
+
         
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
