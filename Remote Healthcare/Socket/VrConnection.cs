@@ -1,11 +1,5 @@
 ﻿using RemoteHealthcare.Data.Providers.Bike;
 using RemoteHealthcare.Data.Providers.Heart;
-using RemoteHealthcare.Logger;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RemoteHealthcare.Socket
 {
@@ -20,17 +14,28 @@ namespace RemoteHealthcare.Socket
             this.bike = bike;
             this.heart = heart;
             this.engine = engine;
+
+            /* Unmerged change from project 'Remote Healthcare (net6.0)'
+            Before:
+                    }
+
+                    public async void start()
+            After:
+                    }
+
+                    public async void start()
+            */
         }
-        
+
         public async void start()
         {
             while (true)
             {
                 bike.ProcessRawData();
                 Console.WriteLine(bike.GetData().Speed);
-                
-                    await engine.ChangeBikeSpeed(bike.GetData().Speed);
-                
+
+                await engine.ChangeBikeSpeed(bike.GetData().Speed);
+
                 Thread.Sleep(500);
             }
         }

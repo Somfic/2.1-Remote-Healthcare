@@ -1,6 +1,6 @@
-﻿using System.Runtime.InteropServices;
-using Avans.TI.BLE;
+﻿using Avans.TI.BLE;
 using RemoteHealthcare.Logger;
+using System.Runtime.InteropServices;
 
 namespace RemoteHealthcare.Bluetooth;
 
@@ -11,12 +11,16 @@ public class BluetoothDevice
     private readonly string _serviceCharacteristic;
     private readonly string _serviceName;
     private BLE _bluetoothConnection;
+    private int _idByte;
+    private int _id;
 
-    public BluetoothDevice(string deviceName, string serviceName, string serviceCharacteristic)
+    public BluetoothDevice(string deviceName, string serviceName, string serviceCharacteristic, int idByte, int id)
     {
         _deviceName = deviceName;
         _serviceName = serviceName;
         _serviceCharacteristic = serviceCharacteristic;
+        _idByte = idByte;  
+        _id = id;
     }
 
     public byte[] ReceivedData { get; private set; } = new byte[12];
@@ -38,6 +42,12 @@ public class BluetoothDevice
 
             var devices = _bluetoothConnection.ListDevices();
 
+            foreach (var device in devices)
+            {
+                _log.Information(device);
+            }
+            
+
             if (!devices.Contains(_deviceName))
             {
                 throw new Exception("Could not find bluetooth device in list of available connections");
@@ -50,12 +60,18 @@ public class BluetoothDevice
 
             _bluetoothConnection.SubscriptionValueChanged += (sender, e) =>
             {
-                ServiceName = e.ServiceName;
-                ReceivedData = e.Data;
+                //Console.WriteLine($" { e.Data[_idByte]}  -- {_id}");
+                if (e.Data[_idByte] == _id)
+                {
+             
+                    ServiceName = e.ServiceName;
+                    ReceivedData = e.Data;
+                }
             };
 
             errorCode = await _bluetoothConnection.SubscribeToCharacteristic(_serviceCharacteristic);
             _log.Information($"Connected to: {_deviceName}");
+            
         }
         catch (Exception ex)
         {
