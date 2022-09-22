@@ -10,8 +10,8 @@
         "parent" : "",
         "transform":
         {
-          "position" : [ 0, 120, 0 ],
-          "scale" : 10.0,
+          "position" : [ -300, 10, 0 ],
+          "scale" : 100.0,
           "rotation" : [ 0, 90, 0 ] 
         }
       }
