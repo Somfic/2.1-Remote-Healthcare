@@ -21,6 +21,7 @@ public class EngineConnection
     private string _bikeId;
     private string _terrainNodeId;
     private string _filePath;
+    private string _cameraId;
 
     public EngineConnection()
     {
@@ -100,6 +101,9 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await PlaceBikeOnRoute(_tunnelId);
+
+        await Task.Delay(1000);
+        await MoveCameraPosition();
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -146,6 +150,8 @@ public class EngineConnection
                         case "1":
                         {
                             _groundPlaneId = result.Data.Data.Data.Children.First(x => x.Name == "GroundPlane").Uuid;
+                            _cameraId = result.Data.Data.Data.Children.First(x => x.Name == "Camera").Uuid;
+                            File.WriteAllText(@"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/Response.json", JObject.Parse(json).ToString());
                             _log.Critical("Groundplane Id = " + _groundPlaneId);
                             break;
                         }
@@ -179,7 +185,7 @@ public class EngineConnection
                             _log.Information("Terrain Node ID is: " + _terrainNodeId);
                             break;
                         }
-                        
+
                         default:
                         {
                             _log.Information(JObject.Parse(json).ToString());
@@ -290,7 +296,7 @@ public class EngineConnection
 
     public async Task Heightmap(string dest)
     {
-        string path = Path.Combine(_filePath, "Image", "Terrain.json");
+        string path = Path.Combine(_filePath, "Image", "Heightmap.png");
 
         using (Bitmap heightmap = new Bitmap(Image.FromFile(path)))
         {
@@ -367,6 +373,19 @@ public class EngineConnection
         
         jObject["data"]["dest"] = dest;
         jObject["data"]["data"]["data"]["id"] = _terrainNodeId;
+        
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task MoveCameraPosition()
+    {
+        string path = Path.Combine(_filePath, "Json", "UpdateCameraNode.json");
+        var jObject = JObject.Parse(File.ReadAllText(path));
+
+        jObject["data"]["dest"] = _tunnelId;
+        jObject["data"]["data"]["data"]["id"] = _cameraId;
+        jObject["data"]["data"]["data"]["parent"] = _bikeId;
         
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
