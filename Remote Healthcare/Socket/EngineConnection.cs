@@ -98,7 +98,14 @@ public class EngineConnection
         await PlaceBikeOnRoute(_tunnelId);
 
         await Task.Delay(1000);
-        await Addhouses(_tunnelId, 1000);
+        await Addhouses(_tunnelId, 100);
+
+
+        while (true)
+        {
+            await Task.Delay(500);
+            await NodeInfo(_tunnelId);
+        }
 
       
 
@@ -174,6 +181,10 @@ public class EngineConnection
                             _log.Information("Road Node ID is: " + _roadNodeId);
                             break;
                         }
+                        case "9":
+                            // _log.Information(result.Data.Data.Data.P);
+                            File.WriteAllText(@"C:\Users\midas\Documents\school\jaar 2\proftaak\gitrepo\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json",JObject.Parse(json).ToString());
+                            break;
                         
                         default:
                         {
@@ -206,6 +217,17 @@ public class EngineConnection
 
     // COMMANDS
 
+    public async Task NodeInfo(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\NodeInfo.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = dest;
+       
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json); 
+    }
     public async Task CreateTerrainNode(string dest, dynamic? data = null)
     {
         var path = Environment.CurrentDirectory;
