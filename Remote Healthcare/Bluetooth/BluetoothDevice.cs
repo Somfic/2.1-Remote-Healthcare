@@ -19,7 +19,7 @@ public class BluetoothDevice
         _deviceName = deviceName;
         _serviceName = serviceName;
         _serviceCharacteristic = serviceCharacteristic;
-        _idByte = idByte;  
+        _idByte = idByte;
         _id = id;
     }
 
@@ -46,7 +46,7 @@ public class BluetoothDevice
             {
                 _log.Information(device);
             }
-            
+
 
             if (!devices.Contains(_deviceName))
             {
@@ -63,7 +63,7 @@ public class BluetoothDevice
                 //Console.WriteLine($" { e.Data[_idByte]}  -- {_id}");
                 if (e.Data[_idByte] == _id)
                 {
-             
+
                     ServiceName = e.ServiceName;
                     ReceivedData = e.Data;
                 }
@@ -71,7 +71,7 @@ public class BluetoothDevice
 
             errorCode = await _bluetoothConnection.SubscribeToCharacteristic(_serviceCharacteristic);
             _log.Information($"Connected to: {_deviceName}");
-            
+
         }
         catch (Exception ex)
         {

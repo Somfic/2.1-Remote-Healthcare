@@ -20,14 +20,14 @@ public class BluetoothBikeDataProvider : BikeDataProvider
     public override async Task ProcessRawData()
     {
         int checkSum = 0;
-        
+
         for (int i = 0; i < 12; i++)
         {
             checkSum ^= _bikeSensor.ReceivedData[i];
-            Console.WriteLine(_bikeSensor.ReceivedData[i]);
-            //checkSum += _bikeSensor.ReceivedData[i];
+
+
         }
-        Console.WriteLine(checkSum % 255 + " -- " + _bikeSensor.ReceivedData[12]);
+
         if (checkSum % 255 == _bikeSensor.ReceivedData[12])
         {
             SetId(_bikeSensor.ServiceName);

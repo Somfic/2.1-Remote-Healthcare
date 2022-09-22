@@ -36,7 +36,7 @@ namespace RemoteHealthcare.Socket
 
                 await engine.ChangeBikeSpeed(bike.GetData().Speed);
 
-                Thread.Sleep(500);
+                Thread.Sleep(100);
             }
         }
     }
