@@ -109,6 +109,7 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await MoveCameraPosition();
+        await Task.Delay(1000);
         await MoveHeadPosition();
     }
 
@@ -408,7 +409,6 @@ public class EngineConnection
         jObject["data"]["dest"] = _tunnelId;
         jObject["data"]["data"]["data"]["id"] = _monkeyHeadId;
         jObject["data"]["data"]["data"]["parent"] = _bikeId;
-
         
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
