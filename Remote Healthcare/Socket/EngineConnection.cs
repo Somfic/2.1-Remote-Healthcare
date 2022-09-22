@@ -20,6 +20,9 @@ public class EngineConnection
     private string _tunnelId;
     private string _userId;
     private string _bikeId;
+    private string _terrainNodeId;
+    private string _filePath;
+    private string _cameraId;
 
 
 
@@ -96,6 +99,9 @@ public class EngineConnection
         await PlaceBikeOnRoute(_tunnelId);
 
         await Task.Delay(1000);
+        await MoveCameraPosition();
+
+        await Task.Delay(1000);
         await Addhouses(_tunnelId, 1000);
 
 
@@ -136,6 +142,14 @@ public class EngineConnection
 
                 case "tunnel/send":
                     {
+                        case "1":
+                        {
+                            _groundPlaneId = result.Data.Data.Data.Children.First(x => x.Name == "GroundPlane").Uuid;
+                            _cameraId = result.Data.Data.Data.Children.First(x => x.Name == "Camera").Uuid;
+                            File.WriteAllText(@"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/Response.json", JObject.Parse(json).ToString());
+                            _log.Critical("Groundplane Id = " + _groundPlaneId);
+                            break;
+                        }
                         var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
                         var resultSerial = result.Data.Data.Serial;
 
@@ -170,6 +184,12 @@ public class EngineConnection
                                     _log.Information("Road Node ID is: " + _roadNodeId);
                                     break;
                                 }
+                                case "5":
+                        {
+                            _terrainNodeId = result.Data.Data.Data.Uuid;
+                            _log.Information("Terrain Node ID is: " + _terrainNodeId);
+                            break;
+                        }
 
                             default:
                                 {
@@ -290,7 +310,7 @@ public class EngineConnection
 
     public async Task Heightmap(string dest)
     {
-        string path = Path.Combine(_filePath, "Image", "Terrain.json");
+        string path = Path.Combine(_filePath, "Image", "Heightmap.png");
 
         using (Bitmap heightmap = new Bitmap(Image.FromFile(path)))
         {
@@ -406,6 +426,19 @@ public class EngineConnection
 
         var json = JsonConvert.SerializeObject(jObject);
         _log.Debug(jObject.ToString());
+        await _socket.SendAsync(json);
+    }
+
+    public async Task MoveCameraPosition()
+    {
+        string path = Path.Combine(_filePath, "Json", "UpdateCameraNode.json");
+        var jObject = JObject.Parse(File.ReadAllText(path));
+
+        jObject["data"]["dest"] = _tunnelId;
+        jObject["data"]["data"]["data"]["id"] = _cameraId;
+        jObject["data"]["data"]["data"]["parent"] = _bikeId;
+        
+        var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
 
