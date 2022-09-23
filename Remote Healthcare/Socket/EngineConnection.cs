@@ -110,11 +110,11 @@ public class EngineConnection
         await Addhouses(_tunnelId, 100);
 
 
-        while (true)
-        {
-            await Task.Delay(500);
-            await NodeInfo(_tunnelId);
-        }
+        // while (true)
+        // {
+        //     await Task.Delay(500);
+        //     await NodeInfo(_tunnelId);
+        // }
 
       
 

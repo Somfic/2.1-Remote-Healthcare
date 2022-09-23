@@ -3,12 +3,12 @@
   "data": {
     "dest": "",
     "data": {
-      "id" : "get",
-      "serial": "9",
+      "id" : "scene/node/find",
+      "serial": "9", 
       "data" :
-      {
-        "type" : "head"
-      }
-    }
+  {
+    "name" : "Bike"
+  }
+}
   }
 }
