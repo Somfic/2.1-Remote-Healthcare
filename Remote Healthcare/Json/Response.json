@@ -1,24 +1,80 @@
 {
   "id": "tunnel/send",
   "data": {
-    "id": "ba71e426-f3f6-4d77-97b3-1ef1099b4219",
+    "id": "e942a89a-addf-4cf4-ad86-11c0df5da0d8",
     "data": {
-      "data": {
-        "forward": [
-          0.0,
-          0.0,
-          -1
-        ],
-        "position": [
-          0.0,
-          1.5,
-          0.0
-        ],
-        "status": "ok"
-      },
-      "id": "get",
-      "serial": "5",
-      "status": "error"
+      "data": [
+        {
+          "children": [
+            {
+              "components": [
+                {
+                  "position": [
+                    0.0,
+                    120,
+                    0.0
+                  ],
+                  "rotation": [
+                    0.0,
+                    0.70710676908493,
+                    0.0,
+                    0.70710676908493
+                  ],
+                  "scale": [
+                    10,
+                    10,
+                    10
+                  ],
+                  "type": "transform"
+                },
+                {
+                  "type": "camera",
+                  "useFbo": false
+                },
+                {
+                  "light": "594b2cb9-7106-4951-9203-fb4e7d787e21",
+                  "timeOfDay": 10.5,
+                  "type": "dynamicskybox"
+                }
+              ],
+              "name": "Camera",
+              "uuid": "76e12369-1dc8-484b-a8da-eeab7ad1abc3"
+            }
+          ],
+          "components": [
+            {
+              "position": [
+                47.6564178466797,
+                1,
+                126.734901428223
+              ],
+              "rotation": [
+                0.0,
+                0.63535463809967,
+                0.0,
+                -0.772220492362976
+              ],
+              "scale": [
+                0.00999999977648258,
+                0.00999999977648258,
+                0.00999999977648258
+              ],
+              "type": "transform"
+            },
+            {
+              "castShadow": true,
+              "cullBackFaces": true,
+              "file": "data/NetworkEngine/models/bike/bike_anim.fbx",
+              "type": "animatedmodelrenderer"
+            }
+          ],
+          "name": "Bike",
+          "uuid": "31272972-de72-45ec-8fdd-e07956d79187"
+        }
+      ],
+      "id": "scene/node/find",
+      "serial": "9",
+      "status": "ok"
     }
   }
 }

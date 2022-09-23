@@ -4,8 +4,8 @@ using RemoteHealthcare.Socket;
 
 try
 {
-    var bike = await DataProvider.GetBike("00438");
-    var heart = await DataProvider.GetHeart();
+    // var bike = await DataProvider.GetBike("00438");
+    // var heart = await DataProvider.GetHeart();
     var engine = new EngineConnection();
     await engine.ConnectAsync("midas");
     

@@ -15,7 +15,11 @@ public class EngineConnection
     private string _groundPlaneId;
     private string _routeId;
     private string _roadNodeId;
-    private JArray hoogte;
+    
+    private JArray _hightForHouse;
+    private bool[,] _roadArray;
+    private bool _roadLoad = false;
+    
 
     private string _tunnelId;
     private string _userId;
@@ -76,7 +80,7 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await ResetScene(_tunnelId);
-        
+
         await Task.Delay(1000);
         await SendSkyboxTime(_tunnelId, 10.5);
         await SendTerrain(_tunnelId);
@@ -87,16 +91,16 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await GetScene(_tunnelId);
-        
+
         await Task.Delay(1000);
         await RemoveGroundPlane(_tunnelId, _groundPlaneId);
-        
+
         await Task.Delay(1000);
         await AddRoute(_tunnelId);
-        
+
         await Task.Delay(1000);
         await AddRoad(_tunnelId, _routeId);
-        
+
         await Task.Delay(1000);
         await AddBikeModel(_tunnelId);
 
@@ -106,18 +110,18 @@ public class EngineConnection
         await Task.Delay(1000);
         await MoveCameraPosition();
 
-        await Task.Delay(1000);
-        await Addhouses(_tunnelId, 100);
+        // await Task.Delay(1000);
+        // await Addhouses(_tunnelId, 100);
 
-
-        // while (true)
-        // {
-        //     await Task.Delay(500);
-        //     await NodeInfo(_tunnelId);
-        // }
-
-      
-
+        _roadArray = new bool[256,256];
+        
+        while (!_roadLoad)
+        {
+            await Task.Delay(50);
+            await NodeInfo(_tunnelId);
+        }
+           
+        
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -156,8 +160,19 @@ public class EngineConnection
 
                 case "tunnel/send":
                 {
-                    var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
-                    var resultSerial = result.Data.Data.Serial;
+                    string resultSerial = "";
+                    var result = new DataResponse<TunnelSendResponse>();
+                    try
+                    {
+                        result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
+                        resultSerial = result.Data.Data.Serial;
+                    }
+                    catch
+                    {
+                        resultSerial  = raw.data.data.serial;
+                    }
+                    
+                    
 
                     switch (resultSerial)
                     {
@@ -165,7 +180,9 @@ public class EngineConnection
                         {
                             _groundPlaneId = result.Data.Data.Data.Children.First(x => x.Name == "GroundPlane").Uuid;
                             _cameraId = result.Data.Data.Data.Children.First(x => x.Name == "Camera").Uuid;
-                            File.WriteAllText(@"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/Response.json", JObject.Parse(json).ToString());
+                            File.WriteAllText(
+                                @"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/Response.json",
+                                JObject.Parse(json).ToString());
                             _log.Critical("Groundplane Id = " + _groundPlaneId);
                             break;
                         }
@@ -177,7 +194,7 @@ public class EngineConnection
                             _log.Information(JObject.Parse(json).ToString());
                             break;
                         }
-                        
+
                         case "3":
                         {
                             _routeId = result.Data.Data.Data.Uuid;
@@ -201,16 +218,36 @@ public class EngineConnection
                         }
 
                         case "9":
+                        {
                             // _log.Information(result.Data.Data.Data.P);
-                            File.WriteAllText(@"C:\Users\midas\Documents\school\jaar 2\proftaak\gitrepo\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json",JObject.Parse(json).ToString());
+
+                            string x = raw.data.data.data[0].components[0].position[0].ToString();
+                            string z = raw.data.data.data[0].components[0].position[2].ToString();
+                         
+                            
+                            
+                            _log.Information($"x = {(int)Convert.ToDecimal(x)} and z ={(int)Convert.ToDecimal(z)}");
+                            if (!_roadArray[(int)Convert.ToDecimal(x), (int)Convert.ToDecimal(z)])
+                            {
+                                _roadArray[(int)Convert.ToDecimal(x),(int)Convert.ToDecimal(z)] = true;
+                            }
+                            else
+                            {
+                                _roadLoad = true;
+                            }
+                            // File.WriteAllText(
+                            //     @"C:\Users\midas\Documents\school\jaar 2\proftaak\gitrepo\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json",
+                            //     JObject.Parse(json).ToString());
                             break;
-                        
+                        }
+
                         default:
                         {
                             _log.Information(JObject.Parse(json).ToString());
                             break;
                         }
                     }
+
                     break;
                 }
 
@@ -242,11 +279,12 @@ public class EngineConnection
         path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\NodeInfo.json";
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
-       
+
 
         var json = JsonConvert.SerializeObject(jObject);
-        await _socket.SendAsync(json); 
+        await _socket.SendAsync(json);
     }
+
     public async Task CreateTerrainNode(string dest, dynamic? data = null)
     {
         string path = Path.Combine(_filePath, "Json", "CreateTerrainNode.json");
@@ -319,7 +357,7 @@ public class EngineConnection
         }
 
         _log.Debug(jObject.ToString());
-        hoogte = heights;
+        _hightForHouse = heights;
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
@@ -332,8 +370,8 @@ public class EngineConnection
         {
             double[,] heights = new double[heightmap.Width, heightmap.Height];
             for (int x = 0; x < heightmap.Width; x++)
-                for (int y = 0; y < heightmap.Height; y++)
-                    heights[x, y] = (heightmap.GetPixel(x, y).R / 256.0f) * 50.0f - 5;
+            for (int y = 0; y < heightmap.Height; y++)
+                heights[x, y] = (heightmap.GetPixel(x, y).R / 256.0f) * 50.0f - 5;
 
             SendTerrain(dest, heights.Cast<double>().ToArray());
         }
@@ -376,7 +414,7 @@ public class EngineConnection
     {
         string path = Path.Combine(_filePath, "Json", "FollowRoute.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
-        
+
         jObject["data"]["dest"] = dest;
         jObject["data"]["data"]["data"]["route"] = _routeId;
         jObject["data"]["data"]["data"]["node"] = _bikeId;
@@ -384,12 +422,12 @@ public class EngineConnection
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
-    
+
     public async Task ResetScene(string dest)
     {
         string path = Path.Combine(_filePath, "Json", "ResetScene.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
-        
+
         jObject["data"]["dest"] = dest;
 
         var json = JsonConvert.SerializeObject(jObject);
@@ -400,10 +438,10 @@ public class EngineConnection
     {
         string path = Path.Combine(_filePath, "Json", "AddTerrainLayer.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
-        
+
         jObject["data"]["dest"] = dest;
         jObject["data"]["data"]["data"]["id"] = _terrainNodeId;
-        
+
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
@@ -416,15 +454,15 @@ public class EngineConnection
         jObject["data"]["dest"] = _tunnelId;
         jObject["data"]["data"]["data"]["id"] = _cameraId;
         jObject["data"]["data"]["data"]["parent"] = _bikeId;
-        
+
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
-    public async Task Addhouses(string dest,int amount)
+
+    public async Task Addhouses(string dest, int amount)
     {
-        
         Random r = new Random();
-        
+
         for (int i = 0; i < amount; i++)
         {
             var path = Environment.CurrentDirectory;
@@ -434,40 +472,30 @@ public class EngineConnection
             switch (r.Next(2))
             {
                 case 0:
-                   s  = $"data/NetworkEngine/models/houses/set1/house{r.Next(1,27)}.obj"; 
+                    s = $"data/NetworkEngine/models/houses/set1/house{r.Next(1, 27)}.obj";
                     break;
-                case 1: 
-                    s = $"data/NetworkEngine/models/trees/fantasy/tree{r.Next(1,10)}.obj"; 
+                case 1:
+                    s = $"data/NetworkEngine/models/trees/fantasy/tree{r.Next(1, 10)}.obj";
                     break;
-                
             }
-           
+
             jObject["data"]["data"]["data"]["components"]["model"]["file"] = s;
 
             int x = r.Next(1, 256);
             int z = r.Next(1, 256);
-            int y = (int)hoogte[z * 256 + x];
-            
-            
+            int y = (int)_hightForHouse[z * 256 + x];
+
+
             var postpar = jObject["data"]["data"]["data"]["components"]["transform"]["position"] as JArray;
             jObject["data"]["dest"] = dest;
             postpar.Insert(0, x);
-            postpar.Insert(1,y);
+            postpar.Insert(1, y);
             postpar.Insert(2, z);
-            
-           
-            
-            
-            
+
 
             var json = JsonConvert.SerializeObject(jObject);
-            
+
             await _socket.SendAsync(json);
-           
         }
     }
-
-
-
-    
 }
