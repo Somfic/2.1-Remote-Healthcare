@@ -465,7 +465,8 @@ public class EngineConnection
 
             int x = r.Next(1, 256);
             int z = r.Next(1, 256);
-            int y = (int)hoogte[z * 256 + x];
+            //int y = (int)hoogte[z * 256 + x];
+            int y = 0;
 
 
             var postpar = jObject["data"]["data"]["data"]["components"]["transform"]["position"] as JArray;
