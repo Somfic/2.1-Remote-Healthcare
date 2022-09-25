@@ -1,6 +1,6 @@
+using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Data.Providers.Bike;
 using RemoteHealthcare.Data.Providers.Heart;
-using RemoteHealthcare.Logger;
 
 namespace RemoteHealthcare.Data.Providers;
 
