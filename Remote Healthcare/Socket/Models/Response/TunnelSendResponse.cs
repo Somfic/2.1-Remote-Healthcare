@@ -7,20 +7,22 @@ public class TunnelSendResponse : IDataResponse
     [JsonProperty("id")] public string Id { get; set; }
 
     [JsonProperty("data")] public TunnelData Data { get; set; }
-    
+
 
     public class TunnelData
     {
         [JsonProperty("data")] public ChildrenData Data { get; set; }
 
         [JsonProperty("id")] public string Id { get; set; }
-        
+
         [JsonProperty("serial")] public string Serial { get; set; }
 
         [JsonProperty("status")] public string Status { get; set; }
 
         public class ChildrenData
         {
+            [JsonProperty("data")] public Child[] Data { get; set; }
+
             [JsonProperty("children")] public Child[] Children { get; set; }
 
             [JsonProperty("name")] public string Name { get; set; }
