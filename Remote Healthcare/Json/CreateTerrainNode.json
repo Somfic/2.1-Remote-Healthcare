@@ -4,6 +4,7 @@
     "dest": "",
     "data": {
       "id": "scene/node/add",
+      "serial": "5",
       "data": {
         "name": "Terrain",
         "components": {
