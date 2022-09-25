@@ -15,7 +15,11 @@ public class EngineConnection
     private string _groundPlaneId;
     private string _routeId;
     private string _roadNodeId;
-    private JArray hoogte;
+    
+    private JArray _hightForHouse;
+    private bool[,] _roadArray;
+    private bool _roadLoad = false;
+    
 
     private string _tunnelId;
     private string _userId;
@@ -156,8 +160,19 @@ public class EngineConnection
 
                 case "tunnel/send":
                 {
-                    var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
-                    var resultSerial = result.Data.Data.Serial;
+                    string resultSerial = "";
+                    var result = new DataResponse<TunnelSendResponse>();
+                    try
+                    {
+                        result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
+                        resultSerial = result.Data.Data.Serial;
+                    }
+                    catch
+                    {
+                        resultSerial  = raw.data.data.serial;
+                    }
+                    
+                    
 
                     switch (resultSerial)
                     {
@@ -236,6 +251,18 @@ public class EngineConnection
     }
 
     // COMMANDS
+
+    public async Task NodeInfo(string dest)
+    {
+        var path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\NodeInfo.json";
+        var jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = dest;
+
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
 
     public async Task CreateTerrainNode(string dest, dynamic? data = null)
     {
@@ -324,7 +351,7 @@ public class EngineConnection
         }
 
         _log.Debug(jObject.ToString());
-        hoogte = heights;
+        _hightForHouse = heights;
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
@@ -438,7 +465,8 @@ public class EngineConnection
 
             int x = r.Next(1, 256);
             int z = r.Next(1, 256);
-            int y = (int)hoogte[z * 256 + x];
+            //int y = (int)hoogte[z * 256 + x];
+            int y = 0;
 
 
             var postpar = jObject["data"]["data"]["data"]["components"]["transform"]["position"] as JArray;

@@ -21,6 +21,8 @@ public class TunnelSendResponse : IDataResponse
 
         public class ChildrenData
         {
+            [JsonProperty("data")] public Child[] Data { get; set; }
+
             [JsonProperty("children")] public Child[] Children { get; set; }
 
             [JsonProperty("name")] public string Name { get; set; }
