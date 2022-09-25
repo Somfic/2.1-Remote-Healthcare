@@ -1,5 +1,5 @@
-﻿using RemoteHealthcare.Data.Providers;
-using RemoteHealthcare.Logger;
+﻿using RemoteHealthcare.Common.Logger;
+using RemoteHealthcare.Data.Providers;
 using RemoteHealthcare.Socket;
 
 try

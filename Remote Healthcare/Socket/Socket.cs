@@ -1,8 +1,8 @@
 using Newtonsoft.Json;
-using RemoteHealthcare.Logger;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.Socket;
 
