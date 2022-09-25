@@ -13,7 +13,7 @@ namespace Server
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello Server!");
+            Console.WriteLine("Server has started.");
 
             listener = new TcpListener(IPAddress.Any, 15243);
             listener.Start();
