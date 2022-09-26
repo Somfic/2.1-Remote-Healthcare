@@ -73,40 +73,37 @@ public class EngineConnection
 
         await _socket.SendAsync("tunnel/create", new { session = _userId, key = password });
 
-        await Task.Delay(1000);
-        await ResetScene(_tunnelId);
-        
-        await Task.Delay(1000);
-        await SendSkyboxTime(_tunnelId, 10.5);
-        await SendTerrain(_tunnelId);
-        await CreateTerrainNode(_tunnelId);
-
-        await Task.Delay(1000);
-        await AddTerrainLayer(_tunnelId);
-
-        await Task.Delay(1000);
-        await GetScene(_tunnelId);
-        
-        await Task.Delay(1000);
-        await RemoveGroundPlane(_tunnelId, _groundPlaneId);
-        
-        await Task.Delay(1000);
-        await AddRoute(_tunnelId);
-        
-        await Task.Delay(1000);
-        await AddRoad(_tunnelId, _routeId);
-        
-        await Task.Delay(1000);
-        await AddBikeModel(_tunnelId);
-
-        await Task.Delay(1000);
-        await PlaceBikeOnRoute(_tunnelId);
-
-        await Task.Delay(1000);
-        await Addhouses(_tunnelId, 1000);
-
-      
-
+        // await Task.Delay(1000);
+        // await ResetScene(_tunnelId);
+        //
+        // await Task.Delay(1000);
+        // await SendSkyboxTime(_tunnelId, 10.5);
+        // await SendTerrain(_tunnelId);
+        // await CreateTerrainNode(_tunnelId);
+        //
+        // await Task.Delay(1000);
+        // await AddTerrainLayer(_tunnelId);
+        //
+        // await Task.Delay(1000);
+        // await GetScene(_tunnelId);
+        //
+        // await Task.Delay(1000);
+        // await RemoveGroundPlane(_tunnelId, _groundPlaneId);
+        //
+        // await Task.Delay(1000);
+        // await AddRoute(_tunnelId);
+        //
+        // await Task.Delay(1000);
+        // await AddRoad(_tunnelId, _routeId);
+        //
+        // await Task.Delay(1000);
+        // await AddBikeModel(_tunnelId);
+        //
+        // await Task.Delay(1000);
+        // await PlaceBikeOnRoute(_tunnelId);
+        //
+        // await Task.Delay(1000);
+        // await Addhouses(_tunnelId, 1000);
     }
 
     private async Task ProcessMessageAsync(string json)
