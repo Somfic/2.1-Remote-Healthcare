@@ -6,7 +6,7 @@ try
 {
 
     var engine = new EngineConnection();
-    await engine.ConnectAsync("xander");
+    await engine.ConnectAsync();
 
     
     var bike = await DataProvider.GetBike("00472");

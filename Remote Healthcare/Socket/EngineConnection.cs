@@ -226,7 +226,8 @@ public class EngineConnection
 
                         case "9":
                         {
-                            _log.Information($"Node info {JObject.Parse(json.ToString())}");
+                            _log.Information($"Node info {JObject.Parse(json).ToString()}");
+                            File.WriteAllText(@"C:\Users\Richa\Documents\Repositories\Guus Chess\2.1-Remote-Healthcare\Remote Healthcare\Json\SecondResponse.json", JObject.Parse(json).ToString());
                             break;
                         }
 
@@ -470,8 +471,8 @@ public class EngineConnection
             jObject["data"]["data"]["data"]["components"]["model"]["file"] = s;
 
 
-            int x = r.Next(1, 256);
-            int z = r.Next(1, 256);
+            int x = r.Next(1, 256) - 128;
+            int z = r.Next(1, 256) - 128;
             //int y = (int)hoogte[z * 256 + x];
             int y = 0;
 
