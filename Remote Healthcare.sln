@@ -12,8 +12,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Central Server tests", "Cen
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUI", "GUI", "{D598229C-34C2-4EC9-BDDE-093CD5BA02A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{1F782727-8878-4CB2-850C-59B13BA61A27}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,10 +34,6 @@ Global
 		{97BA7925-8AE5-4246-B96B-C611057F7771}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97BA7925-8AE5-4246-B96B-C611057F7771}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{97BA7925-8AE5-4246-B96B-C611057F7771}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1F782727-8878-4CB2-850C-59B13BA61A27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1F782727-8878-4CB2-850C-59B13BA61A27}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1F782727-8878-4CB2-850C-59B13BA61A27}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1F782727-8878-4CB2-850C-59B13BA61A27}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{97BA7925-8AE5-4246-B96B-C611057F7771} = {302E745B-500A-442C-BCB2-704BDE45D0E7}

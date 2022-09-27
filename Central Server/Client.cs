@@ -3,8 +3,10 @@ using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
+using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RemoteHealthcare.Common;
 
 namespace Server
 {
@@ -42,7 +44,7 @@ namespace Server
                 StatusCode = (int)StatusCodes.OK,
                 OppCode = OperationCodes.SESSION_START,
 
-                Data = new JsonData
+                Data = new JsonPackets.JsonData
                 {
                     ChatMessage = "OK _-_-_-_ sessie wordt nu gestart"
                 }
@@ -57,7 +59,7 @@ namespace Server
                 StatusCode = (int)StatusCodes.OK,
                 OppCode = OperationCodes.SESSION_STOP,
 
-                Data = new JsonData
+                Data = new JsonPackets.JsonData
                 {
                     ChatMessage = "OK =+=+=+=+= Sessie wordt nu gestopt"
                 }
@@ -104,7 +106,7 @@ namespace Server
                 StatusCode = (int)StatusCodes.OK,
                 OppCode = OperationCodes.CHAT,
 
-                Data = new JsonData
+                Data = new JsonPackets.JsonData
                 {
                     ChatMessage = " Dit is de responde van uit de server, het bericht was: " +
                                   packetData["Data"]["ChatMessage"]
@@ -127,7 +129,7 @@ namespace Server
                     StatusCode = (int)StatusCodes.OK,
                     OppCode = OperationCodes.LOGIN,
 
-                    Data = new JsonData
+                    Data = new JsonPackets.JsonData
                     {
                         Content = "OK je bent goed ingelogd"
                     }
