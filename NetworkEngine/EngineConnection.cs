@@ -215,9 +215,6 @@ public class EngineConnection
                             _leftControllerId = result.Data.Data.Data.Children.First(x => x.Name == "LeftHand").Uuid;
                             _rightControllerId = result.Data.Data.Data.Children.First(x => x.Name == "RightHand").Uuid;
                             _monkeyHeadId = result.Data.Data.Data.Children.First(x => x.Name == "Head").Uuid;
-                            File.WriteAllText(
-                                @"/Users/richardelean/Documents/2.1-Remote-Healthcare/Client/Json/SecondResponse.json",
-                                JObject.Parse(json).ToString());
                             _log.Information("Head Id = " + _monkeyHeadId);
                             break;
                         }
