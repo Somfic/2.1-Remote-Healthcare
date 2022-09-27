@@ -44,7 +44,7 @@ namespace Server
                 StatusCode = (int)StatusCodes.OK,
                 OppCode = OperationCodes.SESSION_START,
 
-                Data = new JsonPackets.JsonData
+                Data = new JsonData
                 {
                     ChatMessage = "OK _-_-_-_ sessie wordt nu gestart"
                 }
@@ -59,7 +59,7 @@ namespace Server
                 StatusCode = (int)StatusCodes.OK,
                 OppCode = OperationCodes.SESSION_STOP,
 
-                Data = new JsonPackets.JsonData
+                Data = new JsonData
                 {
                     ChatMessage = "OK =+=+=+=+= Sessie wordt nu gestopt"
                 }
@@ -106,7 +106,7 @@ namespace Server
                 StatusCode = (int)StatusCodes.OK,
                 OppCode = OperationCodes.CHAT,
 
-                Data = new JsonPackets.JsonData
+                Data = new JsonData
                 {
                     ChatMessage = " Dit is de responde van uit de server, het bericht was: " +
                                   packetData["Data"]["ChatMessage"]
@@ -129,7 +129,7 @@ namespace Server
                     StatusCode = (int)StatusCodes.OK,
                     OppCode = OperationCodes.LOGIN,
 
-                    Data = new JsonPackets.JsonData
+                    Data = new JsonData
                     {
                         Content = "OK je bent goed ingelogd"
                     }
