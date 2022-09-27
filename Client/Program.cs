@@ -1,4 +1,4 @@
-﻿using NetworkEngine;
+using NetworkEngine;
 using NetworkEngine.Socket;
 using RemoteHealthcare.Client;
 using RemoteHealthcare.Common.Logger;
@@ -8,7 +8,6 @@ try
 {
     var engine = new EngineConnection();
     await engine.ConnectAsync();
-
 
     var bike = await DataProvider.GetBike("00472");
     var heart = await DataProvider.GetHeart();

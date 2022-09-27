@@ -10,15 +10,14 @@ namespace RemoteHealthcare.CentralServer
     {
         private TcpClient tcpClient;
         private NetworkStream stream;
-        private PatientData _patientData = new PatientData();
-        private string totalBuffer = "";
-
+        
         private byte[] dataBuffer;
         private readonly byte[] lengthBytes = new byte[4];
 
         public string UserName { get; set; }
         private Dictionary<string, Action<JObject>> functions;
 
+        //Set-ups the client constructor
         public Client(TcpClient tcpClient)
         {
             this.functions = new Dictionary<string, Action<JObject>>();
@@ -32,53 +31,41 @@ namespace RemoteHealthcare.CentralServer
             this.stream = this.tcpClient.GetStream();
             stream.BeginRead(lengthBytes, 0, lengthBytes.Length, new AsyncCallback(OnLengthBytesReceived), null);
         }
-
-        private void SessionStartHandler(JObject obj)
-        {
-            SendData(new JsonFile
-            {
-                StatusCode = (int)StatusCodes.OK,
-                OppCode = OperationCodes.SESSION_START,
-
-                Data = new JsonData
-                {
-                    ChatMessage = "OK _-_-_-_ sessie wordt nu gestart"
-                }
-            });
-        }
-
-        private void SessionStopHandler(JObject obj)
-        {
-            SendData(new JsonFile
-            {
-                StatusCode = (int)StatusCodes.OK,
-                OppCode = OperationCodes.SESSION_STOP,
-
-                Data = new JsonData
-                {
-                    ChatMessage = "OK =+=+=+=+= Sessie wordt nu gestopt"
-                }
-            });
-        }
-
-
+        
         private void OnLengthBytesReceived(IAsyncResult ar)
         {
             dataBuffer = new byte[BitConverter.ToInt32(lengthBytes)];
             stream.BeginRead(dataBuffer, 0, dataBuffer.Length, OnDataReceived, null);
         }
 
+        //receive the request from the client and triggers the right connected methode from the request
         private void OnDataReceived(IAsyncResult ar)
         {
             stream.EndRead(ar);
+            
+            //converts the databuffer to JObject
             JObject data = JObject.Parse(Encoding.UTF8.GetString(this.dataBuffer));
-
-            /*Console.WriteLine("deze werkt sws: "+data.Value<string>("username"));*/
-
+            
+            //gives the JObject as parameter to determine which methode will be triggerd
             handleData(data);
             stream.BeginRead(lengthBytes, 0, lengthBytes.Length, OnLengthBytesReceived, null);
         }
+        
+        //determines which methode exactly will be executed 
+        private void handleData(JObject packetData)
+        {
+            Console.WriteLine($"Got a packet server: {packetData.Value<string>("OppCode")}");
+            Action<JObject> action;
 
+            //Checks if the OppCode (OperationCode) does exist.
+            if (this.functions.TryGetValue(packetData.Value<string>("OppCode"), out action)) {
+                action.Invoke(packetData);
+            }else {
+                throw new Exception("Function not implemented");
+            }
+        }
+        //This methode used to send an request from the Server to the Client
+        //The parameter is an JsonFile object
         public void SendData(JsonFile jsonFile)
         {
             byte[] dataBytes = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(
@@ -86,12 +73,11 @@ namespace RemoteHealthcare.CentralServer
                 Formatting.Indented,
                 new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore }));
 
-
             stream.Write(BitConverter.GetBytes(dataBytes.Length));
             stream.Write(dataBytes);
         }
 
-
+        //the methode for the chat request
         private void ChatHandler(JObject packetData)
         {
             SendData(new JsonFile
@@ -101,12 +87,13 @@ namespace RemoteHealthcare.CentralServer
 
                 Data = new JsonData
                 {
-                    ChatMessage = " Dit is de responde van uit de server, het bericht was: " +
+                    ChatMessage = "Dit is de response van uit de server, het bericht is: " +
                                   packetData["Data"]["ChatMessage"]
                 }
             });
         }
-
+    
+        //the methode for the login request
         private void LoginFeature(JObject packetData)
         {
             Patient patient = new Patient(packetData.Value<string>("username"), packetData.Value<string>("password"));
@@ -126,25 +113,47 @@ namespace RemoteHealthcare.CentralServer
             }
             else
             {
-                Console.WriteLine("GRANDEE error ");
-                //Write("login\r\nerror, wrong password");
+                SendData(new JsonFile
+                {
+                    StatusCode = (int)StatusCodes.NOT_FOUND,
+                    OppCode = OperationCodes.LOGIN,
+
+                    Data = new JsonData
+                    {
+                        Content = "ERROR: Verkeerde gebruiksnaam of Wachtwoord!"
+                    }
+                });
             }
         }
 
-        private void handleData(JObject packetData)
+        //the methode for the session start request
+        private void SessionStartHandler(JObject obj)
         {
-            Console.WriteLine($"Got a packet server: {packetData.Value<string>("OppCode")}");
-            Action<JObject> action;
-
-
-            if (this.functions.TryGetValue(packetData.Value<string>("OppCode"), out action))
+            SendData(new JsonFile
             {
-                action.Invoke(packetData);
-            }
-            else
+                StatusCode = (int)StatusCodes.OK,
+                OppCode = OperationCodes.SESSION_START,
+
+                Data = new JsonData
+                {
+                    ChatMessage = "sessie wordt nu GESTART"
+                }
+            });
+        }
+
+        //the methode for the session stop request
+        private void SessionStopHandler(JObject obj)
+        {
+            SendData(new JsonFile
             {
-                throw new Exception("Function not implemented");
-            }
+                StatusCode = (int)StatusCodes.OK,
+                OppCode = OperationCodes.SESSION_STOP,
+
+                Data = new JsonData
+                {
+                    ChatMessage = "Sessie wordt nu GESTOPT"
+                }
+            });
         }
     }
 }

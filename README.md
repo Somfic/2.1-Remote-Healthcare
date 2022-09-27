@@ -1,8 +1,8 @@
 
 <div text-align="center">
-    <!-- <img src="#" 
+    <!-- <img src="#"
         align="right"
-        width="280" 
+        width="280"
         height="280"> -->
     <br>
     <br>
@@ -17,7 +17,7 @@
 Het onderwerp van de proftaak is het ontwikkelen van een medische netwerkapplicatie – in dit geval is dat een applicatie waarmee op afstand *(“remote”)* met een ergometer een conditietest kan worden afgenomen.
 
 ### Groepsleden
-| Naam | Github | Functie | Studentnummer | 
+| Naam | Github | Functie | Studentnummer |
 |------------------------------------------------------------|------------------------------------------------------|---------------|---------------|
 | **Owen** Arts | [@OwenArts](https://github.com/OwenArts) | Groepsleider    | 2181500 |
 | **Lucas** de Jong | [@Somfic](https://github.com/Somfic) | Codebeheerder | 2158725 |
