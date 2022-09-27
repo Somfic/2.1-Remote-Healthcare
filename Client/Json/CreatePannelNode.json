@@ -4,40 +4,21 @@
     "dest": "",
     "data": {
       "id": "scene/node/add",
-      "serial": "69",
+      "serial": "10",
       "data": {
         "name": "name",
         "parent": "guid",
         "components": {
           "transform": {
-            "position": [
-              0,
-              100,
-              0
-            ],
-            "scale": 3,
-            "rotation": [
-              0,
-              0,
-              0
-            ]
+            "position": [ -25, 115, 0 ],
+            "scale": 1,
+            "rotation": [ 0, 90, 0 ]
           },
           "panel": {
-            "size": [
-              10,
-              10
-            ],
-            "resolution": [
-              512,
-              512
-            ],
-            "background": [
-              1,
-              1,
-              1,
-              1
-            ],
-            "castShadow": false
+            "size": [ 15, 10 ],
+            "resolution": [ 300, 200 ],
+            "background": [ 0, 0, 0, 0.5 ],
+            "castShadow": true
           }
         }
       }
