@@ -187,9 +187,6 @@ public class EngineConnection
                             _leftControllerId = result.Data.Data.Data.Children.First(x => x.Name == "LeftHand").Uuid;
                             _rightControllerId = result.Data.Data.Data.Children.First(x => x.Name == "RightHand").Uuid;
                             _monkeyHeadId = result.Data.Data.Data.Children.First(x => x.Name == "Head").Uuid;
-                            File.WriteAllText(
-                                @"C:\Users\Richa\Documents\Repositories\Guus Chess\2.1-Remote-Healthcare\Remote Healthcare\Json\SecondResponse.json",
-                                JObject.Parse(json).ToString());
                             _log.Information("Head Id = " + _monkeyHeadId);
                             break;
                         }
@@ -227,7 +224,6 @@ public class EngineConnection
                         case "9":
                         {
                             _log.Information($"Node info {JObject.Parse(json).ToString()}");
-                            File.WriteAllText(@"C:\Users\Richa\Documents\Repositories\Guus Chess\2.1-Remote-Healthcare\Remote Healthcare\Json\SecondResponse.json", JObject.Parse(json).ToString());
                             break;
                         }
 
