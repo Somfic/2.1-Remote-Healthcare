@@ -10,6 +10,7 @@ public class SessionData
     public SessionData(JObject data)
     {
         Id = data["sessionId"].ToObject<string>();
+        this.data = new Dictionary<string, dynamic>();
         SetupDictionary(data);
     }
 

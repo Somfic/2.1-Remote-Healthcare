@@ -2,7 +2,7 @@
 
 public class PatientData
 {
-    private List<Patient> _patients { get; set; }
+    public List<Patient> _patients { get; set; }
 
     public PatientData()
     {
@@ -21,7 +21,8 @@ public class PatientData
     public void SavePatientData()
     {
         string folderName = Environment.CurrentDirectory;
-        folderName = Path.Combine(folderName.Substring(0, folderName.LastIndexOf("bin")));
+        Console.WriteLine(folderName);
+        folderName = Path.Combine(folderName.Substring(0, folderName.LastIndexOf("bin")) + "PatientDataFiles");
         foreach (var patient in _patients)
         {
             patient.SaveSessionData(folderName);
