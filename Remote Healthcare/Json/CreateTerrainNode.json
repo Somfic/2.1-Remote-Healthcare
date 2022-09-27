@@ -8,6 +8,12 @@
       "data": {
         "name": "Terrain",
         "components": {
+          "transform":
+          {
+            "position" : [ -128, 0, -128 ],
+            "scale" : 1.0,
+            "rotation" : [ 0, 0, 0 ]
+          },
           "terrain": {
             "smoothnormals": true
           }
