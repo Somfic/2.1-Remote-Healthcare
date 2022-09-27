@@ -110,6 +110,7 @@ namespace RemoteHealthcare.CentralServer
         private void LoginFeature(JObject packetData)
         {
             Patient patient = new Patient(packetData.Value<string>("username"), packetData.Value<string>("password"));
+            
             if (_patientData.MatchLoginData(patient))
             {
                 SendData(new JsonFile

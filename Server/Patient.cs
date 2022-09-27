@@ -1,5 +1,5 @@
 ﻿namespace RemoteHealthcare.CentralServer;
-
+[Serializable]
 public class Patient
 {
     private List<SessionData> _sessions { get; set; }
@@ -11,5 +11,16 @@ public class Patient
         this.username = user;
         this.password = pass;
         _sessions = new List<SessionData>();
+    }
+
+    public void SaveSessionData(string foldername)
+    {
+        string pathString = Path.Combine(foldername, username);
+        Directory.CreateDirectory();
+        foreach (var session in _sessions)
+        {
+            string filename = session.Id;
+            
+        }
     }
 }
