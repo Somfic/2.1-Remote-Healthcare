@@ -1,0 +1,13 @@
+﻿{
+  "id": "tunnel/send",
+  "data": {
+    "dest": "",
+    "data": {
+      "id": "scene/panel/clear",
+      "data": {
+        "id": "uuid"
+      }
+    }
+    }
+  }
+}

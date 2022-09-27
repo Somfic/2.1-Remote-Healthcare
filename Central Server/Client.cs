@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Text.RegularExpressions;
 
 namespace Server
@@ -21,7 +19,7 @@ namespace Server
         {
             this.tcpClient = tcpClient;
 
-            this.stream = this.tcpClient.GetStream();
+            stream = this.tcpClient.GetStream();
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
         #region connection stuff
@@ -32,13 +30,14 @@ namespace Server
                 int receivedBytes = stream.EndRead(ar);
                 string receivedText = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedBytes);
                 totalBuffer += receivedText;
-            }catch(IOException)
+            }
+            catch (IOException)
             {
                 Program.Disconnect(this);
                 return;
             }
 
-            while(totalBuffer.Contains("\r\n\r\n"))
+            while (totalBuffer.Contains("\r\n\r\n"))
             {
                 string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
                 totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
@@ -52,16 +51,16 @@ namespace Server
         private void handleData(string[] packetData)
         {
             Console.WriteLine($"Got a packet: {packetData[0]}");
-            switch(packetData[0])
+            switch (packetData[0])
             {
                 case "login":
                     if (!assertPacketData(packetData, 3))
                         return;
-                    if(packetData[1] == packetData[2])
+                    if (packetData[1] == packetData[2])
                     {
                         Write("login\r\nok");
-                        this.UserName = packetData[1];
-                    } 
+                        UserName = packetData[1];
+                    }
                     else
                         Write("login\r\nerror, wrong password");
                     break;
@@ -69,7 +68,7 @@ namespace Server
                     {
                         if (!assertPacketData(packetData, 2))
                             return;
-                        string message = $"{this.UserName} : {packetData[1]}";
+                        string message = $"{UserName} : {packetData[1]}";
                         Program.Broadcast($"chat\r\n{message}");
                         break;
                     }
@@ -77,7 +76,7 @@ namespace Server
                     {
                         if (!assertPacketData(packetData, 3))
                             return;
-                        string message = $"{this.UserName} : {packetData[2]}";
+                        string message = $"{UserName} : {packetData[2]}";
                         Program.SendToUser(packetData[1], message);
                         break;
                     }

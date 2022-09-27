@@ -1,0 +1,27 @@
+﻿{
+  "id": "tunnel/send",
+  "data": {
+    "dest": "",
+    "data": {
+      "id": "scene/node/add",
+      "serial": "69",
+      "data": {
+        "name": "name",
+        "parent": "guid",
+        "components": {
+          "transform": {
+            "position": [ 0, 100, 0 ],
+            "scale": 3,
+            "rotation": [ 0, 0, 0 ]
+          },
+          "panel": {
+            "size": [ 10, 10 ],
+            "resolution": [ 512, 512 ],
+            "background": [ 1, 1, 1, 1 ],
+            "castShadow": false
+          }
+        }
+      }
+    }
+  }
+}
