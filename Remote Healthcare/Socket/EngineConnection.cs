@@ -246,42 +246,8 @@ public class EngineConnection
                         case "9":
                         {
                             // _log.Information(result.Data.Data.Data.P);
-
-                            string x = raw.data.data.data[0].components[0].position[0].ToString();
-                            string z = raw.data.data.data[0].components[0].position[2].ToString();
-                            int x1 = (int)Convert.ToDecimal(x);
-                            int z1 = (int)Convert.ToDecimal(z);
-                            _roadcount++;
-
-                            _log.Information($"x = {x1} and z ={z1}");
-                           
-                            if (!(_firstx==x1 && _firstz == z1))
-                                
-                            {
-                                for (int i = x1-10; i < x1+10; i++)
-                                {
-                                    for (int j = z1 - 10; j < z1 + 10; j++)
-                                    {
-                                        if(j > -128 && j < 128 && i >-128 && i<128)
-                                        _roadArray[i+128,j+128] = true;
-                                    }
-                                }
-                              
-                            }
-                            else
-                            {
-                                _roadLoad = true;
-                            }
-                            if (!_first)
-                            {
-                                _firstx = x1;
-                                _firstz = z1;
-                                _first = true;
-                            }
-                           
-                            // File.WriteAllText(
-                            //     @"C:\Users\midas\Documents\school\jaar 2\proftaak\gitrepo\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json",
-                            //     JObject.Parse(json).ToString());
+                            GetBikePos(raw.data.data.data[0].components[0].position[0].ToString(),
+                                       raw.data.data.data[0].components[0].position[2].ToString()); 
                             break;
                         }
 
@@ -512,6 +478,40 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
+    public async Task GetBikePos(string inputx,string  inputz)
+    {
+        string x = inputx;
+        string z = inputz;
+        int x1 = (int)Convert.ToDecimal(x);
+        int z1 = (int)Convert.ToDecimal(z);
+        _roadcount++;
+
+        _log.Information($"x = {x1} and z ={z1}");
+                           
+        if (!(_firstx==x1 && _firstz == z1))
+                                
+        {
+            for (int i = x1-10; i < x1+10; i++)
+            {
+                for (int j = z1 - 10; j < z1 + 10; j++)
+                {
+                    if(j > -128 && j < 128 && i >-128 && i<128)
+                        _roadArray[i+128,j+128] = true;
+                }
+            }
+                              
+        }
+        else
+        {
+            _roadLoad = true;
+        }
+        if (!_first)
+        {
+            _firstx = x1;
+            _firstz = z1;
+            _first = true;
+        }
+    }
     public async Task Addhouses(string dest, int amount)
     {
         Random r = new Random();
