@@ -16,18 +16,13 @@ public class EngineConnection
     private string _routeId;
     private string _roadNodeId;
 
-
-    private bool _first = false; 
     private JArray _hightForHouse;
     private bool[,] _roadArray;
     private bool _roadLoad = false;
-    private int _firstx = 0;
-    private int _firstz = 0;
-    private int _roadcount = 0;
-    
 
     private string _tunnelId;
     private string _userId;
+    private string _pannelId;
     private string _bikeId;
     private string _terrainNodeId;
     private string _filePath;
@@ -35,6 +30,11 @@ public class EngineConnection
     private string _leftControllerId;
     private string _rightControllerId;
     private string _monkeyHeadId;
+    private int _roadcount;
+    
+    private int _firstx;
+    private int _firstz;
+    private bool _first;
 
     public EngineConnection()
     {
@@ -126,6 +126,12 @@ public class EngineConnection
         // await ChangeBikeSpeed(0);
 
         await Task.Delay(1000);
+        await AddPanelNode(_tunnelId);
+
+        await Task.Delay(1000);
+        await AddTextToPannel("Het werkt");
+
+        await Task.Delay(1000);
         await MoveCameraPosition();
         await Task.Delay(1000);
         await MoveHeadPosition();
@@ -195,10 +201,8 @@ public class EngineConnection
                     }
                     catch
                     {
-                        resultSerial  = raw.data.data.serial;
+                        resultSerial = raw.data.data.serial;
                     }
-                    
-                    
 
                     switch (resultSerial)
                     {
@@ -209,6 +213,9 @@ public class EngineConnection
                             _leftControllerId = result.Data.Data.Data.Children.First(x => x.Name == "LeftHand").Uuid;
                             _rightControllerId = result.Data.Data.Data.Children.First(x => x.Name == "RightHand").Uuid;
                             _monkeyHeadId = result.Data.Data.Data.Children.First(x => x.Name == "Head").Uuid;
+                            File.WriteAllText(
+                                @"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/SecondResponse.json",
+                                JObject.Parse(json).ToString());
                             _log.Information("Head Id = " + _monkeyHeadId);
                             break;
                         }
@@ -242,14 +249,21 @@ public class EngineConnection
                             _log.Information("Terrain Node ID is: " + _terrainNodeId);
                             break;
                         }
-
+                        case "69":
+                        {
+                            _pannelId = result.Data.Data.Data.Uuid;
+                            _log.Information("Pannel Node ID is: " + _pannelId);
+                            break;
+                        }
                         case "9":
                         {
                             // _log.Information(result.Data.Data.Data.P);
                             GetBikePos(raw.data.data.data[0].components[0].position[0].ToString(),
-                                       raw.data.data.data[0].components[0].position[2].ToString()); 
+                                raw.data.data.data[0].components[0].position[2].ToString());
                             break;
                         }
+
+
 
                         default:
                         {
@@ -267,6 +281,7 @@ public class EngineConnection
                     _log.Debug(json);
                     break;
                 }
+
             }
         }
         catch (Exception ex)
@@ -347,7 +362,7 @@ public class EngineConnection
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
-    
+
     public async Task SendSkyboxTime(string id, double time)
     {
         /* Getting the path of the current directory and then adding the path of the testSave folder and the Time.json 
@@ -371,8 +386,8 @@ public class EngineConnection
         if (data == null)
         {
             for (var i = 0; i < 256; i++)
-            for (var j = 0; j < 256; j++)
-                heights.Add(1);
+                for (var j = 0; j < 256; j++)
+                    heights.Add(1);
         }
         else
         {
@@ -402,7 +417,7 @@ public class EngineConnection
         {
             double[,] heights = new double[heightmap.Width, heightmap.Height];
             for (int x = 0; x < heightmap.Width; x++)
-            for (int y = 0; y < heightmap.Height; y++)
+              for (int y = 0; y < heightmap.Height; y++)
                 heights[x, y] = ((heightmap.GetPixel(x, y).R / 256.0f) * 25.0f - 5);
 
             SendTerrain(dest, heights.Cast<double>().ToArray());
@@ -476,6 +491,18 @@ public class EngineConnection
 
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
+    }
+    public async Task AddPanelNode(string dest)
+    {
+        string path = Path.Combine(_filePath, "Json", "CreatePannelNode.json");
+        var jObject = JObject.Parse(File.ReadAllText(path));
+
+        jObject["data"]["dest"] = dest;
+        jObject["data"]["data"]["data"]["parent"] = _bikeId;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+
     }
 
     public async Task GetBikePos(string inputx,string  inputz)
@@ -588,4 +615,51 @@ public class EngineConnection
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
+
+    public async Task SendTextToPannel(string text)
+    {
+        await ClearPannel();
+        await AddTextToPannel(text);
+        await SwapPannel();
+
+    }
+
+    public async Task ClearPannel()
+    {
+        string path = Path.Combine(_filePath, "Json", "ClearPannel.json");
+        var jObject = JObject.Parse(File.ReadAllText(path));
+
+        jObject["data"]["dest"] = _tunnelId;
+        jObject["data"]["data"]["data"]["id"] = _pannelId;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+
+    }
+    public async Task AddTextToPannel(string text)
+    {
+        string path = Path.Combine(_filePath, "Json", "DrawTextOnPannel.json");
+        var jObject = JObject.Parse(File.ReadAllText(path));
+
+        jObject["data"]["dest"] = _tunnelId;
+        jObject["data"]["data"]["data"]["id"] = _pannelId;
+        jObject["data"]["data"]["data"]["text"] = text;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+
+    }
+    public async Task SwapPannel()
+    {
+        string path = Path.Combine(_filePath, "Json", "SwapPannel.json");
+        var jObject = JObject.Parse(File.ReadAllText(path));
+
+        jObject["data"]["dest"] = _tunnelId;
+        jObject["data"]["data"]["data"]["id"] = _pannelId;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+
+    }
+
 }
