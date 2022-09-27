@@ -288,13 +288,23 @@ public class EngineConnection
 
     {
         string path = Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\ChangeAnimationSpeed.json";
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\ChangeBikeSpeed.json";
         var jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = _tunnelId;
+        jObject["data"]["data"]["data"]["node"] = _bikeId;
+        jObject["data"]["data"]["data"]["speed"] = speed;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+
+        path = Environment.CurrentDirectory;
+        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\ChangeAnimationSpeed.json";
+        jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = _tunnelId;
         jObject["data"]["data"]["data"]["id"] = _bikeId;
         jObject["data"]["data"]["data"]["animation"]["speed"] = speed / 10;
 
-        var json = JsonConvert.SerializeObject(jObject);
+        json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
 
