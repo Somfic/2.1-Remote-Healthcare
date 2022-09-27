@@ -10,6 +10,7 @@ namespace RemoteHealthcare.CentralServer
     {
         private TcpClient tcpClient;
         private NetworkStream stream;
+        private PatientData _patientData = new PatientData();
         private string totalBuffer = "";
 
         private byte[] dataBuffer;
@@ -108,11 +109,8 @@ namespace RemoteHealthcare.CentralServer
 
         private void LoginFeature(JObject packetData)
         {
-            string username = packetData.Value<string>("username");
-
-            string password = packetData.Value<string>("password");
-
-            if (username == password)
+            Patient patient = new Patient(packetData.Value<string>("username"), packetData.Value<string>("password"));
+            if (_patientData.MatchLoginData(patient))
             {
                 SendData(new JsonFile
                 {
@@ -124,8 +122,6 @@ namespace RemoteHealthcare.CentralServer
                         Content = "OK je bent goed ingelogd"
                     }
                 });
-
-                this.UserName = username;
             }
             else
             {
