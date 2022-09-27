@@ -31,11 +31,8 @@ namespace RemoteHealthcare.Socket
         {
             while (true)
             {
-                bike.ProcessRawData();
-                Console.WriteLine(bike.GetData().Speed);
-
+                await bike.ProcessRawData();
                 await engine.ChangeBikeSpeed(bike.GetData().Speed);
-
                 Thread.Sleep(100);
             }
         }
