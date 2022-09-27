@@ -15,8 +15,7 @@ namespace Server
         #endregion
 
         public string UserName { get; set; }
-
-
+        
         public Client(TcpClient tcpClient)
         {
             this.tcpClient = tcpClient;
@@ -32,7 +31,7 @@ namespace Server
                 int receivedBytes = stream.EndRead(ar);
                 string receivedText = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedBytes);
                 totalBuffer += receivedText;
-            }catch(IOException)
+            } catch (IOException)
             {
                 Program.Disconnect(this);
                 return;
