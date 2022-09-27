@@ -3,10 +3,11 @@
   "data": {
     "dest": "",
     "data": {
-      "id": "scene/panel/clear",
+      "id": "scene/panel/setclearcolor",
       "data": {
-        "id": "uuid"
+        "id":  "panelid",
+        "color": [ 1, 1, 1, 1 ]
       }
     }
-    }
   }
+}

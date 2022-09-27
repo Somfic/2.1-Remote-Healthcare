@@ -7,7 +7,7 @@ namespace Server
     {
         private static TcpListener listener;
         private static List<Client> clients = new List<Client>();
-    
+
         static void Main(string[] args)
         {
             Console.WriteLine("Hello Server!");
