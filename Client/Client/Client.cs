@@ -14,31 +14,33 @@ namespace RemoteHealthcare.Client
 
     public class Client
     {
-        private static string password;
         private static TcpClient client;
         private static NetworkStream stream;
-        private static string totalBuffer;
-        private static string username;
 
         private static byte[] dataBuffer;
         private static byte[] lengthBytes = new byte[4];
-
+        
+        private static string password;
+        private static string username;
         private static bool loggedIn = false;
+        
         private static Dictionary<string, Action<JObject>> functions;
 
-        public Client()
-        {
+        public Client() {
             Main();
         }
 
         static void Main()
         {
             functions = new Dictionary<string, Action<JObject>>();
+            
+            //Adds for each key an callback methode in the dictionary
             functions.Add("login", LoginFeature);
             functions.Add("chat", ChatHandler);
             functions.Add("session start", SessionStartHandler);
             functions.Add("session stop", SessionStopHandler);
 
+            
             Console.WriteLine("Hello Client!");
             Console.WriteLine("Wat is uw telefoonnummer? ");
             username = Console.ReadLine();
@@ -53,6 +55,7 @@ namespace RemoteHealthcare.Client
                 Console.WriteLine("Voer een commandin om naar de server te sturen: ");
                 
                 string newChatMessage = Console.ReadLine();
+                //if the user isn't logged in, the user cant send any command to the server
                 if (loggedIn)
                 {
                     if (newChatMessage.Equals("chat")) {
@@ -102,11 +105,15 @@ namespace RemoteHealthcare.Client
             }
         }
 
+        //This methode will be enterd if the user has made an TCP-connection
         private static void OnConnectionMade(IAsyncResult ar)
         {
             stream = client.GetStream();
+            
+            //Triggers the OnLengthBytesReceived methode
             stream.BeginRead(lengthBytes, 0, lengthBytes.Length, OnLengthBytesReceived, null);
-
+            
+            //Sends an login request to the server
             JsonFile loginReq = new JsonFile
             {
                 StatusCode = (int)StatusCodes.OK,
@@ -118,26 +125,31 @@ namespace RemoteHealthcare.Client
             SendData(loginReq);
         }
 
+        //calculates the lenght for the receiveds bytes
         private static void OnLengthBytesReceived(IAsyncResult ar)
         {
             dataBuffer = new byte[BitConverter.ToInt32(lengthBytes, 0)];
-
+            
+            //Triggers the OnDataReceived methode
             stream.BeginRead(dataBuffer, 0, dataBuffer.Length, OnDataReceived, null);
         }
 
-
+        //this methode receives all the requests from the server and will activate the right methode
         private static void OnDataReceived(IAsyncResult ar)
         {
             stream.EndRead(ar);
-
+            
+            //converts the dataBuffer to an JObject
             JObject data = JObject.Parse(Encoding.UTF8.GetString(dataBuffer));
 
+            //this methode detemines which methode will be called
             handleData(data);
 
             stream.BeginRead(lengthBytes, 0, lengthBytes.Length, OnLengthBytesReceived, null);
         }
 
-
+        //This methode used to send an request from the Client to the server
+        //The parameter is an JsonFile object
         public static void SendData(JsonFile jsonFile)
         {
             byte[] dataBytes = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(
@@ -152,10 +164,12 @@ namespace RemoteHealthcare.Client
             stream.Flush();
         }
 
+        //this methode will get the right methode that will be used for the response from the server
         private static void handleData(JObject packetData)
         {
             Action<JObject> action;
-
+            
+            //Checks if the OppCode (OperationCode) does exist.
             if (functions.TryGetValue(packetData["OppCode"].ToString(), out action))
             {
                 action.Invoke(packetData);
@@ -166,24 +180,25 @@ namespace RemoteHealthcare.Client
             }
         }
         
-        
+        //the methode for the session stop request
         private static void SessionStopHandler(JObject obj)
         {
             Console.WriteLine(obj["Data"]["ChatMessage"].ToString());
         }
 
+        //the methode for the session start request
         private static void SessionStartHandler(JObject obj)
         {
             Console.WriteLine(obj["Data"]["ChatMessage"].ToString());
         }
 
-
+        //the methode for the send chat request
         private static void ChatHandler(JObject packetData)
         {
             Console.WriteLine($"Chat ontvangen: '{packetData["Data"]["ChatMessage"]}'");
         }
-
-        //ssd
+        
+        //the methode for the login request
         private static void LoginFeature(JObject packetData)
         {
             if (packetData.Value<int>("StatusCode").Equals(200)) {
