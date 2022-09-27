@@ -30,6 +30,11 @@ public class EngineConnection
     private string _leftControllerId;
     private string _rightControllerId;
     private string _monkeyHeadId;
+    private int _roadcount;
+    
+    private int _firstx;
+    private int _firstz;
+    private bool _first;
 
     public EngineConnection()
     {
@@ -158,30 +163,30 @@ public class EngineConnection
             switch (id)
             {
                 case "session/list":
-                    {
-                        var result = JsonConvert.DeserializeObject<DataResponses<SessionList>>(json);
-                        _clients = result.Data.OrderByDescending(x => x.LastPing).Select(x =>
-                            (user: $"{x.Client.Host}/{x.Client.User} ({Math.Round((DateTime.Now - x.LastPing).TotalSeconds)}s)",
-                                uid: x.Id)).ToArray();
-                        _log.Debug($"Found {_clients.Length} clients: {string.Join(", ", _clients.Select(x => x.user))}");
-                        break;
-                    }
+                {
+                    var result = JsonConvert.DeserializeObject<DataResponses<SessionList>>(json);
+                    _clients = result.Data.OrderByDescending(x => x.LastPing).Select(x =>
+                        (user: $"{x.Client.Host}/{x.Client.User} ({Math.Round((DateTime.Now - x.LastPing).TotalSeconds)}s)",
+                            uid: x.Id)).ToArray();
+                    _log.Debug($"Found {_clients.Length} clients: {string.Join(", ", _clients.Select(x => x.user))}");
+                    break;
+                }
 
                 case "tunnel/create":
+                {
+                    var result = JsonConvert.DeserializeObject<DataResponse<TunnelCreate>>(json);
+                    var user = _clients?.First(x => x.uid == _userId).user;
+
+                    if (result.Data.Status != "ok")
                     {
-                        var result = JsonConvert.DeserializeObject<DataResponse<TunnelCreate>>(json);
-                        var user = _clients?.First(x => x.uid == _userId).user;
-
-                        if (result.Data.Status != "ok")
-                        {
-                            _log.Warning($"Could not establish tunnel connection with {user} ({result.Data.Status})");
-                            throw new Exception("Could not create tunnel connection");
-                        }
-
-                        _tunnelId = result.Data.Id;
-                        _log.Information($"Connected to {user}");
-                        break;
+                        _log.Warning($"Could not establish tunnel connection with {user} ({result.Data.Status})");
+                        throw new Exception("Could not create tunnel connection");
                     }
+
+                    _tunnelId = result.Data.Id;
+                    _log.Information($"Connected to {user}");
+                    break;
+                }
 
                 case "tunnel/send":
                 {
@@ -196,85 +201,89 @@ public class EngineConnection
                     }
                     catch
                     {
-                        resultSerial  = raw.data.data.serial;
+                        resultSerial = raw.data.data.serial;
                     }
-                        switch (resultSerial)
+
+                    switch (resultSerial)
+                    {
+                        case "1":
                         {
-                            case "1":
-                                {
-                                    _groundPlaneId = result.Data.Data.Data.Children.First(x => x.Name == "GroundPlane").Uuid;
-                                    _cameraId = result.Data.Data.Data.Children.First(x => x.Name == "Camera").Uuid;
-                                    _leftControllerId = result.Data.Data.Data.Children.First(x => x.Name == "LeftHand").Uuid;
-                                    _rightControllerId = result.Data.Data.Data.Children.First(x => x.Name == "RightHand").Uuid;
-                                    _monkeyHeadId = result.Data.Data.Data.Children.First(x => x.Name == "Head").Uuid;
-                                    File.WriteAllText(
-                                        @"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/SecondResponse.json",
-                                        JObject.Parse(json).ToString());
-                                    _log.Information("Head Id = " + _monkeyHeadId);
-                                    break;
-                                }
-
-                            case "2":
-                                {
-                                    _bikeId = result.Data.Data.Data.Uuid;
-                                    _log.Critical("Bike Id = " + _bikeId);
-                                    _log.Information(JObject.Parse(json).ToString());
-                                    break;
-                                }
-
-                            case "3":
-                                {
-                                    _routeId = result.Data.Data.Data.Uuid;
-                                    _log.Information("Route ID is: " + _routeId);
-                                    _log.Information(JObject.Parse(json).ToString());
-                                    break;
-                                }
-
-                            case "4":
-                                {
-                                    _roadNodeId = result.Data.Data.Data.Uuid;
-                                    _log.Information("Road Node ID is: " + _roadNodeId);
-                                    break;
-                                }
-
-                            case "5":
-                                {
-                                    _terrainNodeId = result.Data.Data.Data.Uuid;
-                                    _log.Information("Terrain Node ID is: " + _terrainNodeId);
-                                    break;
-                                }
-                            case "69":
-                                {
-                                    _pannelId = result.Data.Data.Data.Uuid;
-                                    _log.Information("Pannel Node ID is: " + _pannelId);
-                                    break;
-                                }
-                             case "9":
-                            {
-                              // _log.Information(result.Data.Data.Data.P);
-                              GetBikePos(raw.data.data.data[0].components[0].position[0].ToString(),
-                                       raw.data.data.data[0].components[0].position[2].ToString()); 
-                              break;
-                            }
-
-
-
-                            default:
-                                {
-                                    _log.Information(JObject.Parse(json).ToString());
-                                    break;
-                                }
-                        }
-                        
-                        default:
-                                {
-                            _log.Warning($"Unhandled incoming message with id '{id}'");
-                            _log.Debug(json);
+                            _groundPlaneId = result.Data.Data.Data.Children.First(x => x.Name == "GroundPlane").Uuid;
+                            _cameraId = result.Data.Data.Data.Children.First(x => x.Name == "Camera").Uuid;
+                            _leftControllerId = result.Data.Data.Data.Children.First(x => x.Name == "LeftHand").Uuid;
+                            _rightControllerId = result.Data.Data.Data.Children.First(x => x.Name == "RightHand").Uuid;
+                            _monkeyHeadId = result.Data.Data.Data.Children.First(x => x.Name == "Head").Uuid;
+                            File.WriteAllText(
+                                @"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/SecondResponse.json",
+                                JObject.Parse(json).ToString());
+                            _log.Information("Head Id = " + _monkeyHeadId);
                             break;
                         }
 
+                        case "2":
+                        {
+                            _bikeId = result.Data.Data.Data.Uuid;
+                            _log.Critical("Bike Id = " + _bikeId);
+                            _log.Information(JObject.Parse(json).ToString());
+                            break;
+                        }
+
+                        case "3":
+                        {
+                            _routeId = result.Data.Data.Data.Uuid;
+                            _log.Information("Route ID is: " + _routeId);
+                            _log.Information(JObject.Parse(json).ToString());
+                            break;
+                        }
+
+                        case "4":
+                        {
+                            _roadNodeId = result.Data.Data.Data.Uuid;
+                            _log.Information("Road Node ID is: " + _roadNodeId);
+                            break;
+                        }
+
+                        case "5":
+                        {
+                            _terrainNodeId = result.Data.Data.Data.Uuid;
+                            _log.Information("Terrain Node ID is: " + _terrainNodeId);
+                            break;
+                        }
+                        case "69":
+                        {
+                            _pannelId = result.Data.Data.Data.Uuid;
+                            _log.Information("Pannel Node ID is: " + _pannelId);
+                            break;
+                        }
+                        case "9":
+                        {
+                            // _log.Information(result.Data.Data.Data.P);
+                            GetBikePos(raw.data.data.data[0].components[0].position[0].ToString(),
+                                raw.data.data.data[0].components[0].position[2].ToString());
+                            break;
+                        }
+
+
+
+                        default:
+                        {
+                            _log.Information(JObject.Parse(json).ToString());
+                            break;
+                        }
                     }
+
+                    break;
+                }
+
+                default:
+                {
+                    _log.Warning($"Unhandled incoming message with id '{id}'");
+                    _log.Debug(json);
+                    break;
+                }
+
             }
+        }
         catch (Exception ex)
         {
             _log.Error(ex, "Error while processing incoming message");
