@@ -27,7 +27,7 @@ namespace RemoteHealthcare.Client {
         {
             functions = new Dictionary<string, Action<JObject>>();
             
-            //Adds for each key an callback methode in the dictionary
+            //Adds for each key an callback methode in the dictionary 
             functions.Add("login", LoginFeature);
             functions.Add("chat", ChatHandler);
             functions.Add("session start", SessionStartHandler);
