@@ -1,106 +1,163 @@
 ﻿using System;
 using System.IO;
 using System.Net.Sockets;
+using System.Text;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Server
 {
     internal class Client
     {
-        #region connection stuff
         private TcpClient tcpClient;
         private NetworkStream stream;
-        private byte[] buffer = new byte[1024];
         private string totalBuffer = "";
-        #endregion
+
+        private byte[] dataBuffer;
+        private readonly byte[] lengthBytes = new byte[4];
 
         public string UserName { get; set; }
+        private Dictionary<string, Action<JObject>> functions;
 
 
         public Client(TcpClient tcpClient)
         {
+            this.functions = new Dictionary<string, Action<JObject>>();
+            this.functions.Add("login", this.LoginFeature);
+            this.functions.Add("chat", this.ChatHandler);
+            this.functions.Add("session start", SessionStartHandler);
+            this.functions.Add("session stop", SessionStopHandler);
+
             this.tcpClient = tcpClient;
 
             this.stream = this.tcpClient.GetStream();
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            stream.BeginRead(lengthBytes, 0, lengthBytes.Length, new AsyncCallback(OnLengthBytesReceived), null);
         }
-        #region connection stuff
-        private void OnRead(IAsyncResult ar)
-        {
-            try
-            {
-                int receivedBytes = stream.EndRead(ar);
-                string receivedText = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-                totalBuffer += receivedText;
-            }catch(IOException)
-            {
-                Program.Disconnect(this);
-                return;
-            }
 
-            while(totalBuffer.Contains("\r\n\r\n"))
+        private void SessionStartHandler(JObject obj)
+        {
+            SendData(new JsonFile
             {
-                string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
-                totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
-                string[] packetData = Regex.Split(packet, "\r\n");
-                handleData(packetData);
-            }
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+                StatusCode = (int)StatusCodes.OK,
+                OppCode = OperationCodes.SESSION_START,
+
+                Data = new JsonData
+                {
+                    ChatMessage = "OK _-_-_-_ sessie wordt nu gestart"
+                }
+
+            });
         }
-        #endregion
 
-        private void handleData(string[] packetData)
+        private void SessionStopHandler(JObject obj)
         {
-            Console.WriteLine($"Got a packet: {packetData[0]}");
-            switch(packetData[0])
+            SendData(new JsonFile
             {
-                case "login":
-                    if (!assertPacketData(packetData, 3))
-                        return;
-                    if(packetData[1] == packetData[2])
+                StatusCode = (int)StatusCodes.OK,
+                OppCode = OperationCodes.SESSION_STOP,
+
+                Data = new JsonData
+                {
+                    ChatMessage = "OK =+=+=+=+= Sessie wordt nu gestopt"
+                }
+
+            });
+        }
+
+
+        private void OnLengthBytesReceived(IAsyncResult ar)
+        {
+            dataBuffer = new byte[BitConverter.ToInt32(lengthBytes)];
+            stream.BeginRead(dataBuffer, 0, dataBuffer.Length, OnDataReceived, null);
+        }
+
+        private void OnDataReceived(IAsyncResult ar)
+        {
+            stream.EndRead(ar);
+            JObject data = JObject.Parse(Encoding.UTF8.GetString(this.dataBuffer));
+
+            /*Console.WriteLine("deze werkt sws: "+data.Value<string>("username"));*/
+
+            handleData(data);
+            stream.BeginRead(lengthBytes, 0, lengthBytes.Length, OnLengthBytesReceived, null);
+        }
+
+        public void SendData(JsonFile jsonFile)
+        {
+            byte[] dataBytes = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(
+                jsonFile,
+                Formatting.Indented,
+                new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore }));
+
+
+            stream.Write(BitConverter.GetBytes(dataBytes.Length));
+            stream.Write(dataBytes);
+        }
+
+
+
+        private void ChatHandler(JObject packetData)
+        {
+            SendData(new JsonFile
+            {
+                StatusCode = (int)StatusCodes.OK,
+                OppCode = OperationCodes.CHAT,
+
+                Data = new JsonData
+                {
+                    ChatMessage = " Dit is de responde van uit de server, het bericht was: " +
+                                  packetData["Data"]["ChatMessage"]
+                }
+
+            });
+        }
+
+        private void LoginFeature(JObject packetData)
+        {
+
+            string username = packetData.Value<string>("username");
+
+            string password = packetData.Value<string>("password");
+
+            if (username == password)
+            {
+                SendData(new JsonFile
+                {
+                    StatusCode = (int)StatusCodes.OK,
+                    OppCode = OperationCodes.LOGIN,
+
+                    Data = new JsonData
                     {
-                        Write("login\r\nok");
-                        this.UserName = packetData[1];
-                    } 
-                    else
-                        Write("login\r\nerror, wrong password");
-                    break;
-                case "chat":
-                    {
-                        if (!assertPacketData(packetData, 2))
-                            return;
-                        string message = $"{this.UserName} : {packetData[1]}";
-                        Program.Broadcast($"chat\r\n{message}");
-                        break;
+                        Content = "OK je bent goed ingelogd"
                     }
-                case "pm":
-                    {
-                        if (!assertPacketData(packetData, 3))
-                            return;
-                        string message = $"{this.UserName} : {packetData[2]}";
-                        Program.SendToUser(packetData[1], message);
-                        break;
-                    }
+
+                });
+
+                this.UserName = username;
             }
-
-
-        }
-
-        private bool assertPacketData(string[] packetData, int requiredLength)
-        {
-            if (packetData.Length < requiredLength)
+            else
             {
-                Write("error");
-                return false;
+                Console.WriteLine("GRANDEE error ");
+                //Write("login\r\nerror, wrong password");
             }
-            return true;
         }
 
-        public void Write(string data)
+        private void handleData(JObject packetData)
         {
-            var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
-            stream.Write(dataAsBytes, 0, dataAsBytes.Length);
-            stream.Flush();
+
+            Console.WriteLine($"Got a packet server: {packetData.Value<string>("OppCode")}");
+            Action<JObject> action;
+
+
+            if (this.functions.TryGetValue(packetData.Value<string>("OppCode"), out action))
+            {
+                action.Invoke(packetData);
+            }
+            else
+            {
+                throw new Exception("Function not implemented");
+            }
         }
     }
 }
