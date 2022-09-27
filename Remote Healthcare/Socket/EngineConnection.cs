@@ -122,6 +122,8 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await Addhouses(_tunnelId, 100);
+        await Task.Delay(1000);
+        await NodeInfo(_tunnelId);
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -160,17 +162,19 @@ public class EngineConnection
 
                 case "tunnel/send":
                 {
-                    string resultSerial = "";
-                    var result = new DataResponse<TunnelSendResponse>();
-                    try
-                    {
-                        result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
-                        resultSerial = result.Data.Data.Serial;
-                    }
-                    catch
-                    {
-                        resultSerial  = raw.data.data.serial;
-                    }
+                    // string resultSerial = "";
+                    // var result = new DataResponse<TunnelSendResponse>();
+                    var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
+                    string resultSerial = result.Data.Data.Serial;
+                    // try
+                    // {
+                    //     result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
+                    //     resultSerial = result.Data.Data.Serial;
+                    // }
+                    // catch
+                    // {
+                    //     resultSerial  = raw.data.data.serial;
+                    // }
                     
                     
 
@@ -183,9 +187,6 @@ public class EngineConnection
                             _leftControllerId = result.Data.Data.Data.Children.First(x => x.Name == "LeftHand").Uuid;
                             _rightControllerId = result.Data.Data.Data.Children.First(x => x.Name == "RightHand").Uuid;
                             _monkeyHeadId = result.Data.Data.Data.Children.First(x => x.Name == "Head").Uuid;
-                            File.WriteAllText(
-                                @"/Users/richardelean/Documents/2.1-Remote-Healthcare/Remote Healthcare/Json/SecondResponse.json",
-                                JObject.Parse(json).ToString());
                             _log.Information("Head Id = " + _monkeyHeadId);
                             break;
                         }
@@ -217,6 +218,12 @@ public class EngineConnection
                         {
                             _terrainNodeId = result.Data.Data.Data.Uuid;
                             _log.Information("Terrain Node ID is: " + _terrainNodeId);
+                            break;
+                        }
+
+                        case "9":
+                        {
+                            _log.Information($"Node info {JObject.Parse(json).ToString()}");
                             break;
                         }
 
@@ -254,8 +261,7 @@ public class EngineConnection
 
     public async Task NodeInfo(string dest)
     {
-        var path = Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\NodeInfo.json";
+        string path = Path.Combine(_filePath, "Json", "NodeInfo.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
 
@@ -287,14 +293,22 @@ public class EngineConnection
     public async Task ChangeBikeSpeed(double speed)
 
     {
-        string path = Environment.CurrentDirectory;
-        path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\ChangeAnimationSpeed.json";
+        string path = Path.Combine(_filePath, "Json", "ChangeBikeSpeed.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = _tunnelId;
+        jObject["data"]["data"]["data"]["node"] = _bikeId;
+        jObject["data"]["data"]["data"]["speed"] = speed;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+
+        path = Path.Combine(_filePath, "Json", "ChangeAnimationSpeed.json");
+        jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = _tunnelId;
         jObject["data"]["data"]["data"]["id"] = _bikeId;
         jObject["data"]["data"]["data"]["animation"]["speed"] = speed / 10;
 
-        var json = JsonConvert.SerializeObject(jObject);
+        json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
 
@@ -446,8 +460,7 @@ public class EngineConnection
 
         for (int i = 0; i < amount; i++)
         {
-            var path = Environment.CurrentDirectory;
-            path = path.Substring(0, path.LastIndexOf("bin")) + "Json" + "\\AddHouses.json";
+            string path = Path.Combine(_filePath, "Json", "AddHouses.json");
             var jObject = JObject.Parse(File.ReadAllText(path));
             String s = "";
             switch (r.Next(2))
@@ -463,8 +476,8 @@ public class EngineConnection
             jObject["data"]["data"]["data"]["components"]["model"]["file"] = s;
 
 
-            int x = r.Next(1, 256);
-            int z = r.Next(1, 256);
+            int x = r.Next(1, 256) - 128;
+            int z = r.Next(1, 256) - 128;
             //int y = (int)hoogte[z * 256 + x];
             int y = 0;
 

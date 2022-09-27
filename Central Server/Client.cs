@@ -21,8 +21,6 @@ namespace Server
 
         public string UserName { get; set; }
         private Dictionary<string, Action<JObject>> functions;
-
-
         public Client(TcpClient tcpClient)
         {
             this.functions = new Dictionary<string, Action<JObject>>();
