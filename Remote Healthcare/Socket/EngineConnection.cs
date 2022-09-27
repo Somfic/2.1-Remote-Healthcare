@@ -23,6 +23,7 @@ public class EngineConnection
     private bool _roadLoad = false;
     private int _firstx = 0;
     private int _firstz = 0;
+    private int _roadcount = 0;
     
 
     private string _tunnelId;
@@ -116,8 +117,8 @@ public class EngineConnection
         await Task.Delay(1000);
         await PlaceBikeOnRoute(_tunnelId);
 
-        await Task.Delay(1000);
-        await ChangeBikeSpeed(0);
+        // await Task.Delay(1000);
+        // await ChangeBikeSpeed(0);
 
         await Task.Delay(1000);
         await MoveCameraPosition();
@@ -128,15 +129,18 @@ public class EngineConnection
 
         _roadArray = new bool[256,256];
         
-        while (!_roadLoad)
+        while (_roadcount < 462)
         {
             await Task.Delay(50);
             await NodeInfo(_tunnelId);
         }
         await Task.Delay(1000);
         await Addhouses(_tunnelId, 1000);
-           
-        
+
+        await Task.Delay(1000);
+        await ChangeBikeSpeed(1);
+
+
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -243,7 +247,7 @@ public class EngineConnection
                             string z = raw.data.data.data[0].components[0].position[2].ToString();
                             int x1 = (int)Convert.ToDecimal(x);
                             int z1 = (int)Convert.ToDecimal(z);
-                           
+                            _roadcount++;
 
                             _log.Information($"x = {x1} and z ={z1}");
                            
@@ -349,7 +353,7 @@ public class EngineConnection
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = _tunnelId;
         jObject["data"]["data"]["data"]["id"] = _bikeId;
-        jObject["data"]["data"]["data"]["animation"]["speed"] = speed / 10;
+        jObject["data"]["data"]["data"]["speed"] = speed / 10;
 
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
