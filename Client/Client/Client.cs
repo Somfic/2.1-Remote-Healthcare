@@ -40,9 +40,9 @@ namespace RemoteHealthcare.Client
             functions.Add("session stop", SessionStopHandler);
 
             Console.WriteLine("Hello Client!");
-            Console.WriteLine("Wat is je gebruikersnaam? ");
+            Console.WriteLine("Wat is uw telefoonnummer? ");
             username = Console.ReadLine();
-            Console.WriteLine("Wat is je wachtwoord? ");
+            Console.WriteLine("Wat is uw wachtwoord? ");
             password = Console.ReadLine();
 
             client = new TcpClient();
@@ -50,12 +50,13 @@ namespace RemoteHealthcare.Client
 
             while (true)
             {
-                Console.WriteLine("Voer een chat bericht om naar de server te sturen:");
+                Console.WriteLine("Voer een commandin om naar de server te sturen: ");
+                
                 string newChatMessage = Console.ReadLine();
                 if (loggedIn)
                 {
-                    if (newChatMessage.Equals("chat"))
-                    {
+                    if (newChatMessage.Equals("chat")) {
+                        Console.WriteLine("Voer uw bericht in: ");
                         newChatMessage = Console.ReadLine();
 
                         JsonFile req = new JsonFile
@@ -72,27 +73,18 @@ namespace RemoteHealthcare.Client
 
                         SendData(req);
 
-                    }
-                    else if (newChatMessage.Equals("session start"))
-                    {
+                    }else if (newChatMessage.Equals("session start")) {
 
-                        JsonFile req = new JsonFile
-                        {
+                        JsonFile req = new JsonFile {
                             StatusCode = (int)StatusCodes.OK,
                             OppCode = OperationCodes.SESSION_START,
                             Username = username,
                             Password = password
                         };
-
                         SendData(req);
+                    }else if (newChatMessage.Equals("session stop")) {
 
-
-                    }
-                    else if (newChatMessage.Equals("session stop"))
-                    {
-
-                        JsonFile req = new JsonFile
-                        {
+                        JsonFile req = new JsonFile {
                             StatusCode = (int)StatusCodes.OK,
                             OppCode = OperationCodes.SESSION_STOP,
                             Username = username,
@@ -100,45 +92,13 @@ namespace RemoteHealthcare.Client
                         };
 
                         SendData(req);
-                    }
-                    else
-                    {
+                    }else {
                         Console.WriteLine("in de else bij de client if else elsif statements!");
                     }
                 }
-                else
-                {
+                else {
                     Console.WriteLine("Je bent nog niet ingelogd");
                 }
-            }
-        }
-
-        private static void SessionStopHandler(JObject obj)
-        {
-            Console.WriteLine(obj["Data"]["ChatMessage"].ToString());
-        }
-
-        private static void SessionStartHandler(JObject obj)
-        {
-            Console.WriteLine(obj["Data"]["ChatMessage"].ToString());
-        }
-
-
-        private static void ChatHandler(JObject packetData)
-        {
-            Console.WriteLine($"Chat ontvangen: '{packetData["Data"]["ChatMessage"].ToString()}'");
-        }
-
-        private static void LoginFeature(JObject packetData)
-        {
-            if (packetData.Value<int>("StatusCode").Equals(200))
-            {
-                Console.WriteLine("Logged in!");
-                loggedIn = true;
-            }
-            else
-            {
-                Console.WriteLine(packetData.Value<string>("StatusCode"));
             }
         }
 
@@ -203,6 +163,35 @@ namespace RemoteHealthcare.Client
             else
             {
                 throw new Exception("Function not implemented");
+            }
+        }
+        
+        
+        private static void SessionStopHandler(JObject obj)
+        {
+            Console.WriteLine(obj["Data"]["ChatMessage"].ToString());
+        }
+
+        private static void SessionStartHandler(JObject obj)
+        {
+            Console.WriteLine(obj["Data"]["ChatMessage"].ToString());
+        }
+
+
+        private static void ChatHandler(JObject packetData)
+        {
+            Console.WriteLine($"Chat ontvangen: '{packetData["Data"]["ChatMessage"]}'");
+        }
+
+        //ssd
+        private static void LoginFeature(JObject packetData)
+        {
+            if (packetData.Value<int>("StatusCode").Equals(200)) {
+                Console.WriteLine("Logged in!");
+                loggedIn = true;
+            } else {
+                Console.WriteLine(packetData.Value<string>("StatusCode"));
+                Console.WriteLine(packetData["Data"]["ChatMessage"]);
             }
         }
     }

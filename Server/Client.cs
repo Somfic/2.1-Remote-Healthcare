@@ -41,7 +41,7 @@ namespace RemoteHealthcare.CentralServer
 
                 Data = new JsonData
                 {
-                    ChatMessage = "OK _-_-_-_ sessie wordt nu gestart"
+                    ChatMessage = "sessie wordt nu GESTART"
                 }
             });
         }
@@ -55,12 +55,11 @@ namespace RemoteHealthcare.CentralServer
 
                 Data = new JsonData
                 {
-                    ChatMessage = "OK =+=+=+=+= Sessie wordt nu gestopt"
+                    ChatMessage = "Sessie wordt nu GESTOPT"
                 }
             });
         }
-
-
+        
         private void OnLengthBytesReceived(IAsyncResult ar)
         {
             dataBuffer = new byte[BitConverter.ToInt32(lengthBytes)];
@@ -71,9 +70,7 @@ namespace RemoteHealthcare.CentralServer
         {
             stream.EndRead(ar);
             JObject data = JObject.Parse(Encoding.UTF8.GetString(this.dataBuffer));
-
-            /*Console.WriteLine("deze werkt sws: "+data.Value<string>("username"));*/
-
+            
             handleData(data);
             stream.BeginRead(lengthBytes, 0, lengthBytes.Length, OnLengthBytesReceived, null);
         }
@@ -84,7 +81,6 @@ namespace RemoteHealthcare.CentralServer
                 jsonFile,
                 Formatting.Indented,
                 new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore }));
-
 
             stream.Write(BitConverter.GetBytes(dataBytes.Length));
             stream.Write(dataBytes);
@@ -100,7 +96,7 @@ namespace RemoteHealthcare.CentralServer
 
                 Data = new JsonData
                 {
-                    ChatMessage = " Dit is de responde van uit de server, het bericht was: " +
+                    ChatMessage = "Dit is de response van uit de server, het bericht is: " +
                                   packetData["Data"]["ChatMessage"]
                 }
             });
@@ -129,8 +125,16 @@ namespace RemoteHealthcare.CentralServer
             }
             else
             {
-                Console.WriteLine("GRANDEE error ");
-                //Write("login\r\nerror, wrong password");
+                SendData(new JsonFile
+                {
+                    StatusCode = (int)StatusCodes.NOT_FOUND,
+                    OppCode = OperationCodes.LOGIN,
+
+                    Data = new JsonData
+                    {
+                        Content = "ERROR: Verkeerde gebruiksnaam of Wachtwoord!"
+                    }
+                });
             }
         }
 
