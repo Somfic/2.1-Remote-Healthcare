@@ -91,7 +91,12 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await SendSkyboxTime(_tunnelId, 10.5);
-        await SendTerrain(_tunnelId);
+        
+        // await SendTerrain(_tunnelId);
+        await Task.Delay(1000);
+        await Heightmap(_tunnelId);
+       
+        await Task.Delay(1000);
         await CreateTerrainNode(_tunnelId);
 
         await Task.Delay(1000);
@@ -179,19 +184,19 @@ public class EngineConnection
 
                 case "tunnel/send":
                 {
-                    // string resultSerial = "";
-                    // var result = new DataResponse<TunnelSendResponse>();
-                    var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
-                    string resultSerial = result.Data.Data.Serial;
-                    // try
-                    // {
-                    //     result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
-                    //     resultSerial = result.Data.Data.Serial;
-                    // }
-                    // catch
-                    // {
-                    //     resultSerial  = raw.data.data.serial;
-                    // }
+                    string resultSerial = "";
+                    var result = new DataResponse<TunnelSendResponse>();
+                    // var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
+                    // string resultSerial = result.Data.Data.Serial;
+                    try
+                    {
+                        result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
+                        resultSerial = result.Data.Data.Serial;
+                    }
+                    catch
+                    {
+                        resultSerial  = raw.data.data.serial;
+                    }
                     
                     
 
@@ -257,8 +262,8 @@ public class EngineConnection
                                 {
                                     for (int j = z1 - 10; j < z1 + 10; j++)
                                     {
-                                        if(j > 0 && j < 256 && i >0 && i<256)
-                                        _roadArray[i,j] = true;
+                                        if(j > -128 && j < 128 && i >-128 && i<128)
+                                        _roadArray[i+128,j+128] = true;
                                     }
                                 }
                               
@@ -432,7 +437,7 @@ public class EngineConnection
             double[,] heights = new double[heightmap.Width, heightmap.Height];
             for (int x = 0; x < heightmap.Width; x++)
             for (int y = 0; y < heightmap.Height; y++)
-                heights[x, y] = (heightmap.GetPixel(x, y).R / 256.0f) * 50.0f - 5;
+                heights[x, y] = ((heightmap.GetPixel(x, y).R / 256.0f) * 25.0f - 5);
 
             SendTerrain(dest, heights.Cast<double>().ToArray());
         }
@@ -529,19 +534,19 @@ public class EngineConnection
             jObject["data"]["data"]["data"]["components"]["model"]["file"] = s;
 
 
-            int x = r.Next(1, 256) - 128;
-            int z = r.Next(1, 256) - 128;
-            //int y = (int)hoogte[z * 256 + x];
-            int y = 0;
+            int x = r.Next(-128, 128);
+            int z = r.Next(-128, 128);
+            int y = (int)_hightForHouse[(z+128) * 256 + (x+128)];
+            // int y = 0;
 
-            if (!_roadArray[x, z])
+            if (!_roadArray[x+128, z+128])
             {
                 var postpar = jObject["data"]["data"]["data"]["components"]["transform"]["position"] as JArray;
                 jObject["data"]["dest"] = dest;
             
-                postpar.Insert(0, x);
+                postpar.Insert(0, x );
                 postpar.Insert(1, y);
-                postpar.Insert(2, z);
+                postpar.Insert(2, z );
 
 
                 var json = JsonConvert.SerializeObject(jObject);
