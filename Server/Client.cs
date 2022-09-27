@@ -11,14 +11,6 @@ namespace RemoteHealthcare.CentralServer
         private TcpClient tcpClient;
         private NetworkStream stream;
         
-        
-        
-        
-        private string totalBuffer = "";
-
-        
-        
-        
         private byte[] dataBuffer;
         private readonly byte[] lengthBytes = new byte[4];
 
