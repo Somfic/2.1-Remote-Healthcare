@@ -15,10 +15,14 @@ public class EngineConnection
     private string _groundPlaneId;
     private string _routeId;
     private string _roadNodeId;
-    
+
+
+    private bool _first = false; 
     private JArray _hightForHouse;
     private bool[,] _roadArray;
     private bool _roadLoad = false;
+    private int _firstx = 0;
+    private int _firstz = 0;
     
 
     private string _tunnelId;
@@ -120,8 +124,19 @@ public class EngineConnection
         await Task.Delay(1000);
         await MoveHeadPosition();
 
+       
+
+        _roadArray = new bool[256,256];
+        
+        while (!_roadLoad)
+        {
+            await Task.Delay(50);
+            await NodeInfo(_tunnelId);
+        }
         await Task.Delay(1000);
-        await Addhouses(_tunnelId, 100);
+        await Addhouses(_tunnelId, 1000);
+           
+        
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -217,6 +232,48 @@ public class EngineConnection
                         {
                             _terrainNodeId = result.Data.Data.Data.Uuid;
                             _log.Information("Terrain Node ID is: " + _terrainNodeId);
+                            break;
+                        }
+
+                        case "9":
+                        {
+                            // _log.Information(result.Data.Data.Data.P);
+
+                            string x = raw.data.data.data[0].components[0].position[0].ToString();
+                            string z = raw.data.data.data[0].components[0].position[2].ToString();
+                            int x1 = (int)Convert.ToDecimal(x);
+                            int z1 = (int)Convert.ToDecimal(z);
+                           
+
+                            _log.Information($"x = {x1} and z ={z1}");
+                           
+                            if (!(_firstx==x1 && _firstz == z1))
+                                
+                            {
+                                for (int i = x1-10; i < x1+10; i++)
+                                {
+                                    for (int j = z1 - 10; j < z1 + 10; j++)
+                                    {
+                                        if(j > 0 && j < 256 && i >0 && i<256)
+                                        _roadArray[i,j] = true;
+                                    }
+                                }
+                              
+                            }
+                            else
+                            {
+                                _roadLoad = true;
+                            }
+                            if (!_first)
+                            {
+                                _firstx = x1;
+                                _firstz = z1;
+                                _first = true;
+                            }
+                           
+                            // File.WriteAllText(
+                            //     @"C:\Users\midas\Documents\school\jaar 2\proftaak\gitrepo\2.1-Remote-Healthcare\Remote Healthcare\Json\Response.json",
+                            //     JObject.Parse(json).ToString());
                             break;
                         }
 
@@ -468,17 +525,27 @@ public class EngineConnection
             //int y = (int)hoogte[z * 256 + x];
             int y = 0;
 
+            if (!_roadArray[x, z])
+            {
+                var postpar = jObject["data"]["data"]["data"]["components"]["transform"]["position"] as JArray;
+                jObject["data"]["dest"] = dest;
+            
+                postpar.Insert(0, x);
+                postpar.Insert(1, y);
+                postpar.Insert(2, z);
 
-            var postpar = jObject["data"]["data"]["data"]["components"]["transform"]["position"] as JArray;
-            jObject["data"]["dest"] = dest;
-            postpar.Insert(0, x);
-            postpar.Insert(1, y);
-            postpar.Insert(2, z);
+
+                var json = JsonConvert.SerializeObject(jObject);
+
+                await _socket.SendAsync(json);   
+            }
+            else
+            {
+                continue;
+            }
 
 
-            var json = JsonConvert.SerializeObject(jObject);
-
-            await _socket.SendAsync(json);
+            
         }
     }
 
