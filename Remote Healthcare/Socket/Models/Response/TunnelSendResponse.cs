@@ -22,7 +22,6 @@ public class TunnelSendResponse : IDataResponse
         public class ChildrenData
         {
             [JsonProperty("data")] public Child[] Data { get; set; }
-
             [JsonProperty("children")] public Child[] Children { get; set; }
 
             [JsonProperty("name")] public string Name { get; set; }
@@ -34,6 +33,7 @@ public class TunnelSendResponse : IDataResponse
         {
             [JsonProperty("components")] public Component[] Components { get; set; }
 
+            [JsonProperty("children")] public Child[] Children { get; set; }
             [JsonProperty("name")] public string Name { get; set; }
 
             [JsonProperty("uuid")] public string Uuid { get; set; }
