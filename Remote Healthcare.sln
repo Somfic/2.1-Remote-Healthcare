@@ -9,6 +9,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{302E745B-500A-442C-BCB2-704BDE45D0E7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Central Server tests", "Central Server tests\Central Server tests.csproj", "{97BA7925-8AE5-4246-B96B-C611057F7771}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUI", "GUI", "{D598229C-34C2-4EC9-BDDE-093CD5BA02A9}"
 EndProject
 Global
