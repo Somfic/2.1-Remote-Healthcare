@@ -10,6 +10,7 @@ namespace RemoteHealthcare.CentralServer
     {
         private TcpClient tcpClient;
         private NetworkStream stream;
+        private PatientData _patientData;
         
         private byte[] dataBuffer;
         private readonly byte[] lengthBytes = new byte[4];
@@ -27,6 +28,7 @@ namespace RemoteHealthcare.CentralServer
             this.functions.Add("session stop", SessionStopHandler);
 
             this.tcpClient = tcpClient;
+            _patientData = new PatientData();
 
             this.stream = this.tcpClient.GetStream();
             stream.BeginRead(lengthBytes, 0, lengthBytes.Length, new AsyncCallback(OnLengthBytesReceived), null);
