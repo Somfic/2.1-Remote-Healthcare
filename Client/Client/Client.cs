@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Sockets;
-using System.Runtime.InteropServices.ComTypes;
+﻿using System.Net.Sockets;
 using System.Text;
-using System.Text.RegularExpressions;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 
-namespace RemoteHealthcare.Client
-{
-
+namespace RemoteHealthcare.Client {
     public class Client
     {
         private static TcpClient client;
