@@ -3,11 +3,10 @@
   "data": {
     "dest": "",
     "data": {
-      "id": "scene/road/add",
-      "serial": "4",
+      "id": "route/follow/speed",
       "data": {
-        "route": "",
-        "heightoffset": 0.03
+        "node": "",
+        "speed": 1.0
       }
     }
   }
