@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 
 namespace Server
@@ -31,7 +28,7 @@ namespace Server
 
         internal static void Broadcast(string packet)
         {
-            foreach(var client in clients)
+            foreach (var client in clients)
             {
                 Console.WriteLine("print print print");
                 //client.Write(packet);
@@ -46,7 +43,7 @@ namespace Server
 
         internal static void SendToUser(string user, string packet)
         {
-            foreach(var client in clients.Where(c => c.UserName == user))
+            foreach (var client in clients.Where(c => c.UserName == user))
             {
                 //TODO:  omzetten naar SendData
                 //client.Write(packet);

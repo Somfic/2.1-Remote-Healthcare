@@ -1,6 +1,6 @@
-﻿using System.Runtime.InteropServices;
-using Avans.TI.BLE;
+﻿using Avans.TI.BLE;
 using RemoteHealthcare.Common.Logger;
+using System.Runtime.InteropServices;
 
 namespace RemoteHealthcare.Bluetooth;
 
