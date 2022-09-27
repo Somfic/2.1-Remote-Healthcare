@@ -11,15 +11,18 @@ namespace RemoteHealthcare.CentralServer
         private TcpClient tcpClient;
         private NetworkStream stream;
         private string totalBuffer = "";
+        private Patientlist p = new Patientlist();
 
         private byte[] dataBuffer;
         private readonly byte[] lengthBytes = new byte[4];
+       
 
         public string UserName { get; set; }
         private Dictionary<string, Action<JObject>> functions;
 
         public Client(TcpClient tcpClient)
         {
+            
             this.functions = new Dictionary<string, Action<JObject>>();
             this.functions.Add("login", this.LoginFeature);
             this.functions.Add("chat", this.ChatHandler);
@@ -108,11 +111,11 @@ namespace RemoteHealthcare.CentralServer
 
         private void LoginFeature(JObject packetData)
         {
-            string username = packetData.Value<string>("username");
+            string username = packetData.Value<string>("Username");
 
-            string password = packetData.Value<string>("password");
+            string password = packetData.Value<string>("Password");
 
-            if (username == password)
+            if (p.Login(username,password))
             {
                 SendData(new JsonFile
                 {
@@ -129,6 +132,16 @@ namespace RemoteHealthcare.CentralServer
             }
             else
             {
+                SendData(new JsonFile
+                {
+                    StatusCode = (int)StatusCodes.NOT_FOUND,
+                    OppCode = OperationCodes.LOGIN,
+
+                    Data = new JsonData
+                    {
+                        Content = "Wrong login,try again"
+                    }
+                });
                 Console.WriteLine("GRANDEE error ");
                 //Write("login\r\nerror, wrong password");
             }

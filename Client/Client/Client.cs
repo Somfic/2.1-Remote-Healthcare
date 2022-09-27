@@ -138,7 +138,7 @@ namespace RemoteHealthcare.Client
             }
             else
             {
-                Console.WriteLine(packetData.Value<string>("StatusCode"));
+                Console.WriteLine(packetData.Value<string>("StatusCode")+" "+packetData.Value<string>("Data"));
             }
         }
 
