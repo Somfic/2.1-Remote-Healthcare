@@ -82,8 +82,6 @@ namespace Server
                         break;
                     }
             }
-
-
         }
 
         private bool assertPacketData(string[] packetData, int requiredLength)
