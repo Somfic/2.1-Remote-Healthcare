@@ -234,13 +234,13 @@ public class EngineConnection
                                     _log.Information("Pannel Node ID is: " + _pannelId);
                                     break;
                                 }
-                                case "9":
-                        {
-                            _log.Information($"Node info {JObject.Parse(json).ToString()}");
-                            break;
-                        }
+                            case "9":
+                                {
+                                    _log.Information($"Node info {JObject.Parse(json).ToString()}");
+                                    break;
+                                }
 
-                        
+
 
                             default:
                                 {
@@ -249,17 +249,18 @@ public class EngineConnection
                                 }
                         }
 
-                        
-                    }
 
-                default:
-                    {
-                        _log.Warning($"Unhandled incoming message with id '{id}'");
-                        _log.Debug(json);
-                        break;
+
+
+                        default:
+                                {
+                            _log.Warning($"Unhandled incoming message with id '{id}'");
+                            _log.Debug(json);
+                            break;
+                        }
+
                     }
             }
-        }
         catch (Exception ex)
         {
             _log.Error(ex, "Error while processing incoming message");
@@ -581,7 +582,7 @@ public class EngineConnection
         await _socket.SendAsync(json);
 
     }
-    public async Task  SwapPannel()
+    public async Task SwapPannel()
     {
         string path = Path.Combine(_filePath, "Json", "SwapPannel.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
