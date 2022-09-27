@@ -1,4 +1,5 @@
-﻿using RemoteHealthcare.Common.Logger;
+﻿using RemoteHealthcare.Client;
+using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Data.Providers;
 using RemoteHealthcare.Socket;
 
@@ -11,6 +12,8 @@ try
 
     var bike = await DataProvider.GetBike("00472");
     var heart = await DataProvider.GetHeart();
+    
+    var client = new Client();
 
     var vrConnection = new VrConnection(bike, heart, engine);
     vrConnection.start();

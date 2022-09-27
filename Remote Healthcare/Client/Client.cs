@@ -1,5 +1,7 @@
 ﻿using System.Net.Sockets;
 using System.Text.RegularExpressions;
+using RemoteHealthcare.Common.Logger;
+using RemoteHealthcare.Socket;
 
 namespace RemoteHealthcare.Client;
 
@@ -13,41 +15,53 @@ public class Client
     private static string username;
 
     private static bool loggedIn = false;
+    private static bool connected = false;
 
-    static void Main(string[] args)
+    private readonly Log _log = new(typeof(Client));
+
+    public Client()
     {
-        Console.WriteLine("Hello Client!");
-        Console.WriteLine("What is your username? (phone-number)");
+        _log.Debug("testing main now");
+        Main();
+    }
+
+    void Main()
+    {
+        _log.Information("Welcome Client!");
+        _log.Information("What is your username? (phone-number)");
         username = Console.ReadLine();
-        Console.WriteLine("What is your password?");
+        _log.Information("What is your password?");
         password = Console.ReadLine();
 
         client = new TcpClient();
         client.BeginConnect("localhost", 15243, new AsyncCallback(OnConnect), null);
 
-
-
         while (true)
         {
-            Console.WriteLine("Voer een chatbericht in:");
-            string newChatMessage = Console.ReadLine();
-            if (loggedIn)
-                write($"chat\r\n{newChatMessage}");
-            else
-                Console.WriteLine("Je bent nog niet ingelogd");
+            if (connected)
+            {
+                _log.Information("Voer een chatbericht in:");
+                string newChatMessage = Console.ReadLine();
+                if (loggedIn)
+                    write($"chat\r\n{newChatMessage}");
+                else
+                    _log.Information("Je bent nog niet ingelogd");
+            }
         }
     }
 
-    private static void OnConnect(IAsyncResult ar)
+    private void OnConnect(IAsyncResult ar)
     {
         client.EndConnect(ar);
-        Console.WriteLine("Verbonden!");
+        _log.Debug("Verbonden!");
+        connected = client.Connected;
+        _log.Debug("Connectino is now");
         stream = client.GetStream();
         stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         write($"login\r\n{username}\r\n{password}");
     }
 
-    private static void OnRead(IAsyncResult ar)
+    private void OnRead(IAsyncResult ar)
     {
         int receivedBytes = stream.EndRead(ar);
         string receivedText = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedBytes);
@@ -60,9 +74,11 @@ public class Client
             string[] packetData = Regex.Split(packet, "\r\n");
             handleData(packetData);
         }
+
         stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
     }
-    private static void write(string data)
+
+    private void write(string data)
     {
         var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
         stream.Write(dataAsBytes, 0, dataAsBytes.Length);
@@ -83,11 +99,12 @@ public class Client
                 }
                 else
                     Console.WriteLine(packetData[1]);
+
                 break;
+
             case "chat":
                 Console.WriteLine($"Chat ontvangen: '{packetData[1]}'");
                 break;
         }
-
     }
 }
