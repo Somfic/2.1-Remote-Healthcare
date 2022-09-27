@@ -681,6 +681,5 @@ public class EngineConnection
 
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
-
     }
 }

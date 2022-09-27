@@ -6,6 +6,7 @@ using RemoteHealthcare.Data.Providers;
 
 try
 {
+
     var engine = new EngineConnection();
     await engine.ConnectAsync();
 
@@ -18,7 +19,12 @@ try
 
     var client = new Client();
 
+
+
     await Task.Delay(-1);
+
+
+
 }
 catch (Exception ex)
 {
