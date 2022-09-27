@@ -10,15 +10,14 @@ namespace Server
     {
         private static TcpListener listener;
         private static List<Client> clients = new List<Client>();
-
+    
         static void Main(string[] args)
         {
-            Console.WriteLine("Server has started.");
+            Console.WriteLine("Hello Server!");
 
             listener = new TcpListener(IPAddress.Any, 15243);
             listener.Start();
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
-
             Console.ReadLine();
         }
 
@@ -34,7 +33,8 @@ namespace Server
         {
             foreach(var client in clients)
             {
-                client.Write(packet);
+                Console.WriteLine("print print print");
+                //client.Write(packet);
             }
         }
 
@@ -48,7 +48,8 @@ namespace Server
         {
             foreach(var client in clients.Where(c => c.UserName == user))
             {
-                client.Write(packet);
+                //TODO:  omzetten naar SendData
+                //client.Write(packet);
             }
         }
     }
