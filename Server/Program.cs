@@ -16,7 +16,7 @@ namespace RemoteHealthcare.CentralServer
             listener.Start();
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
             Console.ReadLine();
-        }
+        } 
 
         private static void OnConnect(IAsyncResult ar)
         {
