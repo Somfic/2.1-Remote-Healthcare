@@ -16,7 +16,7 @@ namespace RemoteHealthcare.CentralServer
             listener.Start();
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
             Console.ReadLine();
-        }
+        } 
 
         private static void OnConnect(IAsyncResult ar)
         {
@@ -30,8 +30,7 @@ namespace RemoteHealthcare.CentralServer
         {
             foreach (var client in clients)
             {
-                Console.WriteLine("print print print");
-                //client.Write(packet);
+                Console.WriteLine("Welkom naar alle users, dit is een broadcast bericht");
             }
         }
 
