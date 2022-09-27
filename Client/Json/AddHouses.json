@@ -1,0 +1,33 @@
+﻿{
+  "id": "tunnel/send",
+  "data": {
+    "dest": "",
+    "data": {
+      "id": "scene/node/add",
+      "data": {
+        "name": "name",
+        "components": {
+          "transform": {
+            "position": [
+              0,
+              0,
+              0
+            ],
+            "scale": 4,
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "model": {
+            "file": "",
+            "cullbackfaces": true,
+            "animated": false,
+            "animation": "animationname"
+          }
+        }
+      }
+    }
+  }
+}

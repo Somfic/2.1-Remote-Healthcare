@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <RootNamespace>RemoteHealthcare</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+        <TargetFrameworks>net472;net6.0</TargetFrameworks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Reference Include="BLELibrary">
+            <HintPath>BLELibrary.dll</HintPath>
+        </Reference>
+        <Reference Include="BLELibrary" Condition="'$(TargetFramework)' == 'net472'">
+            <HintPath>BLELibrary.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Net.Http" Condition="'$(TargetFramework)' == 'net472'"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CSharp" Version="4.7.0"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="System.Drawing.Common" Version="6.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Common\Common.csproj"/>
+        <ProjectReference Include="..\NetworkEngine\NetworkEngine.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="BLELibrary.dll">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+</Project>
