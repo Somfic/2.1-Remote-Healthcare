@@ -2,7 +2,6 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Threading.Tasks;
 using NetworkEngine.Socket.Models;
 using NetworkEngine.Socket.Models.Response;
