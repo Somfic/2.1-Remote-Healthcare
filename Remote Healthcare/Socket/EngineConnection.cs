@@ -15,10 +15,15 @@ public class EngineConnection
     private string _groundPlaneId;
     private string _routeId;
     private string _roadNodeId;
-    
+
+
+    private bool _first = false; 
     private JArray _hightForHouse;
     private bool[,] _roadArray;
     private bool _roadLoad = false;
+    private int _firstx = 0;
+    private int _firstz = 0;
+    private int _roadcount = 0;
     
 
     private string _tunnelId;
@@ -86,7 +91,12 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await SendSkyboxTime(_tunnelId, 10.5);
-        await SendTerrain(_tunnelId);
+        
+        // await SendTerrain(_tunnelId);
+        await Task.Delay(1000);
+        await Heightmap(_tunnelId);
+       
+        await Task.Delay(1000);
         await CreateTerrainNode(_tunnelId);
 
         await Task.Delay(1000);
@@ -112,18 +122,30 @@ public class EngineConnection
         await Task.Delay(1000);
         await PlaceBikeOnRoute(_tunnelId);
 
-        await Task.Delay(1000);
-        await ChangeBikeSpeed(0);
+        // await Task.Delay(1000);
+        // await ChangeBikeSpeed(0);
 
         await Task.Delay(1000);
         await MoveCameraPosition();
         await Task.Delay(1000);
         await MoveHeadPosition();
 
+       
+
+        _roadArray = new bool[256,256];
+        
+        while (_roadcount < 462)
+        {
+            await Task.Delay(50);
+            await NodeInfo(_tunnelId);
+        }
         await Task.Delay(1000);
-        await Addhouses(_tunnelId, 100);
+        await Addhouses(_tunnelId, 1000);
+
         await Task.Delay(1000);
-        await NodeInfo(_tunnelId);
+        await ChangeBikeSpeed(1);
+
+
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -162,19 +184,19 @@ public class EngineConnection
 
                 case "tunnel/send":
                 {
-                    // string resultSerial = "";
-                    // var result = new DataResponse<TunnelSendResponse>();
-                    var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
-                    string resultSerial = result.Data.Data.Serial;
-                    // try
-                    // {
-                    //     result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
-                    //     resultSerial = result.Data.Data.Serial;
-                    // }
-                    // catch
-                    // {
-                    //     resultSerial  = raw.data.data.serial;
-                    // }
+                    string resultSerial = "";
+                    var result = new DataResponse<TunnelSendResponse>();
+                    // var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
+                    // string resultSerial = result.Data.Data.Serial;
+                    try
+                    {
+                        result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
+                        resultSerial = result.Data.Data.Serial;
+                    }
+                    catch
+                    {
+                        resultSerial  = raw.data.data.serial;
+                    }
                     
                     
 
@@ -223,7 +245,9 @@ public class EngineConnection
 
                         case "9":
                         {
-                            _log.Information($"Node info {JObject.Parse(json).ToString()}");
+                            // _log.Information(result.Data.Data.Data.P);
+                            GetBikePos(raw.data.data.data[0].components[0].position[0].ToString(),
+                                       raw.data.data.data[0].components[0].position[2].ToString()); 
                             break;
                         }
 
@@ -306,7 +330,7 @@ public class EngineConnection
         jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = _tunnelId;
         jObject["data"]["data"]["data"]["id"] = _bikeId;
-        jObject["data"]["data"]["data"]["animation"]["speed"] = speed / 10;
+        jObject["data"]["data"]["data"]["speed"] = speed / 10;
 
         json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
@@ -379,7 +403,7 @@ public class EngineConnection
             double[,] heights = new double[heightmap.Width, heightmap.Height];
             for (int x = 0; x < heightmap.Width; x++)
             for (int y = 0; y < heightmap.Height; y++)
-                heights[x, y] = (heightmap.GetPixel(x, y).R / 256.0f) * 50.0f - 5;
+                heights[x, y] = ((heightmap.GetPixel(x, y).R / 256.0f) * 25.0f - 5);
 
             SendTerrain(dest, heights.Cast<double>().ToArray());
         }
@@ -454,6 +478,40 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
+    public async Task GetBikePos(string inputx,string  inputz)
+    {
+        string x = inputx;
+        string z = inputz;
+        int x1 = (int)Convert.ToDecimal(x);
+        int z1 = (int)Convert.ToDecimal(z);
+        _roadcount++;
+
+        _log.Information($"x = {x1} and z ={z1}");
+                           
+        if (!(_firstx==x1 && _firstz == z1))
+                                
+        {
+            for (int i = x1-10; i < x1+10; i++)
+            {
+                for (int j = z1 - 10; j < z1 + 10; j++)
+                {
+                    if(j > -128 && j < 128 && i >-128 && i<128)
+                        _roadArray[i+128,j+128] = true;
+                }
+            }
+                              
+        }
+        else
+        {
+            _roadLoad = true;
+        }
+        if (!_first)
+        {
+            _firstx = x1;
+            _firstz = z1;
+            _first = true;
+        }
+    }
     public async Task Addhouses(string dest, int amount)
     {
         Random r = new Random();
@@ -476,22 +534,32 @@ public class EngineConnection
             jObject["data"]["data"]["data"]["components"]["model"]["file"] = s;
 
 
-            int x = r.Next(1, 256) - 128;
-            int z = r.Next(1, 256) - 128;
-            //int y = (int)hoogte[z * 256 + x];
-            int y = 0;
+            int x = r.Next(-128, 128);
+            int z = r.Next(-128, 128);
+            int y = (int)_hightForHouse[(z+128) * 256 + (x+128)];
+            // int y = 0;
+
+            if (!_roadArray[x+128, z+128])
+            {
+                var postpar = jObject["data"]["data"]["data"]["components"]["transform"]["position"] as JArray;
+                jObject["data"]["dest"] = dest;
+            
+                postpar.Insert(0, x );
+                postpar.Insert(1, y);
+                postpar.Insert(2, z );
 
 
-            var postpar = jObject["data"]["data"]["data"]["components"]["transform"]["position"] as JArray;
-            jObject["data"]["dest"] = dest;
-            postpar.Insert(0, x);
-            postpar.Insert(1, y);
-            postpar.Insert(2, z);
+                var json = JsonConvert.SerializeObject(jObject);
+
+                await _socket.SendAsync(json);   
+            }
+            else
+            {
+                continue;
+            }
 
 
-            var json = JsonConvert.SerializeObject(jObject);
-
-            await _socket.SendAsync(json);
+            
         }
     }
 
