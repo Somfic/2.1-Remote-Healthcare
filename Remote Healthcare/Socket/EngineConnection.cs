@@ -293,13 +293,22 @@ public class EngineConnection
     public async Task ChangeBikeSpeed(double speed)
 
     {
-        string path = Path.Combine(_filePath, "Json", "ChangeAnimationSpeed.json");
+        string path = Path.Combine(_filePath, "Json", "ChangeBikeSpeed.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
+        jObject["data"]["dest"] = _tunnelId;
+        jObject["data"]["data"]["data"]["node"] = _bikeId;
+        jObject["data"]["data"]["data"]["speed"] = speed;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+
+        path = Path.Combine(_filePath, "Json", "ChangeAnimationSpeed.json");
+        jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = _tunnelId;
         jObject["data"]["data"]["data"]["id"] = _bikeId;
         jObject["data"]["data"]["data"]["animation"]["speed"] = speed / 10;
 
-        var json = JsonConvert.SerializeObject(jObject);
+        json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
 
