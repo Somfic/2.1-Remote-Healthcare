@@ -3,6 +3,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
+using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.CentralServer
 {
@@ -57,6 +58,7 @@ namespace RemoteHealthcare.CentralServer
         private void handleData(JObject packetData)
         {
             Console.WriteLine($"Got a packet server: {packetData.Value<string>("OppCode")}");
+            Console.WriteLine(packetData.ToString());
             Action<JObject> action;
 
             //Checks if the OppCode (OperationCode) does exist.
