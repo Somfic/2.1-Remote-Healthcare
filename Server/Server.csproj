@@ -9,11 +9,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Common\Common.csproj"/>
+        <ProjectReference Include="..\Common\Common.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 
 </Project>
