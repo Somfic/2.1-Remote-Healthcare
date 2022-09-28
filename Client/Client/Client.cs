@@ -15,9 +15,11 @@ namespace RemoteHealthcare.Client {
         
         private static string password;
         private static string username;
-        private static bool loggedIn = false;
+        private static bool loggedIn;
         
-        private static Dictionary<string, Action<JObject>> functions;
+
+        private static Dictionary<string, Action<DataPacket>> functions;
+
 
         public Client() {
             Main();
@@ -25,8 +27,10 @@ namespace RemoteHealthcare.Client {
 
         static void Main()
         {
-            functions = new Dictionary<string, Action<JObject>>();
-            
+
+            loggedIn = false;
+            functions = new Dictionary<string, Action<DataPacket>>();
+
             //Adds for each key an callback methode in the dictionary 
             functions.Add("login", LoginFeature);
             functions.Add("chat", ChatHandler);
@@ -46,24 +50,19 @@ namespace RemoteHealthcare.Client {
             while (true)
             {
                 Console.WriteLine("Voer een commandin om naar de server te sturen: ");
-                
+                Console.WriteLine("de loggedin = " + loggedIn);
                 string newChatMessage = Console.ReadLine();
                 //if the user isn't logged in, the user cant send any command to the server
-                if (loggedIn)
-                {
+                if (loggedIn) {
                     if (newChatMessage.Equals("chat")) {
                         Console.WriteLine("Voer uw bericht in: ");
                         newChatMessage = Console.ReadLine();
 
-                        JsonFile req = new JsonFile
+                        DataPacket<ChatPacket> req = new DataPacket<ChatPacket>
                         {
-                            StatusCode = (int)StatusCodes.OK,
-                            OppCode = OperationCodes.CHAT,
-                            Username = username,
-                            Password = password,
-                            Data = new JsonData
-                            {
-                                ChatMessage = newChatMessage
+                            OpperationCode = OperationCodes.CHAT,
+                            data = new ChatPacket() {
+                                message = newChatMessage
                             }
                         };
 
@@ -71,28 +70,22 @@ namespace RemoteHealthcare.Client {
 
                     }else if (newChatMessage.Equals("session start")) {
 
-                        JsonFile req = new JsonFile {
-                            StatusCode = (int)StatusCodes.OK,
-                            OppCode = OperationCodes.SESSION_START,
-                            Username = username,
-                            Password = password
+                        DataPacket<SessionStartPacket> req = new DataPacket<SessionStartPacket> {
+                            OpperationCode = OperationCodes.SESSION_START,
                         };
+                        
                         SendData(req);
                     }else if (newChatMessage.Equals("session stop")) {
 
-                        JsonFile req = new JsonFile {
-                            StatusCode = (int)StatusCodes.OK,
-                            OppCode = OperationCodes.SESSION_STOP,
-                            Username = username,
-                            Password = password
+                        DataPacket<SessionStopPacket> req = new DataPacket<SessionStopPacket> {
+                            OpperationCode = OperationCodes.SESSION_STOP,
                         };
 
                         SendData(req);
                     }else {
                         Console.WriteLine("in de else bij de client if else elsif statements!");
                     }
-                }
-                else {
+                }else {
                     Console.WriteLine("Je bent nog niet ingelogd");
                 }
             }
@@ -107,12 +100,12 @@ namespace RemoteHealthcare.Client {
             stream.BeginRead(lengthBytes, 0, lengthBytes.Length, OnLengthBytesReceived, null);
             
             //Sends an login request to the server
-            JsonFile loginReq = new JsonFile
-            {
-                StatusCode = (int)StatusCodes.OK,
-                OppCode = OperationCodes.LOGIN,
-                Username = username,
-                Password = password
+            DataPacket<LoginPacket> loginReq = new DataPacket<LoginPacket> {
+                OpperationCode = OperationCodes.LOGIN,
+                data = new LoginPacket() {
+                    username = username,
+                    password = password   
+                }
             };
 
             SendData(loginReq);
@@ -133,22 +126,21 @@ namespace RemoteHealthcare.Client {
             stream.EndRead(ar);
             
             //converts the dataBuffer to an JObject
-            JObject data = JObject.Parse(Encoding.UTF8.GetString(dataBuffer));
-
+            string data = Encoding.UTF8.GetString(dataBuffer);
+            
+            DataPacket dataPacket = JsonConvert.DeserializeObject<DataPacket>(data);
+            
             //this methode detemines which methode will be called
-            handleData(data);
+            handleData(dataPacket);
 
             stream.BeginRead(lengthBytes, 0, lengthBytes.Length, OnLengthBytesReceived, null);
         }
 
         //This methode used to send an request from the Client to the server
         //The parameter is an JsonFile object
-        public static void SendData(JsonFile jsonFile)
+        public static void SendData(DAbstract packet)
         {
-            byte[] dataBytes = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(
-                jsonFile,
-                Formatting.Indented,
-                new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore }));
+            byte[] dataBytes = Encoding.ASCII.GetBytes(packet.ToJson());
 
             var lengthh = BitConverter.GetBytes(dataBytes.Length);
 
@@ -158,48 +150,52 @@ namespace RemoteHealthcare.Client {
         }
 
         //this methode will get the right methode that will be used for the response from the server
-        private static void handleData(JObject packetData)
+        private static void handleData(DataPacket packet)
         {
-            Action<JObject> action;
-            
+            Action<DataPacket> action;
+            Console.WriteLine(" ");
+            Console.WriteLine(" ");
+            Console.WriteLine("dit is van ui de client client packet.operation code");
+            Console.WriteLine(packet.OpperationCode.Length);
+            Console.WriteLine(" ");
+            Console.WriteLine(" ");
             //Checks if the OppCode (OperationCode) does exist.
-            if (functions.TryGetValue(packetData["OppCode"].ToString(), out action))
+            if (functions.TryGetValue(packet.OpperationCode, out action))
             {
-                action.Invoke(packetData);
-            }
-            else
-            {
-                throw new Exception("Function not implemented");
+                action.Invoke(packet);
+            }else {
+                    throw new Exception("Function not implemented");
             }
         }
-        
+
         //the methode for the session stop request
-        private static void SessionStopHandler(JObject obj)
+        private static void SessionStopHandler(DataPacket obj)
         {
-            Console.WriteLine(obj["Data"]["ChatMessage"].ToString());
+            Console.WriteLine(obj.GetData<SessionStopResponse>().message);
         }
 
         //the methode for the session start request
-        private static void SessionStartHandler(JObject obj)
+        private static void SessionStartHandler(DataPacket obj)
         {
-            Console.WriteLine(obj["Data"]["ChatMessage"].ToString());
+            Console.WriteLine(obj.GetData<SessionStartResponse>().message);
         }
 
         //the methode for the send chat request
-        private static void ChatHandler(JObject packetData)
+        private static void ChatHandler(DataPacket packetData)
         {
-            Console.WriteLine($"Chat ontvangen: '{packetData["Data"]["ChatMessage"]}'");
+            Console.WriteLine(packetData.GetData<ChatResponse>().message);
         }
         
         //the methode for the login request
-        private static void LoginFeature(JObject packetData)
+        private static void LoginFeature(DataPacket packetData)
         {
-            if (packetData.Value<int>("StatusCode").Equals(200)) {
+            
+            if ((int)packetData.GetData<LoginResponsePacket>().statusCode == 200) {
                 Console.WriteLine("Logged in!");
                 loggedIn = true;
             } else {
-                Console.WriteLine(packetData.Value<string>("StatusCode"));
-                Console.WriteLine(packetData["Data"]["ChatMessage"]);
+                Console.WriteLine(packetData.GetData<LoginResponsePacket>().statusCode);
+                Console.WriteLine(packetData.GetData<LoginResponsePacket>().message);
             }
         }
     }

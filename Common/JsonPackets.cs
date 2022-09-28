@@ -1,6 +1,18 @@
-﻿namespace RemoteHealthcare.Common;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-public class JsonFile
+namespace RemoteHealthcare.Common;
+
+
+public abstract class DAbstract
+{
+    public string ToJson() {
+        return JsonConvert.SerializeObject(this);
+    }
+}
+
+
+/*public class JsonFile
 {
     public int StatusCode { get; set; }
     public string OppCode { get; set; }
@@ -19,4 +31,4 @@ public class JsonData
     public string ChatMessage { get; set; }
     public string Content { get; set; }
     public bool BikeDataHistory { get; set; }
-}
+}*/
