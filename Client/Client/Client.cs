@@ -169,7 +169,7 @@ namespace RemoteHealthcare.Client {
         }
 
         //the methode for the session stop request
-        private static void SessionStopHandler(DataPacket obj)
+        /*private static void SessionStopHandler(DataPacket obj)
         {
             Console.WriteLine(obj.GetData<SessionStopResponse>().message);
         }
@@ -186,7 +186,7 @@ namespace RemoteHealthcare.Client {
             Console.WriteLine(packetData.GetData<ChatResponse>().message);
         }
         
-        //the methode for the login request
+        //the methode for the login request*/
         private static void LoginFeature(DataPacket packetData)
         {
             
