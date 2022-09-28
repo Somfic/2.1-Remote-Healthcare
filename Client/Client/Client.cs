@@ -3,12 +3,14 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
+using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.Client {
     public class Client
     {
         private static TcpClient client;
         private static NetworkStream stream;
+        private static Log _log = new (typeof(Client));
 
         private static byte[] dataBuffer;
         private static byte[] lengthBytes = new byte[4];
@@ -45,12 +47,11 @@ namespace RemoteHealthcare.Client {
 
             while (true)
             {
-                Console.WriteLine("Voer een commandin om naar de server te sturen: ");
-                
-                string newChatMessage = Console.ReadLine();
                 //if the user isn't logged in, the user cant send any command to the server
                 if (loggedIn)
                 {
+                    Console.WriteLine("Voer een commandin om naar de server te sturen: ");
+                    string newChatMessage = Console.ReadLine();
                     if (newChatMessage.Equals("chat")) {
                         Console.WriteLine("Voer uw bericht in: ");
                         newChatMessage = Console.ReadLine();
@@ -93,7 +94,7 @@ namespace RemoteHealthcare.Client {
                     }
                 }
                 else {
-                    Console.WriteLine("Je bent nog niet ingelogd");
+                    //Console.WriteLine("Je bent nog niet ingelogd");
                 }
             }
         }
@@ -149,7 +150,10 @@ namespace RemoteHealthcare.Client {
                 jsonFile,
                 Formatting.Indented,
                 new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore }));
-
+            
+            string utfString = Encoding.UTF8.GetString(dataBytes, 0, dataBytes.Length);  
+            Console.WriteLine(utfString);
+            
             var lengthh = BitConverter.GetBytes(dataBytes.Length);
 
             stream.Write(lengthh, 0, lengthh.Length);
@@ -196,7 +200,7 @@ namespace RemoteHealthcare.Client {
         {
             if (packetData.Value<int>("StatusCode").Equals(200)) {
                 Console.WriteLine("Logged in!");
-                loggedIn = true;
+                loggedIn = client.Connected;
             } else {
                 Console.WriteLine(packetData.Value<string>("StatusCode"));
                 Console.WriteLine(packetData["Data"]["ChatMessage"]);

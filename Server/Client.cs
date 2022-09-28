@@ -3,6 +3,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
+using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.CentralServer
 {
@@ -47,6 +48,8 @@ namespace RemoteHealthcare.CentralServer
             
             //converts the databuffer to JObject
             JObject data = JObject.Parse(Encoding.UTF8.GetString(this.dataBuffer));
+
+            Console.WriteLine(data.ToString());
             
             //gives the JObject as parameter to determine which methode will be triggerd
             handleData(data);
@@ -57,6 +60,7 @@ namespace RemoteHealthcare.CentralServer
         private void handleData(JObject packetData)
         {
             Console.WriteLine($"Got a packet server: {packetData.Value<string>("OppCode")}");
+            Console.WriteLine(packetData.ToString());
             Action<JObject> action;
 
             //Checks if the OppCode (OperationCode) does exist.
@@ -74,6 +78,9 @@ namespace RemoteHealthcare.CentralServer
                 jsonFile,
                 Formatting.Indented,
                 new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore }));
+            
+            string utfString = Encoding.UTF8.GetString(dataBytes, 0, dataBytes.Length);  
+            Console.WriteLine(utfString);
 
             stream.Write(BitConverter.GetBytes(dataBytes.Length));
             stream.Write(dataBytes);
@@ -98,8 +105,9 @@ namespace RemoteHealthcare.CentralServer
         //the methode for the login request
         private void LoginFeature(JObject packetData)
         {
-            Patient patient = new Patient(packetData.Value<string>("username"), packetData.Value<string>("password"));
-            
+            Patient patient = new Patient(packetData["Username"].ToObject<string>(), packetData["Password"].ToObject<string>(), "1234");
+            _patientData._patients.Add(new Patient("richard", "owen", "1234"));
+            Console.WriteLine($"Name: {patient.username} Password: {patient.password}");
             if (_patientData.MatchLoginData(patient))
             {
                 SendData(new JsonFile
