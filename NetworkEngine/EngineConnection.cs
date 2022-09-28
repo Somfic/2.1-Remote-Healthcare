@@ -8,13 +8,14 @@ using NetworkEngine.Socket.Models.Response;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common.Logger;
+using RemoteHealthcare.Common.Socket.Client;
 
 namespace NetworkEngine;
 
 public class EngineConnection
 {
     private readonly Log _log = new(typeof(EngineConnection));
-    private readonly SocketConnection _socket = new();
+    private readonly SocketClient _socket = new();
     private (string user, string uid)[]? _clients;
     private string _groundPlaneId;
     private string _routeId;
@@ -52,7 +53,7 @@ public class EngineConnection
         _clients = null;
 
         await CreateConnectionAsync();
-        await _socket.SendAsync("session/list", null);
+        await _socket.SendAsync(new {id = "session/list"});
 
         while (true)
         {
@@ -88,7 +89,7 @@ public class EngineConnection
         _userId = foundUser.uid;
         _log.Debug($"Connecting to {foundUser.user} ({foundUser.uid}) ... ");
 
-        await _socket.SendAsync("tunnel/create", new { session = _userId, key = password });
+        await _socket.SendAsync(new {id = "tunnel/create", data = new { session = _userId, key = password }});
 
         await Task.Delay(1000);
         await ResetScene(_tunnelId);
