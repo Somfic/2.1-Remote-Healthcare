@@ -80,7 +80,7 @@ namespace RemoteHealthcare.CentralServer
         private void ChatHandler(DataPacket packetData)
         {
             SendData(new DataPacket<ChatResponse> {
-                OpperationCode = OperationCodes.LOGIN,
+                OpperationCode = OperationCodes.CHAT,
                 
                 data = new ChatResponse() {
                     statusCode = StatusCodes.OK,

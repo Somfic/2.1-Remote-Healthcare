@@ -27,7 +27,6 @@ namespace RemoteHealthcare.Client {
 
         static void Main()
         {
-
             loggedIn = false;
             functions = new Dictionary<string, Action<DataPacket>>();
 
