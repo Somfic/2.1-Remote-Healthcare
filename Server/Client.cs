@@ -98,7 +98,7 @@ namespace RemoteHealthcare.CentralServer
         //the methode for the login request
         private void LoginFeature(JObject packetData)
         {
-            Patient patient = new Patient(packetData.Value<string>("username"), packetData.Value<string>("password"));
+            Patient patient = new Patient(packetData.Value<string>("username"), packetData.Value<string>("password"), packetData.Value<string>("phoneNumber"));
             
             if (_patientData.MatchLoginData(patient))
             {
