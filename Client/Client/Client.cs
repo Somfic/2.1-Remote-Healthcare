@@ -153,12 +153,7 @@ namespace RemoteHealthcare.Client {
         private static void handleData(DataPacket packet)
         {
             Action<DataPacket> action;
-            Console.WriteLine(" ");
-            Console.WriteLine(" ");
-            Console.WriteLine("dit is van ui de client client packet.operation code");
-            Console.WriteLine(packet.OpperationCode.Length);
-            Console.WriteLine(" ");
-            Console.WriteLine(" ");
+           
             //Checks if the OppCode (OperationCode) does exist.
             if (functions.TryGetValue(packet.OpperationCode, out action))
             {

@@ -104,7 +104,7 @@ namespace RemoteHealthcare.CentralServer
                 
                     data = new LoginResponsePacket() {
                         statusCode = StatusCodes.OK,
-                        message =  "Gefeliciteer: Je bent ingelogd"
+                        message =  "Gefeliciteerd! : Je bent ingelogd"
                     }
                 });
 
