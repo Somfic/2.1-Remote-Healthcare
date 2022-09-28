@@ -1,28 +1,34 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace RemoteHealthcare.CentralServer;
+﻿namespace RemoteHealthcare.CentralServer;
 
 public class PatientData
 {
-    public string Id { get; set; }
-    public string password { get; set; }
-    public Dictionary<string, dynamic> data { get; set; }
+    public List<Patient> _patients { get; set; }
 
-    public PatientData(string id, string password, JObject data)
+    public PatientData()
     {
-        this.Id = id;
-        this.password = password;
-        SetupDictionary(data);
+        _patients = new List<Patient>();
     }
 
-    private void SetupDictionary(JObject data)
+    public bool MatchLoginData(Patient patient)
     {
-        this.data.Add("distance", data["distance"].ToObject<int>());
-        this.data.Add("speed", data["speed"].ToObject<int>());
-        this.data.Add("heartrate", data["heartRate"].ToObject<int>());
-        this.data.Add("elapsed", data["elapsed"].ToObject<int>());
-        this.data.Add("deviceType", data["deviceType"].ToObject<int>());
-        this.data.Add("id", data["id"].ToObject<int>());
-        this.data.Add("sessionId", data["sessionId"].ToObject<int>());
+        foreach (var varPatient in _patients)
+        {
+            if (varPatient.username.Equals(patient.username) && varPatient.password.Equals(patient.password) && varPatient.userId.Equals(patient.userId))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void SavePatientData()
+    {
+        string folderName = Environment.CurrentDirectory;
+        Console.WriteLine(folderName);
+        folderName = Path.Combine(folderName.Substring(0, folderName.LastIndexOf("bin")) + "PatientDataFiles");
+        foreach (var patient in _patients)
+        {
+            patient.SaveSessionData(folderName);
+        }
     }
 }

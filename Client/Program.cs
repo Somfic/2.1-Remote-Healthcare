@@ -1,4 +1,4 @@
-﻿using NetworkEngine;
+using NetworkEngine;
 using NetworkEngine.Socket;
 using RemoteHealthcare.Client;
 using RemoteHealthcare.Common.Logger;
@@ -16,9 +16,9 @@ try
      var client = new Client();
 
     /*var vrConnection = new VrConnection(bike, heart, engine);
-    vrConnection.start();
+    vrConnection.start();*/
 
-    await Task.Delay(-1);*/
+    await Task.Delay(-1);
 }
 catch (Exception ex)
 {

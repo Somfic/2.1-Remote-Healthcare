@@ -7,7 +7,7 @@ public class JsonFile
     public string Username { get; set; }
     public string Password { get; set; }
 
-    public JsonData Data { get; set; }
+    public JsonData? Data { get; set; }
 }
 
 public class JsonData
