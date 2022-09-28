@@ -10,18 +10,22 @@ public static class SocketHelper
     public static async Task SendMessage(Stream stream, string data, bool useEncryption = true)
     {
         var bytes = Encode(data, useEncryption);
-        
-        await stream.WriteAsync(BitConverter.GetBytes(data.Length), 0, 4);
-        await stream.WriteAsync(bytes, 0, data.Length);
+        await stream.WriteAsync(bytes, 0, bytes.Length);
     }
 
     public static async Task<string> ReadMessage(Stream stream, bool useEncryption = true)
     {
-        var length = new byte[4];
-        await stream.ReadAsync(length, 0, 4);
+        var length = new byte[1024];
+        var dataRead = 0;
+
+        while (dataRead < 4)
+        {
+            var read = await stream.ReadAsync(length, dataRead, 4 - dataRead);
+            dataRead += read;
+        }
         var dataLength = BitConverter.ToInt32(length, 0);
 
-        var dataRead = 0;
+        dataRead = 0;
         var data = new byte[dataLength];
         
         while (dataRead < dataLength)
@@ -40,7 +44,7 @@ public static class SocketHelper
     public static byte[] Encode(string text, bool useEncryption = true)
     {
         // Convert the text to bytes
-        var textBytes = Encoding.Unicode.GetBytes(text);
+        var textBytes = Encoding.UTF8.GetBytes(text);
         
         // Encrypt the bytes using RSA
         if(useEncryption)
@@ -56,6 +60,8 @@ public static class SocketHelper
         if(lengthBytes.Length > 4)
             throw new Exception($"Length of encrypted bytes is too large (length: {length})");
 
+        lengthBytes = lengthBytes.Take(4).ToArray();
+        
         var bytes = new List<byte>();
         bytes.AddRange(lengthBytes);
         bytes.AddRange(textBytes);
@@ -76,7 +82,7 @@ public static class SocketHelper
             throw new NullReferenceException("Bytes is null");
         
         // Convert the bytes to a string
-        var text = Encoding.Unicode.GetString(textBytes);
+        var text = Encoding.UTF8.GetString(textBytes);
 
         return text;
     }

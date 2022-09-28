@@ -19,25 +19,22 @@ public class SocketClient
 
     public async Task ConnectAsync(string ip, int port)
     {
-        _log.Debug($"Connecting to {ip}:{port}");
+        if (_socket.Connected)
+            return;
+    
+        _log.Debug($"Connecting to {ip}:{port} ({(_useEncryption ? "encrypted" : "not encrypted")})");
 
         try
         {
             await _socket.ConnectAsync(IPAddress.Parse(ip), port);
+            _log.Debug($"Connected to {ip}:{port}");
         }
         catch (Exception ex)
         {
             _log.Error(ex, $"Could not connect to {ip}:{port}");
         }
 
-        Task.Run(async () =>
-        {
-            while (_socket.Connected)
-            {
-                var text = await SocketHelper.ReadMessage(_socket.GetStream(), _useEncryption);
-                OnMessage?.Invoke(this, text);
-            }
-        });
+        Task.Run(async () => await Read());
     }
 
     public Task SendAsync(dynamic data)
@@ -50,7 +47,16 @@ public class SocketClient
     {
         return SocketHelper.SendMessage(_socket.GetStream(), text, _useEncryption);
     }
-    
+
+    private async Task Read()
+    {
+        while (_socket.Connected)
+        {
+            var text = await SocketHelper.ReadMessage(_socket.GetStream(), _useEncryption);
+            OnMessage?.Invoke(this, text);
+        }
+    }
+
     public event EventHandler<string>? OnMessage;
     
     public Task DisconnectAsync()
