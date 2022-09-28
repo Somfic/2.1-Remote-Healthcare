@@ -22,7 +22,7 @@ public class SocketClient
         if (_socket.Connected)
             return;
     
-        _log.Debug($"Connecting to {ip}:{port} ({(_useEncryption ? "encrypted" : "not encrypted")})");
+        _log.Debug($"Connecting to {ip}:{port} ({(_useEncryption ? "encrypted" : "unencrypted")})");
 
         try
         {

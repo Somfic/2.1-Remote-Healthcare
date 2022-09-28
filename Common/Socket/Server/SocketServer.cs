@@ -10,6 +10,12 @@ public class SocketServer
     private TcpListener? _listener;
     private readonly Log _log = new Log(typeof(SocketServer));
     private readonly List<TcpClient> _clients = new();
+    private readonly bool _useEncryption;
+    
+    public SocketServer(bool useEncryption)
+    {
+        _useEncryption = useEncryption;
+    }
 
     public async Task ConnectAsync(string ip, int port)
     {
@@ -18,7 +24,7 @@ public class SocketServer
 
         try
         {
-            _log.Debug($"Starting server on {ip}:{port} ... ");
+            _log.Debug($"Starting server on {ip}:{port} ... ({(_useEncryption ? "encrypted" : "unencrypted")})");
 
             _listener = new TcpListener(IPAddress.Parse(ip), port);
             _listener.Start();
@@ -36,19 +42,21 @@ public class SocketServer
 
     private async Task AcceptConnection()
     {
-        if (_listener == null)
-            throw new NullReferenceException("Listener is null");
-        
-        var client = await _listener.AcceptTcpClientAsync();
+        while (_listener?.Server.Connected == true)
+        {
+            if (_listener == null) throw new NullReferenceException("Listener is null");
 
-        _log.Debug($"Socket client connected from {client.Client.RemoteEndPoint}");
-        
-        _clients.Add(client);
-        
-        Task.Run(() => { OnConnection?.Invoke(this, client); });
+            var client = await _listener.AcceptTcpClientAsync();
+
+            _log.Debug($"Socket client connected from {client.Client.RemoteEndPoint}");
+
+            _clients.Add(client);
+
+            Task.Run(() => { OnClientConnected?.Invoke(this, client); });
+        }
     }
 
-    public event EventHandler<TcpClient>? OnConnection;
+    public event EventHandler<TcpClient>? OnClientConnected;
 
     public Task Broadcast(dynamic data)
     {
