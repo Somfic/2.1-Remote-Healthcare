@@ -6,14 +6,15 @@ using RemoteHealthcare.Data.Providers;
 
 try
 {
-    var engine = new EngineConnection();
-    await engine.ConnectAsync();
-
-
-     var bike = await DataProvider.GetBike("00472");
-     var heart = await DataProvider.GetHeart();
+    // var engine = new EngineConnection();
+    // await engine.ConnectAsync();
+    //
+    //
+    //  var bike = await DataProvider.GetBike("00472");
+    //  var heart = await DataProvider.GetHeart();
 
      var client = new Client();
+     await client.RunAsync();
 
     /*var vrConnection = new VrConnection(bike, heart, engine);
     vrConnection.start();*/

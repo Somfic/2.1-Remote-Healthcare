@@ -1,69 +1,47 @@
 using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using RemoteHealthcare.CentralServer.Models;
 using RemoteHealthcare.Common;
-using RemoteHealthcare.Common.Logger;
+using RemoteHealthcare.Common.Socket.Client;
 
-namespace RemoteHealthcare.CentralServer
+namespace RemoteHealthcare.CentralServer.Client
 {
-    internal class Client
+    internal class ServerClient
     {
-        private TcpClient tcpClient;
-        private NetworkStream stream;
+        private SocketClient _client;
         private PatientData _patientData;
-        
-        private byte[] dataBuffer;
-        private readonly byte[] lengthBytes = new byte[4];
 
         public string UserName { get; set; }
-        private Dictionary<string, Action<DataPacket>> functions;
+        private Dictionary<string, Action<DataPacket>> _functions;
 
         //Set-ups the client constructor
-        public Client(TcpClient tcpClient)
+        public ServerClient(SocketClient client)
         {
-            this.functions = new Dictionary<string, Action<DataPacket>>();
+            _client = client;
+            _client.OnMessage += (sender, data) =>
+            {
+                var dataPacket = JsonConvert.DeserializeObject<DataPacket>(data);
+                //gives the JObject as parameter to determine which methode will be triggerd
+                HandleData(dataPacket);
+            };
             
-            this.functions.Add("login", LoginFeature);
-            this.functions.Add("chat", ChatHandler);
-            this.functions.Add("session start", SessionStartHandler);
-            this.functions.Add("session stop", SessionStopHandler);
-
-            this.tcpClient = tcpClient;
+            _functions = new Dictionary<string, Action<DataPacket>>();
+            _functions.Add("login", LoginFeature);
+            _functions.Add("chat", ChatHandler);
+            _functions.Add("session start", SessionStartHandler);
+            _functions.Add("session stop", SessionStopHandler);
+            
             _patientData = new PatientData();
-
-            this.stream = this.tcpClient.GetStream();
-            stream.BeginRead(lengthBytes, 0, lengthBytes.Length, new AsyncCallback(OnLengthBytesReceived), null);
-        }
-        
-        private void OnLengthBytesReceived(IAsyncResult ar)
-        {
-            dataBuffer = new byte[BitConverter.ToInt32(lengthBytes)];
-            stream.BeginRead(dataBuffer, 0, dataBuffer.Length, OnDataReceived, null);
         }
 
-        //receive the request from the client and triggers the right connected methode from the request
-        private void OnDataReceived(IAsyncResult ar)
-        {
-            stream.EndRead(ar);
-            
-            //converts the databuffer to JObject
-            string data = Encoding.UTF8.GetString(dataBuffer);
-            DataPacket dataPacket = JsonConvert.DeserializeObject<DataPacket>(data);
-
-            //gives the JObject as parameter to determine which methode will be triggerd
-            handleData(dataPacket);
-            stream.BeginRead(lengthBytes, 0, lengthBytes.Length, OnLengthBytesReceived, null);
-        }
-        
         //determines which methode exactly will be executed 
-        private void handleData(DataPacket packetData)
+        private void HandleData(DataPacket packetData)
         {
             Console.WriteLine($"Got a packet server: {packetData.OpperationCode}");
-            Action<DataPacket> action;
 
             //Checks if the OppCode (OperationCode) does exist.
-            if (functions.TryGetValue(packetData.OpperationCode, out action)) {
+            if (_functions.TryGetValue(packetData.OpperationCode, out var action)) {
                 action.Invoke(packetData);
             }else {
                 throw new Exception("Function not implemented");
@@ -71,24 +49,23 @@ namespace RemoteHealthcare.CentralServer
         }
         //This methode used to send an request from the Server to the Client
         //The parameter is an JsonFile object
-        public void SendData(DAbstract packet)
+        private void SendData(DAbstract packet)
         {
-            byte[] dataBytes = Encoding.ASCII.GetBytes(packet.ToJson());
-
-            stream.Write(BitConverter.GetBytes(dataBytes.Length));
-            stream.Write(dataBytes);
+            _client.SendAsync(packet).GetAwaiter().GetResult();
         }
 
         //the methode for the chat request
         private void ChatHandler(DataPacket packetData)
         {
-            SendData(new DataPacket<ChatPacketResponse> {
+            SendData(new DataPacket<ChatPacketResponse>
+            {
                 OpperationCode = OperationCodes.CHAT,
-                
-                data = new ChatPacketResponse() {
+
+                data = new ChatPacketResponse()
+                {
                     statusCode = StatusCodes.OK,
-                    message =  "Dit is de response van uit de server, het bericht is: " +
-                               packetData.GetData<ChatPacketRequest>().message
+                    message = "Dit is de response van uit de server, het bericht is: " +
+                              packetData.GetData<ChatPacketRequest>().message
                 }
             });
         }
@@ -97,8 +74,8 @@ namespace RemoteHealthcare.CentralServer
         private void LoginFeature(DataPacket packetData)
         {
             Patient patient = new Patient(packetData.GetData<LoginPacketRequest>().username, packetData.GetData<LoginPacketRequest>().password, "1234");
-            _patientData._patients.Add(new Patient("user", "password123", "1234"));
-            Console.WriteLine($"Name: {patient.username} Password: {patient.password}");
+            _patientData.Patients.Add(new Patient("user", "password123", "1234"));
+            Console.WriteLine($"Name: {patient.Username} Password: {patient.Password}");
           
             if (_patientData.MatchLoginData(patient)) {
                 SendData(new DataPacket<LoginPacketResponse> {
