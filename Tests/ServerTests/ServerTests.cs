@@ -25,13 +25,13 @@ public class ServerTests
         var client = new SocketClient(false);
         await client.ConnectAsync("127.0.0.1", 12345);
 
-        await Task.Delay(1000);
+        await Task.Delay(1);
 
         Assert.That(connectedClients, Is.EqualTo(1));
     }
     
     [Test]
-    public async Task Messaging()
+    public async Task ClientToServerMessaging()
     {
         var server = new SocketServer(true);
         await server.ConnectAsync("127.0.0.1", 12346);
@@ -42,10 +42,30 @@ public class ServerTests
         
         var client = new SocketClient(true);
         await client.ConnectAsync("127.0.0.1", 12346);
-        await client.SendAsync("Hello world!");
+        await client.SendAsync("Hello world! 123456789");
 
-        await Task.Delay(1000);
+        await Task.Delay(1);
 
-        Assert.That(receivedMessage, Is.EqualTo("Hello world!"));
+        Assert.That(receivedMessage, Is.EqualTo("Hello world! 123456789"));
     }
+
+    [Test]
+    public async Task ServerToClientMessaging()
+    {
+        var server = new SocketServer(true);
+        await server.ConnectAsync("127.0.0.1", 12347);
+
+        var client = new SocketClient(true);
+        await client.ConnectAsync("127.0.0.1", 12347);
+        
+        var receivedMessage = "";
+        client.OnMessage += (sender, e) => receivedMessage = e;
+        
+        await server.BroadcastAsync("Hello world! 123456789");
+
+        await Task.Delay(1);
+
+        Assert.That(receivedMessage, Is.EqualTo("Hello world! 123456789"));
+    }
+    
 }
