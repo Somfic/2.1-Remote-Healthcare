@@ -19,7 +19,9 @@ public class SocketClient
 
     public static SocketClient CreateFromSocket(TcpClient socket, bool useEncryption)
     {
-        return new SocketClient(useEncryption) { Socket = socket };
+        var client = new SocketClient(useEncryption) { Socket = socket };
+        client.Read();
+        return client;
     }
 
     public async Task ConnectAsync(string ip, int port)
@@ -33,13 +35,12 @@ public class SocketClient
         {
             await Socket.ConnectAsync(IPAddress.Parse(ip), port);
             _log.Debug($"Connected to {ip}:{port}");
+            Read();
         }
         catch (Exception ex)
         {
             _log.Error(ex, $"Could not connect to {ip}:{port}");
         }
-
-        Task.Run(async () => await Read());
     }
 
     public Task SendAsync(dynamic data)
@@ -53,13 +54,23 @@ public class SocketClient
         return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);
     }
 
-    private async Task Read()
+    private void Read()
     {
-        while (Socket.Connected)
+        Task.Run(async () =>
         {
-            var text = await SocketHelper.ReadMessage(Socket.GetStream(), _useEncryption);
-            OnMessage?.Invoke(this, text);
-        }
+            while (Socket.Connected)
+            {
+                try
+                {
+                    var text = await SocketHelper.ReadMessage(Socket.GetStream(), _useEncryption);
+                    OnMessage?.Invoke(this, text);
+                }
+                catch (Exception ex)
+                {
+                    _log.Warning(ex, "Could not read socket message");
+                }
+            }
+        });
     }
     
     public event EventHandler<string>? OnMessage;
