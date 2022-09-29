@@ -13,6 +13,7 @@ public class SocketServer
     private readonly List<SocketClient> _clients = new();
     public IReadOnlyList<SocketClient> Clients => _clients.AsReadOnly();
     private readonly bool _useEncryption;
+    private bool _shouldRun;
 
     public SocketServer(bool useEncryption)
     {
@@ -21,6 +22,8 @@ public class SocketServer
 
     public async Task ConnectAsync(string ip, int port)
     {
+        _shouldRun = true;
+        
         if (Socket?.Server.Connected == true)
             return;
 
@@ -29,7 +32,7 @@ public class SocketServer
             _log.Debug($"Starting server on {ip}:{port} ... ({(_useEncryption ? "encrypted" : "unencrypted")})");
 
             Socket = new TcpListener(IPAddress.Parse(ip), port);
-            Socket.Start();
+            Socket.Start(0);
 
             _log.Debug($"Started server on {ip}:{port}");
 
@@ -44,7 +47,7 @@ public class SocketServer
 
     private async Task AcceptConnection()
     {
-        while (Socket?.Server.Connected == true)
+        while (_shouldRun)
         {
             try
             {
@@ -66,6 +69,8 @@ public class SocketServer
                 _log.Warning(ex, "Could not accept new socket client connection");
             }
         }
+        
+        _log.Debug("Stopped server");
     }
 
     public event EventHandler<SocketClient>? OnClientConnected;
@@ -84,5 +89,11 @@ public class SocketServer
         {
             await client.SendAsync(json);
         }
+    }
+
+    public async Task DisconnectAsync()
+    {
+        _shouldRun = false;
+        Socket.Stop();
     }
 }

@@ -70,6 +70,8 @@ public class SocketClient
                     _log.Warning(ex, "Could not read socket message");
                 }
             }
+            
+            _log.Debug("Stopped client");
         });
     }
     

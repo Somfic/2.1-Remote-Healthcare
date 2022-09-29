@@ -3,7 +3,7 @@ using RemoteHealthcare.Common.Socket;
 
 namespace CentralServer.Tests;
 
-public class Tests
+public class SocketTests
 {
     [SetUp]
     public void Setup()
@@ -17,6 +17,17 @@ public class Tests
 
         var encrypted = SocketHelper.Encode(text, false);
         var decrypted = SocketHelper.Decode(encrypted, false);
+
+        Assert.That(decrypted, Is.EqualTo(text));
+    }
+    
+    [Test]
+    public void Encryption()
+    {
+        var text = GenerateRandomString(1000);
+
+        var encrypted = SocketHelper.Encode(text, true);
+        var decrypted = SocketHelper.Decode(encrypted, true);
 
         Assert.That(decrypted, Is.EqualTo(text));
     }

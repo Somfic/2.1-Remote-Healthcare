@@ -6,6 +6,7 @@ namespace RemoteHealthcare.Common.Socket;
 public static class SocketHelper
 {
     private static readonly RSACryptoServiceProvider Rsa = new(2048);
+    private static readonly Aes Aes = Aes.Create();
 
     public static async Task SendMessage(Stream stream, string data, bool useEncryption = true)
     {
@@ -15,7 +16,7 @@ public static class SocketHelper
 
     public static async Task<string> ReadMessage(Stream stream, bool useEncryption = true)
     {
-        var length = new byte[1024];
+        var length = new byte[4];
         var dataRead = 0;
 
         while (dataRead < 4)
@@ -46,9 +47,9 @@ public static class SocketHelper
         // Convert the text to bytes
         var textBytes = Encoding.UTF8.GetBytes(text);
         
-        // Encrypt the bytes using RSA
-        if(useEncryption)
-            textBytes = Rsa.Encrypt(textBytes, false);;
+        // Encrypt the bytes
+        if (useEncryption)
+            textBytes = Encrypt(textBytes);
 
         // If the bytes were null, throw an exception
         if(textBytes == null)
@@ -73,9 +74,9 @@ public static class SocketHelper
     {
         var textBytes = data.Skip(4).ToArray();
         
-        // Decrypt the bytes using RSA
-        if(useEncryption)
-            textBytes = Rsa.Decrypt(textBytes, false);
+        // Decrypt the bytes
+        if (useEncryption)
+            textBytes = Decrypt(textBytes);
         
         // If the bytes were null, throw an exception
         if(textBytes == null)
@@ -93,5 +94,17 @@ public static class SocketHelper
         Buffer.BlockCopy(b1, 0, r, 0, b1.Length);
         Buffer.BlockCopy(b2, 0, r, b1.Length, count);
         return r;
+    }
+
+    public static byte[] Encrypt(byte[] data)
+    {
+        // return Rsa.Encrypt(data, false);
+        return data;
+    }
+
+    public static byte[] Decrypt(byte[] data)
+    {
+        // return Rsa.Decrypt(data, false);
+        return data;
     }
 }
