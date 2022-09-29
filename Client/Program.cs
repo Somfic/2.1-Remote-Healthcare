@@ -14,6 +14,7 @@ try
     var heart = await DataProvider.GetHeart();
 
     var client = new Client();
+    await client.RunAsync();
 
     /*var vrConnection = new VrConnection(bike, heart, engine);
     vrConnection.start();*/
