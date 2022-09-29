@@ -11,8 +11,9 @@ public class SocketServer
     public TcpListener? Socket { get; private set; }
     private readonly Log _log = new(typeof(SocketServer));
     private readonly List<SocketClient> _clients = new();
+    public IReadOnlyList<SocketClient> Clients => _clients.AsReadOnly();
     private readonly bool _useEncryption;
-    
+
     public SocketServer(bool useEncryption)
     {
         _useEncryption = useEncryption;
@@ -50,19 +51,19 @@ public class SocketServer
                 if (Socket == null) throw new NullReferenceException("Listener is null");
 
                 var socket = await Socket.AcceptTcpClientAsync();
+                
+                _log.Debug($"Socket client connected");
+                
                 var client = SocketClient.CreateFromSocket(socket, _useEncryption);
 
                 client.OnMessage += (sender, message) => OnMessage?.Invoke(this, (client, message));
-
-                _log.Debug($"Socket client connected");
-
                 _clients.Add(client);
 
                 Task.Run(() => { OnClientConnected?.Invoke(this, client); });
             }
             catch (Exception ex)
             {
-                _log.Warning(ex, "Could not accept socket client");
+                _log.Warning(ex, "Could not accept new socket client connection");
             }
         }
     }
@@ -79,7 +80,7 @@ public class SocketServer
     
     public async Task Broadcast(string json)
     {
-        foreach (var client in _clients.Where(x => x.Socket.Connected))
+        foreach (var client in Clients.Where(x => x.Socket.Connected))
         {
             await client.SendAsync(json);
         }
