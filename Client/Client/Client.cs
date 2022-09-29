@@ -6,16 +6,17 @@ using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 
-namespace RemoteHealthcare.Client {
+namespace RemoteHealthcare.Client
+{
     public class Client
     {
         private SocketClient _client = new(true);
-        private Log _log = new (typeof(Client));
+        private Log _log = new(typeof(Client));
 
         private string _password;
         private string _username;
         private bool _loggedIn;
-        
+
         private static Dictionary<string, Action<DataPacket>> _functions;
 
         public async Task RunAsync()
@@ -28,7 +29,7 @@ namespace RemoteHealthcare.Client {
             _functions.Add("chat", ChatHandler);
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
-            
+
             Console.WriteLine("Hello Client!");
             Console.WriteLine("Wat is uw telefoonnummer? ");
             _username = Console.ReadLine();
@@ -40,14 +41,17 @@ namespace RemoteHealthcare.Client {
                 var packet = JsonConvert.DeserializeObject<DataPacket>(data);
                 HandleData(packet);
             };
-            
+
             await _client.ConnectAsync("127.0.0.1", 15243);
-            
-            DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest> {
+
+            DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
+            {
                 OpperationCode = OperationCodes.LOGIN,
-                data = new LoginPacketRequest() {
+                data = new LoginPacketRequest()
+                {
                     username = _username,
-                    password = _password   
+                    password = _password,
+                    isDoctor = false
                 }
             };
 
@@ -57,46 +61,56 @@ namespace RemoteHealthcare.Client {
             {
                 Console.WriteLine("Voer een command in om naar de server te sturen: ");
                 var newChatMessage = Console.ReadLine();
-                
+
                 //if the user isn't logged in, the user cant send any command to the server
-                if (_loggedIn) {
-                    if (newChatMessage.Equals("chat")) {
+                if (_loggedIn)
+                {
+                    if (newChatMessage.Equals("chat"))
+                    {
                         Console.WriteLine("Voer uw bericht in: ");
                         newChatMessage = Console.ReadLine();
 
                         var req = new DataPacket<ChatPacketRequest>
                         {
                             OpperationCode = OperationCodes.CHAT,
-                            data = new ChatPacketRequest() {
+                            data = new ChatPacketRequest()
+                            {
                                 message = newChatMessage
                             }
                         };
 
                         await _client.SendAsync(req);
-
-                    }else if (newChatMessage.Equals("session start")) {
-
-                        var req = new DataPacket<SessionStartPacketRequest> {
+                    }
+                    else if (newChatMessage.Equals("session start"))
+                    {
+                        var req = new DataPacket<SessionStartPacketRequest>
+                        {
                             OpperationCode = OperationCodes.SESSION_START,
                         };
-                        
-                        await _client.SendAsync(req);
-                    }else if (newChatMessage.Equals("session stop")) {
 
-                        var req = new DataPacket<SessionStopPacketRequest> {
+                        await _client.SendAsync(req);
+                    }
+                    else if (newChatMessage.Equals("session stop"))
+                    {
+                        var req = new DataPacket<SessionStopPacketRequest>
+                        {
                             OpperationCode = OperationCodes.SESSION_STOP,
                         };
 
-                       await _client.SendAsync(req);
-                    }else {
+                        await _client.SendAsync(req);
+                    }
+                    else
+                    {
                         Console.WriteLine("in de else bij de client if else elsif statements!");
                     }
-                }else {
+                }
+                else
+                {
                     Console.WriteLine("Je bent nog niet ingelogd");
                 }
             }
         }
-        
+
         //this methode will get the right methode that will be used for the response from the server
         public void HandleData(DataPacket packet)
         {
@@ -104,7 +118,9 @@ namespace RemoteHealthcare.Client {
             if (_functions.TryGetValue(packet.OpperationCode, out var action))
             {
                 action.Invoke(packet);
-            } else {
+            }
+            else
+            {
                 throw new Exception("Function not implemented");
             }
         }
@@ -126,17 +142,19 @@ namespace RemoteHealthcare.Client {
         {
             Console.WriteLine(packetData.GetData<ChatPacketResponse>().message);
         }
-        
+
         //the methode for the login request
         private void LoginFeature(DataPacket packetData)
         {
+            int statusCode = (int)packetData.GetData<LoginPacketResponse>().statusCode;
 
-            int statusCode = (int) packetData.GetData<LoginPacketResponse>().statusCode;
-            
-            if (statusCode.Equals(200)) {
+            if (statusCode.Equals(200))
+            {
                 Console.WriteLine("Logged in!");
                 _loggedIn = true;
-            } else {
+            }
+            else
+            {
                 Console.WriteLine(packetData.GetData<LoginPacketResponse>().statusCode);
                 Console.WriteLine(packetData.GetData<LoginPacketResponse>().message);
             }

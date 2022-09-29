@@ -37,6 +37,7 @@ namespace RemoteHealthcare.Server.ServerClient
             _functions.Add("session stop", SessionStopHandler);
 
             _patientData = new PatientData();
+            _doctorData = new DoctorData();
         }
 
         //determines which methode exactly will be executed 

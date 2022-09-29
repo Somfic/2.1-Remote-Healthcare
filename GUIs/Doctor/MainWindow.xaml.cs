@@ -23,11 +23,25 @@ namespace Doctor
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly Log _log = new(typeof(MainWindow));
+
         public MainWindow()
         {
-            Thread clientThread = new Thread(() => new Client());
-            clientThread.Start();
-            // InitializeComponent();
+            InitializeComponent();
+            try
+            {
+                new Thread(async () =>
+                {
+                    var client = new Client();
+                    _log.Debug("Client created");
+                    await client.RunAsync();
+                }).Start();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
