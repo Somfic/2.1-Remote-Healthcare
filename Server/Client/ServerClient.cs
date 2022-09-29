@@ -5,7 +5,7 @@ using RemoteHealthcare.CentralServer.Models;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Socket.Client;
 
-namespace RemoteHealthcare.CentralServer.Client
+namespace RemoteHealthcare.Server.ServerClient
 {
     internal class ServerClient
     {

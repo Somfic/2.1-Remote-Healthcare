@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
-using RemoteHealthcare.CentralServer.Client;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
+using RemoteHealthcare.Server.ServerClient;
 
 namespace RemoteHealthcare.CentralServer;
 

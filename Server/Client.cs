@@ -2,6 +2,7 @@ using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RemoteHealthcare.CentralServer.Models;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 
@@ -110,8 +111,8 @@ namespace RemoteHealthcare.CentralServer
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
                     packetData.GetData<LoginPacketRequest>().password, "1234");
-                _patientData._patients.Add(new Patient("user", "password123", "1234"));
-                Console.WriteLine($"Patient name: {patient.username} Password: {patient.password}");
+                _patientData.Patients.Add(new Patient("user", "password123", "1234"));
+                Console.WriteLine($"Patient name: {patient.Username} Password: {patient.Password}");
             }
             else if (packetData.GetData<LoginPacketRequest>().isDoctor)
             {

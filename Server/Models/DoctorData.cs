@@ -2,17 +2,17 @@
 
 public class DoctorData
 {
-    public Doctor doctor { get; set; }
+    private Doctor _doctor { get; set; }
 
     public DoctorData()
     {
-        this.doctor = new Doctor("Piet", "dhrPiet", "Dhr145");
+        this._doctor = new Doctor("Piet", "dhrPiet", "Dhr145");
     }
 
     public bool MatchLoginData(Doctor d)
     {
-        if (doctor.username.Equals(d.username) && doctor.password.Equals(d.password) &&
-            doctor.userId.Equals(d.userId))
+        if (_doctor.username.Equals(d.username) && _doctor.password.Equals(d.password) &&
+            _doctor.userId.Equals(d.userId))
             return true;
         else 
             return false;
@@ -23,6 +23,6 @@ public class DoctorData
         string folderName = Environment.CurrentDirectory;
         Console.WriteLine(folderName);
         folderName = Path.Combine(folderName.Substring(0, folderName.LastIndexOf("bin")) + "DoctorDataFiles");
-        doctor.SaveSessionData(folderName);
+        _doctor.SaveSessionData(folderName);
     }
 }

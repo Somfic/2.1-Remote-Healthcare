@@ -13,7 +13,8 @@ public class PatientData
     {
         foreach (var varPatient in Patients)
         {
-            if (varPatient.Username.Equals(patient.Username) && varPatient.Password.Equals(patient.Password) && varPatient.UserId.Equals(patient.UserId))
+            if (varPatient.Username.Equals(patient.Username) && varPatient.Password.Equals(patient.Password) && 
+                varPatient.UserId.Equals(patient.UserId))
             {
                 return true;
             }
