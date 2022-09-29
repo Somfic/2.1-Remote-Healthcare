@@ -49,4 +49,9 @@ public class SimulationBikeDataProvider : BikeDataProvider
 
         _timerSinceLastProcess.Restart();
     }
+
+    public override void SentMessage(byte[] bytes)
+    {
+        Console.Write(":)");
+    }
 }

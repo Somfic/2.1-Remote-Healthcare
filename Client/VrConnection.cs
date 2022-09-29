@@ -15,6 +15,8 @@ namespace NetworkEngine.Socket
             this.heart = heart;
             this.engine = engine;
 
+            
+
             /* Unmerged change from project 'Client (net6.0)'
             Before:
                     }
@@ -33,7 +35,20 @@ namespace NetworkEngine.Socket
             {
                 await bike.ProcessRawData();
                 await engine.ChangeBikeSpeed(bike.GetData().Speed);
-                Thread.Sleep(100);
+                Thread.Sleep(300);
+                byte[] data = (new byte[] { 164, 9, 78, 5, 48, 255, 255, 255, 255, 255, 255, 199, 0 });
+                byte checksum = 0;
+                for (int i = 0; i < 12; i++)
+                {
+                    checksum ^= data[i];
+                }
+                data[12] = (byte)checksum;
+                foreach(byte bite in data)
+                {
+                    Console.Write(bite + "-");
+                }
+                Console.WriteLine();
+                bike.SentMessage(data);
             }
         }
     }

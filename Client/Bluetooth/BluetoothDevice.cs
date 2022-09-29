@@ -26,6 +26,11 @@ public class BluetoothDevice
     public byte[] ReceivedData { get; private set; } = new byte[12];
     public string ServiceName { get; private set; } = string.Empty;
 
+    public async Task sendMessage(byte[] bytes)
+    {
+        await _bluetoothConnection.WriteCharacteristic(_serviceCharacteristic, bytes);
+    }
+
     public async Task Connect()
     {
         var errorCode = -1;
@@ -61,8 +66,16 @@ public class BluetoothDevice
             _bluetoothConnection.SubscriptionValueChanged += (sender, e) =>
             {
                 //Console.WriteLine($" { e.Data[_idByte]}  -- {_id}");
+
+                foreach (byte bite in e.Data)
+                {
+                    Console.Write(bite + "-");
+                }
+                Console.WriteLine("");
                 if (e.Data[_idByte] == _id)
                 {
+                  
+                    
                     ServiceName = e.ServiceName;
                     ReceivedData = e.Data;
                 }
