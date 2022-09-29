@@ -97,7 +97,7 @@ namespace RemoteHealthcare.CentralServer
         private void LoginFeature(DataPacket packetData)
         {
             Patient patient = new Patient(packetData.GetData<LoginPacketRequest>().username, packetData.GetData<LoginPacketRequest>().password, "1234");
-            _patientData._patients.Add(new Patient("richard", "owen", "1234"));
+            _patientData._patients.Add(new Patient("user", "password123", "1234"));
             Console.WriteLine($"Name: {patient.username} Password: {patient.password}");
           
             if (_patientData.MatchLoginData(patient)) {
