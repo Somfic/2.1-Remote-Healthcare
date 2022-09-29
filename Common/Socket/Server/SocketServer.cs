@@ -45,20 +45,31 @@ public class SocketServer
     {
         while (Socket?.Server.Connected == true)
         {
-            if (Socket == null) throw new NullReferenceException("Listener is null");
+            try
+            {
+                if (Socket == null) throw new NullReferenceException("Listener is null");
 
-            var socket = await Socket.AcceptTcpClientAsync();
-            var client = SocketClient.CreateFromSocket(socket, _useEncryption);
+                var socket = await Socket.AcceptTcpClientAsync();
+                var client = SocketClient.CreateFromSocket(socket, _useEncryption);
 
-            _log.Debug($"Socket client connected");
+                client.OnMessage += (sender, message) => OnMessage?.Invoke(this, (client, message));
 
-            _clients.Add(client);
+                _log.Debug($"Socket client connected");
 
-            Task.Run(() => { OnClientConnected?.Invoke(this, client); });
+                _clients.Add(client);
+
+                Task.Run(() => { OnClientConnected?.Invoke(this, client); });
+            }
+            catch (Exception ex)
+            {
+                _log.Warning(ex, "Could not accept socket client");
+            }
         }
     }
 
     public event EventHandler<SocketClient>? OnClientConnected;
+
+    public event EventHandler<(SocketClient client, string message)>? OnMessage; 
 
     public Task Broadcast(dynamic data)
     {
@@ -70,7 +81,7 @@ public class SocketServer
     {
         foreach (var client in _clients.Where(x => x.Socket.Connected))
         {
-            await SocketHelper.SendMessage(client.Socket.GetStream(), json);
+            await client.SendAsync(json);
         }
     }
 }
