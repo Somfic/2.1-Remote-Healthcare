@@ -7,6 +7,14 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-
+        <Button FontWeight="Bold" HorizontalContentAlignment="Center" Click="ButtonBase_OnClick">
+            <Button.HorizontalAlignment>Left</Button.HorizontalAlignment>
+            <Button.VerticalAlignment>Center</Button.VerticalAlignment>
+            <Button.Background>Black</Button.Background>
+            <WrapPanel>
+                <TextBlock Foreground="Blue">Multi</TextBlock>
+                <TextBlock Foreground="Red">Color</TextBlock>
+            </WrapPanel>
+        </Button>
     </Grid>
 </Window>
