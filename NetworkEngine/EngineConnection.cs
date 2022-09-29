@@ -15,7 +15,7 @@ namespace NetworkEngine;
 public class EngineConnection
 {
     private readonly Log _log = new(typeof(EngineConnection));
-    private readonly SocketClient _socket = new();
+    private readonly SocketClient _socket = new(false);
     private (string user, string uid)[]? _clients;
     private string _groundPlaneId;
     private string _routeId;
@@ -76,7 +76,10 @@ public class EngineConnection
         }
 
         if (user == null)
+        {
             user = Environment.UserName;
+            _log.Debug($"Connecting as {user}");
+        }
 
         if (!_clients.Any(x => x.user.ToLower().Contains(user.ToLower())))
         {

@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
@@ -17,11 +17,6 @@ jobs:
       with:
         dotnet-version: 6.0.x
 
-    - name: Restore dependencies
-      run: dotnet restore
-
-    - name: Build codebase
-      run: dotnet build --no-restore
-
     - name: Test codebase
-      run: dotnet test --no-build --verbosity normal
+      working-directory: Tests
+      run: dotnet test ServerTests

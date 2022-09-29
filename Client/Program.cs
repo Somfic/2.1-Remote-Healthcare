@@ -9,12 +9,14 @@ try
     var engine = new EngineConnection();
     await engine.ConnectAsync();
 
-    var bike = await DataProvider.GetBike("00472");
-    var heart = await DataProvider.GetHeart();
-    var vrConnection = new VrConnection(bike, heart, engine);
-    vrConnection.start();
 
-    //var client = new Client();
+     var bike = await DataProvider.GetBike("00472");
+     var heart = await DataProvider.GetHeart();
+
+     var client = new Client();
+
+    /*var vrConnection = new VrConnection(bike, heart, engine);
+    vrConnection.start();*/
 
     await Task.Delay(-1);
 }
