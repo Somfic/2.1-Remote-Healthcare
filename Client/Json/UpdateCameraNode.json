@@ -10,9 +10,9 @@
         "parent": "",
         "transform": {
           "position": [
-            -300,
             0,
-            0
+            0,
+            -30
           ],
           "scale": 100.0,
           "rotation": [

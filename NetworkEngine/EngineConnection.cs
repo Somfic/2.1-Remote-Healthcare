@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using NetworkEngine.Socket.Models;
 using NetworkEngine.Socket.Models.Response;
@@ -145,20 +146,45 @@ public class EngineConnection
         await MoveHeadPosition();
 
 
-        _roadArray = new bool[256, 256];
-
-        await ChangeBikeSpeed(30);
-        while (_roadcount < 462)
-        {
-            await Task.Delay(50);
-            await NodeInfo(_tunnelId);
-        }
+        await Task.Delay(1000);
+        await RoadLoad();
+       
 
         await Task.Delay(1000);
         await Addhouses(_tunnelId, 1000);
 
         await Task.Delay(1000);
-        await ChangeBikeSpeed(1);
+        await ChangeBikeSpeed(50);
+    }
+
+    
+
+    private async Task RoadLoad()
+    {
+        _roadArray = new bool[256, 256];
+        
+        string s = Path.Combine(_filePath, "Roadload", "road.ser");
+        BinaryFormatter b = new BinaryFormatter();
+        if (!File.Exists(s))
+        {
+            await ChangeBikeSpeed(50);
+            while (_roadcount < 550)
+            {
+                await Task.Delay(50);
+                await NodeInfo(_tunnelId);
+            }
+
+            
+            
+            Stream ss = new FileStream(s,FileMode.Create,FileAccess.Write);
+            b.Serialize(ss,_roadArray);
+
+        }
+        else
+        {
+            Stream ss = new FileStream(s, FileMode.Open, FileAccess.Read);
+            _roadArray = (bool[,])b.Deserialize(ss);
+        }
     }
 
     private async Task ProcessMessageAsync(string json)
@@ -516,7 +542,7 @@ public class EngineConnection
         int z1 = (int)Convert.ToDecimal(z);
         _roadcount++;
 
-        _log.Information($"x = {x1} and z ={z1}");
+        // _log.Information($"x = {x1} and z ={z1}");
 
         if (!(_firstx == x1 && _firstz == z1))
 
@@ -542,7 +568,8 @@ public class EngineConnection
             _first = true;
         }
     }
-
+    
+    
     public async Task Addhouses(string dest, int amount)
     {
         Random r = new Random();
