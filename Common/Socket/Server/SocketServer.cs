@@ -83,11 +83,11 @@ public class SocketServer
         return Broadcast(json);
     }
     
-    public async Task Broadcast(string json)
+    public async Task BroadcastAsync(string text)
     {
         foreach (var client in Clients.Where(x => x.Socket.Connected))
         {
-            await client.SendAsync(json);
+            await client.SendAsync(text);
         }
     }
 
