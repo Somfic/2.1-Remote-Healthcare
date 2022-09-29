@@ -12,6 +12,7 @@ namespace RemoteHealthcare.Client {
         private SocketClient _client = new(true);
         private Log _log = new (typeof(Client));
 
+        private string checkedd;
         private string _password;
         private string _username;
         private bool _loggedIn;
@@ -40,9 +41,10 @@ namespace RemoteHealthcare.Client {
                 var packet = JsonConvert.DeserializeObject<DataPacket>(data);
                 HandleData(packet);
             };
+            
             await _client.ConnectAsync("127.0.0.1", 15243);
             
-            var loginReq = new DataPacket<LoginPacketRequest> {
+            DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest> {
                 OpperationCode = OperationCodes.LOGIN,
                 data = new LoginPacketRequest() {
                     username = _username,
@@ -97,7 +99,7 @@ namespace RemoteHealthcare.Client {
         }
         
         //this methode will get the right methode that will be used for the response from the server
-        private void HandleData(DataPacket packet)
+        public void HandleData(DataPacket packet)
         {
             //Checks if the OppCode (OperationCode) does exist.
             if (_functions.TryGetValue(packet.OpperationCode, out var action))
@@ -130,7 +132,8 @@ namespace RemoteHealthcare.Client {
         private void LoginFeature(DataPacket packetData)
         {
 
-            var statusCode = (int) packetData.GetData<LoginPacketResponse>().statusCode;
+            int statusCode = (int) packetData.GetData<LoginPacketResponse>().statusCode;
+            
             if (statusCode.Equals(200)) {
                 Console.WriteLine("Logged in!");
                 _loggedIn = true;

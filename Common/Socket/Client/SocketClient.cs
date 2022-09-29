@@ -51,7 +51,6 @@ public class SocketClient
     
     public Task SendAsync(string text)
     {
-        _log.Debug($"Sending: {text}");
         return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);
     }
 

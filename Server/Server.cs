@@ -1,3 +1,6 @@
+using Newtonsoft.Json;
+using RemoteHealthcare.CentralServer.Client;
+using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
@@ -13,22 +16,18 @@ public class Server
 
     public async Task StartAsync()
     {
-        _server.OnMessage += async (sender, e) => await OnMessage(e.client, e.message);
         _server.OnClientConnected += async (sender, e) => await OnClientConnected(e);
         
         await _server.ConnectAsync("127.0.0.1", Port);
         
         _log.Information($"Server running on port {Port}");
     }
-
-    private async Task OnMessage(SocketClient client, string message)
-    {
-        await client.SendAsync(message);
-    }
+    
     
     private async Task OnClientConnected(SocketClient client)
     {
         _log.Information($"Client connected: {client.Socket}");
+        ServerClient serverClient = new ServerClient(client);
     }
 
     private async Task BroadcastAsync(string message)

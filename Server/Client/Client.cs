@@ -22,6 +22,7 @@ namespace RemoteHealthcare.CentralServer.Client
             _client.OnMessage += (sender, data) =>
             {
                 var dataPacket = JsonConvert.DeserializeObject<DataPacket>(data);
+                
                 //gives the JObject as parameter to determine which methode will be triggerd
                 HandleData(dataPacket);
             };
@@ -47,6 +48,7 @@ namespace RemoteHealthcare.CentralServer.Client
                 throw new Exception("Function not implemented");
             }
         }
+        
         //This methode used to send an request from the Server to the Client
         //The parameter is an JsonFile object
         private void SendData(DAbstract packet)
@@ -75,9 +77,9 @@ namespace RemoteHealthcare.CentralServer.Client
         {
             Patient patient = new Patient(packetData.GetData<LoginPacketRequest>().username, packetData.GetData<LoginPacketRequest>().password, "1234");
             _patientData.Patients.Add(new Patient("user", "password123", "1234"));
-            Console.WriteLine($"Name: {patient.Username} Password: {patient.Password}");
-          
+            
             if (_patientData.MatchLoginData(patient)) {
+                Console.WriteLine("in de login if dus het is goed binne gekomen");
                 SendData(new DataPacket<LoginPacketResponse> {
                     OpperationCode = OperationCodes.LOGIN,
                 
