@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using RemoteHealthcare.Client;
+using RemoteHealthcare.Common.Logger;
 
 namespace Doctor
 {
@@ -22,7 +25,14 @@ namespace Doctor
     {
         public MainWindow()
         {
-            InitializeComponent();
+            Thread clientThread = new Thread(() => new Client());
+            clientThread.Start();
+            // InitializeComponent();
+        }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("Button pressed");
         }
     }
 }
