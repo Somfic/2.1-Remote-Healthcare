@@ -17,14 +17,15 @@ namespace RemoteHealthcare.CentralServer
         private readonly byte[] lengthBytes = new byte[4];
 
         public string UserName { get; set; }
-        private Dictionary<string, Action<JObject>> functions;
+        private Dictionary<string, Action<DataPacket>> functions;
 
         //Set-ups the client constructor
         public Client(TcpClient tcpClient)
         {
-            this.functions = new Dictionary<string, Action<JObject>>();
-            this.functions.Add("login", this.LoginFeature);
-            this.functions.Add("chat", this.ChatHandler);
+            this.functions = new Dictionary<string, Action<DataPacket>>();
+            
+            this.functions.Add("login", LoginFeature);
+            this.functions.Add("chat", ChatHandler);
             this.functions.Add("session start", SessionStartHandler);
             this.functions.Add("session stop", SessionStopHandler);
 
@@ -47,24 +48,22 @@ namespace RemoteHealthcare.CentralServer
             stream.EndRead(ar);
             
             //converts the databuffer to JObject
-            JObject data = JObject.Parse(Encoding.UTF8.GetString(this.dataBuffer));
+            string data = Encoding.UTF8.GetString(dataBuffer);
+            DataPacket dataPacket = JsonConvert.DeserializeObject<DataPacket>(data);
 
-            Console.WriteLine(data.ToString());
-            
             //gives the JObject as parameter to determine which methode will be triggerd
-            handleData(data);
+            handleData(dataPacket);
             stream.BeginRead(lengthBytes, 0, lengthBytes.Length, OnLengthBytesReceived, null);
         }
         
         //determines which methode exactly will be executed 
-        private void handleData(JObject packetData)
+        private void handleData(DataPacket packetData)
         {
-            Console.WriteLine($"Got a packet server: {packetData.Value<string>("OppCode")}");
-            Console.WriteLine(packetData.ToString());
-            Action<JObject> action;
+            Console.WriteLine($"Got a packet server: {packetData.OpperationCode}");
+            Action<DataPacket> action;
 
             //Checks if the OppCode (OperationCode) does exist.
-            if (this.functions.TryGetValue(packetData.Value<string>("OppCode"), out action)) {
+            if (functions.TryGetValue(packetData.OpperationCode, out action)) {
                 action.Invoke(packetData);
             }else {
                 throw new Exception("Function not implemented");
@@ -72,96 +71,79 @@ namespace RemoteHealthcare.CentralServer
         }
         //This methode used to send an request from the Server to the Client
         //The parameter is an JsonFile object
-        public void SendData(JsonFile jsonFile)
+        public void SendData(DAbstract packet)
         {
-            byte[] dataBytes = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(
-                jsonFile,
-                Formatting.Indented,
-                new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore }));
-            
-            string utfString = Encoding.UTF8.GetString(dataBytes, 0, dataBytes.Length);  
-            Console.WriteLine(utfString);
+            byte[] dataBytes = Encoding.ASCII.GetBytes(packet.ToJson());
 
             stream.Write(BitConverter.GetBytes(dataBytes.Length));
             stream.Write(dataBytes);
         }
 
         //the methode for the chat request
-        private void ChatHandler(JObject packetData)
+        private void ChatHandler(DataPacket packetData)
         {
-            SendData(new JsonFile
-            {
-                StatusCode = (int)StatusCodes.OK,
-                OppCode = OperationCodes.CHAT,
-
-                Data = new JsonData
-                {
-                    ChatMessage = "Dit is de response van uit de server, het bericht is: " +
-                                  packetData["Data"]["ChatMessage"]
+            SendData(new DataPacket<ChatPacketResponse> {
+                OpperationCode = OperationCodes.CHAT,
+                
+                data = new ChatPacketResponse() {
+                    statusCode = StatusCodes.OK,
+                    message =  "Dit is de response van uit de server, het bericht is: " +
+                               packetData.GetData<ChatPacketRequest>().message
                 }
             });
         }
     
         //the methode for the login request
-        private void LoginFeature(JObject packetData)
+        private void LoginFeature(DataPacket packetData)
         {
-            Patient patient = new Patient(packetData["Username"].ToObject<string>(), packetData["Password"].ToObject<string>(), "1234");
-            _patientData._patients.Add(new Patient("richard", "owen", "1234"));
+            Patient patient = new Patient(packetData.GetData<LoginPacketRequest>().username, packetData.GetData<LoginPacketRequest>().password, "1234");
+            _patientData._patients.Add(new Patient("user", "password123", "1234"));
             Console.WriteLine($"Name: {patient.username} Password: {patient.password}");
-            if (_patientData.MatchLoginData(patient))
-            {
-                SendData(new JsonFile
-                {
-                    StatusCode = (int)StatusCodes.OK,
-                    OppCode = OperationCodes.LOGIN,
-
-                    Data = new JsonData
-                    {
-                        Content = "OK je bent goed ingelogd"
+          
+            if (_patientData.MatchLoginData(patient)) {
+                SendData(new DataPacket<LoginPacketResponse> {
+                    OpperationCode = OperationCodes.LOGIN,
+                
+                    data = new LoginPacketResponse() {
+                        statusCode = StatusCodes.OK,
+                        message =  "Gefeliciteerd! : Je bent ingelogd"
                     }
                 });
-            }
-            else
-            {
-                SendData(new JsonFile
-                {
-                    StatusCode = (int)StatusCodes.NOT_FOUND,
-                    OppCode = OperationCodes.LOGIN,
 
-                    Data = new JsonData
-                    {
-                        Content = "ERROR: Verkeerde gebruiksnaam of Wachtwoord!"
+            } else {
+                SendData(new DataPacket<ChatPacketResponse> {
+                    OpperationCode = OperationCodes.LOGIN,
+                
+                    data = new ChatPacketResponse() {
+                        statusCode = StatusCodes.NOT_FOUND,
+                        message =  "Error: verkeerde wachtwoord of gebruikersnaam"
                     }
                 });
             }
         }
 
         //the methode for the session start request
-        private void SessionStartHandler(JObject obj)
+        private void SessionStartHandler(DataPacket obj)
         {
-            SendData(new JsonFile
-            {
-                StatusCode = (int)StatusCodes.OK,
-                OppCode = OperationCodes.SESSION_START,
-
-                Data = new JsonData
-                {
-                    ChatMessage = "sessie wordt nu GESTART"
+            SendData(new DataPacket<SessionStartPacketResponse> {
+                OpperationCode = OperationCodes.SESSION_START,
+                
+                data = new SessionStartPacketResponse() {
+                    statusCode = StatusCodes.OK,
+                    message =  "Sessie wordt nu GESTART" 
                 }
             });
         }
 
         //the methode for the session stop request
-        private void SessionStopHandler(JObject obj)
+        private void SessionStopHandler(DataPacket obj)
         {
-            SendData(new JsonFile
-            {
-                StatusCode = (int)StatusCodes.OK,
-                OppCode = OperationCodes.SESSION_STOP,
-
-                Data = new JsonData
-                {
-                    ChatMessage = "Sessie wordt nu GESTOPT"
+            SendData(new DataPacket<SessionStopPacketResponse> {
+                OpperationCode = OperationCodes.SESSION_STOP,
+                
+                data = new SessionStopPacketResponse() {
+                    statusCode = StatusCodes.OK,
+                    message =  "Sessie wordt nu GESTOPT" 
                 }
             });
         }
