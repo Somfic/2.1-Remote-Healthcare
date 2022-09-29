@@ -185,7 +185,9 @@ namespace RemoteHealthcare.Client {
         //the methode for the login request
         private static void LoginFeature(DataPacket packetData)
         {
-            if (packetData.Value<int>("StatusCode").Equals(200)) {
+
+            int status_code = (int) packetData.GetData<LoginPacketResponse>().statusCode;
+            if (status_code.Equals(200)) {
                 Console.WriteLine("Logged in!");
                 loggedIn = client.Connected;
             } else {

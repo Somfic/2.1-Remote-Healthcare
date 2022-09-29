@@ -96,11 +96,11 @@ namespace RemoteHealthcare.CentralServer
         //the methode for the login request
         private void LoginFeature(DataPacket packetData)
         {
-            Patient patient = new Patient(packetData["Username"].ToObject<string>(), packetData["Password"].ToObject<string>(), "1234");
+            Patient patient = new Patient(packetData.GetData<LoginPacketRequest>().username, packetData.GetData<LoginPacketRequest>().password, "1234");
             _patientData._patients.Add(new Patient("richard", "owen", "1234"));
             Console.WriteLine($"Name: {patient.username} Password: {patient.password}");
-            if (_patientData.MatchLoginData(patient))
-            {
+          
+            if (_patientData.MatchLoginData(patient)) {
                 SendData(new DataPacket<LoginPacketResponse> {
                     OpperationCode = OperationCodes.LOGIN,
                 
@@ -110,7 +110,6 @@ namespace RemoteHealthcare.CentralServer
                     }
                 });
 
-                this.UserName = username;
             } else {
                 SendData(new DataPacket<ChatPacketResponse> {
                     OpperationCode = OperationCodes.LOGIN,
