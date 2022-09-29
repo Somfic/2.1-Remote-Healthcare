@@ -1,20 +1,17 @@
-using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RemoteHealthcare.Common.Logger;
 
-namespace NetworkEngine;
+namespace RemoteHealthcare.Common.Socket.Client;
 
-public class SocketConnection
+public class SocketClient
 {
     private readonly byte[] _buffer = new byte[1024];
-
-    private readonly Log _log = new(typeof(SocketConnection));
+    private readonly Log _log = new(typeof(SocketClient));
     private readonly TcpClient _socket = new();
-    private NetworkStream _stream;
+    private NetworkStream? _stream;
     private byte[] _totalBuffer = Array.Empty<byte>();
 
     public async Task ConnectAsync(string host, int port)
@@ -46,6 +43,9 @@ public class SocketConnection
     {
         try
         {
+            if (_stream == null)
+                throw new NullReferenceException("Stream was null");
+            
             var numberOfBytes = _stream.EndRead(readResult);
             _totalBuffer = Concat(_totalBuffer, _buffer, numberOfBytes);
         }
@@ -68,7 +68,6 @@ public class SocketConnection
                 Array.Copy(_totalBuffer, packetSize + 4, newBuffer, 0, newBuffer.Length);
                 _totalBuffer = newBuffer;
             }
-
             else
             {
                 break;
@@ -78,15 +77,17 @@ public class SocketConnection
         _stream.BeginRead(_buffer, 0, 1024, OnRead, null);
     }
 
-    public async Task SendAsync(string id, dynamic? data)
+    public Task SendAsync(dynamic data)
     {
-        var command = new { id, data };
-        var json = JsonConvert.SerializeObject(command);
-        await SendAsync(json);
+        string json = JsonConvert.SerializeObject(data);
+        return SendAsync(json);
     }
 
     public async Task SendAsync(string json)
     {
+        if(_stream == null)
+            throw new NullReferenceException("Stream was null");
+        
         var bytes = Encoding.UTF8.GetBytes(json);
         await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
         await _stream.WriteAsync(bytes, 0, bytes.Length);

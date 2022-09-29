@@ -3,12 +3,14 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
+using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.Client {
     public class Client
     {
         private static TcpClient client;
         private static NetworkStream stream;
+        private static Log _log = new (typeof(Client));
 
         private static byte[] dataBuffer;
         private static byte[] lengthBytes = new byte[4];
@@ -183,10 +185,9 @@ namespace RemoteHealthcare.Client {
         //the methode for the login request
         private static void LoginFeature(DataPacket packetData)
         {
-            
-            if ((int)packetData.GetData<LoginPacketResponse>().statusCode == 200) {
-                loggedIn = true;
-                Console.WriteLine(packetData.GetData<LoginPacketResponse>().message);
+            if (packetData.Value<int>("StatusCode").Equals(200)) {
+                Console.WriteLine("Logged in!");
+                loggedIn = client.Connected;
             } else {
                 Console.WriteLine(packetData.GetData<LoginPacketResponse>().statusCode);
                 Console.WriteLine(packetData.GetData<LoginPacketResponse>().message);

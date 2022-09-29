@@ -5,19 +5,11 @@
     "data": {
       "id": "scene/panel/drawtext",
       "data": {
-        "id": "panelid",
+        "id":  "panelid" ,
         "text": "Hello World",
-        "position": [
-          100.0,
-          100.0
-        ],
-        "size": 32.0,
-        "color": [
-          0,
-          0,
-          0,
-          1
-        ],
+        "position": [ 100.0, 100.0 ],
+        "size": 50.0,
+        "color": [ 1, 0, 0, 1 ],
         "font": "segoeui"
       }
     }

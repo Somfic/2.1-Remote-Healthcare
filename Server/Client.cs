@@ -3,6 +3,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
+using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.CentralServer
 {
@@ -10,6 +11,7 @@ namespace RemoteHealthcare.CentralServer
     {
         private TcpClient tcpClient;
         private NetworkStream stream;
+        private PatientData _patientData;
         
         private byte[] dataBuffer;
         private readonly byte[] lengthBytes = new byte[4];
@@ -28,6 +30,7 @@ namespace RemoteHealthcare.CentralServer
             this.functions.Add("session stop", SessionStopHandler);
 
             this.tcpClient = tcpClient;
+            _patientData = new PatientData();
 
             this.stream = this.tcpClient.GetStream();
             stream.BeginRead(lengthBytes, 0, lengthBytes.Length, new AsyncCallback(OnLengthBytesReceived), null);
@@ -93,11 +96,10 @@ namespace RemoteHealthcare.CentralServer
         //the methode for the login request
         private void LoginFeature(DataPacket packetData)
         {
-            string username = packetData.GetData<LoginPacketRequest>().username;
-
-            string password = packetData.GetData<LoginPacketRequest>().password;
-
-            if (username == password)
+            Patient patient = new Patient(packetData["Username"].ToObject<string>(), packetData["Password"].ToObject<string>(), "1234");
+            _patientData._patients.Add(new Patient("richard", "owen", "1234"));
+            Console.WriteLine($"Name: {patient.username} Password: {patient.password}");
+            if (_patientData.MatchLoginData(patient))
             {
                 SendData(new DataPacket<LoginPacketResponse> {
                     OpperationCode = OperationCodes.LOGIN,
