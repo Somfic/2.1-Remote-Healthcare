@@ -19,4 +19,4 @@ jobs:
 
     - name: Test codebase
       working-directory: Tests
-      run: dotnet test Tests/ServerTests
+      run: dotnet test ServerTests
