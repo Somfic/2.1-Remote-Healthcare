@@ -79,7 +79,6 @@ namespace RemoteHealthcare.CentralServer.Client
             _patientData.Patients.Add(new Patient("user", "password123", "1234"));
             
             if (_patientData.MatchLoginData(patient)) {
-                Console.WriteLine("in de login if dus het is goed binne gekomen");
                 SendData(new DataPacket<LoginPacketResponse> {
                     OpperationCode = OperationCodes.LOGIN,
                 
