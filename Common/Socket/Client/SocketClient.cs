@@ -9,7 +9,7 @@ namespace RemoteHealthcare.Common.Socket.Client;
 public class SocketClient
 {
     private readonly bool _useEncryption;
-    private TcpClient _socket = new();
+    public TcpClient Socket { get; private set; } = new();
     private readonly Log _log = new(typeof(SocketClient));
 
     public SocketClient(bool useEncryption)
@@ -17,23 +17,21 @@ public class SocketClient
         _useEncryption = useEncryption;
     }
 
-    public static SocketClient CreateFromSocket(TcpClient client, bool useEncryption)
+    public static SocketClient CreateFromSocket(TcpClient socket, bool useEncryption)
     {
-        var socket = new SocketClient(useEncryption);
-        socket.SetSocket(client);
-        return socket;
+        return new SocketClient(useEncryption) { Socket = socket };
     }
 
     public async Task ConnectAsync(string ip, int port)
     {
-        if (_socket.Connected)
+        if (Socket.Connected)
             return;
     
         _log.Debug($"Connecting to {ip}:{port} ({(_useEncryption ? "encrypted" : "unencrypted")})");
 
         try
         {
-            await _socket.ConnectAsync(IPAddress.Parse(ip), port);
+            await Socket.ConnectAsync(IPAddress.Parse(ip), port);
             _log.Debug($"Connected to {ip}:{port}");
         }
         catch (Exception ex)
@@ -52,28 +50,23 @@ public class SocketClient
     
     public Task SendAsync(string text)
     {
-        return SocketHelper.SendMessage(_socket.GetStream(), text, _useEncryption);
+        return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);
     }
 
     private async Task Read()
     {
-        while (_socket.Connected)
+        while (Socket.Connected)
         {
-            var text = await SocketHelper.ReadMessage(_socket.GetStream(), _useEncryption);
+            var text = await SocketHelper.ReadMessage(Socket.GetStream(), _useEncryption);
             OnMessage?.Invoke(this, text);
         }
     }
-
-    private void SetSocket(TcpClient client)
-    {
-        _socket = client;
-    }
-
+    
     public event EventHandler<string>? OnMessage;
     
     public Task DisconnectAsync()
     {
-        _socket.Dispose();
+        Socket.Dispose();
         return Task.CompletedTask;
     }
 }

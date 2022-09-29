@@ -2,14 +2,15 @@ using System.Net;
 using System.Net.Sockets;
 using Newtonsoft.Json;
 using RemoteHealthcare.Common.Logger;
+using RemoteHealthcare.Common.Socket.Client;
 
 namespace RemoteHealthcare.Common.Socket.Server;
 
 public class SocketServer
 {
-    private TcpListener? _listener;
-    private readonly Log _log = new Log(typeof(SocketServer));
-    private readonly List<TcpClient> _clients = new();
+    public TcpListener? Socket { get; private set; }
+    private readonly Log _log = new(typeof(SocketServer));
+    private readonly List<SocketClient> _clients = new();
     private readonly bool _useEncryption;
     
     public SocketServer(bool useEncryption)
@@ -19,15 +20,15 @@ public class SocketServer
 
     public async Task ConnectAsync(string ip, int port)
     {
-        if (_listener?.Server.Connected == true)
+        if (Socket?.Server.Connected == true)
             return;
 
         try
         {
             _log.Debug($"Starting server on {ip}:{port} ... ({(_useEncryption ? "encrypted" : "unencrypted")})");
 
-            _listener = new TcpListener(IPAddress.Parse(ip), port);
-            _listener.Start();
+            Socket = new TcpListener(IPAddress.Parse(ip), port);
+            Socket.Start();
 
             _log.Debug($"Started server on {ip}:{port}");
 
@@ -42,13 +43,14 @@ public class SocketServer
 
     private async Task AcceptConnection()
     {
-        while (_listener?.Server.Connected == true)
+        while (Socket?.Server.Connected == true)
         {
-            if (_listener == null) throw new NullReferenceException("Listener is null");
+            if (Socket == null) throw new NullReferenceException("Listener is null");
 
-            var client = await _listener.AcceptTcpClientAsync();
+            var socket = await Socket.AcceptTcpClientAsync();
+            var client = SocketClient.CreateFromSocket(socket, _useEncryption);
 
-            _log.Debug($"Socket client connected from {client.Client.RemoteEndPoint}");
+            _log.Debug($"Socket client connected");
 
             _clients.Add(client);
 
@@ -56,7 +58,7 @@ public class SocketServer
         }
     }
 
-    public event EventHandler<TcpClient>? OnClientConnected;
+    public event EventHandler<SocketClient>? OnClientConnected;
 
     public Task Broadcast(dynamic data)
     {
@@ -66,9 +68,9 @@ public class SocketServer
     
     public async Task Broadcast(string json)
     {
-        foreach (var client in _clients.Where(x => x.Connected))
+        foreach (var client in _clients.Where(x => x.Socket.Connected))
         {
-            await SocketHelper.SendMessage(client.GetStream(), json);
+            await SocketHelper.SendMessage(client.Socket.GetStream(), json);
         }
     }
 }
