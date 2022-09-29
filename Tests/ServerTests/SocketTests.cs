@@ -1,20 +1,47 @@
+using System.Text;
+using RemoteHealthcare.Common.Socket;
+
 namespace CentralServer.Tests;
 
-public class Tests
+public class SocketTests
 {
     [SetUp]
     public void Setup()
     {
     }
-
+    
     [Test]
-    public void Checksum()
+    public void NoEncryption()
     {
-        var bytes = new byte[] { 0x01, 0x02, 0x03, 0x06 };
+        var text = GenerateRandomString(100);
 
-        var sum = bytes.Take(bytes.Length - 1).Sum(x => x);
-        var checkByte = BitConverter.GetBytes(sum).First();
+        var encrypted = SocketHelper.Encode(text, false);
+        var decrypted = SocketHelper.Decode(encrypted, false);
 
-        Assert.That(bytes.Last(), Is.EqualTo(checkByte));
+        Assert.That(decrypted, Is.EqualTo(text));
+    }
+    
+    [Test]
+    public void Encryption()
+    {
+        var text = GenerateRandomString(1000);
+
+        var encrypted = SocketHelper.Encode(text, true);
+        var decrypted = SocketHelper.Decode(encrypted, true);
+
+        Assert.That(decrypted, Is.EqualTo(text));
+    }
+
+    private string GenerateRandomString(int size)
+    {
+        var builder = new StringBuilder();
+        var random = new Random();
+
+        for (int i = 0; i < size; i++)
+        {
+            builder.Append((char)random.Next(0, 255));
+        }
+
+        return builder.ToString();
     }
 }

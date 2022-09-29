@@ -1,80 +1,46 @@
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using Newtonsoft.Json;
 using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.Common.Socket.Client;
 
+
 public class SocketClient
 {
-    private readonly byte[] _buffer = new byte[1024];
+    private readonly bool _useEncryption;
+    public TcpClient Socket { get; private set; } = new();
     private readonly Log _log = new(typeof(SocketClient));
-    private readonly TcpClient _socket = new();
-    private NetworkStream? _stream;
-    private byte[] _totalBuffer = Array.Empty<byte>();
 
-    public async Task ConnectAsync(string host, int port)
+    public SocketClient(bool useEncryption)
     {
-        if (_socket.Connected)
-            return;
-
-        try
-        {
-            var ip = IPAddress.Parse(host);
-
-            _log.Debug($"Connecting to {ip}:{port} ... ");
-
-            await _socket.ConnectAsync(ip, port);
-
-            _stream = _socket.GetStream();
-            _stream.BeginRead(_buffer, 0, 1024, OnRead, null);
-
-            _log.Debug($"Connected to {ip}:{port}");
-        }
-        catch (Exception ex)
-        {
-            _log.Warning(ex, $"Could not connect to {host}:{port}");
-            throw;
-        }
+        _useEncryption = useEncryption;
     }
 
-    private void OnRead(IAsyncResult readResult)
+    public static SocketClient CreateFromSocket(TcpClient socket, bool useEncryption)
     {
+        var client = new SocketClient(useEncryption) { Socket = socket };
+        client.Read();
+        return client;
+    }
+
+    public async Task ConnectAsync(string ip, int port)
+    {
+        if (Socket.Connected)
+            return;
+    
+        _log.Debug($"Connecting to {ip}:{port} ({(_useEncryption ? "encrypted" : "unencrypted")})");
+
         try
         {
-            if (_stream == null)
-                throw new NullReferenceException("Stream was null");
-            
-            var numberOfBytes = _stream.EndRead(readResult);
-            _totalBuffer = Concat(_totalBuffer, _buffer, numberOfBytes);
+            await Socket.ConnectAsync(IPAddress.Parse(ip), port);
+            _log.Debug($"Connected to {ip}:{port}");
+            Read();
         }
         catch (Exception ex)
         {
-            _log.Warning(ex, "Could not read from stream");
-            return;
+            _log.Error(ex, $"Could not connect to {ip}:{port}");
         }
-
-        while (_totalBuffer.Length >= 4)
-        {
-            var packetSize = BitConverter.ToInt32(_totalBuffer, 0);
-
-            if (_totalBuffer.Length >= packetSize + 4)
-            {
-                var json = Encoding.UTF8.GetString(_totalBuffer, 4, packetSize);
-                OnMessage?.Invoke(this, json);
-
-                var newBuffer = new byte[_totalBuffer.Length - packetSize - 4];
-                Array.Copy(_totalBuffer, packetSize + 4, newBuffer, 0, newBuffer.Length);
-                _totalBuffer = newBuffer;
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        _stream.BeginRead(_buffer, 0, 1024, OnRead, null);
     }
 
     public Task SendAsync(dynamic data)
@@ -82,24 +48,38 @@ public class SocketClient
         string json = JsonConvert.SerializeObject(data);
         return SendAsync(json);
     }
-
-    public async Task SendAsync(string json)
+    
+    public Task SendAsync(string text)
     {
-        if(_stream == null)
-            throw new NullReferenceException("Stream was null");
-        
-        var bytes = Encoding.UTF8.GetBytes(json);
-        await _stream.WriteAsync(BitConverter.GetBytes(bytes.Length), 0, 4);
-        await _stream.WriteAsync(bytes, 0, bytes.Length);
+        return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);
     }
 
-    public event EventHandler<string> OnMessage;
-
-    private static byte[] Concat(byte[] b1, byte[] b2, int count)
+    private void Read()
     {
-        var r = new byte[b1.Length + count];
-        Buffer.BlockCopy(b1, 0, r, 0, b1.Length);
-        Buffer.BlockCopy(b2, 0, r, b1.Length, count);
-        return r;
+        Task.Run(async () =>
+        {
+            while (Socket.Connected)
+            {
+                try
+                {
+                    var text = await SocketHelper.ReadMessage(Socket.GetStream(), _useEncryption);
+                    OnMessage?.Invoke(this, text);
+                }
+                catch (Exception ex)
+                {
+                    _log.Warning(ex, "Could not read socket message");
+                }
+            }
+            
+            _log.Debug("Stopped client");
+        });
+    }
+    
+    public event EventHandler<string>? OnMessage;
+    
+    public Task DisconnectAsync()
+    {
+        Socket.Dispose();
+        return Task.CompletedTask;
     }
 }
