@@ -9,12 +9,19 @@ namespace RemoteHealthcare.Common.Socket.Client;
 public class SocketClient
 {
     private readonly bool _useEncryption;
-    private readonly TcpClient _socket = new();
+    private TcpClient _socket = new();
     private readonly Log _log = new(typeof(SocketClient));
 
     public SocketClient(bool useEncryption)
     {
         _useEncryption = useEncryption;
+    }
+
+    public static SocketClient CreateFromSocket(TcpClient client, bool useEncryption)
+    {
+        var socket = new SocketClient(useEncryption);
+        socket.SetSocket(client);
+        return socket;
     }
 
     public async Task ConnectAsync(string ip, int port)
@@ -55,6 +62,11 @@ public class SocketClient
             var text = await SocketHelper.ReadMessage(_socket.GetStream(), _useEncryption);
             OnMessage?.Invoke(this, text);
         }
+    }
+
+    private void SetSocket(TcpClient client)
+    {
+        _socket = client;
     }
 
     public event EventHandler<string>? OnMessage;
