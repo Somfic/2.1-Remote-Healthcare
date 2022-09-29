@@ -12,7 +12,6 @@ namespace RemoteHealthcare.Client {
         private SocketClient _client = new(true);
         private Log _log = new (typeof(Client));
 
-        private string checkedd;
         private string _password;
         private string _username;
         private bool _loggedIn;
