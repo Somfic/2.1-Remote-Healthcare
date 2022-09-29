@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace RemoteHealthcare.Common.Logger;
@@ -21,6 +22,15 @@ public class Log
     public Log(Type callerType)
     {
         _callerType = callerType;
+    }
+
+    public static Log Send()
+    {
+        var frame = new StackFrame(1);
+        var method = frame.GetMethod();
+        var type = method.DeclaringType!;
+
+        return new Log(type);
     }
 
     private void LogMessage(LogLevel level, Exception? exception, string message)

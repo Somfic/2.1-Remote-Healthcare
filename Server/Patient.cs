@@ -6,13 +6,15 @@ namespace RemoteHealthcare.CentralServer;
 public class Patient
 {
     public List<SessionData> _sessions { get; set; }
-    private string username { get; set; }
-    private string password { get; set; }
+    internal string username { get; set; }
+    internal string userId { get; set; }
+    internal string password { get; set; }
 
-    public Patient(string user, string pass)
+    public Patient(string user, string pass, string userId)
     {
         this.username = user;
         this.password = pass;
+        this.userId = userId;
         _sessions = new List<SessionData>();
     }
 

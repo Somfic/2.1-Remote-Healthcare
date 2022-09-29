@@ -1,53 +1,29 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using Newtonsoft.Json.Linq;
+using RemoteHealthcare.Common.Socket.Client;
+using RemoteHealthcare.Common.Socket.Server;
 
 namespace RemoteHealthcare.CentralServer
 {
     class Program
     {
-        private static TcpListener listener;
-        private static List<Client> clients = new List<Client>();
+        private static readonly SocketServer _server = new(true);
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello Server!");
-            
-            listener = new TcpListener(IPAddress.Any, 15243);
-            listener.Start();
-            listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
+            _server.OnMessage += (sender, e) => OnMessage(e.client, e.message);
+            await _server.ConnectAsync("127.0.0.1", 15243);
             Console.ReadLine();
-        } 
-
-        private static void OnConnect(IAsyncResult ar)
-        {
-            var tcpClient = listener.EndAcceptTcpClient(ar);
-            Console.WriteLine($"Client connected from {tcpClient.Client.RemoteEndPoint}");
-            clients.Add(new Client(tcpClient));
-            listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
         }
 
-        internal static void Broadcast(string packet)
+        private static void OnMessage(SocketClient client, string message)
         {
-            foreach (var client in clients)
-            {
-                Console.WriteLine("Welkom naar alle users, dit is een broadcast bericht");
-            }
+            client.SendAsync(message);
         }
 
-        internal static void Disconnect(Client client)
+        private static async Task Broadcast(string message)
         {
-            clients.Remove(client);
-            Console.WriteLine("Client disconnected");
-        }
-
-        internal static void SendToUser(string user, string packet)
-        {
-            foreach (var client in clients.Where(c => c.UserName == user))
-            {
-                //TODO:  omzetten naar SendData
-                //client.Write(packet);
-            }
+            await _server.Broadcast(message);
         }
     }
 }

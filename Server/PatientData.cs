@@ -11,9 +11,12 @@ public class PatientData
 
     public bool MatchLoginData(Patient patient)
     {
-        if (_patients.Contains(patient) )
+        foreach (var varPatient in _patients)
         {
-            return true;
+            if (varPatient.username.Equals(patient.username) && varPatient.password.Equals(patient.password) && varPatient.userId.Equals(patient.userId))
+            {
+                return true;
+            }
         }
         return false;
     }
