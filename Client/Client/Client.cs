@@ -105,7 +105,8 @@ namespace RemoteHealthcare.Client {
                 OpperationCode = OperationCodes.LOGIN,
                 data = new LoginPacketRequest() {
                     username = username,
-                    password = password   
+                    password = password,
+                    isDoctor = false
                 }
             };
 

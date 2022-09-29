@@ -12,7 +12,8 @@ namespace RemoteHealthcare.CentralServer
         private TcpClient tcpClient;
         private NetworkStream stream;
         private PatientData _patientData;
-        
+        private DoctorData _doctorData;
+
         private byte[] dataBuffer;
         private readonly byte[] lengthBytes = new byte[4];
 
@@ -23,7 +24,7 @@ namespace RemoteHealthcare.CentralServer
         public Client(TcpClient tcpClient)
         {
             this.functions = new Dictionary<string, Action<DataPacket>>();
-            
+
             this.functions.Add("login", LoginFeature);
             this.functions.Add("chat", ChatHandler);
             this.functions.Add("session start", SessionStartHandler);
@@ -35,7 +36,7 @@ namespace RemoteHealthcare.CentralServer
             this.stream = this.tcpClient.GetStream();
             stream.BeginRead(lengthBytes, 0, lengthBytes.Length, new AsyncCallback(OnLengthBytesReceived), null);
         }
-        
+
         private void OnLengthBytesReceived(IAsyncResult ar)
         {
             dataBuffer = new byte[BitConverter.ToInt32(lengthBytes)];
@@ -46,7 +47,7 @@ namespace RemoteHealthcare.CentralServer
         private void OnDataReceived(IAsyncResult ar)
         {
             stream.EndRead(ar);
-            
+
             //converts the databuffer to JObject
             string data = Encoding.UTF8.GetString(dataBuffer);
             DataPacket dataPacket = JsonConvert.DeserializeObject<DataPacket>(data);
@@ -55,7 +56,7 @@ namespace RemoteHealthcare.CentralServer
             handleData(dataPacket);
             stream.BeginRead(lengthBytes, 0, lengthBytes.Length, OnLengthBytesReceived, null);
         }
-        
+
         //determines which methode exactly will be executed 
         private void handleData(DataPacket packetData)
         {
@@ -63,12 +64,16 @@ namespace RemoteHealthcare.CentralServer
             Action<DataPacket> action;
 
             //Checks if the OppCode (OperationCode) does exist.
-            if (functions.TryGetValue(packetData.OpperationCode, out action)) {
+            if (functions.TryGetValue(packetData.OpperationCode, out action))
+            {
                 action.Invoke(packetData);
-            }else {
+            }
+            else
+            {
                 throw new Exception("Function not implemented");
             }
         }
+
         //This methode used to send an request from the Server to the Client
         //The parameter is an JsonFile object
         public void SendData(DAbstract packet)
@@ -82,41 +87,64 @@ namespace RemoteHealthcare.CentralServer
         //the methode for the chat request
         private void ChatHandler(DataPacket packetData)
         {
-            SendData(new DataPacket<ChatPacketResponse> {
+            SendData(new DataPacket<ChatPacketResponse>
+            {
                 OpperationCode = OperationCodes.CHAT,
-                
-                data = new ChatPacketResponse() {
+
+                data = new ChatPacketResponse()
+                {
                     statusCode = StatusCodes.OK,
-                    message =  "Dit is de response van uit de server, het bericht is: " +
-                               packetData.GetData<ChatPacketRequest>().message
+                    message = "Dit is de response van uit de server, het bericht is: " +
+                              packetData.GetData<ChatPacketRequest>().message
                 }
             });
         }
-    
+
         //the methode for the login request
         private void LoginFeature(DataPacket packetData)
         {
-            Patient patient = new Patient(packetData.GetData<LoginPacketRequest>().username, packetData.GetData<LoginPacketRequest>().password, "1234");
-            _patientData._patients.Add(new Patient("user", "password123", "1234"));
-            Console.WriteLine($"Name: {patient.username} Password: {patient.password}");
-          
-            if (_patientData.MatchLoginData(patient)) {
-                SendData(new DataPacket<LoginPacketResponse> {
+            Patient? patient = null;
+            Doctor? doctor = null;
+            Console.WriteLine("test");
+            if (!packetData.GetData<LoginPacketRequest>().isDoctor)
+            {
+                patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
+                    packetData.GetData<LoginPacketRequest>().password, "1234");
+                _patientData._patients.Add(new Patient("user", "password123", "1234"));
+                Console.WriteLine($"Patient name: {patient.username} Password: {patient.password}");
+            }
+            else if (packetData.GetData<LoginPacketRequest>().isDoctor)
+            {
+                doctor = new Doctor(packetData.GetData<LoginPacketRequest>().username,
+                    packetData.GetData<LoginPacketRequest>().password, "Dhr145");
+                Console.WriteLine($"Doctor name: {doctor.username} Password: {doctor.password}");
+            }
+
+
+            if (_patientData.MatchLoginData(patient) && patient != null || 
+                _doctorData.MatchLoginData(doctor) && doctor != null)
+            {
+                SendData(new DataPacket<LoginPacketResponse>
+                {
                     OpperationCode = OperationCodes.LOGIN,
-                
-                    data = new LoginPacketResponse() {
+
+                    data = new LoginPacketResponse()
+                    {
                         statusCode = StatusCodes.OK,
-                        message =  "Gefeliciteerd! : Je bent ingelogd"
+                        message = "Gefeliciteerd! : Je bent ingelogd"
                     }
                 });
-
-            } else {
-                SendData(new DataPacket<ChatPacketResponse> {
+            }
+            else
+            {
+                SendData(new DataPacket<ChatPacketResponse>
+                {
                     OpperationCode = OperationCodes.LOGIN,
-                
-                    data = new ChatPacketResponse() {
+
+                    data = new ChatPacketResponse()
+                    {
                         statusCode = StatusCodes.NOT_FOUND,
-                        message =  "Error: verkeerde wachtwoord of gebruikersnaam"
+                        message = "Error: verkeerde wachtwoord of gebruikersnaam"
                     }
                 });
             }
@@ -125,12 +153,14 @@ namespace RemoteHealthcare.CentralServer
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            SendData(new DataPacket<SessionStartPacketResponse> {
+            SendData(new DataPacket<SessionStartPacketResponse>
+            {
                 OpperationCode = OperationCodes.SESSION_START,
-                
-                data = new SessionStartPacketResponse() {
+
+                data = new SessionStartPacketResponse()
+                {
                     statusCode = StatusCodes.OK,
-                    message =  "Sessie wordt nu GESTART" 
+                    message = "Sessie wordt nu GESTART"
                 }
             });
         }
@@ -138,12 +168,14 @@ namespace RemoteHealthcare.CentralServer
         //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
-            SendData(new DataPacket<SessionStopPacketResponse> {
+            SendData(new DataPacket<SessionStopPacketResponse>
+            {
                 OpperationCode = OperationCodes.SESSION_STOP,
-                
-                data = new SessionStopPacketResponse() {
+
+                data = new SessionStopPacketResponse()
+                {
                     statusCode = StatusCodes.OK,
-                    message =  "Sessie wordt nu GESTOPT" 
+                    message = "Sessie wordt nu GESTOPT"
                 }
             });
         }

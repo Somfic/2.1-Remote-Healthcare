@@ -7,12 +7,12 @@ using RemoteHealthcare.Data.Providers;
 try
 {
 
-    var engine = new EngineConnection();
-    await engine.ConnectAsync();
+    // var engine = new EngineConnection();
+    // await engine.ConnectAsync();
 
 
-    var bike = await DataProvider.GetBike("00472");
-    var heart = await DataProvider.GetHeart();
+    // var bike = await DataProvider.GetBike("00472");
+    // var heart = await DataProvider.GetHeart();
 
     var client = new Client();
 

@@ -37,8 +37,8 @@ namespace RemoteHealthcare.Client
             functions.Add("session start", SessionStartHandler);
             functions.Add("session stop", SessionStopHandler);
 
-            Console.WriteLine("Hello Client!");
-            Console.WriteLine("Wat is uw telefoonnummer? ");
+            Console.WriteLine("Hallo Dokter!");
+            Console.WriteLine("Wat is uw loginId? ");
             username = Console.ReadLine();
             Console.WriteLine("Wat is uw wachtwoord? ");
             password = Console.ReadLine();
@@ -115,7 +115,8 @@ namespace RemoteHealthcare.Client
                 data = new LoginPacketRequest()
                 {
                     username = username,
-                    password = password
+                    password = password,
+                    isDoctor = true
                 }
             };
 
