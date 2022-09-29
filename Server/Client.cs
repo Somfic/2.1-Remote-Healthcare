@@ -79,13 +79,13 @@ namespace RemoteHealthcare.CentralServer
         //the methode for the chat request
         private void ChatHandler(DataPacket packetData)
         {
-            SendData(new DataPacket<ChatResponse> {
+            SendData(new DataPacket<ChatPacketResponse> {
                 OpperationCode = OperationCodes.CHAT,
                 
-                data = new ChatResponse() {
+                data = new ChatPacketResponse() {
                     statusCode = StatusCodes.OK,
                     message =  "Dit is de response van uit de server, het bericht is: " +
-                               packetData.GetData<ChatPacket>().message
+                               packetData.GetData<ChatPacketRequest>().message
                 }
             });
         }
@@ -93,16 +93,16 @@ namespace RemoteHealthcare.CentralServer
         //the methode for the login request
         private void LoginFeature(DataPacket packetData)
         {
-            string username = packetData.GetData<LoginPacket>().username;
+            string username = packetData.GetData<LoginPacketRequest>().username;
 
-            string password = packetData.GetData<LoginPacket>().password;
+            string password = packetData.GetData<LoginPacketRequest>().password;
 
             if (username == password)
             {
-                SendData(new DataPacket<LoginResponsePacket> {
+                SendData(new DataPacket<LoginPacketResponse> {
                     OpperationCode = OperationCodes.LOGIN,
                 
-                    data = new LoginResponsePacket() {
+                    data = new LoginPacketResponse() {
                         statusCode = StatusCodes.OK,
                         message =  "Gefeliciteerd! : Je bent ingelogd"
                     }
@@ -110,10 +110,10 @@ namespace RemoteHealthcare.CentralServer
 
                 this.UserName = username;
             } else {
-                SendData(new DataPacket<ChatResponse> {
+                SendData(new DataPacket<ChatPacketResponse> {
                     OpperationCode = OperationCodes.LOGIN,
                 
-                    data = new ChatResponse() {
+                    data = new ChatPacketResponse() {
                         statusCode = StatusCodes.NOT_FOUND,
                         message =  "Error: verkeerde wachtwoord of gebruikersnaam"
                     }
@@ -124,10 +124,10 @@ namespace RemoteHealthcare.CentralServer
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            SendData(new DataPacket<SessionStartResponse> {
+            SendData(new DataPacket<SessionStartPacketResponse> {
                 OpperationCode = OperationCodes.SESSION_START,
                 
-                data = new SessionStartResponse() {
+                data = new SessionStartPacketResponse() {
                     statusCode = StatusCodes.OK,
                     message =  "Sessie wordt nu GESTART" 
                 }
@@ -137,10 +137,10 @@ namespace RemoteHealthcare.CentralServer
         //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
-            SendData(new DataPacket<SessionStopResponse> {
+            SendData(new DataPacket<SessionStopPacketResponse> {
                 OpperationCode = OperationCodes.SESSION_STOP,
                 
-                data = new SessionStopResponse() {
+                data = new SessionStopPacketResponse() {
                     statusCode = StatusCodes.OK,
                     message =  "Sessie wordt nu GESTOPT" 
                 }

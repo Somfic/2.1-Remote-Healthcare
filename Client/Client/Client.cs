@@ -48,19 +48,19 @@ namespace RemoteHealthcare.Client {
 
             while (true)
             {
-                Console.WriteLine("Voer een commandin om naar de server te sturen: ");
-                Console.WriteLine("de loggedin = " + loggedIn);
+                Console.WriteLine("Voer een command in om naar de server te sturen: ");
                 string newChatMessage = Console.ReadLine();
+                
                 //if the user isn't logged in, the user cant send any command to the server
                 if (loggedIn) {
                     if (newChatMessage.Equals("chat")) {
                         Console.WriteLine("Voer uw bericht in: ");
                         newChatMessage = Console.ReadLine();
 
-                        DataPacket<ChatPacket> req = new DataPacket<ChatPacket>
+                        DataPacket<ChatPacketRequest> req = new DataPacket<ChatPacketRequest>
                         {
                             OpperationCode = OperationCodes.CHAT,
-                            data = new ChatPacket() {
+                            data = new ChatPacketRequest() {
                                 message = newChatMessage
                             }
                         };
@@ -69,14 +69,14 @@ namespace RemoteHealthcare.Client {
 
                     }else if (newChatMessage.Equals("session start")) {
 
-                        DataPacket<SessionStartPacket> req = new DataPacket<SessionStartPacket> {
+                        DataPacket<SessionStartPacketRequest> req = new DataPacket<SessionStartPacketRequest> {
                             OpperationCode = OperationCodes.SESSION_START,
                         };
                         
                         SendData(req);
                     }else if (newChatMessage.Equals("session stop")) {
 
-                        DataPacket<SessionStopPacket> req = new DataPacket<SessionStopPacket> {
+                        DataPacket<SessionStopPacketRequest> req = new DataPacket<SessionStopPacketRequest> {
                             OpperationCode = OperationCodes.SESSION_STOP,
                         };
 
@@ -99,9 +99,9 @@ namespace RemoteHealthcare.Client {
             stream.BeginRead(lengthBytes, 0, lengthBytes.Length, OnLengthBytesReceived, null);
             
             //Sends an login request to the server
-            DataPacket<LoginPacket> loginReq = new DataPacket<LoginPacket> {
+            DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest> {
                 OpperationCode = OperationCodes.LOGIN,
-                data = new LoginPacket() {
+                data = new LoginPacketRequest() {
                     username = username,
                     password = password   
                 }
@@ -165,31 +165,31 @@ namespace RemoteHealthcare.Client {
         //the methode for the session stop request
         private static void SessionStopHandler(DataPacket obj)
         {
-            Console.WriteLine(obj.GetData<SessionStopResponse>().message);
+            Console.WriteLine(obj.GetData<SessionStopPacketResponse>().message);
         }
 
         //the methode for the session start request
         private static void SessionStartHandler(DataPacket obj)
         {
-            Console.WriteLine(obj.GetData<SessionStartResponse>().message);
+            Console.WriteLine(obj.GetData<SessionStartPacketResponse>().message);
         }
 
         //the methode for the send chat request
         private static void ChatHandler(DataPacket packetData)
         {
-            Console.WriteLine(packetData.GetData<ChatResponse>().message);
+            Console.WriteLine(packetData.GetData<ChatPacketResponse>().message);
         }
         
         //the methode for the login request
         private static void LoginFeature(DataPacket packetData)
         {
             
-            if ((int)packetData.GetData<LoginResponsePacket>().statusCode == 200) {
-                Console.WriteLine("Logged in!");
+            if ((int)packetData.GetData<LoginPacketResponse>().statusCode == 200) {
                 loggedIn = true;
+                Console.WriteLine(packetData.GetData<LoginPacketResponse>().message);
             } else {
-                Console.WriteLine(packetData.GetData<LoginResponsePacket>().statusCode);
-                Console.WriteLine(packetData.GetData<LoginResponsePacket>().message);
+                Console.WriteLine(packetData.GetData<LoginPacketResponse>().statusCode);
+                Console.WriteLine(packetData.GetData<LoginPacketResponse>().message);
             }
         }
     }

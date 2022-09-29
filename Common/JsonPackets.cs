@@ -38,48 +38,47 @@ public class ErrorPacket : DAbstract
     public StatusCodes statusCode;
 }
 
-public class LoginPacket : DAbstract
+public class LoginPacketRequest : DAbstract
 {
     public string username;
     public string password;
 }
 
-public class LoginResponsePacket : DAbstract
+public class LoginPacketResponse : DAbstract
 {
     public StatusCodes statusCode;
     public string message;
 }
 
-public class ChatPacket : DAbstract
+public class ChatPacketRequest : DAbstract
 {
     public string message;
 }
 
-public class ChatResponse : DAbstract
+public class ChatPacketResponse : DAbstract
 {
     public StatusCodes statusCode;
     public string message;
 }
 
-public class SessionStartPacket : DAbstract
+public class SessionStartPacketRequest : DAbstract
 {
     //voorlopig leeg laten
 }
 
-public class SessionStartResponse : DAbstract
+public class SessionStartPacketResponse : DAbstract
 {
     public StatusCodes statusCode;
     public string message;
 }
 
-public class SessionStopPacket : DAbstract
+public class SessionStopPacketRequest : DAbstract
 {
     //voorlopig leeg laten
 }
 
-public class SessionStopResponse : DAbstract
+public class SessionStopPacketResponse : DAbstract
 {
     public StatusCodes statusCode;
-
     public string message;
 }
