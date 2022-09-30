@@ -8,7 +8,7 @@ public abstract class BikeDataProvider : IDataProvider<BikeData>
 
     public abstract Task ProcessRawData();
 
-    public abstract void SentMessage(byte[] bytes);
+    public abstract Task SendMessage(byte[] bytes);
 
     public BikeData GetData()
     {

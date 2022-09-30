@@ -29,7 +29,7 @@ namespace NetworkEngine.Socket
             */
         }
 
-        public async void start()
+        public async void Start()
         {
             while (true)
             {
@@ -48,7 +48,7 @@ namespace NetworkEngine.Socket
                     Console.Write(bite + "-");
                 }
                 Console.WriteLine();
-                bike.SentMessage(data);
+                await bike.SendMessage(data);
             }
         }
     }

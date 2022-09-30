@@ -26,7 +26,7 @@ public class BluetoothDevice
     public byte[] ReceivedData { get; private set; } = new byte[12];
     public string ServiceName { get; private set; } = string.Empty;
 
-    public async Task sendMessage(byte[] bytes)
+    public async Task SendMessage(byte[] bytes)
     {
         await _bluetoothConnection.WriteCharacteristic(_serviceCharacteristic, bytes);
     }
