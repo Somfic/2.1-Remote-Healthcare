@@ -36,4 +36,9 @@ public class BluetoothBikeDataProvider : BikeDataProvider
             SetDeviceType(DeviceType.Bike);
         }
     }
+
+    public override async Task SendMessage(byte[] bytes)
+    {
+        await _bikeSensor.SendMessage(bytes);
+    }
 }

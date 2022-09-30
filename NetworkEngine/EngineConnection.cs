@@ -116,8 +116,8 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await RemoveNode(_groundPlaneId);
-        await RemoveNode(_leftControllerId);
-        await RemoveNode(_rightControllerId);
+        //await RemoveNode(_leftControllerId);
+        //await RemoveNode(_rightControllerId);
 
         await Task.Delay(1000);
         await AddRoute(_tunnelId);
@@ -154,7 +154,7 @@ public class EngineConnection
         await Addhouses(_tunnelId, 1000);
 
         await Task.Delay(1000);
-        await ChangeBikeSpeed(50);
+        await ChangeBikeSpeed(1000);
     }
 
     
@@ -296,7 +296,8 @@ public class EngineConnection
 
                         default:
                         {
-                            _log.Information(JObject.Parse(json).ToString());
+                            //_log.Information(JObject.Parse(json).ToString()); 
+                            ///fixme
                             break;
                         }
                     }
@@ -373,7 +374,7 @@ public class EngineConnection
         jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = _tunnelId;
         jObject["data"]["data"]["data"]["id"] = _bikeId;
-        jObject["data"]["data"]["data"]["speed"] = speed / 10;
+        jObject["data"]["data"]["data"]["animation"]["speed"] = speed / 10;
 
         json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
