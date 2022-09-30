@@ -9,7 +9,7 @@ public class BluetoothBikeDataProvider : BikeDataProvider
     public BluetoothBikeDataProvider(string serial)
     {
         _bikeSensor = new BluetoothDevice($"Tacx Flux {serial}", "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e",
-            "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e", 4, 16);
+            "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e", "6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", 4, 16);
     }
 
     public override async Task Initialise()

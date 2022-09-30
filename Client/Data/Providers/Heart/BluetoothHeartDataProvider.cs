@@ -5,7 +5,7 @@ namespace RemoteHealthcare.Data.Providers.Heart;
 public class BluetoothHeartDataProvider : HeartDataProvider
 {
     private readonly BluetoothDevice
-        _heartSensor = new("Decathlon Dual HR", "HeartRate", "HeartRateMeasurement", 0, 16);
+        _heartSensor = new("Decathlon Dual HR", "HeartRate", "HeartRateMeasurement","", 0, 16);
 
     public override async Task Initialise()
     {
