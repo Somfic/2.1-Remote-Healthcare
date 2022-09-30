@@ -1,19 +1,20 @@
-﻿namespace RemoteHealthcare.CentralServer;
+﻿namespace RemoteHealthcare.CentralServer.Models;
 
 public class PatientData
 {
-    public List<Patient> _patients { get; set; }
+    public List<Patient> Patients { get; set; }
 
     public PatientData()
     {
-        _patients = new List<Patient>();
+        Patients = new List<Patient>();
     }
 
     public bool MatchLoginData(Patient patient)
     {
-        foreach (var varPatient in _patients)
+        foreach (var varPatient in Patients)
         {
-            if (varPatient.username.Equals(patient.username) && varPatient.password.Equals(patient.password) && varPatient.userId.Equals(patient.userId))
+            if (varPatient.Username.Equals(patient.Username) && varPatient.Password.Equals(patient.Password) && 
+                varPatient.UserId.Equals(patient.UserId))
             {
                 return true;
             }
@@ -23,10 +24,10 @@ public class PatientData
 
     public void SavePatientData()
     {
-        string folderName = Environment.CurrentDirectory;
+        var folderName = Environment.CurrentDirectory;
         Console.WriteLine(folderName);
         folderName = Path.Combine(folderName.Substring(0, folderName.LastIndexOf("bin")) + "PatientDataFiles");
-        foreach (var patient in _patients)
+        foreach (var patient in Patients)
         {
             patient.SaveSessionData(folderName);
         }
