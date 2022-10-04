@@ -47,7 +47,7 @@ namespace NetworkEngine.Socket
                 data[12] = (byte)checksum;
                 
                 Console.WriteLine(BitConverter.ToString(data));
-                bike.SentMessage(data);
+                bike.SendMessage(data);
             }
         }
     }
