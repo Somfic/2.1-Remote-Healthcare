@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.CentralServer.Models;
 
-namespace RemoteHealthcare.CentralServer;
+namespace RemoteHealthcare.Server.Models;
 
 public class Doctor
 {

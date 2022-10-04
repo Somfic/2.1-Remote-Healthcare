@@ -7,15 +7,15 @@ using RemoteHealthcare.Data.Providers;
 try
 {
 
-    var engine = new EngineConnection();
-    await engine.ConnectAsync("cave");
-    
-    Console.WriteLine("Enter Bike ID:");
-    var bike = await DataProvider.GetBike(Console.ReadLine());
-    var heart = await DataProvider.GetHeart();
-    
-    var vrConnection = new VrConnection(bike, heart, engine);
-    vrConnection.Start();
+    // var engine = new EngineConnection();
+    // await engine.ConnectAsync("cave");
+    //
+    // Console.WriteLine("Enter Bike ID:");
+    // var bike = await DataProvider.GetBike(Console.ReadLine());
+    // var heart = await DataProvider.GetHeart();
+    //
+    // var vrConnection = new VrConnection(bike, heart, engine);
+    // vrConnection.Start();
     
     var client = new Client();
     await client.RunAsync();

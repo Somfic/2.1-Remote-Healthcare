@@ -1,7 +1,11 @@
-﻿namespace RemoteHealthcare.CentralServer;
+﻿using RemoteHealthcare.Common.Logger;
+
+namespace RemoteHealthcare.Server.Models;
 
 public class DoctorData
 {
+    private readonly Log _log = new(typeof(DoctorData));
+    
     private Doctor _doctor { get; set; }
 
     public DoctorData()
@@ -21,7 +25,7 @@ public class DoctorData
     public void SaveDoctorData()
     {
         string folderName = Environment.CurrentDirectory;
-        Console.WriteLine(folderName);
+        _log.Debug(folderName);
         folderName = Path.Combine(folderName.Substring(0, folderName.LastIndexOf("bin")) + "DoctorDataFiles");
         _doctor.SaveSessionData(folderName);
     }

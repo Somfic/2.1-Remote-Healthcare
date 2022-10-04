@@ -33,12 +33,6 @@ namespace RemoteHealthcare.Client
             functions.Add("session start", SessionStartHandler);
             functions.Add("session stop", SessionStopHandler);
 
-            _log.Information("Hallo Dokter!");
-            _log.Information("Wat is uw loginId? ");
-            username = Console.ReadLine();
-            _log.Information("Wat is uw wachtwoord? ");
-            password = Console.ReadLine();
-
             client.OnMessage += (sender, data) =>
             {
                 var packet = JsonConvert.DeserializeObject<DataPacket>(data);
@@ -46,29 +40,19 @@ namespace RemoteHealthcare.Client
             };
 
             await client.ConnectAsync("127.0.0.1", 15243);
-
-            DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
-            {
-                OpperationCode = OperationCodes.LOGIN,
-                data = new LoginPacketRequest()
-                {
-                    username = username,
-                    password = password,
-                    isDoctor = true
-                }
-            };
-
-            await client.SendAsync(loginReq);
+            
+            AskForLoginAsync();
 
             while (true)
             {
-                Console.WriteLine("Voer een command in om naar de server te sturen: ");
-                string newChatMessage = Console.ReadLine();
-
                 //if the user isn't logged in, the user cant send any command to the server
                 if (_loggedIn)
                 {
-                    if (newChatMessage.Equals("chat"))
+                    _log.Information("Voer een command in om naar de server te sturen: \r\n" +
+                                     "[BERICHT] [START SESSIE] [STOP SESSIE] [NOODSTOP]");
+                    string newChatMessage = Console.ReadLine();
+                    
+                    if (newChatMessage.ToLower().Equals("bericht"))
                     {
                         _log.Information("Voer uw bericht in: ");
                         newChatMessage = Console.ReadLine();
@@ -84,7 +68,7 @@ namespace RemoteHealthcare.Client
 
                         await client.SendAsync(req);
                     }
-                    else if (newChatMessage.Equals("session start"))
+                    else if (newChatMessage.ToLower().Equals("start sessie"))
                     {
                         var req = new DataPacket<SessionStartPacketRequest>
                         {
@@ -93,7 +77,7 @@ namespace RemoteHealthcare.Client
 
                         await client.SendAsync(req);
                     }
-                    else if (newChatMessage.Equals("session stop"))
+                    else if (newChatMessage.ToLower().Equals("stop sessie"))
                     {
                         DataPacket<SessionStopPacketRequest> req = new DataPacket<SessionStopPacketRequest>
                         {
@@ -102,40 +86,47 @@ namespace RemoteHealthcare.Client
 
                         await client.SendAsync(req);
                     }
+                    else if (newChatMessage.ToLower().Equals("noodstop"))
+                    {
+                        DataPacket<SessionStopPacketRequest> req = new DataPacket<SessionStopPacketRequest>
+                        {
+                            OpperationCode = OperationCodes.EMERGENCY_STOP,
+                        };
+
+                        await client.SendAsync(req);
+                    }
                     else
                     {
-                        _log.Debug("in de else bij de client if else elsif statements!");
+                        _log.Warning("Het commando dat u heeft ingevoerd is incorrect.");
                     }
-                }
-                else
-                {
-                    _log.Critical("Je bent nog niet ingelogd");
                 }
             }
         }
 
-        //This methode will be enterd if the user has made an TCP-connection
-        // private void OnConnectionMade(IAsyncResult ar)
-        // {
-        //     stream = client.GetStream();
-        //
-        //     //Triggers the OnLengthBytesReceived methode
-        //     stream.BeginRead(lengthBytes, 0, lengthBytes.Length, OnLengthBytesReceived, null);
-        //
-        //     //Sends an login request to the server
-        //     DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
-        //     {
-        //         OpperationCode = OperationCodes.LOGIN,
-        //         data = new LoginPacketRequest()
-        //         {
-        //             username = username,
-        //             password = password,
-        //             isDoctor = true
-        //         }
-        //     };
-        //
-        //     SendData(loginReq);
-        // }
+        private async void AskForLoginAsync()
+        {
+            
+            _log.Information("Hallo Dokter!");
+            _log.Information("Wat is uw loginId? ");
+            username = Console.ReadLine();
+            _log.Information("Wat is uw wachtwoord? ");
+            password = Console.ReadLine();
+
+            DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
+            {
+                OpperationCode = OperationCodes.LOGIN,
+                data = new LoginPacketRequest()
+                {
+                    username = username,
+                    password = password,
+                    isDoctor = true
+                }
+            };
+
+            _log.Debug(loginReq.ToJson());
+
+            await client.SendAsync(loginReq);
+        }
 
         //this methode will get the right methode that will be used for the response from the server
         private void HandleData(DataPacket packet)
@@ -153,19 +144,19 @@ namespace RemoteHealthcare.Client
 
         private void SessionStopHandler(DataPacket obj)
         {
-            Console.WriteLine(obj.GetData<SessionStopPacketResponse>().message);
+            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
         }
 
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            Console.WriteLine(obj.GetData<SessionStartPacketResponse>().message);
+            _log.Information(obj.GetData<SessionStartPacketResponse>().message);
         }
 
         //the methode for the send chat request
         private void ChatHandler(DataPacket packetData)
         {
-            Console.WriteLine(packetData.GetData<ChatPacketResponse>().message);
+            _log.Information(packetData.GetData<ChatPacketResponse>().message);
         }
 
         //the methode for the login request
@@ -175,13 +166,14 @@ namespace RemoteHealthcare.Client
 
             if (statusCode.Equals(200))
             {
-                Console.WriteLine("Logged in!");
+                _log.Information("Logged in!");
                 _loggedIn = true;
             }
             else
             {
-                Console.WriteLine(packetData.GetData<LoginPacketResponse>().statusCode);
-                Console.WriteLine(packetData.GetData<LoginPacketResponse>().message);
+                _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
+                           packetData.GetData<LoginPacketResponse>().message);
+                AskForLoginAsync();
             }
         }
     }

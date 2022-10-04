@@ -1,15 +1,16 @@
-using System.Net.Sockets;
-using System.Text;
 using Newtonsoft.Json;
-using RemoteHealthcare.CentralServer;
 using RemoteHealthcare.CentralServer.Models;
 using RemoteHealthcare.Common;
+using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
+using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.Server.ServerClient
 {
     internal class ServerClient
     {
+        private readonly Log _log = new(typeof(ServerClient));
+
         private SocketClient _client;
         private PatientData _patientData;
         private DoctorData _doctorData;
@@ -43,7 +44,7 @@ namespace RemoteHealthcare.Server.ServerClient
         //determines which methode exactly will be executed 
         private void HandleData(DataPacket packetData)
         {
-            Console.WriteLine($"Got a packet server: {packetData.OpperationCode}");
+            _log.Debug($"Got a packet server: {packetData.OpperationCode}");
 
             //Checks if the OppCode (OperationCode) does exist.
             if (_functions.TryGetValue(packetData.OpperationCode, out var action))
@@ -84,19 +85,18 @@ namespace RemoteHealthcare.Server.ServerClient
         {
             Patient? patient = null;
             Doctor? doctor = null;
-            Console.WriteLine("test");
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
                     packetData.GetData<LoginPacketRequest>().password, "1234");
                 _patientData.Patients.Add(new Patient("user", "password123", "1234"));
-                Console.WriteLine($"Patient name: {patient.Username} Password: {patient.Password}");
+                _log.Information($"Patient name: {patient.Username} Password: {patient.Password}");
             }
             else if (packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 doctor = new Doctor(packetData.GetData<LoginPacketRequest>().username,
                     packetData.GetData<LoginPacketRequest>().password, "Dhr145");
-                Console.WriteLine($"Doctor name: {doctor.username} Password: {doctor.password}");
+                _log.Information($"Doctor name: {doctor.username} Password: {doctor.password}");
             }
 
 
@@ -123,7 +123,7 @@ namespace RemoteHealthcare.Server.ServerClient
                     data = new ChatPacketResponse()
                     {
                         statusCode = StatusCodes.NOT_FOUND,
-                        message = "Error: verkeerde wachtwoord of gebruikersnaam"
+                        message = "Opgegeven wachtwoord of gebruikersnaam incorrect."
                     }
                 });
             }
