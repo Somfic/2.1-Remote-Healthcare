@@ -1,5 +1,6 @@
 ﻿using Avans.TI.BLE;
 using RemoteHealthcare.Common.Logger;
+using RemoteHealthcare.Data;
 using System.Runtime.InteropServices;
 
 namespace RemoteHealthcare.Bluetooth;
@@ -10,15 +11,17 @@ public class BluetoothDevice
     private readonly Log _log = new(typeof(BluetoothDevice));
     private readonly string _serviceCharacteristic;
     private readonly string _serviceName;
+    private readonly string _sendCharacteristic;
     private BLE _bluetoothConnection;
     private int _idByte;
     private int _id;
 
-    public BluetoothDevice(string deviceName, string serviceName, string serviceCharacteristic, int idByte, int id)
+    public BluetoothDevice(string deviceName, string serviceName, string serviceCharacteristic,string sendCharacteristic, int idByte, int id)
     {
         _deviceName = deviceName;
         _serviceName = serviceName;
         _serviceCharacteristic = serviceCharacteristic;
+        _sendCharacteristic = sendCharacteristic;
         _idByte = idByte;
         _id = id;
     }
@@ -28,7 +31,16 @@ public class BluetoothDevice
 
     public async Task SendMessage(byte[] bytes)
     {
-        await _bluetoothConnection.WriteCharacteristic(_serviceCharacteristic, bytes);
+        if (bytes.Length == 13) {
+            byte checksum = bytes[0];
+            for (int i = 1; i < 12; i++)
+            {
+                checksum ^= bytes[i];
+            }
+            bytes[12] = (byte)checksum;
+            _log.Information("Sending: " + BitConverter.ToString(bytes));
+            await _bluetoothConnection.WriteCharacteristic(_sendCharacteristic, bytes);
+        } else throw new Exception("Not in format");
     }
 
     public async Task Connect()
@@ -65,13 +77,9 @@ public class BluetoothDevice
 
             _bluetoothConnection.SubscriptionValueChanged += (sender, e) =>
             {
-                //Console.WriteLine($" { e.Data[_idByte]}  -- {_id}");
+                Console.WriteLine(BitConverter.ToString(e.Data) );
 
-                foreach (byte bite in e.Data)
-                {
-                    Console.Write(bite + "-");
-                }
-                Console.WriteLine("");
+                
                 if (e.Data[_idByte] == _id)
                 {
                   

@@ -16,10 +16,7 @@ try
     */
 
     var client = new Client();
-    await client.RunAsync();
-
-    
-
+    client.RunAsync();
     await Task.Delay(-1);
 }
 catch (Exception ex)
