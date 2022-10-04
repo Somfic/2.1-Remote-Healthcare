@@ -83,3 +83,13 @@ public class SessionStopPacketResponse : DAbstract
     public StatusCodes statusCode;
     public string message;
 }
+public class DisconnectPacketRequest : DAbstract
+{
+    //voorlopig leeg laten
+}
+
+public class DisconnectPacketResponse : DAbstract
+{
+    public StatusCodes statusCode;
+    public string message;
+}
