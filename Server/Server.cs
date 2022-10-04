@@ -38,11 +38,11 @@ public class Server
     
     internal static void Disconnect(ServerClient client)
     {
-        /*if (!_connectedClients.Contains(client)) 
+        if (!_connectedClients.Contains(client)) 
         {
             return;
         }
-        _connectedClients.Remove(client);*/
+        _connectedClients.Remove(client);
     }
 
     private async Task BroadcastAsync(string message)
