@@ -23,7 +23,7 @@ public class SocketClient
         var client = new SocketClient(useEncryption) { Socket = socket };
         client.Read();
         return client;
-    }
+    } 
 
     public async Task ConnectAsync(string ip, int port)
     {
