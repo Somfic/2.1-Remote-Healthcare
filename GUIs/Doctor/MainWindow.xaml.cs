@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Doctor.ViewModels;
 using RemoteHealthcare.Client;
 using RemoteHealthcare.Common.Logger;
 
@@ -24,16 +25,17 @@ namespace Doctor
     public partial class MainWindow : Window
     {
         private readonly Log _log = new(typeof(MainWindow));
-        private Client _client = new Client();
         public MainWindow()
         {
             InitializeComponent();
-            LogIn();
         }
 
-        public void LogIn()
+        private void PasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
         {
-            
+            if (this.DataContext != null)
+            {
+                ((dynamic)this.DataContext).SecurePassword = ((PasswordBox)sender).SecurePassword;
+            }
         }
     }
 }

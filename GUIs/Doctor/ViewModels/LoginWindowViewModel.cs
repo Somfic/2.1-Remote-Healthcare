@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Runtime.InteropServices;
+using System.Security;
 using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using MvvmHelpers;
@@ -11,14 +14,14 @@ namespace Doctor.ViewModels;
 public class LoginWindowViewModel : ObservableObject
 {
     private Client _client;
-    public LoginWindowViewModel(Client client)
+    public LoginWindowViewModel()
     {
-        _client = client;
+        _client = new Client();
         LogIn = new Command(LogInDoctor);
     }
 
     private string _username;
-    private string _password;
+    private SecureString _password;
 
     public string Username
     {
@@ -26,17 +29,18 @@ public class LoginWindowViewModel : ObservableObject
         set => _username = value;
     }
 
-    public string Password
+    public SecureString SecurePassword
     {
-        get => _password;
+        private get => _password;
         set => _password = value;
     }
     public ICommand LogIn { get; }
 
-    void LogInDoctor()
+    void LogInDoctor(object window)
     {
+        Window windowToClose = window as Window;
         _client.username = Username;
-        _client.password = Password;
+        _client.password = SecureStringToString(SecurePassword);
         try
         {
             new Thread(async () =>
@@ -48,6 +52,21 @@ public class LoginWindowViewModel : ObservableObject
         {
             Console.WriteLine(exception);
             throw;
+        }
+
+        DoctorView doctorView = new DoctorView();
+        windowToClose.Close();
+        doctorView.Show();
+    }
+
+    public string SecureStringToString(SecureString value)
+    {
+        IntPtr valuePtr = IntPtr.Zero;
+        try {
+            valuePtr = Marshal.SecureStringToGlobalAllocUnicode(value);
+            return Marshal.PtrToStringUni(valuePtr);
+        } finally {
+            Marshal.ZeroFreeGlobalAllocUnicode(valuePtr);
         }
     }
 }
