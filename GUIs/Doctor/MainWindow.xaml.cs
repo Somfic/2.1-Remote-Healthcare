@@ -24,29 +24,16 @@ namespace Doctor
     public partial class MainWindow : Window
     {
         private readonly Log _log = new(typeof(MainWindow));
-
+        private Client _client = new Client();
         public MainWindow()
         {
             InitializeComponent();
-            try
-            {
-                new Thread(async () =>
-                {
-                    var client = new Client();
-                    _log.Debug("Client created");
-                    await client.RunAsync();
-                }).Start();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            LogIn();
         }
 
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        public void LogIn()
         {
-            Console.WriteLine("Button pressed");
+            
         }
     }
 }

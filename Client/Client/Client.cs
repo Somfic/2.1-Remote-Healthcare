@@ -30,12 +30,6 @@ namespace RemoteHealthcare.Client
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
 
-            Console.WriteLine("Hello Client!");
-            Console.WriteLine("Wat is uw telefoonnummer? ");
-            _username = Console.ReadLine();
-            Console.WriteLine("Wat is uw wachtwoord? ");
-            _password = Console.ReadLine();
-
             _client.OnMessage += (sender, data) =>
             {
                 var packet = JsonConvert.DeserializeObject<DataPacket>(data);

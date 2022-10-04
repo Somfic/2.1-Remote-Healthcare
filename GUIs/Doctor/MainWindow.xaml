@@ -5,16 +5,34 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Doctor"
         mc:Ignorable="d"
+        Background="#4966CD"
+        ResizeMode="NoResize"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button FontWeight="Bold" HorizontalContentAlignment="Center" Click="ButtonBase_OnClick">
-            <Button.HorizontalAlignment>Left</Button.HorizontalAlignment>
-            <Button.VerticalAlignment>Center</Button.VerticalAlignment>
-            <Button.Background>Black</Button.Background>
-            <WrapPanel>
-                <TextBlock Foreground="Blue">Multi</TextBlock>
-                <TextBlock Foreground="Red">Color</TextBlock>
-            </WrapPanel>
-        </Button>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Rectangle Grid.Row="1" Height="150" VerticalAlignment="Bottom">
+            <Rectangle.Fill>
+                <ImageBrush ImageSource="Images/fiets.png"></ImageBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Rectangle Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Fill="Black"></Rectangle>
+        <UserControl Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Height="175" Width="400" Background="White">
+            <StackPanel>
+                <TextBlock Text="Welkom Dokter!" FontSize="18" TextAlignment="Center"></TextBlock>
+                <Label Content="Login ID" HorizontalAlignment="Center"></Label>
+                <TextBox Name="LoginIdBox" Margin="10,0,10,0"></TextBox>
+                <Label Content="Wachtwoord" HorizontalAlignment="Center"></Label>
+                <PasswordBox Name="PasswordBox" Margin="10,0,10,0"></PasswordBox>
+                <Button Margin="10,20,10,30" Content="Log in!" Click="ButtonBase_OnClick"></Button>
+            </StackPanel>
+        </UserControl>
     </Grid>
 </Window>
