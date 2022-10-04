@@ -17,6 +17,12 @@ namespace RemoteHealthcare.GUIs.Doctor
             InitializeComponent();
         }
 
+        /// <summary>
+        /// If the DataContext is not null, then set the SecurePassword property of the DataContext to the SecurePassword
+        /// property of the PasswordBox
+        /// </summary>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="RoutedEventArgs">This is the event arguments that are passed to the event handler.</param>
         private void PasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
         {
             if (this.DataContext != null)
