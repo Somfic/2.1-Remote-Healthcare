@@ -3,9 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:viewModels="clr-namespace:RemoteHealthcare.GUIs.Doctor.ViewModels"
+        xmlns:DVC="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=DotNetProjects.DataVisualization.Toolkit"
+        xmlns:DV="clr-namespace:System.Windows.Controls.DataVisualization;assembly=DotNetProjects.DataVisualization.Toolkit"
         mc:Ignorable="d"
         Title="DoctorView" Height="450" Width="800">
+    <Window.DataContext>
+        <viewModels:DoctorViewModel/>
+    </Window.DataContext>
     <Grid>
-        
+        <DVC:Chart Name="Chart" Width="500" Height="300" Background="Salmon"></DVC:Chart>
     </Grid>
 </Window>
