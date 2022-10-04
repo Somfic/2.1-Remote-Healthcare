@@ -15,20 +15,6 @@ namespace RemoteHealthcare.GUIs.Doctor
         public MainWindow()
         {
             InitializeComponent();
-            try
-            {
-                new Thread(async () =>
-                {
-                    var client = new Client.Client();
-                    _log.Debug("Client created");
-                    await client.RunAsync();
-                }).Start();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
         }
 
         private void PasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
