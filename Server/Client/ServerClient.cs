@@ -158,7 +158,7 @@ namespace RemoteHealthcare.Server.Client
         {
             //Console.WriteLine(_patientData.);
             Console.WriteLine("in de server-client methode disconnectHandler");
-            CentralServer.Server.Disconnect(this);
+            Server.Disconnect(this);
 
             /*SendData(new DataPacket<DisconnectPacketResponse> {
                 OpperationCode = OperationCodes.DISCONNECT,
