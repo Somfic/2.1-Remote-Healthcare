@@ -13,8 +13,8 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         private SocketClient client = new(true);
         private Log _log = new(typeof(Client));
 
-        private string password;
-        private string username;
+        public string password { get; set; }
+        public string username { get; set; }
         private bool _loggedIn;
 
         private static Dictionary<string, Action<DataPacket>> functions;
@@ -29,12 +29,6 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             functions.Add("chat", ChatHandler);
             functions.Add("session start", SessionStartHandler);
             functions.Add("session stop", SessionStopHandler);
-
-            _log.Information("Hallo Dokter!");
-            _log.Information("Wat is uw loginId? ");
-            username = Console.ReadLine();
-            _log.Information("Wat is uw wachtwoord? ");
-            password = Console.ReadLine();
 
             client.OnMessage += (sender, data) =>
             {
