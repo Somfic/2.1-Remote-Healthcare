@@ -50,8 +50,8 @@ public class SimulationBikeDataProvider : BikeDataProvider
         _timerSinceLastProcess.Restart();
     }
 
-    public override void SentMessage(byte[] bytes)
+    public override Task SendMessage(byte[] bytes)
     {
-        Console.Write(":)");
+        return Task.CompletedTask;
     }
 }

@@ -29,7 +29,7 @@ public class BluetoothDevice
     public byte[] ReceivedData { get; private set; } = new byte[12];
     public string ServiceName { get; private set; } = string.Empty;
 
-    public async Task sendMessage(byte[] bytes)
+    public async Task SendMessage(byte[] bytes)
     {
         if (bytes.Length == 13) {
             byte checksum = bytes[0];

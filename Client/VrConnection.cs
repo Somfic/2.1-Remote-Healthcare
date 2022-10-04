@@ -29,7 +29,7 @@ namespace NetworkEngine.Socket
             */
         }
 
-        public async void start()
+        public async void Start()
         {
             while (true)
             {
