@@ -16,8 +16,8 @@ namespace RemoteHealthcare.Client
         private string _password;
         private string _username;
         private bool _loggedIn;
-
-        private static Dictionary<string, Action<DataPacket>> _functions;
+        
+        private Dictionary<string, Action<DataPacket>> _functions;
 
         public async Task RunAsync()
         {
@@ -116,6 +116,11 @@ namespace RemoteHealthcare.Client
             {
                 throw new Exception("Function not implemented");
             }
+        }
+        
+        private void DisconnectHandler(DataPacket obj)
+        {
+            throw new NotImplementedException();
         }
 
         //the methode for the session stop request
