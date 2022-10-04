@@ -71,6 +71,10 @@ public class SocketClient
                 {
                     Console.WriteLine("Client disconnected");
                     DisconnectAsync();
+                    foreach (SocketClient ss in SocketServer.Clients)
+                    {
+                        Console.WriteLine(ss);
+                    }
                 }
             }
             

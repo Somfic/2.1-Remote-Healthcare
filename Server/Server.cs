@@ -13,9 +13,6 @@ public class Server
     
     private readonly SocketServer _server = new(true);
     private readonly Log _log = new(typeof(Server));
-    
-    private static List<ServerClient> _connectedClients = new List<ServerClient>();
-
 
     public async Task StartAsync()
     {
@@ -31,22 +28,20 @@ public class Server
     {
         _log.Information($"Client connected: {client.Socket}");
         
-        _connectedClients.Add(new ServerClient(client));
-           
         Console.WriteLine("ALLE INGELOGDE USER ZIJN:");
-        foreach (ServerClient ss in _connectedClients)
+        foreach (SocketClient ss in SocketServer.Clients)
         {
-            Console.WriteLine(ss.UserName);
+            Console.WriteLine(ss);
         }
     }
     
     internal static void Disconnect(ServerClient client)
     {
-        if (!_connectedClients.Contains(client)) 
+        /*if (!_connectedClients.Contains(client)) 
         {
             return;
         }
-        _connectedClients.Remove(client);
+        _connectedClients.Remove(client);*/
     }
 
     private async Task BroadcastAsync(string message)
