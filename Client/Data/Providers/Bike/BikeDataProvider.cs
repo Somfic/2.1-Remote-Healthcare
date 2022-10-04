@@ -8,6 +8,8 @@ public abstract class BikeDataProvider : IDataProvider<BikeData>
 
     public abstract Task ProcessRawData();
 
+    public abstract Task SendMessage(byte[] bytes);
+
     public BikeData GetData()
     {
         return _data;
@@ -47,4 +49,5 @@ public abstract class BikeDataProvider : IDataProvider<BikeData>
     {
         _data.Id = id;
     }
+
 }

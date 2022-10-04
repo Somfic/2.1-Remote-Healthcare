@@ -42,6 +42,7 @@ public class LoginPacketRequest : DAbstract
 {
     public string username;
     public string password;
+    public bool isDoctor;
 }
 
 public class LoginPacketResponse : DAbstract
