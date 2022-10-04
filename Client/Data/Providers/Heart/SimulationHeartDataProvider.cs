@@ -1,4 +1,4 @@
-namespace RemoteHealthcare.Data.Providers.Heart;
+namespace RemoteHealthcare.Client.Data.Providers.Heart;
 
 public class SimulationHeartDataProvider : HeartDataProvider
 {

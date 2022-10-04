@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace RemoteHealthcare.Data.Providers.Bike;
+namespace RemoteHealthcare.Client.Data.Providers.Bike;
 
 public class SimulationBikeDataProvider : BikeDataProvider
 {

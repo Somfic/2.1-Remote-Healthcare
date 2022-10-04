@@ -1,7 +1,8 @@
-﻿using RemoteHealthcare.Data.Providers.Bike;
-using RemoteHealthcare.Data.Providers.Heart;
+﻿using RemoteHealthcare.Client.Data.Providers.Bike;
+using RemoteHealthcare.Client.Data.Providers.Heart;
+using RemoteHealthcare.NetworkEngine;
 
-namespace NetworkEngine.Socket
+namespace RemoteHealthcare.Client
 {
     public class VrConnection
     {
@@ -47,7 +48,7 @@ namespace NetworkEngine.Socket
                 data[12] = (byte)checksum;
                 
                 Console.WriteLine(BitConverter.ToString(data));
-                bike.SentMessage(data);
+                await bike.SendMessage(data);
             }
         }
     }

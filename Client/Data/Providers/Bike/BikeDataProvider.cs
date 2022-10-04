@@ -1,4 +1,4 @@
-namespace RemoteHealthcare.Data.Providers.Bike;
+namespace RemoteHealthcare.Client.Data.Providers.Bike;
 
 public abstract class BikeDataProvider : IDataProvider<BikeData>
 {

@@ -1,4 +1,4 @@
-namespace RemoteHealthcare.Data.Providers.Heart;
+namespace RemoteHealthcare.Client.Data.Providers.Heart;
 
 public abstract class HeartDataProvider : IDataProvider<HeartData>
 {

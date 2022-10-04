@@ -1,4 +1,4 @@
-namespace RemoteHealthcare.Data.Providers;
+namespace RemoteHealthcare.Client.Data.Providers;
 
 public interface IDataProvider<out TData> where TData : IData
 {

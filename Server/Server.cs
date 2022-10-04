@@ -1,11 +1,9 @@
-using Newtonsoft.Json;
-using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
-using RemoteHealthcare.Server.ServerClient;
+using RemoteHealthcare.Server.Client;
 
-namespace RemoteHealthcare.CentralServer;
+namespace RemoteHealthcare.Server;
 
 public class Server
 {
