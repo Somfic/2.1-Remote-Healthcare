@@ -1,4 +1,4 @@
-﻿using RemoteHealthcare.CentralServer;
+﻿using RemoteHealthcare.Server;
 
 var server = new Server();
 await server.StartAsync();

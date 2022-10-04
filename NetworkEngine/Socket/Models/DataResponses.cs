@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace NetworkEngine.Socket.Models;
+namespace RemoteHealthcare.NetworkEngine.Socket.Models;
 
 public class DataResponses<TData> where TData : Response.IDataResponse
 {

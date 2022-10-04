@@ -1,8 +1,5 @@
-using NetworkEngine;
-using NetworkEngine.Socket;
-using RemoteHealthcare.Client;
+using RemoteHealthcare.Client.Client;
 using RemoteHealthcare.Common.Logger;
-using RemoteHealthcare.Data.Providers;
 
 try
 {

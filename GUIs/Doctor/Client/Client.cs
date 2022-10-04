@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 
-namespace RemoteHealthcare.Client
+namespace RemoteHealthcare.GUIs.Doctor.Client
 {
     public class Client
     {

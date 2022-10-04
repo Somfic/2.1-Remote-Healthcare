@@ -1,4 +1,4 @@
-namespace RemoteHealthcare.Data;
+namespace RemoteHealthcare.Client.Data;
 
 public class HeartData : IData
 {

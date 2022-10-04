@@ -1,9 +1,8 @@
-﻿using Avans.TI.BLE;
+﻿using System.Runtime.InteropServices;
+using Avans.TI.BLE;
 using RemoteHealthcare.Common.Logger;
-using RemoteHealthcare.Data;
-using System.Runtime.InteropServices;
 
-namespace RemoteHealthcare.Bluetooth;
+namespace RemoteHealthcare.Client.Bluetooth;
 
 public class BluetoothDevice
 {

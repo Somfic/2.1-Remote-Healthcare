@@ -1,6 +1,6 @@
-using RemoteHealthcare.Bluetooth;
+using RemoteHealthcare.Client.Bluetooth;
 
-namespace RemoteHealthcare.Data.Providers.Heart;
+namespace RemoteHealthcare.Client.Data.Providers.Heart;
 
 public class BluetoothHeartDataProvider : HeartDataProvider
 {

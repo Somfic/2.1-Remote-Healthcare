@@ -1,4 +1,4 @@
-﻿using RemoteHealthcare.Common.Logger;
+﻿namespace RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.Server.Models;
 

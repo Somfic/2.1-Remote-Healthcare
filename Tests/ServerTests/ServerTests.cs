@@ -1,10 +1,8 @@
 using System.Diagnostics;
-using System.Text;
-using RemoteHealthcare.Common.Socket;
 using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
 
-namespace CentralServer.Tests;
+namespace RemoteHealthcare.Tests.ServerTests;
 
 public class ServerTests
 {

@@ -1,7 +1,7 @@
 using System.Text;
 using RemoteHealthcare.Common.Socket;
 
-namespace CentralServer.Tests;
+namespace RemoteHealthcare.Tests.ServerTests;
 
 public class SocketTests
 {
