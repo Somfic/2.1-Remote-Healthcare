@@ -13,6 +13,7 @@ public class Server
     
     private readonly SocketServer _server = new(true);
     private readonly Log _log = new(typeof(Server));
+    private static List<ServerClient> _connectedClients = new List<ServerClient>();
 
     public async Task StartAsync()
     {
@@ -23,15 +24,15 @@ public class Server
         _log.Information($"Server running on port {Port}");
     }
     
-    
     private async Task OnClientConnected(SocketClient client)
     {
         _log.Information($"Client connected: {client.Socket}");
-        
+        _connectedClients.Add(new ServerClient(client));
+
         Console.WriteLine("ALLE INGELOGDE USER ZIJN:");
-        foreach (SocketClient ss in SocketServer.Clients)
+        foreach (SocketClient user in SocketServer.Clients)
         {
-            Console.WriteLine(ss);
+            Console.WriteLine(user);
         }
     }
     

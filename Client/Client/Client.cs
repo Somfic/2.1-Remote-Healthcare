@@ -16,7 +16,7 @@ namespace RemoteHealthcare.Client {
         private string _username;
         private bool _loggedIn;
         
-        private static Dictionary<string, Action<DataPacket>> _functions;
+        private Dictionary<string, Action<DataPacket>> _functions;
 
         public async Task RunAsync()
         {
