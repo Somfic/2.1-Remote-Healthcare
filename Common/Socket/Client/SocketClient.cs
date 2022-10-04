@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 using Newtonsoft.Json;
 using RemoteHealthcare.Common.Logger;
+using RemoteHealthcare.Common.Socket.Server;
 
 namespace RemoteHealthcare.Common.Socket.Client;
 
@@ -54,6 +55,7 @@ public class SocketClient
         return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);
     }
 
+  
     private void Read()
     {
         Task.Run(async () =>
@@ -67,7 +69,8 @@ public class SocketClient
                 }
                 catch (Exception ex)
                 {
-                    _log.Warning(ex, "Could not read socket message");
+                    Console.WriteLine("Client disconnected");
+                    DisconnectAsync();
                 }
             }
             
@@ -79,6 +82,7 @@ public class SocketClient
     
     public Task DisconnectAsync()
     {
+        SocketServer._clients.Remove(this); 
         Socket.Dispose();
         return Task.CompletedTask;
     }

@@ -10,7 +10,7 @@ public class SocketServer
 {
     public TcpListener? Socket { get; private set; }
     private readonly Log _log = new(typeof(SocketServer));
-    private readonly List<SocketClient> _clients = new();
+    public static readonly List<SocketClient> _clients = new();
     public IReadOnlyList<SocketClient> Clients => _clients.AsReadOnly();
     private readonly bool _useEncryption;
     private bool _shouldRun;
