@@ -32,6 +32,6 @@ public class Server
 
     private async Task BroadcastAsync(string message)
     {
-        await _server.Broadcast(message);
+        await _server.BroadcastAsync(message);
     }
 }

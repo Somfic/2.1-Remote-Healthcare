@@ -6,7 +6,7 @@ using RemoteHealthcare.Common.Logger;
 namespace RemoteHealthcare.Common.Socket.Client;
 
 
-public class SocketClient
+public class SocketClient : ISocket
 {
     private readonly bool _useEncryption;
     public TcpClient Socket { get; private set; } = new();
