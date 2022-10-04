@@ -32,6 +32,7 @@ namespace RemoteHealthcare.CentralServer.Client
             _functions.Add("chat", ChatHandler);
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
+            _functions.Add("disconnect", DisconnectHandler);
             
             _patientData = new PatientData();
         }
@@ -77,7 +78,9 @@ namespace RemoteHealthcare.CentralServer.Client
         {
             Patient patient = new Patient(packetData.GetData<LoginPacketRequest>().username, packetData.GetData<LoginPacketRequest>().password, "1234");
             _patientData.Patients.Add(new Patient("user", "password123", "1234"));
-            
+
+            UserName = packetData.GetData<LoginPacketRequest>().username;
+                
             if (_patientData.MatchLoginData(patient)) {
                 SendData(new DataPacket<LoginPacketResponse> {
                     OpperationCode = OperationCodes.LOGIN,
@@ -128,15 +131,18 @@ namespace RemoteHealthcare.CentralServer.Client
         
         private void DisconnectHandler(DataPacket obj)
         {
-            
-            SendData(new DataPacket<SessionStopPacketResponse> {
-                OpperationCode = OperationCodes.SESSION_STOP,
+            //Console.WriteLine(_patientData.);
+            Console.WriteLine("in de server-client methode disconnectHandler");
+            Server.Disconnect(this);
+
+            /*SendData(new DataPacket<DisconnectPacketResponse> {
+                OpperationCode = OperationCodes.DISCONNECT,
                 
-                data = new SessionStopPacketResponse() {
+                data = new DisconnectPacketResponse() {
                     statusCode = StatusCodes.OK,
-                    message =  "Sessie wordt nu GESTOPT" 
+                    message =  "Gebruiker wordt nu gedisconnect!" 
                 }
-            });
+            });*/
         }
     }
 }

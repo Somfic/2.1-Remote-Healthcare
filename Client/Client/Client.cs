@@ -92,11 +92,11 @@ namespace RemoteHealthcare.Client {
                     }else if (newChatMessage.Equals("disconnect")) {
 
                         Console.WriteLine("in de disconnect else if");
-                        /*var req = new DataPacket<SessionStopPacketRequest> {
-                            OpperationCode = OperationCodes.DISCONECT,
+                        var req = new DataPacket<SessionStopPacketRequest> {
+                            OpperationCode = OperationCodes.DISCONNECT,
                         };
 
-                        await _client.SendAsync(req);*/
+                        await _client.SendAsync(req);
                     }else {
                         Console.WriteLine("in de else bij de client if else elsif statements!");
                     }

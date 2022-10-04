@@ -32,20 +32,21 @@ public class Server
         _log.Information($"Client connected: {client.Socket}");
         
         _connectedClients.Add(new ServerClient(client));
+           
+        Console.WriteLine("ALLE INGELOGDE USER ZIJN:");
+        foreach (ServerClient ss in _connectedClients)
+        {
+            Console.WriteLine(ss.UserName);
+        }
     }
     
     internal static void Disconnect(ServerClient client)
     {
-        if (_connectedClients.Contains(client))
+        if (!_connectedClients.Contains(client)) 
         {
-            Console.WriteLine("bestaat");
+            return;
         }
-        else
-        {
-            Console.WriteLine("bestaat niet");
-        }
-        //_connectedClients.Remove(client);
-       // Console.WriteLine("Client disconnected");
+        _connectedClients.Remove(client);
     }
 
     private async Task BroadcastAsync(string message)
