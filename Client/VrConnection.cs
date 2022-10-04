@@ -34,21 +34,20 @@ namespace NetworkEngine.Socket
             while (true)
             {
                 await bike.ProcessRawData();
-                await engine.ChangeBikeSpeed(bike.GetData().Speed);
+                ///uncommend
+                //await engine.ChangeBikeSpeed(bike.GetData().Speed); 
                 Thread.Sleep(300);
-                byte[] data = (new byte[] { 164, 9, 78, 5, 48, 255, 255, 255, 255, 255, 255, 199, 0 });
-                byte checksum = 0;
-                for (int i = 0; i < 12; i++)
+
+                byte[] data = (new byte[] {164, 9, 78, 5, 48, 255, 255, 255, 255, 255, 255, 199, 0 });
+                byte checksum = data[0];
+                for (int i = 1; i < 12; i++)
                 {
                     checksum ^= data[i];
                 }
                 data[12] = (byte)checksum;
-                foreach(byte bite in data)
-                {
-                    Console.Write(bite + "-");
-                }
-                Console.WriteLine();
-                await bike.SendMessage(data);
+                
+                Console.WriteLine(BitConverter.ToString(data));
+                bike.SentMessage(data);
             }
         }
     }

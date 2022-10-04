@@ -16,8 +16,8 @@ namespace RemoteHealthcare.Client
         private string _password;
         private string _username;
         private bool _loggedIn;
-
-        private static Dictionary<string, Action<DataPacket>> _functions;
+        
+        private Dictionary<string, Action<DataPacket>> _functions;
 
         public async Task RunAsync()
         {
@@ -91,10 +91,16 @@ namespace RemoteHealthcare.Client
                             OpperationCode = OperationCodes.SESSION_STOP,
                         };
 
+                       await _client.SendAsync(req);
+                    }else if (newChatMessage.Equals("disconnect")) {
+
+                        Console.WriteLine("in de disconnect else if");
+                        var req = new DataPacket<SessionStopPacketRequest> {
+                            OpperationCode = OperationCodes.DISCONNECT,
+                        };
+
                         await _client.SendAsync(req);
-                    }
-                    else
-                    {
+                    }else {
                         Console.WriteLine("in de else bij de client if else elsif statements!");
                     }
                 }
@@ -117,6 +123,11 @@ namespace RemoteHealthcare.Client
             {
                 throw new Exception("Function not implemented");
             }
+        }
+        
+        private void DisconnectHandler(DataPacket obj)
+        {
+            throw new NotImplementedException();
         }
 
         //the methode for the session stop request
