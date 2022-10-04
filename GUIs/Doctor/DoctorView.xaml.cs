@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Doctor;
+namespace RemoteHealthcare.GUIs.Doctor;
 
 public partial class DoctorView : Window
 {

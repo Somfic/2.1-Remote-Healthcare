@@ -3,20 +3,18 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using MvvmHelpers;
 using MvvmHelpers.Commands;
-using RemoteHealthcare.Client;
 
-namespace Doctor.ViewModels;
+namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class LoginWindowViewModel : ObservableObject
 {
-    private Client _client;
+    private Client.Client _client;
     public LoginWindowViewModel()
     {
-        _client = new Client();
+        _client = new Client.Client();
         LogIn = new Command(LogInDoctor);
     }
 
