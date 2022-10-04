@@ -1,4 +1,4 @@
-﻿namespace RemoteHealthcare.CentralServer;
+﻿namespace RemoteHealthcare.Server.Models;
 
 public class DoctorData
 {

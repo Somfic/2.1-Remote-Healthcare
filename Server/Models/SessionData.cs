@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace RemoteHealthcare.CentralServer.Models;
+namespace RemoteHealthcare.Server.Models;
 
 [Serializable]
 public class SessionData

@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
-using Doctor.ViewModels;
 
-namespace Doctor
+namespace RemoteHealthcare.GUIs.Doctor
 {
     /// <summary>
     /// Interaction logic for App.xaml

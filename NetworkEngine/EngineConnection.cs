@@ -4,14 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
-using NetworkEngine.Socket.Models;
-using NetworkEngine.Socket.Models.Response;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
+using RemoteHealthcare.NetworkEngine.Socket.Models;
+using RemoteHealthcare.NetworkEngine.Socket.Models.Response;
 
-namespace NetworkEngine;
+namespace RemoteHealthcare.NetworkEngine;
 
 public class EngineConnection
 {

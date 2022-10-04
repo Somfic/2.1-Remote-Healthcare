@@ -1,4 +1,4 @@
-﻿namespace NetworkEngine.Socket.Models.Response;
+﻿namespace RemoteHealthcare.NetworkEngine.Socket.Models.Response;
 
 public interface IDataResponse
 {

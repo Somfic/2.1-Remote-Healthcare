@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace NetworkEngine.Socket.Models.Response;
+namespace RemoteHealthcare.NetworkEngine.Socket.Models.Response;
 
 public class TunnelCreate : IDataResponse
 {

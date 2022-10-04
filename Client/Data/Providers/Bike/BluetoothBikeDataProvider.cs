@@ -1,6 +1,6 @@
-using RemoteHealthcare.Bluetooth;
+using RemoteHealthcare.Client.Bluetooth;
 
-namespace RemoteHealthcare.Data.Providers.Bike;
+namespace RemoteHealthcare.Client.Data.Providers.Bike;
 
 public class BluetoothBikeDataProvider : BikeDataProvider
 {
