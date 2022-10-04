@@ -1,7 +1,6 @@
-﻿namespace RemoteHealthcare.Server.Models;
+﻿using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.Server.Models;
-
 public class DoctorData
 {
     private readonly Log _log = new(typeof(DoctorData));

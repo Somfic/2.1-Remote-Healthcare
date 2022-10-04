@@ -17,25 +17,26 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         private string username;
         private bool _loggedIn;
 
-        private static Dictionary<string, Action<DataPacket>> functions;
+        private static Dictionary<string, Action<DataPacket>> _functions;
 
         public async Task RunAsync()
         {
             _loggedIn = false;
-            functions = new Dictionary<string, Action<DataPacket>>();
+            _functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
-            functions.Add("login", LoginFeature);
-            functions.Add("chat", ChatHandler);
-            functions.Add("session start", SessionStartHandler);
-            functions.Add("session stop", SessionStopHandler);
+            _functions.Add("login", LoginFeature);
+            _functions.Add("chat", ChatHandler);
+            _functions.Add("session start", SessionStartHandler);
+            _functions.Add("session stop", SessionStopHandler);
+            _functions.Add("emergency stop", EmergencyStopHandler);
 
             client.OnMessage += (sender, data) =>
             {
                 var packet = JsonConvert.DeserializeObject<DataPacket>(data);
                 HandleData(packet);
             };
-
+            
             await client.ConnectAsync("127.0.0.1", 15243);
             
             AskForLoginAsync();
@@ -47,25 +48,13 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                 {
                     _log.Information("Voer een command in om naar de server te sturen: \r\n" +
                                      "[BERICHT] [START SESSIE] [STOP SESSIE] [NOODSTOP]");
-                    string newChatMessage = Console.ReadLine();
+                    string userCommand = Console.ReadLine();
                     
-                    if (newChatMessage.ToLower().Equals("bericht"))
+                    if (userCommand.ToLower().Equals("bericht"))
                     {
-                        _log.Information("Voer uw bericht in: ");
-                        newChatMessage = Console.ReadLine();
-
-                        var req = new DataPacket<ChatPacketRequest>
-                        {
-                            OpperationCode = OperationCodes.CHAT,
-                            data = new ChatPacketRequest()
-                            {
-                                message = newChatMessage
-                            }
-                        };
-
-                        await client.SendAsync(req);
+                        SendChatAsync();
                     }
-                    else if (newChatMessage.ToLower().Equals("start sessie"))
+                    else if (userCommand.ToLower().Equals("start sessie"))
                     {
                         var req = new DataPacket<SessionStartPacketRequest>
                         {
@@ -74,7 +63,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
                         await client.SendAsync(req);
                     }
-                    else if (newChatMessage.ToLower().Equals("stop sessie"))
+                    else if (userCommand.ToLower().Equals("stop sessie"))
                     {
                         DataPacket<SessionStopPacketRequest> req = new DataPacket<SessionStopPacketRequest>
                         {
@@ -83,9 +72,9 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
                         await client.SendAsync(req);
                     }
-                    else if (newChatMessage.ToLower().Equals("noodstop"))
+                    else if (userCommand.ToLower().Equals("noodstop"))
                     {
-                        DataPacket<SessionStopPacketRequest> req = new DataPacket<SessionStopPacketRequest>
+                        var req = new DataPacket<EmergencyStopPacketRequest>
                         {
                             OpperationCode = OperationCodes.EMERGENCY_STOP,
                         };
@@ -100,9 +89,29 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             }
         }
 
+        private async void SendChatAsync()
+        {
+            _log.Debug("Entered SendChatAsync()");
+
+            _connectedClients;
+            
+            _log.Information("Voer uw bericht in: ");
+            String chatInput = Console.ReadLine();
+
+            var req = new DataPacket<ChatPacketRequest>
+            {
+                OpperationCode = OperationCodes.CHAT,
+                data = new ChatPacketRequest()
+                {
+                    message = chatInput
+                }
+            };
+
+            await client.SendAsync(req);
+        }
+
         private async void AskForLoginAsync()
         {
-            
             _log.Information("Hallo Dokter!");
             _log.Information("Wat is uw loginId? ");
             username = Console.ReadLine();
@@ -129,7 +138,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         private void HandleData(DataPacket packet)
         {
             //Checks if the OppCode (OperationCode) does exist.
-            if (functions.TryGetValue(packet.OpperationCode, out var action))
+            if (_functions.TryGetValue(packet.OpperationCode, out var action))
             {
                 action.Invoke(packet);
             }
@@ -140,6 +149,13 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         } //the methode for the session stop request
 
         private void SessionStopHandler(DataPacket obj)
+        {
+            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
+        }
+
+        //the methode for the emergency stop request
+        //TODO 
+        private void EmergencyStopHandler(DataPacket obj)
         {
             _log.Information(obj.GetData<SessionStopPacketResponse>().message);
         }

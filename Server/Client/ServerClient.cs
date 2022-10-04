@@ -36,6 +36,7 @@ namespace RemoteHealthcare.Server.Client
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("disconnect", DisconnectHandler);
+            _functions.Add("emergency stop", EmergencyStopHandler);
             
             _patientData = new PatientData();
             _doctorData = new DoctorData();
@@ -152,7 +153,24 @@ namespace RemoteHealthcare.Server.Client
                 data = new SessionStopPacketResponse()
                 {
                     statusCode = StatusCodes.OK,
-                    message = "Sessie wordt nu GESTOPT"
+                    message = "Sessie wordt nu gestopt"
+                }
+            });
+        }
+
+        //the methode for the emergency stop request
+        //TODO 
+        private void EmergencyStopHandler(DataPacket obj)
+        {
+            _log.Debug("123 server client");
+            SendData(new DataPacket<EmergencyStopPacketResponse>
+            {
+                OpperationCode = OperationCodes.EMERGENCY_STOP,
+
+                data = new EmergencyStopPacketResponse()
+                {
+                    statusCode = StatusCodes.OK,
+                    message = "Sessie wordt nu gestopt doormiddel van een noodstop"
                 }
             });
         }

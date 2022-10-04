@@ -69,7 +69,7 @@ public class SocketClient : ISocket
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Client disconnected");
+                    _log.Debug("Client disconnected");
                     DisconnectAsync();
                     foreach (SocketClient user in SocketServer.Clients)
                     {
