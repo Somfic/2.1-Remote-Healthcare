@@ -35,7 +35,8 @@ namespace RemoteHealthcare.Server.ServerClient
             _functions.Add("chat", ChatHandler);
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
-
+            _functions.Add("disconnect", DisconnectHandler);
+            
             _patientData = new PatientData();
             _doctorData = new DoctorData();
         }
@@ -84,7 +85,6 @@ namespace RemoteHealthcare.Server.ServerClient
         {
             Patient? patient = null;
             Doctor? doctor = null;
-            Console.WriteLine("test");
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
@@ -113,11 +113,9 @@ namespace RemoteHealthcare.Server.ServerClient
                         message = "Gefeliciteerd! : Je bent ingelogd"
                     }
                 });
-            }
-            else
-            {
-                SendData(new DataPacket<ChatPacketResponse>
-                {
+
+            } else {
+                SendData(new DataPacket<ChatPacketResponse> {
                     OpperationCode = OperationCodes.LOGIN,
 
                     data = new ChatPacketResponse()
@@ -157,6 +155,22 @@ namespace RemoteHealthcare.Server.ServerClient
                     message = "Sessie wordt nu GESTOPT"
                 }
             });
+        }
+        
+        private void DisconnectHandler(DataPacket obj)
+        {
+            //Console.WriteLine(_patientData.);
+            Console.WriteLine("in de server-client methode disconnectHandler");
+            Server.Disconnect(this);
+
+            /*SendData(new DataPacket<DisconnectPacketResponse> {
+                OpperationCode = OperationCodes.DISCONNECT,
+                
+                data = new DisconnectPacketResponse() {
+                    statusCode = StatusCodes.OK,
+                    message =  "Gebruiker wordt nu gedisconnect!" 
+                }
+            });*/
         }
     }
 }

@@ -6,12 +6,12 @@ using RemoteHealthcare.Common.Socket.Client;
 
 namespace RemoteHealthcare.Common.Socket.Server;
 
-public class SocketServer
+public class SocketServer : ISocket
 {
     public TcpListener? Socket { get; private set; }
     private readonly Log _log = new(typeof(SocketServer));
-    private readonly List<SocketClient> _clients = new();
-    public IReadOnlyList<SocketClient> Clients => _clients.AsReadOnly();
+    public static readonly List<SocketClient> _clients = new();
+    public static IReadOnlyList<SocketClient> Clients => _clients.AsReadOnly();
     private readonly bool _useEncryption;
     private bool _shouldRun;
 
@@ -77,10 +77,10 @@ public class SocketServer
 
     public event EventHandler<(SocketClient client, string message)>? OnMessage; 
 
-    public Task Broadcast(dynamic data)
+    public Task BroadcastAsync(dynamic data)
     {
         string json = JsonConvert.SerializeObject(data);
-        return Broadcast(json);
+        return BroadcastAsync(json);
     }
     
     public async Task BroadcastAsync(string text)
