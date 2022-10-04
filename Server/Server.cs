@@ -13,6 +13,9 @@ public class Server
     
     private readonly SocketServer _server = new(true);
     private readonly Log _log = new(typeof(Server));
+    
+    private static List<ServerClient> _connectedClients = new List<ServerClient>();
+
 
     public async Task StartAsync()
     {
@@ -27,7 +30,22 @@ public class Server
     private async Task OnClientConnected(SocketClient client)
     {
         _log.Information($"Client connected: {client.Socket}");
-        ServerClient serverClient = new ServerClient(client);
+        
+        _connectedClients.Add(new ServerClient(client));
+    }
+    
+    internal static void Disconnect(ServerClient client)
+    {
+        if (_connectedClients.Contains(client))
+        {
+            Console.WriteLine("bestaat");
+        }
+        else
+        {
+            Console.WriteLine("bestaat niet");
+        }
+        //_connectedClients.Remove(client);
+       // Console.WriteLine("Client disconnected");
     }
 
     private async Task BroadcastAsync(string message)

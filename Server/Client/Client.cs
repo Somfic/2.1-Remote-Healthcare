@@ -125,5 +125,18 @@ namespace RemoteHealthcare.CentralServer.Client
                 }
             });
         }
+        
+        private void DisconnectHandler(DataPacket obj)
+        {
+            
+            SendData(new DataPacket<SessionStopPacketResponse> {
+                OpperationCode = OperationCodes.SESSION_STOP,
+                
+                data = new SessionStopPacketResponse() {
+                    statusCode = StatusCodes.OK,
+                    message =  "Sessie wordt nu GESTOPT" 
+                }
+            });
+        }
     }
 }

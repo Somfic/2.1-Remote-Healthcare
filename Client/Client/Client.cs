@@ -28,6 +28,7 @@ namespace RemoteHealthcare.Client {
             _functions.Add("chat", ChatHandler);
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
+            _functions.Add("Disconnect", DisconnectHandler);
             
             Console.WriteLine("Hello Client!");
             Console.WriteLine("Wat is uw telefoonnummer? ");
@@ -88,6 +89,14 @@ namespace RemoteHealthcare.Client {
                         };
 
                        await _client.SendAsync(req);
+                    }else if (newChatMessage.Equals("disconnect")) {
+
+                        Console.WriteLine("in de disconnect else if");
+                        /*var req = new DataPacket<SessionStopPacketRequest> {
+                            OpperationCode = OperationCodes.DISCONECT,
+                        };
+
+                        await _client.SendAsync(req);*/
                     }else {
                         Console.WriteLine("in de else bij de client if else elsif statements!");
                     }
@@ -96,7 +105,7 @@ namespace RemoteHealthcare.Client {
                 }
             }
         }
-        
+
         //this methode will get the right methode that will be used for the response from the server
         public void HandleData(DataPacket packet)
         {
@@ -107,6 +116,11 @@ namespace RemoteHealthcare.Client {
             } else {
                 throw new Exception("Function not implemented");
             }
+        }
+        
+        private void DisconnectHandler(DataPacket obj)
+        {
+            throw new NotImplementedException();
         }
 
         //the methode for the session stop request
