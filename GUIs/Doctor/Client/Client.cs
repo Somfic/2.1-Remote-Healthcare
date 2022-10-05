@@ -36,9 +36,9 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                 var packet = JsonConvert.DeserializeObject<DataPacket>(data);
                 HandleData(packet);
             };
-            
+
             await client.ConnectAsync("127.0.0.1", 15243);
-            
+
             AskForLoginAsync();
 
             while (true)
@@ -49,7 +49,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                     _log.Information("Voer een command in om naar de server te sturen: \r\n" +
                                      "[BERICHT] [START SESSIE] [STOP SESSIE] [NOODSTOP]");
                     string userCommand = Console.ReadLine();
-                    
+
                     if (userCommand.ToLower().Equals("bericht"))
                     {
                         SendChatAsync();
@@ -93,8 +93,8 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         {
             _log.Debug("Entered SendChatAsync()");
 
-            _connectedClients;
-            
+            ;
+
             _log.Information("Voer uw bericht in: ");
             String chatInput = Console.ReadLine();
 
@@ -105,6 +105,16 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                 {
                     message = chatInput
                 }
+            };
+
+            await client.SendAsync(req);
+        }
+
+        private async void requestClientsAsync()
+        {
+            var req = new DataPacket<ChatPacketRequest>
+            {
+                OpperationCode = OperationCodes.CHAT
             };
 
             await client.SendAsync(req);

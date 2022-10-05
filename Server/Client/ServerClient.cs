@@ -37,7 +37,7 @@ namespace RemoteHealthcare.Server.Client
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("disconnect", DisconnectHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
-            
+
             _patientData = new PatientData();
             _doctorData = new DoctorData();
         }
@@ -101,8 +101,7 @@ namespace RemoteHealthcare.Server.Client
             }
 
 
-            if (_patientData.MatchLoginData(patient) && patient != null ||
-                _doctorData.MatchLoginData(doctor) && doctor != null)
+            if (_patientData.MatchLoginData(patient) && patient != null)
             {
                 SendData(new DataPacket<LoginPacketResponse>
                 {
@@ -110,13 +109,31 @@ namespace RemoteHealthcare.Server.Client
 
                     data = new LoginPacketResponse()
                     {
+                        user = patient,
                         statusCode = StatusCodes.OK,
-                        message = "Gefeliciteerd! : Je bent ingelogd"
+                        message = "U bent succesvol ingelogd."
                     }
                 });
+            } 
+            else if (_doctorData.MatchLoginData(doctor) && doctor != null)
+            {
+                SendData(new DataPacket<LoginPacketResponse>
+                {
+                    OpperationCode = OperationCodes.LOGIN,
 
-            } else {
-                SendData(new DataPacket<ChatPacketResponse> {
+                    data = new LoginPacketResponse()
+                    {
+                        user = doctor,
+                        statusCode = StatusCodes.OK,
+                        message = "U bent succesvol ingelogd."
+                    }
+                });
+                
+            }
+            else 
+            {
+                SendData(new DataPacket<ChatPacketResponse>
+                {
                     OpperationCode = OperationCodes.LOGIN,
 
                     data = new ChatPacketResponse()
@@ -138,7 +155,7 @@ namespace RemoteHealthcare.Server.Client
                 data = new SessionStartPacketResponse()
                 {
                     statusCode = StatusCodes.OK,
-                    message = "Sessie wordt nu GESTART"
+                    message = "Sessie wordt nu gestart."
                 }
             });
         }
@@ -153,7 +170,7 @@ namespace RemoteHealthcare.Server.Client
                 data = new SessionStopPacketResponse()
                 {
                     statusCode = StatusCodes.OK,
-                    message = "Sessie wordt nu gestopt"
+                    message = "Sessie wordt nu gestopt."
                 }
             });
         }
@@ -174,7 +191,7 @@ namespace RemoteHealthcare.Server.Client
                 }
             });
         }
-        
+
         private void DisconnectHandler(DataPacket obj)
         {
             //Console.WriteLine(_patientData.);

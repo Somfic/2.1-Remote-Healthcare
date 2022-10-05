@@ -47,16 +47,17 @@ public class LoginPacketRequest : DAbstract
 
 public class LoginPacketResponse : DAbstract
 {
+    public dynamic user;
     public StatusCodes statusCode;
     public string message;
 }
 
-public class ChatPacketRequest : DAbstract
+public class ChatPacketRequest : DAbstract      //TODO: add sender and receiver
 {
     public string message;
 }
 
-public class ChatPacketResponse : DAbstract
+public class ChatPacketResponse : DAbstract    //TODO: add sender and receiver
 {
     public StatusCodes statusCode;
     public string message;
@@ -64,7 +65,7 @@ public class ChatPacketResponse : DAbstract
 
 public class SessionStartPacketRequest : DAbstract
 {
-    //voorlopig leeg laten
+    //TODO: voorlopig leeg laten
 }
 
 public class SessionStartPacketResponse : DAbstract
@@ -75,7 +76,7 @@ public class SessionStartPacketResponse : DAbstract
 
 public class SessionStopPacketRequest : DAbstract
 {
-    //voorlopig leeg laten
+    //TODO: voorlopig leeg laten
 }
 
 public class SessionStopPacketResponse : DAbstract
@@ -86,7 +87,7 @@ public class SessionStopPacketResponse : DAbstract
 
 public class EmergencyStopPacketRequest : DAbstract
 {
-    //voorlopig leeg laten
+    //TODO: voorlopig leeg laten
 }
 
 public class EmergencyStopPacketResponse : DAbstract
@@ -96,7 +97,7 @@ public class EmergencyStopPacketResponse : DAbstract
 }
 public class DisconnectPacketRequest : DAbstract
 {
-    //voorlopig leeg laten
+    //TODO: voorlopig leeg laten
 }
 
 public class DisconnectPacketResponse : DAbstract
