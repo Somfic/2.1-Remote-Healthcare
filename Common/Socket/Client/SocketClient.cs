@@ -69,12 +69,8 @@ public class SocketClient : ISocket
                 }
                 catch (Exception ex)
                 {
-                    _log.Debug("Client disconnected");
-                    DisconnectAsync();
-                    foreach (SocketClient user in SocketServer.Clients)
-                    {
-                        Console.WriteLine(user);
-                    }
+                    _log.Debug("A client disconnected");
+                    await DisconnectAsync();
                 }
             }
             
@@ -86,7 +82,7 @@ public class SocketClient : ISocket
     
     public Task DisconnectAsync()
     {
-        SocketServer._clients.Remove(this); 
+        SocketServer._clients.Remove(this);
         Socket.Dispose();
         return Task.CompletedTask;
     }

@@ -5,15 +5,17 @@ public class DoctorData
 {
     private readonly Log _log = new(typeof(DoctorData));
     
-    private Doctor _doctor { get; set; }
+    public Doctor _doctor { get; set; }
 
     public DoctorData()
     {
-        this._doctor = new Doctor("Piet", "dhrPiet", "Dhr145");
     }
 
     public bool MatchLoginData(Doctor d)
     {
+        if (_doctor == null)
+            return false;
+        
         if (_doctor.username.Equals(d.username) && _doctor.password.Equals(d.password) &&
             _doctor.userId.Equals(d.userId))
             return true;

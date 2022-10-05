@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Net.Cache;
+using Newtonsoft.Json;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
@@ -10,9 +11,11 @@ namespace RemoteHealthcare.Client.Client
         private SocketClient _client = new(true);
         private Log _log = new(typeof(Client));
 
+        private bool _loggedIn;
         private string _password;
         private string _username;
-        private bool _loggedIn;
+        private string userId;
+        private string doctorId;
         
         private Dictionary<string, Action<DataPacket>> _functions;
 
@@ -101,6 +104,23 @@ namespace RemoteHealthcare.Client.Client
             await _client.SendAsync(loginReq);
         }
 
+        private async void RequestDoctorIdAsync()
+        {
+            
+            DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
+            {
+                OpperationCode = OperationCodes.LOGIN,
+                data = new LoginPacketRequest()
+                {
+                    username = _username,
+                    password = _password,
+                    isDoctor = false
+                }
+            };
+
+            await _client.SendAsync(loginReq);
+        }
+
         //this methode will get the right methode that will be used for the response from the server
         public void HandleData(DataPacket packet)
         {
@@ -141,11 +161,13 @@ namespace RemoteHealthcare.Client.Client
         //the methode for the login request
         private void LoginFeature(DataPacket packetData)
         {
+            _log.Debug($"Responce: {packetData.ToJson()}");
             int statusCode = (int)packetData.GetData<LoginPacketResponse>().statusCode;
-
             if (statusCode.Equals(200))
             {
-                _log.Information("Logged in!");
+                userId = packetData.GetData<LoginPacketResponse>().userId;
+                _log.Information($"Succesfully logged in to the user: {_username}; {_password}; {userId}.");
+                RequestDoctorIdAsync();
                 _loggedIn = true;
             }
             else

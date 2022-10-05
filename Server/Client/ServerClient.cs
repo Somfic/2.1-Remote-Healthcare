@@ -1,7 +1,9 @@
+using System.Net.Sockets;
 using Newtonsoft.Json;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
+using RemoteHealthcare.Common.Socket.Server;
 using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.Server.Client
@@ -32,6 +34,7 @@ namespace RemoteHealthcare.Server.Client
 
             _functions = new Dictionary<string, Action<DataPacket>>();
             _functions.Add("login", LoginFeature);
+            _functions.Add("users", RequestConnectionsFeature);
             _functions.Add("chat", ChatHandler);
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
@@ -65,6 +68,25 @@ namespace RemoteHealthcare.Server.Client
             _client.SendAsync(packet).GetAwaiter().GetResult();
         }
 
+        private void RequestConnectionsFeature(DataPacket obj)
+        {
+            List<SocketClient> connections = new(SocketServer._clients);
+            _log.Information(connections.ToArray().Length + "");
+            string clients = "";
+            connections.ForEach(connection => clients += connection.Socket.Client + ";");
+            _log.Information(clients);
+            SendData(new DataPacket<ConnectedClientsPacketResponse>
+            {
+                OpperationCode = OperationCodes.USERS,
+                
+                data = new ConnectedClientsPacketResponse()
+                {
+                    statusCode = StatusCodes.OK,
+                    connectedIds = clients
+                }
+            });
+        }
+
         //the methode for the chat request
         private void ChatHandler(DataPacket packetData)
         {
@@ -91,17 +113,18 @@ namespace RemoteHealthcare.Server.Client
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
                     packetData.GetData<LoginPacketRequest>().password, "1234");
                 _patientData.Patients.Add(new Patient("user", "password123", "1234"));
-                _log.Information($"Patient name: {patient.Username} Password: {patient.Password}");
+                _log.Debug($"Patient name: {patient.Username} Password: {patient.Password}");
             }
             else if (packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 doctor = new Doctor(packetData.GetData<LoginPacketRequest>().username,
                     packetData.GetData<LoginPacketRequest>().password, "Dhr145");
-                _log.Information($"Doctor name: {doctor.username} Password: {doctor.password}");
+                _doctorData._doctor = new Doctor("Piet", "dhrPiet", "Dhr145");
+                _log.Debug($"Doctor name: {doctor.username} Password: {doctor.password}");
             }
 
 
-            if (_patientData.MatchLoginData(patient) && patient != null)
+            if (patient != null && _patientData.MatchLoginData(patient))
             {
                 SendData(new DataPacket<LoginPacketResponse>
                 {
@@ -109,13 +132,14 @@ namespace RemoteHealthcare.Server.Client
 
                     data = new LoginPacketResponse()
                     {
-                        user = patient,
+                        userId = patient.UserId,
+                        doctorId = (_doctorData._doctor != null ? _doctorData._doctor.userId : ""),
                         statusCode = StatusCodes.OK,
                         message = "U bent succesvol ingelogd."
                     }
                 });
             } 
-            else if (_doctorData.MatchLoginData(doctor) && doctor != null)
+            else if (doctor != null && _doctorData.MatchLoginData(doctor))
             {
                 SendData(new DataPacket<LoginPacketResponse>
                 {
@@ -123,7 +147,7 @@ namespace RemoteHealthcare.Server.Client
 
                     data = new LoginPacketResponse()
                     {
-                        user = doctor,
+                        userId = doctor.userId,
                         statusCode = StatusCodes.OK,
                         message = "U bent succesvol ingelogd."
                     }
