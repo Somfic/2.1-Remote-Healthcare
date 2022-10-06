@@ -68,9 +68,6 @@ namespace RemoteHealthcare.Server.Client
         //The parameter is an JsonFile object
         private void SendData(DAbstract packet, string? targetId = null)
         {
-            // _log.Critical(target._userId + " : " + targetId);
-
-            _log.Critical(packet.ToJson());
             if (packet.ToJson().Contains("chat"))
                 calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
             else
@@ -107,6 +104,12 @@ namespace RemoteHealthcare.Server.Client
             string clients = "";
             foreach (ServerClient client in connections)
             {
+                if ((connections.Count - 1) == connections.IndexOf(client))
+                {
+                    clients += client._userId;
+                    _log.Debug("last index");
+                }
+
                 if (!client._isDoctor)
                     clients += client._userId + ";";
             }
@@ -127,8 +130,6 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the chat request
         private void ChatHandler(DataPacket packetData)
         {
-            _log.Debug($"{(packetData.GetData<ChatPacketRequest>().receiverId) == null}");
-
             SendData(new DataPacket<ChatPacketResponse>
             {
                 OpperationCode = OperationCodes.CHAT,
@@ -147,12 +148,11 @@ namespace RemoteHealthcare.Server.Client
         {
             Patient? patient = null;
             Doctor? doctor = null;
-            _log.Error(packetData.ToJson());
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
                     packetData.GetData<LoginPacketRequest>().password, "1234");
-                _patientData.Patients.Add(new Patient("user", "password123", "1234"));
+                _patientData.Patients.Add(new Patient("user", "password123", new Random().Next(1001, 2000).ToString()));
                 _log.Debug($"Patient name: {patient.Username} Password: {patient.Password}");
             }
             else if (packetData.GetData<LoginPacketRequest>().isDoctor)
