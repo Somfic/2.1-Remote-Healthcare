@@ -204,7 +204,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             if (((int)packetData.GetData<LoginPacketResponse>().statusCode).Equals(200))
             {
                 userId = packetData.GetData<LoginPacketResponse>().userId;
-                _log.Information($"Succesfully logged in to the user: {_username}; {_password}; {userId}.");
+                _log.Information($"Succesfully logged in to the user: {username}; {password}; {userId}.");
                 _loggedIn = true;
             }
             else
