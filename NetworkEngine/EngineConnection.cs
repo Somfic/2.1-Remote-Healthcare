@@ -644,7 +644,7 @@ public class EngineConnection
     public async Task SendTextToPannel(string speed, string distance, string time, string bpm, string resistance)
     {
         var text =
-            $"Snelheid: {speed} \n Afstand: {distance} \n Tijd: {time} \n Hartslag: {bpm} \n Weerstand: {resistance}";
+            $"Snelheid: {speed} \\nAfstand: {distance} \\nTijd: {time} \\nHartslag: {bpm} \\nWeerstand: {resistance}";
         await SetBackgroundColor(1, 1, 1, 0.2f);
         await ClearPannel();
         await AddTextToPannel(text);
