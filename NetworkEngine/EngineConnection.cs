@@ -138,9 +138,6 @@ public class EngineConnection
         await AddPanelNode(_tunnelId);
 
         await Task.Delay(1000);
-        await SendTextToPannel("Het werkt");
-
-        await Task.Delay(1000);
         await MoveCameraPosition();
         await Task.Delay(1000);
         await MoveHeadPosition();
@@ -378,7 +375,6 @@ public class EngineConnection
 
         json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
-        await SendTextToPannel(((int)speed) + "");
     }
 
 
@@ -645,8 +641,10 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
-    public async Task SendTextToPannel(string text)
+    public async Task SendTextToPannel(string speed, string distance, string time, string bpm, string resistance)
     {
+        var text =
+            $"Snelheid: {speed} \n Afstand: {distance} \n Tijd: {time} \n Hartslag: {bpm} \n Weerstand: {resistance}";
         await SetBackgroundColor(1, 1, 1, 0.2f);
         await ClearPannel();
         await AddTextToPannel(text);
