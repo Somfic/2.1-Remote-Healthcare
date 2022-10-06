@@ -219,7 +219,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         private void ChatHandler(DataPacket packetData)
         {
             _log.Information(
-                $"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+                $"Incomming message: {packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
         }
 
         private void RequestConnectionsFeature(DataPacket packetData)
@@ -227,7 +227,8 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             _log.Debug(packetData.ToJson());
             if (((int)packetData.GetData<ConnectedClientsPacketResponse>().statusCode).Equals(200))
             {
-                _connected.Clear();
+                // _connected.Clear();
+                // _log.Debug(_connected.ToString());
                 _connected = packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Split(";").ToList();
             }
         }

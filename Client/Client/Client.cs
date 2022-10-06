@@ -57,9 +57,11 @@ namespace RemoteHealthcare.Client.Client
                         var req = new DataPacket<ChatPacketRequest>
                         {
                             OpperationCode = OperationCodes.CHAT,
+                            
                             data = new ChatPacketRequest()
                             {
                                 senderId = userId,
+                                receiverId = null,
                                 message = ChatMessage
                             }
                         };

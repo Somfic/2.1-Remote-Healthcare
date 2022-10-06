@@ -108,15 +108,17 @@ namespace RemoteHealthcare.Server.Client
 
         private void RequestConnectionsFeature(DataPacket obj)
         {
-            List<ServerClient> connections = new(Server._connectedClients);
+            List<ServerClient> connections = new();
+
+            foreach (ServerClient sc in Server._connectedClients)
+            {
+                if (!sc._isDoctor)
+                    connections.Add(sc);
+            }
 
             string clients = "";
-            _log.Debug($"RequestConnectionsFeature.clients: {clients}, Server._connectedClients.Count: {Server._connectedClients.Count}");
-            
-            if (connections.Count == 1)
-            {
-                clients = connections[0]._userId;
-            }
+            _log.Debug(
+                $"RequestConnectionsFeature.clients: {clients}, Server._connectedClients.Count: {Server._connectedClients.Count}");
 
             int clientCount = 0;
             foreach (ServerClient client in connections)
@@ -124,7 +126,7 @@ namespace RemoteHealthcare.Server.Client
                 if (!client._isDoctor && client._userId != null)
                 {
                     //connections.count - 2 because we subtract the doctor and count is 1 up on the index.
-                    if ((connections.Count - 2) <= clientCount)
+                    if ((connections.Count - 1) <= clientCount)
                     {
                         clients += client._userId;
                     }
@@ -136,7 +138,7 @@ namespace RemoteHealthcare.Server.Client
                     clientCount++;
                 }
             }
-            
+
             _log.Debug($"RequestConnectionsFeature.clients: {clients}");
 
             SendData(new DataPacket<ConnectedClientsPacketResponse>
@@ -156,9 +158,9 @@ namespace RemoteHealthcare.Server.Client
         {
             ChatPacketRequest data = packetData.GetData<ChatPacketRequest>();
             _log.Debug($"ChatHandler: {data.ToJson()}");
-            /*if (!data.receiverId.Contains(";"))
+
+            if (data.receiverId == null)
             {
-                _log.Debug("sending to a single patient");
                 SendData(new DataPacket<ChatPacketResponse>
                 {
                     OpperationCode = OperationCodes.CHAT,
@@ -169,13 +171,13 @@ namespace RemoteHealthcare.Server.Client
                         statusCode = StatusCodes.OK,
                         message = data.message
                     }
-                }, data.receiverId);
+                });
             }
             else
             {
-                _log.Debug("sending to multiple patients");*/
-                List<string> targetIds = data.receiverId.Split(";").ToList();
+                List<string>? targetIds = data.receiverId.Split(";").ToList();
                 targetIds.ForEach(t => _log.Debug($"Target: {t}"));
+
                 SendData(new DataPacket<ChatPacketResponse>
                 {
                     OpperationCode = OperationCodes.CHAT,
@@ -187,7 +189,7 @@ namespace RemoteHealthcare.Server.Client
                         message = data.message
                     }
                 }, targetIds);
-            // }
+            }
         }
 
         //the methode for the login request

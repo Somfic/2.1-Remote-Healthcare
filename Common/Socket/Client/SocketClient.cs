@@ -70,12 +70,12 @@ public class SocketClient : ISocket
                 catch (Exception ex)
                 {
                     _log.Error(ex.Message);
-                    _log.Debug("A client disconnected");
+                    _log.Debug("Stopping a client");
                     await DisconnectAsync();
                 }
             }
 
-            _log.Debug("Stopped client");
+            _log.Debug($"Stopped a client at {ToString()}");
         });
     }
     
