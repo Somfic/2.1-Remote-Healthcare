@@ -15,16 +15,16 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         private List<string> _connected;
         private Log _log = new(typeof(Client));
 
-        private bool _loggedIn;
-        public string username;
-        public string password;
-        private string userId;
+        public string password { get; set; }
+        public string username { get; set; }
+        public bool loggedIn { get; set; }
 
         private Dictionary<string, Action<DataPacket>> _functions = new();
 
         public async Task RunAsync()
         {
-            _loggedIn = false;
+            loggedIn = false;
+            functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
             _functions.Add("login", LoginFeature);
@@ -47,7 +47,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             while (true)
             {
                 //if the user isn't logged in, the user cant send any command to the server
-                if (_loggedIn)
+                if (loggedIn)
                 {
                     _log.Information("Voer een command in om naar de server te sturen: \r\n" +
                                      "[BERICHT] [START SESSIE] [STOP SESSIE] [NOODSTOP]");
