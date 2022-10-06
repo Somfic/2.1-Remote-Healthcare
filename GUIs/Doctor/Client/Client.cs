@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RemoteHealthcare.Common;
@@ -11,7 +12,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
     public class Client
     {
         private SocketClient _client = new(true);
-        private string[]? _connected;
+        private List<string> _connected;
         private Log _log = new(typeof(Client));
 
         private bool _loggedIn;
@@ -100,6 +101,10 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             
             _log.Information("Voer uw bericht in: ");
             String chatInput = Console.ReadLine();
+            string savedConnections = "";
+            _connected.ForEach(c => savedConnections+= c + "; ");
+            _log.Information($"Voor welk accountnummer is dit bedoeld: [{savedConnections}]");
+            String target = Console.ReadLine();
 
             var req = new DataPacket<ChatPacketRequest>
             {
@@ -107,11 +112,13 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                 data = new ChatPacketRequest()
                 {
                     senderId = userId,
-                    receiverId = "1234",
+                    receiverId = target,
                     message = chatInput
                 }
             };
-
+            
+            _log.Debug(req.ToJson());
+            
             await _client.SendAsync(req);
         }
 
@@ -191,8 +198,9 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             _log.Debug($"Responce: {packetData.ToJson()}");
             if (((int)packetData.GetData<ConnectedClientsPacketResponse>().statusCode).Equals(200))
             {
-                _log.Critical(packetData.GetData<ConnectedClientsPacketResponse>().connectedIds);
-                _connected = packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Split(";");
+                _log.Critical($"Size: {packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Count()} " +
+                              $"id's: {packetData.GetData<ConnectedClientsPacketResponse>().connectedIds}");
+                _connected = packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Split(";").ToList();
             }
         }
 

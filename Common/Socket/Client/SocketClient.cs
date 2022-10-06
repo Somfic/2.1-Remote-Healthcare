@@ -69,11 +69,13 @@ public class SocketClient : ISocket
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine(ex);
                     _log.Debug("A client disconnected");
                     await DisconnectAsync();
                 }
             }
-            
+
+            await DisconnectAsync();
             _log.Debug("Stopped client");
         });
     }
