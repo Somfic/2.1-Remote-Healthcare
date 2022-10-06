@@ -41,27 +41,27 @@ public class LoginWindowViewModel : ObservableObject
     void LogInDoctor(object window)
     {
         Window windowToClose = window as Window;
-        _client.username = Username;
-        _client.password = SecureStringToString(SecurePassword);
-        try
+        while (!_client.loggedIn)
         {
-            new Thread(async () =>
+            _client.username = Username;
+            _client.password = SecureStringToString(SecurePassword);
+            try
             {
-                await _client.RunAsync();
-            }).Start();
+                new Thread(async () =>
+                {
+                    await _client.RunAsync();
+                }).Start();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
         }
-        catch (Exception exception)
-        {
-            Console.WriteLine(exception);
-            throw;
-        }
-
-        if (_client.loggedIn)
-        {
-            DoctorView doctorView = new DoctorView();
-            windowToClose.Close();
-            doctorView.Show();
-        }
+        
+        DoctorView doctorView = new DoctorView();
+        windowToClose.Close();
+        doctorView.Show();
     }
 
     /// <summary>
