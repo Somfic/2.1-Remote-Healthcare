@@ -6,11 +6,6 @@ namespace RemoteHealthcare.Tests.ServerTests;
 
 public class ServerTests
 {
-    [SetUp]
-    public void Setup()
-    {
-    }
-    
     [Test]
     public async Task Connecting()
     {

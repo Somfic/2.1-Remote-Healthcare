@@ -5,31 +5,48 @@ namespace RemoteHealthcare.Tests.ServerTests;
 
 public class SocketTests
 {
-    [SetUp]
-    public void Setup()
-    {
-    }
-    
     [Test]
     public void NoEncryption()
     {
-        var text = GenerateRandomString(100);
+        var text = GenerateRandomString(1000000);
 
         var encrypted = SocketHelper.Encode(text, false);
         var decrypted = SocketHelper.Decode(encrypted, false);
 
         Assert.That(decrypted, Is.EqualTo(text));
     }
-    
+
+    [Test]
+    public void ByteEncryption()
+    {
+        var bytes = GenerateRandomBytes(1000000);
+        
+        var encrypted = SocketHelper.Encrypt(bytes);
+        var decrypted = SocketHelper.Decrypt(encrypted);
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(encrypted, Is.Not.EqualTo(bytes));
+            Assert.That(decrypted, Is.EqualTo(bytes));
+        });
+    }
+
     [Test]
     public void Encryption()
     {
-        var text = GenerateRandomString(1000);
+        var text = GenerateRandomString(1000000);
 
         var encrypted = SocketHelper.Encode(text, true);
         var decrypted = SocketHelper.Decode(encrypted, true);
 
         Assert.That(decrypted, Is.EqualTo(text));
+    }
+    
+    private byte[] GenerateRandomBytes(int size)
+    {
+        var bytes = new byte[size];
+        new Random().NextBytes(bytes);
+        return bytes;
     }
 
     private string GenerateRandomString(int size)
