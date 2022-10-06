@@ -18,7 +18,6 @@ public class PatientData
         string returnAllUsersFromText = File.ReadAllText(path);
         
         List<Patient> data = JsonConvert.DeserializeObject<List<Patient>>(returnAllUsersFromText);
-       
         
         return data;
     }
@@ -27,12 +26,9 @@ public class PatientData
     {
         Patients = readUsersFromJson();
 
-        foreach (var varPatient in Patients)
+        if (Patients.Exists(name => name.Password == patient.Password && name.UserId == patient.UserId))
         {
-            if (varPatient.UserId.Equals(patient.UserId) && varPatient.Password.Equals(patient.Password))
-            {
-                return true;
-            }
+            return true;
         }
         
         return false;
