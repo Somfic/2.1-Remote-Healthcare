@@ -9,7 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
+      <ProjectReference Include="..\..\Client\Client.csproj" />
+      <ProjectReference Include="..\..\Common\Common.csproj" />
     </ItemGroup>
 
 </Project>

@@ -48,45 +48,45 @@ namespace RemoteHealthcare.Client.Client
 
             await _client.SendAsync(loginReq);
 
-            while (true)
-            {
-                Console.WriteLine("Voer een command in om naar de server te sturen: ");
-                var newChatMessage = Console.ReadLine();
+            //while (true)
+            //{
+            //    Console.WriteLine("Voer een command in om naar de server te sturen: ");
+            //    var newChatMessage = Console.ReadLine();
 
-                //if the user isn't logged in, the user cant send any command to the server
-                if (_loggedIn)
-                {
-                    if (newChatMessage.Equals("chat"))
-                    {
-                        Console.WriteLine("Voer uw bericht in: ");
-                        newChatMessage = Console.ReadLine();
+            //    //if the user isn't logged in, the user cant send any command to the server
+            //    if (_loggedIn)
+            //    {
+            //        if (newChatMessage.Equals("chat"))
+            //        {
+            //            Console.WriteLine("Voer uw bericht in: ");
+            //            newChatMessage = Console.ReadLine();
 
-                        var req = new DataPacket<ChatPacketRequest>
-                        {
-                            OpperationCode = OperationCodes.CHAT,
-                            data = new ChatPacketRequest()
-                            {
-                                message = newChatMessage
-                            }
-                        };
+            //            var req = new DataPacket<ChatPacketRequest>
+            //            {
+            //                OpperationCode = OperationCodes.CHAT,
+            //                data = new ChatPacketRequest()
+            //                {
+            //                    message = newChatMessage
+            //                }
+            //            };
 
-                        await _client.SendAsync(req);
-                    }
-                    else if (newChatMessage.Equals("session start"))
-                    {
-                        var req = new DataPacket<SessionStartPacketRequest>
-                        {
-                            OpperationCode = OperationCodes.SESSION_START,
-                        };
+            //            await _client.SendAsync(req);
+            //        }
+            //        else if (newChatMessage.Equals("session start"))
+            //        {
+            //            var req = new DataPacket<SessionStartPacketRequest>
+            //            {
+            //                OpperationCode = OperationCodes.SESSION_START,
+            //            };
 
-                        await _client.SendAsync(req);
-                    }
-                    else if (newChatMessage.Equals("session stop"))
-                    {
-                        var req = new DataPacket<SessionStopPacketRequest>
-                        {
-                            OpperationCode = OperationCodes.SESSION_STOP,
-                        };
+            //            await _client.SendAsync(req);
+            //        }
+            //        else if (newChatMessage.Equals("session stop"))
+            //        {
+            //            var req = new DataPacket<SessionStopPacketRequest>
+            //            {
+            //                OpperationCode = OperationCodes.SESSION_STOP,
+            //            };
 
                        await _client.SendAsync(req);
                     }else if (newChatMessage.Equals("disconnect")) {
@@ -161,5 +161,11 @@ namespace RemoteHealthcare.Client.Client
                 Console.WriteLine(packetData.GetData<LoginPacketResponse>().message);
             }
         }
+        public bool GetLoggedIn()
+        {
+            return _loggedIn;
+        }
     }
+    
+   
 }

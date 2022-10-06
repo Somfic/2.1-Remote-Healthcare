@@ -7,6 +7,7 @@ public class PatientData
     public PatientData()
     {
         Patients = new List<Patient>();
+        Patients.Add(new Patient("test", "test", "test"));
     }
 
     public bool MatchLoginData(Patient patient)
