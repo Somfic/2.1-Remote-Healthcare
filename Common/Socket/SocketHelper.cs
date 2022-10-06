@@ -98,13 +98,15 @@ public static class SocketHelper
 
     public static byte[] Encrypt(byte[] data)
     {
-        // return Rsa.Encrypt(data, false);
-        return data;
+        var encryptor = Aes.CreateEncryptor(Aes.Key, Aes.IV);
+        var encrypted = encryptor.TransformFinalBlock(data, 0, data.Length);
+        return encrypted;
     }
 
     public static byte[] Decrypt(byte[] data)
     {
-        // return Rsa.Decrypt(data, false);
-        return data;
+        var decryptor = Aes.CreateDecryptor(Aes.Key, Aes.IV);
+        var decrypted = decryptor.TransformFinalBlock(data, 0, data.Length);
+        return decrypted;
     }
 }
