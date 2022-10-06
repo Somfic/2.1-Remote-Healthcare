@@ -18,13 +18,14 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         public string password { get; set; }
         public string username { get; set; }
         public bool loggedIn { get; set; }
+        private string _userId;
 
         private Dictionary<string, Action<DataPacket>> _functions = new();
 
         public async Task RunAsync()
         {
             loggedIn = false;
-            functions = new Dictionary<string, Action<DataPacket>>();
+            _functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
             _functions.Add("login", LoginFeature);
@@ -111,7 +112,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                 OpperationCode = OperationCodes.CHAT,
                 data = new ChatPacketRequest()
                 {
-                    senderId = userId,
+                    senderId = _userId,
                     receiverId = target,
                     message = chatInput
                 }
@@ -197,9 +198,9 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             _log.Debug($"Responce: {packetData.ToJson()}");
             if (((int)packetData.GetData<LoginPacketResponse>().statusCode).Equals(200))
             {
-                userId = packetData.GetData<LoginPacketResponse>().userId;
-                _log.Information($"Succesfully logged in to the user: {username}; {password}; {userId}.");
-                _loggedIn = true;
+                _userId = packetData.GetData<LoginPacketResponse>().userId;
+                _log.Information($"Succesfully logged in to the user: {username}; {password}; {_userId}.");
+                loggedIn = true;
             }
             else
             {
