@@ -645,7 +645,7 @@ public class EngineConnection
     public async Task SendTextToPannel(string speed, string distance, TimeSpan timespan, string bpm, string resistance)
     {
         var text =
-            $"Snelheid: {speed} \\nAfstand: {distance} \\nTijd: {timespan::mm\\\\:ss} \\nHartslag: {bpm} \\nWeerstand: {resistance}";
+            $"Snelheid: {speed} \\nAfstand: {distance} \\nTijd: {timespan.Minutes + ":" + timespan.Seconds} \\nHartslag: {bpm} \\nWeerstand: {resistance}";
         await SetBackgroundColor(1, 1, 1, 0.2f);
         await ClearPannel();
         await AddTextToPannel(text);
