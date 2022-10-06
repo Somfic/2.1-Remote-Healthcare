@@ -68,27 +68,39 @@ namespace RemoteHealthcare.Server.Client
         //The parameter is an JsonFile object
         private void SendData(DAbstract packet, string? targetId = null)
         {
+            _log.Debug($"sending: {packet.ToJson()}");
             if (packet.ToJson().Contains("chat"))
                 calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
             else
                 _client.SendAsync(packet).GetAwaiter().GetResult();
         }
 
+        //This methode used to send an request from the Server to the Client
+        //The parameter is an JsonFile object
+        private void SendData(DAbstract packet, List<string> targetIds)
+        {
+            _log.Debug($"sending: {packet.ToJson()}");
+            if (packet.ToJson().Contains("chat"))
+            {
+                foreach (string targetId in targetIds)
+                {
+                    calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
+                }
+            }
+        }
+
         //If userid == null, then search for doctor otherwise search for patient
         private ServerClient calculateTarget(string? userId = null)
         {
-            _log.Warning($"userId: {userId}");
             foreach (ServerClient client in Server._connectedClients)
             {
                 if (userId == null && client._isDoctor)
                 {
-                    _log.Warning($"Client: {client._userId}");
                     return client;
                 }
 
                 if (userId != null && client._userId.Equals(userId))
                 {
-                    _log.Warning($"Client: {client._userId}; Is Doctor: {client._doctorData}");
                     return client;
                 }
             }
@@ -99,27 +111,27 @@ namespace RemoteHealthcare.Server.Client
         private void RequestConnectionsFeature(DataPacket obj)
         {
             List<ServerClient> connections = new(Server._connectedClients);
-            _log.Information($"Client count: {connections.ToArray().Length}");
 
             string clients = "";
+            int clientCount = 0;
             foreach (ServerClient client in connections)
             {
-                
-                if (!client._isDoctor && client._userId != null) 
+                if (!client._isDoctor && client._userId != null)
                 {
-                    if ((connections.Count - 1) == connections.IndexOf(client))
+                    //connections.count - 2 because we subtract the doctor and count is 1 up on the index.
+                    if ((connections.Count - 2) <= clientCount)
                     {
                         clients += client._userId;
-                        _log.Debug("last index");
                     }
                     else
                     {
-                    clients += client._userId + ";";
+                        clients += client._userId + ";";
                     }
+
+                    clientCount++;
                 }
             }
 
-            _log.Information(clients);
             SendData(new DataPacket<ConnectedClientsPacketResponse>
             {
                 OpperationCode = OperationCodes.USERS,
@@ -135,21 +147,40 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the chat request
         private void ChatHandler(DataPacket packetData)
         {
-            SendData(new DataPacket<ChatPacketResponse>
+            ChatPacketRequest data = packetData.GetData<ChatPacketRequest>();
+            if (!data.receiverId.Contains(";"))
             {
-                OpperationCode = OperationCodes.CHAT,
-
-                data = new ChatPacketResponse()
+                SendData(new DataPacket<ChatPacketResponse>
                 {
-                    statusCode = StatusCodes.OK,
-                    message =
-                        $"{packetData.GetData<ChatPacketRequest>().senderId}: {packetData.GetData<ChatPacketRequest>().message}"
-                }
-            }, packetData.GetData<ChatPacketRequest>().receiverId);
+                    OpperationCode = OperationCodes.CHAT,
+
+                    data = new ChatPacketResponse()
+                    {
+                        senderId = packetData.GetData<ChatPacketRequest>().senderId,
+                        statusCode = StatusCodes.OK,
+                        message = packetData.GetData<ChatPacketRequest>().message
+                    }
+                }, packetData.GetData<ChatPacketRequest>().receiverId);
+            }
+            else
+            {
+                List<string> targetIds = data.receiverId.Split(";").ToList();
+                SendData(new DataPacket<ChatPacketResponse>
+                {
+                    OpperationCode = OperationCodes.CHAT,
+
+                    data = new ChatPacketResponse()
+                    {
+                        senderId = packetData.GetData<ChatPacketRequest>().senderId,
+                        statusCode = StatusCodes.OK,
+                        message = packetData.GetData<ChatPacketRequest>().message
+                    }
+                }, targetIds);
+            }
         }
 
         //the methode for the login request
-        private void LoginFeature(DataPacket packetData)        //TODO: spam on incorrect login
+        private void LoginFeature(DataPacket packetData) //TODO: spam on incorrect login
         {
             Patient? patient = null;
             Doctor? doctor = null;

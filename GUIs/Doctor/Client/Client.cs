@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Navigation;
 using Newtonsoft.Json;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
@@ -53,7 +54,6 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                     _log.Information("Voer een commando in om naar de server te sturen: \r\n" +
                                      "[BERICHT] [START SESSIE] [STOP SESSIE] [NOODSTOP]");
                     string userCommand = Console.ReadLine();
-                    _log.Warning(userCommand);
 
                     if (userCommand.ToLower().Equals("bericht"))
                     {
@@ -97,19 +97,31 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         private async void SendChatAsync()
         {
             await requestClients();
+            /* This is a while loop that will do nothing until connected is filled */
             while (_connected == null)
             {
             }
 
             string savedConnections = "";
-            _connected.ForEach(c => savedConnections+= c + "; ");
-            _log.Information($"Voor welk accountnummer is dit bedoeld: [{savedConnections}]");
-            String target = Console.ReadLine();
-            _log.Warning(target);
+            _connected.ForEach(c => savedConnections += c + "; ");
+            string? target = 0000 + "";
             
+            /* This is a while loop that will keep asking for a target until the target is in the list of connected
+            clients. */
+            while (!_connected.Contains(target) && !target.Contains(";"))
+            {
+                _log.Information($"Voor welk accountnummer is dit bedoeld? Voor meerdere accountnummers tegelijk, " +
+                                 $"gebruik een ; tussen de nummers. Kies uit de volgende beschikbare " +
+                                 $"accountnummers: \t[{savedConnections}]");
+                target = Console.ReadLine();
+                
+                //breaks the while-loop if all targets are correct.
+                if (CheckTargets(target.Split(";").ToList(), _connected))
+                    break;
+            }
+
             _log.Information("Voer uw bericht in: ");
             String chatInput = Console.ReadLine();
-            _log.Warning(chatInput);
 
             var req = new DataPacket<ChatPacketRequest>
             {
@@ -121,8 +133,27 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                     message = chatInput
                 }
             };
-            
+
             await _client.SendAsync(req);
+        }
+
+        /// <summary>
+        /// It checks if all the targets are in the connections list
+        /// </summary>
+        /// <param name="targets">A list of strings that represent the targets you want to check for.</param>
+        /// <param name="connections">A list of all the connections that are currently active.</param>
+        /// <returns>
+        /// True if all targets are in connections list, false if not so.
+        /// </returns>
+        private bool CheckTargets(List<string> targets, List<string> connections)
+        {
+            foreach (string target in targets)
+            {
+                if (!connections.Contains(target))
+                    return false;
+            }
+
+            return true;
         }
 
         private async Task requestClients()
@@ -187,7 +218,8 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         //the methode for the send chat request
         private void ChatHandler(DataPacket packetData)
         {
-            _log.Information(packetData.GetData<ChatPacketResponse>().message);
+            _log.Information(
+                $"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
         }
 
         private void RequestConnectionsFeature(DataPacket packetData)
