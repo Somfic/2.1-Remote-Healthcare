@@ -88,25 +88,27 @@ namespace RemoteHealthcare.Client.Client
             //                OpperationCode = OperationCodes.SESSION_STOP,
             //            };
 
-                       await _client.SendAsync(req);
-                    }else if (newChatMessage.Equals("disconnect")) {
-
-                        Console.WriteLine("in de disconnect else if");
-                        var req = new DataPacket<SessionStopPacketRequest> {
-                            OpperationCode = OperationCodes.DISCONNECT,
-                        };
-
-                        await _client.SendAsync(req);
-                    }else {
-                        Console.WriteLine("in de else bij de client if else elsif statements!");
-                    }
+                //        await _client.SendAsync(req);
+                //     }else if (newChatMessage.Equals("disconnect")) {
+                //
+                //         Console.WriteLine("in de disconnect else if");
+                //         var req = new DataPacket<SessionStopPacketRequest> {
+                //             OpperationCode = OperationCodes.DISCONNECT,
+                //         };
+                //
+                //         await _client.SendAsync(req);
+                //     }else {
+                //         Console.WriteLine("in de else bij de client if else elsif statements!");
+                //     }
+                // }
+                // else
+                // {
+                //     Console.WriteLine("Je bent nog niet ingelogd");
+                // }
                 }
-                else
-                {
-                    Console.WriteLine("Je bent nog niet ingelogd");
-                }
-            }
-        }
+
+            
+        
 
         //this methode will get the right methode that will be used for the response from the server
         public void HandleData(DataPacket packet)

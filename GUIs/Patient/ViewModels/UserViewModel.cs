@@ -1,31 +1,24 @@
-﻿using MvvmHelpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using MvvmHelpers;
 using MvvmHelpers.Commands;
-using RemoteHealthcare.Client.Client;
-using RemoteHealthcare.GUIs.Patient;
-using Client = RemoteHealthcare.GUIs.Patient.Client.Client;
 
-namespace Patient.ViewModel
+namespace RemoteHealthcare.GUIs.Patient.ViewModels
 {
     public class UserViewModel : ObservableObject
     {
         
         private string _username;
         private SecureString _password;
-        private Client _client;
+        private Client.Client _client;
 
         public UserViewModel()
         {
-            _client = new Client();
+            _client = new Client.Client();
             LogIn = new Command(LogInPatient);
         }
 
@@ -46,8 +39,9 @@ namespace Patient.ViewModel
         void LogInPatient(object window)
         { 
             Window windowToClose = window as Window;
+            Console.WriteLine("Got window, logging in patient");
             _client.username = Username;
-           _client.password = SecureStringToString(Password);
+            _client.password = SecureStringToString(Password);
             try
             {
                 new Thread(async () =>
