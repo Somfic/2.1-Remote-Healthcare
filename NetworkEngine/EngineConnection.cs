@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -641,10 +642,10 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
-    public async Task SendTextToPannel(string speed, string distance, string time, string bpm, string resistance)
+    public async Task SendTextToPannel(string speed, string distance, TimeSpan timespan, string bpm, string resistance)
     {
         var text =
-            $"Snelheid: {speed} \\nAfstand: {distance} \\nTijd: {time} \\nHartslag: {bpm} \\nWeerstand: {resistance}";
+            $"Snelheid: {speed} \\nAfstand: {distance} \\nTijd: {timespan.ToString(":mm\\:ss")} \\nHartslag: {bpm} \\nWeerstand: {resistance}";
         await SetBackgroundColor(1, 1, 1, 0.2f);
         await ClearPannel();
         await AddTextToPannel(text);

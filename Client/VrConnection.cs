@@ -39,7 +39,12 @@ namespace NetworkEngine.Socket
             {
                 await bike.ProcessRawData();
                 await engine.ChangeBikeSpeed(bike.GetData().Speed);
-                await engine.SendTextToPannel((int)bike.GetData().Speed + "", (int)bike.GetData().Distance + "", bike.GetData().TotalElapsed.ToString(), heart.GetData().HeartRate.ToString(), resistance.ToString());
+                await engine.SendTextToPannel(
+                    (int)bike.GetData().Speed + "", 
+                    (int)bike.GetData().Distance + "", 
+                    bike.GetData().TotalElapsed, 
+                    heart.GetData().HeartRate.ToString(), 
+                    resistance.ToString());
                 Thread.Sleep(300);
             }
         }
