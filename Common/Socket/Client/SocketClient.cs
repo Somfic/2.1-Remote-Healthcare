@@ -69,15 +69,13 @@ public class SocketClient : ISocket
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Client disconnected");
-                    DisconnectAsync();
-                    foreach (SocketClient user in SocketServer.Clients)
-                    {
-                        Console.WriteLine(user);
-                    }
+                    Console.WriteLine(ex);
+                    _log.Debug("A client disconnected");
+                    await DisconnectAsync();
                 }
             }
-            
+
+            await DisconnectAsync();
             _log.Debug("Stopped client");
         });
     }
@@ -86,8 +84,13 @@ public class SocketClient : ISocket
     
     public Task DisconnectAsync()
     {
-        SocketServer._clients.Remove(this); 
+        SocketServer._clients.Remove(this);
         Socket.Dispose();
         return Task.CompletedTask;
+    }
+
+    public override string ToString()
+    {
+        return $"IP Adress: {((IPEndPoint)Socket.Client.RemoteEndPoint).Address}; Port: {((IPEndPoint)Socket.Client.RemoteEndPoint).Port}";
     }
 }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Net.Cache;
+using Newtonsoft.Json;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
@@ -10,9 +11,11 @@ namespace RemoteHealthcare.Client.Client
         private SocketClient _client = new(true);
         private Log _log = new(typeof(Client));
 
+        private bool _loggedIn;
         private string _password;
         private string _username;
-        private bool _loggedIn;
+        private string userId;
+        private string doctorId;
         
         private Dictionary<string, Action<DataPacket>> _functions;
 
@@ -34,7 +37,60 @@ namespace RemoteHealthcare.Client.Client
             };
 
             await _client.ConnectAsync("127.0.0.1", 15243);
+            
+            AskForLoginAsync();
 
+            while (true)
+            {
+                _log.Information("Voer een command in om naar de server te sturen: \r\n" +
+                                  "[BERICHT] [NOODSTOP]");
+                string newChatMessage = Console.ReadLine();
+
+                //if the user isn't logged in, the user cant send any command to the server
+                if (_loggedIn)
+                {
+                    if (newChatMessage.ToLower().Equals("bericht"))
+                    {
+                        _log.Information("Voer uw bericht in: ");
+                        newChatMessage = Console.ReadLine();
+
+                        var req = new DataPacket<ChatPacketRequest>
+                        {
+                            OpperationCode = OperationCodes.CHAT,
+                            data = new ChatPacketRequest()
+                            {
+                                senderId = userId,
+                                message = newChatMessage
+                            }
+                        };
+    
+                        await _client.SendAsync(req);
+                    }
+                    else if (newChatMessage.ToLower().Equals("noodstop"))
+                    {
+                        var req = new DataPacket<EmergencyStopPacketRequest>
+                        {
+                            OpperationCode = OperationCodes.EMERGENCY_STOP,
+                        };
+
+                        await _client.SendAsync(req);
+                    }
+                    else
+                    {
+                        _log.Warning("Het commando dat u heeft ingevoerd is incorrect.");
+                    }
+                }
+            }
+        }
+
+        private async void AskForLoginAsync()
+        {
+            _log.Information("Hello Client!");
+            _log.Information("Wat is uw telefoonnummer? ");
+            _username = Console.ReadLine();
+            _log.Information("Wat is uw wachtwoord? ");
+            _password = Console.ReadLine();
+            
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
                 OpperationCode = OperationCodes.LOGIN,
@@ -47,65 +103,23 @@ namespace RemoteHealthcare.Client.Client
             };
 
             await _client.SendAsync(loginReq);
+        }
 
-            while (true)
+        private async void RequestDoctorIdAsync()       //TODO, FIX THE SPAMMING TO SERVER IF ENABLED.
+        {
+            
+            DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
-                Console.WriteLine("Voer een command in om naar de server te sturen: ");
-                var newChatMessage = Console.ReadLine();
-
-                //if the user isn't logged in, the user cant send any command to the server
-                if (_loggedIn)
+                OpperationCode = OperationCodes.LOGIN,
+                data = new LoginPacketRequest()
                 {
-                    if (newChatMessage.Equals("chat"))
-                    {
-                        Console.WriteLine("Voer uw bericht in: ");
-                        newChatMessage = Console.ReadLine();
-
-                        var req = new DataPacket<ChatPacketRequest>
-                        {
-                            OpperationCode = OperationCodes.CHAT,
-                            data = new ChatPacketRequest()
-                            {
-                                message = newChatMessage
-                            }
-                        };
-
-                        await _client.SendAsync(req);
-                    }
-                    else if (newChatMessage.Equals("session start"))
-                    {
-                        var req = new DataPacket<SessionStartPacketRequest>
-                        {
-                            OpperationCode = OperationCodes.SESSION_START,
-                        };
-
-                        await _client.SendAsync(req);
-                    }
-                    else if (newChatMessage.Equals("session stop"))
-                    {
-                        var req = new DataPacket<SessionStopPacketRequest>
-                        {
-                            OpperationCode = OperationCodes.SESSION_STOP,
-                        };
-
-                       await _client.SendAsync(req);
-                    }else if (newChatMessage.Equals("disconnect")) {
-
-                        Console.WriteLine("in de disconnect else if");
-                        var req = new DataPacket<SessionStopPacketRequest> {
-                            OpperationCode = OperationCodes.DISCONNECT,
-                        };
-
-                        await _client.SendAsync(req);
-                    }else {
-                        Console.WriteLine("in de else bij de client if else elsif statements!");
-                    }
+                    username = _username,
+                    password = _password,
+                    isDoctor = false
                 }
-                else
-                {
-                    Console.WriteLine("Je bent nog niet ingelogd");
-                }
-            }
+            };
+
+            await _client.SendAsync(loginReq);
         }
 
         //this methode will get the right methode that will be used for the response from the server
@@ -130,35 +144,38 @@ namespace RemoteHealthcare.Client.Client
         //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
-            Console.WriteLine(obj.GetData<SessionStopPacketResponse>().message);
+            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
         }
 
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            Console.WriteLine(obj.GetData<SessionStartPacketResponse>().message);
+            _log.Information(obj.GetData<SessionStartPacketResponse>().message);
         }
 
         //the methode for the send chat request
         private void ChatHandler(DataPacket packetData)
         {
-            Console.WriteLine(packetData.GetData<ChatPacketResponse>().message);
+            _log.Information(packetData.GetData<ChatPacketResponse>().message);
         }
 
         //the methode for the login request
         private void LoginFeature(DataPacket packetData)
         {
+            _log.Debug($"Responce: {packetData.ToJson()}");
             int statusCode = (int)packetData.GetData<LoginPacketResponse>().statusCode;
-
             if (statusCode.Equals(200))
             {
-                Console.WriteLine("Logged in!");
+                userId = packetData.GetData<LoginPacketResponse>().userId;
+                _log.Information($"Succesfully logged in to the user: {_username}; {_password}; {userId}.");
+                // RequestDoctorIdAsync();
                 _loggedIn = true;
             }
             else
             {
-                Console.WriteLine(packetData.GetData<LoginPacketResponse>().statusCode);
-                Console.WriteLine(packetData.GetData<LoginPacketResponse>().message);
+                _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " + 
+                           packetData.GetData<LoginPacketResponse>().message);
+                AskForLoginAsync();
             }
         }
     }
