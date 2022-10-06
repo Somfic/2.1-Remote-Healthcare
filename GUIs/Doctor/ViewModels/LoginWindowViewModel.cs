@@ -12,6 +12,7 @@ namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 public class LoginWindowViewModel : ObservableObject
 {
     private Client.Client _client;
+
     public LoginWindowViewModel()
     {
         _client = new Client.Client();
@@ -32,6 +33,7 @@ public class LoginWindowViewModel : ObservableObject
         private get => _password;
         set => _password = value;
     }
+
     public ICommand LogIn { get; }
 
     /// <summary>
@@ -41,27 +43,28 @@ public class LoginWindowViewModel : ObservableObject
     void LogInDoctor(object window)
     {
         Window windowToClose = window as Window;
-        while (!_client.loggedIn)
+        
+        if (!_client.loggedIn)
         {
             _client.username = Username;
             _client.password = SecureStringToString(SecurePassword);
             try
             {
-                new Thread(async () =>
-                {
-                    await _client.RunAsync();
-                }).Start();
+                new Thread(async () => { await _client.RunAsync(); }).Start();
             }
             catch (Exception exception)
             {
                 Console.WriteLine(exception);
                 throw;
             }
+
+            if (_client.loggedIn)
+            {
+                DoctorView doctorView = new DoctorView();
+                windowToClose.Close();
+                doctorView.Show();
+            }
         }
-        
-        DoctorView doctorView = new DoctorView();
-        windowToClose.Close();
-        doctorView.Show();
     }
 
     /// <summary>
@@ -79,10 +82,13 @@ public class LoginWindowViewModel : ObservableObject
     public string SecureStringToString(SecureString value)
     {
         IntPtr valuePtr = IntPtr.Zero;
-        try {
+        try
+        {
             valuePtr = Marshal.SecureStringToGlobalAllocUnicode(value);
             return Marshal.PtrToStringUni(valuePtr);
-        } finally {
+        }
+        finally
+        {
             Marshal.ZeroFreeGlobalAllocUnicode(valuePtr);
         }
     }
