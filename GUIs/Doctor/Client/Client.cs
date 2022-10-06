@@ -36,7 +36,6 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             _client.OnMessage += (sender, data) =>
             {
                 var packet = JsonConvert.DeserializeObject<DataPacket>(data);
-                _log.Debug($"Packet: {packet.ToJson()}");
                 HandleData(packet);
             };
 
@@ -57,7 +56,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                     {
                         SendChatAsync();
                     }
-                    else if (userCommand.ToLower().Equals("start sessie"))
+                    else if (userCommand.ToLower().Equals("start") && userCommand.ToLower().Equals("sessie"))
                     {
                         var req = new DataPacket<SessionStartPacketRequest>
                         {
@@ -66,7 +65,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
                         await _client.SendAsync(req);
                     }
-                    else if (userCommand.ToLower().Equals("stop sessie"))
+                    else if (userCommand.ToLower().Contains(("stop")) && userCommand.ToLower().Contains("Sessie"))
                     {
                         DataPacket<SessionStopPacketRequest> req = new DataPacket<SessionStopPacketRequest>
                         {
@@ -94,11 +93,11 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
         private async void SendChatAsync()
         {
-            _log.Warning("requesting clients now");
-            requestClientsAsync();
-            _log.Information("");
-            _log.Warning("requesting clients done");
-
+            await requestClients();
+            while (_connected == null)
+            {
+            }
+            
             _log.Information("Voer uw bericht in: ");
             String chatInput = Console.ReadLine();
 
@@ -116,7 +115,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             await _client.SendAsync(req);
         }
 
-        private async void requestClientsAsync()
+        private async Task requestClients()
         {
             var req = new DataPacket<ConnectedClientsPacketRequest>
             {

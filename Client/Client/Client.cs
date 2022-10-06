@@ -104,7 +104,7 @@ namespace RemoteHealthcare.Client.Client
             await _client.SendAsync(loginReq);
         }
 
-        private async void RequestDoctorIdAsync()
+        private async void RequestDoctorIdAsync()       //TODO, FIX THE SPAMMING TO SERVER IF ENABLED.
         {
             
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
@@ -167,7 +167,7 @@ namespace RemoteHealthcare.Client.Client
             {
                 userId = packetData.GetData<LoginPacketResponse>().userId;
                 _log.Information($"Succesfully logged in to the user: {_username}; {_password}; {userId}.");
-                RequestDoctorIdAsync();
+                // RequestDoctorIdAsync();
                 _loggedIn = true;
             }
             else
