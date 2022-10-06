@@ -2,6 +2,7 @@
 using System.Text;
 using NetworkEngine.Socket;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
@@ -92,7 +93,7 @@ namespace RemoteHealthcare.Client
                     else if (newChatMessage.ToLower().StartsWith("setresistance:"))
                     {
                         int resistance = int.Parse(newChatMessage.Remove(0, 14));
-                        vrConnection.setResistance(resistance);
+                        _vrConnection.setResistance(resistance);
                     }
                     else if (newChatMessage.Equals("session start"))
                     {
@@ -147,6 +148,13 @@ namespace RemoteHealthcare.Client
         private void DisconnectHandler(DataPacket obj)
         {
             throw new NotImplementedException();
+        }
+
+        private void SetResistanceHandeler(DataPacket obj)
+        {
+            string newChatMessage = obj.GetData<SetResistancePacketResponse>().message;
+            var resistance = int.Parse(newChatMessage.Remove(0, 14));
+            _vrConnection.setResistance(resistance);
         }
 
         //the methode for the session stop request

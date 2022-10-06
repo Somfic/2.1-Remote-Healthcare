@@ -76,7 +76,7 @@ public class BluetoothDevice
 
             _bluetoothConnection.SubscriptionValueChanged += (sender, e) =>
             {
-                Console.WriteLine(BitConverter.ToString(e.Data) );
+                //Console.WriteLine(BitConverter.ToString(e.Data) );
 
                 
                 if (e.Data[_idByte] == _id)

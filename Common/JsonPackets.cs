@@ -78,6 +78,12 @@ public class SessionStopPacketRequest : DAbstract
     //voorlopig leeg laten
 }
 
+public class SetResistancePacketResponse : DAbstract
+{
+    public StatusCodes statusCode;
+    public string message;
+}
+
 public class SessionStopPacketResponse : DAbstract
 {
     public StatusCodes statusCode;

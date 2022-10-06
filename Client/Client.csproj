@@ -42,6 +42,7 @@
 
     <ItemGroup>
       <Folder Include="Roadload" />
+      <Folder Include="Roadload\" />
     </ItemGroup>
 
 </Project>

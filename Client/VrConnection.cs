@@ -46,13 +46,13 @@ namespace NetworkEngine.Socket
         {
             byte[] data = (new byte[] { 164, 9, 78, 5, 48, 255, 255, 255, 255, 255, 255, (byte)((byte)resistance * 2), 0 });
             byte checksum = data[0];
-            for (int i = 1; i < 12; i++)
+            for (int i = 1; i < 12; i++)  
             {
                 checksum ^= data[i];
             }
             data[12] = (byte)checksum;
 
-            Console.WriteLine(BitConverter.ToString(data));
+            //Console.WriteLine(BitConverter.ToString(data));
             bike.SendMessage(data);
         }
     }
