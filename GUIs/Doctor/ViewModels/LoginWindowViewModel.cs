@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using MvvmHelpers;
 using MvvmHelpers.Commands;
+using RemoteHealthcare.GUIs.Patient;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 

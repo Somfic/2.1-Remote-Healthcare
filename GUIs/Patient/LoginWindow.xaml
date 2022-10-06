@@ -1,30 +1,40 @@
-﻿<Window x:Class="Patient.LoginWindow"
+﻿<Window x:Class="RemoteHealthcare.GUIs.Patient.LoginWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:Patient"
+        
+        xmlns:viewModel="clr-namespace:Patient.ViewModel"
         mc:Ignorable="d"
-        Title="LoginWindow" Height="450" Width="379">
-    <Grid HorizontalAlignment="Center" Width="359">
+        Title="LoginWindow" Height="450" Width="800">
+   <Window.DataContext>
+        <viewModel:UserViewModel/>
+    </Window.DataContext>
+    <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="123*"/>
-            <ColumnDefinition Width="677*"/>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Button Content="Log In" HorizontalAlignment="Left" Margin="69,318,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.599,0.49" Height="42" Width="151" Click="LoginButton_Click" Grid.Column="1">
-            <Button.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="-0.445"/>
-                    <TranslateTransform X="-0.005" Y="-0.051"/>
-                </TransformGroup>
-            </Button.RenderTransform>
-        </Button>
-        <Label Grid.Column="1" Content="Login ID:" HorizontalAlignment="Left" Margin="65,121,0,0" VerticalAlignment="Top" Width="90"/>
-        <Label Grid.Column="1" Content="Wachtwoord:" HorizontalAlignment="Left" Margin="61,206,0,0" VerticalAlignment="Top" Width="126"/>
-        <TextBox Grid.Column="1" HorizontalAlignment="Left" Margin="65,147,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="189" TextChanged="UserName_Input"/>
-        <TextBox Grid.Column="1" HorizontalAlignment="Left" Margin="65,232,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="189" TextChanged="Password_Input"/>
-
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Rectangle Grid.Row="1" Height="150" VerticalAlignment="Bottom">
+            <Rectangle.Fill>
+                <ImageBrush ImageSource="Images/fiets.png"></ImageBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Rectangle Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Fill="Black"></Rectangle>
+        <UserControl Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Height="175" Width="400" Background="White">
+            <StackPanel>
+                <TextBlock Text="Welkom Patient!" FontSize="18" TextAlignment="Center"></TextBlock>
+                <Label Content="Login ID" HorizontalAlignment="Center"></Label>
+                <TextBox Name="LoginIdBox" Margin="10,0,10,0" Text="{Binding Username}"></TextBox>
+                <Label Content="Wachtwoord" HorizontalAlignment="Center"></Label>
+                <PasswordBox Name="PasswordBox" Margin="10,0,10,0" ></PasswordBox>
+                <Button Margin="10,20,10,30" Content="Log in!" Command="{Binding Path=LogIn}" CommandParameter="{Binding ElementName=Window}"></Button>
+            </StackPanel>
+        </UserControl>
     </Grid>
 </Window>
