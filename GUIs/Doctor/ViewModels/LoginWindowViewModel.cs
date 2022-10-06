@@ -56,9 +56,12 @@ public class LoginWindowViewModel : ObservableObject
             throw;
         }
 
-        DoctorView doctorView = new DoctorView();
-        windowToClose.Close();
-        doctorView.Show();
+        if (_client.loggedIn)
+        {
+            DoctorView doctorView = new DoctorView();
+            windowToClose.Close();
+            doctorView.Show();
+        }
     }
 
     /// <summary>
