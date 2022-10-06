@@ -18,13 +18,14 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         public string password { get; set; }
         public string username { get; set; }
         public bool loggedIn { get; set; }
+        private string _userId;
 
         private Dictionary<string, Action<DataPacket>> _functions = new();
 
         public async Task RunAsync()
         {
             loggedIn = false;
-            functions = new Dictionary<string, Action<DataPacket>>();
+            _functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
             _functions.Add("login", LoginFeature);
@@ -49,9 +50,10 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                 //if the user isn't logged in, the user cant send any command to the server
                 if (loggedIn)
                 {
-                    _log.Information("Voer een command in om naar de server te sturen: \r\n" +
+                    _log.Information("Voer een commando in om naar de server te sturen: \r\n" +
                                      "[BERICHT] [START SESSIE] [STOP SESSIE] [NOODSTOP]");
                     string userCommand = Console.ReadLine();
+                    _log.Warning(userCommand);
 
                     if (userCommand.ToLower().Equals("bericht"))
                     {
@@ -98,20 +100,23 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             while (_connected == null)
             {
             }
-            
-            _log.Information("Voer uw bericht in: ");
-            String chatInput = Console.ReadLine();
+
             string savedConnections = "";
             _connected.ForEach(c => savedConnections+= c + "; ");
             _log.Information($"Voor welk accountnummer is dit bedoeld: [{savedConnections}]");
             String target = Console.ReadLine();
+            _log.Warning(target);
+            
+            _log.Information("Voer uw bericht in: ");
+            String chatInput = Console.ReadLine();
+            _log.Warning(chatInput);
 
             var req = new DataPacket<ChatPacketRequest>
             {
                 OpperationCode = OperationCodes.CHAT,
                 data = new ChatPacketRequest()
                 {
-                    senderId = userId,
+                    senderId = _userId,
                     receiverId = target,
                     message = chatInput
                 }
@@ -197,9 +202,9 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             _log.Debug($"Responce: {packetData.ToJson()}");
             if (((int)packetData.GetData<LoginPacketResponse>().statusCode).Equals(200))
             {
-                userId = packetData.GetData<LoginPacketResponse>().userId;
-                _log.Information($"Succesfully logged in to the user: {username}; {password}; {userId}.");
-                _loggedIn = true;
+                _userId = packetData.GetData<LoginPacketResponse>().userId;
+                _log.Information($"Succesfully logged in to the user: {username}; {password}; {_userId}.");
+                loggedIn = true;
             }
             else
             {

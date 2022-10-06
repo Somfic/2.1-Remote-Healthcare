@@ -104,14 +104,19 @@ namespace RemoteHealthcare.Server.Client
             string clients = "";
             foreach (ServerClient client in connections)
             {
-                if ((connections.Count - 1) == connections.IndexOf(client))
+                
+                if (!client._isDoctor && client._userId != null) 
                 {
-                    clients += client._userId;
-                    _log.Debug("last index");
-                }
-
-                if (!client._isDoctor)
+                    if ((connections.Count - 1) == connections.IndexOf(client))
+                    {
+                        clients += client._userId;
+                        _log.Debug("last index");
+                    }
+                    else
+                    {
                     clients += client._userId + ";";
+                    }
+                }
             }
 
             _log.Information(clients);
@@ -144,15 +149,16 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the login request
-        private void LoginFeature(DataPacket packetData)        //TODO: crash on incorrect login
+        private void LoginFeature(DataPacket packetData)        //TODO: spam on incorrect login
         {
             Patient? patient = null;
             Doctor? doctor = null;
+            string randomUserId = new Random().Next(1001, 2000).ToString();
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
-                    packetData.GetData<LoginPacketRequest>().password, "1234");
-                _patientData.Patients.Add(new Patient("user", "password123", new Random().Next(1001, 2000).ToString()));
+                    packetData.GetData<LoginPacketRequest>().password, randomUserId);
+                _patientData.Patients.Add(new Patient("user", "password123", randomUserId));
                 _log.Debug($"Patient name: {patient.Username} Password: {patient.Password}");
             }
             else if (packetData.GetData<LoginPacketRequest>().isDoctor)
@@ -200,7 +206,6 @@ namespace RemoteHealthcare.Server.Client
             }
             else
             {
-                _log.Critical("incorrect login");
                 SendData(new DataPacket<ChatPacketResponse>
                 {
                     OpperationCode = OperationCodes.LOGIN,

@@ -16,7 +16,7 @@ namespace RemoteHealthcare.Client.Client
         private string _username;
         private string userId;
         private string doctorId;
-        
+
         private Dictionary<string, Action<DataPacket>> _functions;
 
         public async Task RunAsync()
@@ -35,22 +35,24 @@ namespace RemoteHealthcare.Client.Client
                 var packet = JsonConvert.DeserializeObject<DataPacket>(data);
                 HandleData(packet);
             };
-            
+
+            await _client.ConnectAsync("127.0.0.1", 15243);
+
             AskForLoginAsync();
 
             while (true)
             {
-                _log.Information("Voer een command in om naar de server te sturen: \r\n" +
-                                  "[BERICHT] [NOODSTOP]");
-                string newChatMessage = Console.ReadLine();
-
                 //if the user isn't logged in, the user cant send any command to the server
                 if (_loggedIn)
                 {
-                    if (newChatMessage.ToLower().Equals("bericht"))
+                    _log.Information("Voer een commando in om naar de server te sturen: \r\n" +
+                                     "[BERICHT] [NOODSTOP]");
+                    string command = Console.ReadLine();
+                    
+                    if (command.ToLower().Equals("bericht"))
                     {
                         _log.Information("Voer uw bericht in: ");
-                        newChatMessage = Console.ReadLine();
+                        string ChatMessage = Console.ReadLine();
 
                         var req = new DataPacket<ChatPacketRequest>
                         {
@@ -58,13 +60,13 @@ namespace RemoteHealthcare.Client.Client
                             data = new ChatPacketRequest()
                             {
                                 senderId = userId,
-                                message = newChatMessage
+                                message = ChatMessage
                             }
                         };
-    
+
                         await _client.SendAsync(req);
                     }
-                    else if (newChatMessage.ToLower().Equals("noodstop"))
+                    else if (command.ToLower().Equals("noodstop"))
                     {
                         var req = new DataPacket<EmergencyStopPacketRequest>
                         {
@@ -88,7 +90,7 @@ namespace RemoteHealthcare.Client.Client
             _username = Console.ReadLine();
             _log.Information("Wat is uw wachtwoord? ");
             _password = Console.ReadLine();
-            
+
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
                 OpperationCode = OperationCodes.LOGIN,
@@ -99,8 +101,6 @@ namespace RemoteHealthcare.Client.Client
                     isDoctor = false
                 }
             };
-
-            await _client.ConnectAsync("127.0.0.1", 15243);
 
             await _client.SendAsync(loginReq);
         }
@@ -118,7 +118,7 @@ namespace RemoteHealthcare.Client.Client
                 throw new Exception("Function not implemented");
             }
         }
-        
+
         private void DisconnectHandler(DataPacket obj)
         {
             throw new NotImplementedException();
@@ -156,7 +156,7 @@ namespace RemoteHealthcare.Client.Client
             }
             else
             {
-                _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " + 
+                _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
                            packetData.GetData<LoginPacketResponse>().message);
                 AskForLoginAsync();
             }
