@@ -143,7 +143,7 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the login request
-        private void LoginFeature(DataPacket packetData)
+        private void LoginFeature(DataPacket packetData)        //TODO: crash on incorrect login
         {
             Patient? patient = null;
             Doctor? doctor = null;

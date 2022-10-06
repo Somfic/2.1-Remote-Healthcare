@@ -35,8 +35,6 @@ namespace RemoteHealthcare.Client.Client
                 var packet = JsonConvert.DeserializeObject<DataPacket>(data);
                 HandleData(packet);
             };
-
-            await _client.ConnectAsync("127.0.0.1", 15243);
             
             AskForLoginAsync();
 
@@ -102,22 +100,7 @@ namespace RemoteHealthcare.Client.Client
                 }
             };
 
-            await _client.SendAsync(loginReq);
-        }
-
-        private async void RequestDoctorIdAsync()       //TODO, FIX THE SPAMMING TO SERVER IF ENABLED.
-        {
-            
-            DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
-            {
-                OpperationCode = OperationCodes.LOGIN,
-                data = new LoginPacketRequest()
-                {
-                    username = _username,
-                    password = _password,
-                    isDoctor = false
-                }
-            };
+            await _client.ConnectAsync("127.0.0.1", 15243);
 
             await _client.SendAsync(loginReq);
         }
