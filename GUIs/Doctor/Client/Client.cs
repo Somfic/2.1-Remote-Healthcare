@@ -16,8 +16,8 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         private Log _log = new(typeof(Client));
 
         private bool _loggedIn;
-        private string _username;
-        private string _password;
+        public string username;
+        public string password;
         private string userId;
 
         private Dictionary<string, Action<DataPacket>> _functions = new();
@@ -117,8 +117,6 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                 }
             };
             
-            _log.Debug(req.ToJson());
-            
             await _client.SendAsync(req);
         }
 
@@ -136,17 +134,17 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         {
             _log.Information("Hallo Dokter!");
             _log.Information("Wat is uw loginId? ");
-            _username = Console.ReadLine();
+            username = Console.ReadLine();
             _log.Information("Wat is uw wachtwoord? ");
-            _password = Console.ReadLine();
+            password = Console.ReadLine();
 
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
                 OpperationCode = OperationCodes.LOGIN,
                 data = new LoginPacketRequest()
                 {
-                    username = _username,
-                    password = _password,
+                    username = username,
+                    password = password,
                     isDoctor = true
                 }
             };
@@ -195,13 +193,8 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
         private void RequestConnectionsFeature(DataPacket packetData)
         {
-            _log.Debug($"Responce: {packetData.ToJson()}");
             if (((int)packetData.GetData<ConnectedClientsPacketResponse>().statusCode).Equals(200))
-            {
-                _log.Critical($"Size: {packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Count()} " +
-                              $"id's: {packetData.GetData<ConnectedClientsPacketResponse>().connectedIds}");
                 _connected = packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Split(";").ToList();
-            }
         }
 
         //the methode for the login request
