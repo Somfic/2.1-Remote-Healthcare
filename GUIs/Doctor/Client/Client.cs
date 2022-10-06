@@ -132,12 +132,6 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
         private async void AskForLoginAsync()
         {
-            _log.Information("Hallo Dokter!");
-            _log.Information("Wat is uw loginId? ");
-            username = Console.ReadLine();
-            _log.Information("Wat is uw wachtwoord? ");
-            password = Console.ReadLine();
-
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
                 OpperationCode = OperationCodes.LOGIN,
