@@ -76,7 +76,6 @@ public class SocketClient : ISocket
             }
 
             _log.Debug("Stopped client");
-            await DisconnectAsync();
         });
     }
     

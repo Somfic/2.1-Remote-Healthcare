@@ -35,7 +35,7 @@ public class Server
     {
         if (!_connectedClients.Contains(client))
             return;
-
+        Console.WriteLine("Disconnecting a client now");
         _connectedClients.Remove(client);
     }
 

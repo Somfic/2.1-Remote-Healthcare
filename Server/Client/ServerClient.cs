@@ -83,9 +83,7 @@ namespace RemoteHealthcare.Server.Client
             if (packet.ToJson().Contains("chat"))
             {
                 foreach (string targetId in targetIds)
-                {
                     calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
-                }
             }
         }
 
@@ -113,6 +111,13 @@ namespace RemoteHealthcare.Server.Client
             List<ServerClient> connections = new(Server._connectedClients);
 
             string clients = "";
+            _log.Debug($"RequestConnectionsFeature.clients: {clients}, Server._connectedClients.Count: {Server._connectedClients.Count}");
+            
+            if (connections.Count == 1)
+            {
+                clients = connections[0]._userId;
+            }
+
             int clientCount = 0;
             foreach (ServerClient client in connections)
             {
@@ -131,6 +136,8 @@ namespace RemoteHealthcare.Server.Client
                     clientCount++;
                 }
             }
+            
+            _log.Debug($"RequestConnectionsFeature.clients: {clients}");
 
             SendData(new DataPacket<ConnectedClientsPacketResponse>
             {
@@ -148,35 +155,39 @@ namespace RemoteHealthcare.Server.Client
         private void ChatHandler(DataPacket packetData)
         {
             ChatPacketRequest data = packetData.GetData<ChatPacketRequest>();
-            if (!data.receiverId.Contains(";"))
+            _log.Debug($"ChatHandler: {data.ToJson()}");
+            /*if (!data.receiverId.Contains(";"))
             {
+                _log.Debug("sending to a single patient");
                 SendData(new DataPacket<ChatPacketResponse>
                 {
                     OpperationCode = OperationCodes.CHAT,
 
                     data = new ChatPacketResponse()
                     {
-                        senderId = packetData.GetData<ChatPacketRequest>().senderId,
+                        senderId = data.senderId,
                         statusCode = StatusCodes.OK,
-                        message = packetData.GetData<ChatPacketRequest>().message
+                        message = data.message
                     }
-                }, packetData.GetData<ChatPacketRequest>().receiverId);
+                }, data.receiverId);
             }
             else
             {
+                _log.Debug("sending to multiple patients");*/
                 List<string> targetIds = data.receiverId.Split(";").ToList();
+                targetIds.ForEach(t => _log.Debug($"Target: {t}"));
                 SendData(new DataPacket<ChatPacketResponse>
                 {
                     OpperationCode = OperationCodes.CHAT,
 
                     data = new ChatPacketResponse()
                     {
-                        senderId = packetData.GetData<ChatPacketRequest>().senderId,
+                        senderId = data.senderId,
                         statusCode = StatusCodes.OK,
-                        message = packetData.GetData<ChatPacketRequest>().message
+                        message = data.message
                     }
                 }, targetIds);
-            }
+            // }
         }
 
         //the methode for the login request
