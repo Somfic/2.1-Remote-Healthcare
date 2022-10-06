@@ -25,9 +25,6 @@ public class PatientData
 
     public bool MatchLoginData(Patient patient)
     {
-
-        Console.WriteLine("miasiajsiohdasdkasjdkashjkasjdjkashdjkashdjkashdjkshdaskjhdasjkasdjhk");
-
         Patients = readUsersFromJson();
 
         foreach (var varPatient in Patients)

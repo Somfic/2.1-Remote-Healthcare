@@ -167,7 +167,7 @@ namespace RemoteHealthcare.Client.Client
             {
                 userId = packetData.GetData<LoginPacketResponse>().userId;
                 _log.Information($"Succesfully logged in to the user: {_username}; {_password}; {userId}.");
-                RequestDoctorIdAsync();
+                //RequestDoctorIdAsync();
                 _loggedIn = true;
             }
             else

@@ -125,10 +125,8 @@ namespace RemoteHealthcare.Server.Client
                 _log.Debug($"Doctor name: {doctor.username} Password: {doctor.password}");
             }
 
-            Console.WriteLine("uit de iff");
             if (patient != null && _patientData.MatchLoginData(patient))
             {
-                Console.WriteLine("in de iff");
                 SendData(new DataPacket<LoginPacketResponse>
                 {
                     OpperationCode = OperationCodes.LOGIN,
