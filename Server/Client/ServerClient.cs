@@ -113,7 +113,7 @@ namespace RemoteHealthcare.Server.Client
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
-                    packetData.GetData<LoginPacketRequest>().password, "1234");
+                    packetData.GetData<LoginPacketRequest>().password);
                 
                 _log.Debug($"Patient name: {patient.UserId} Password: {patient.Password}");
             }
@@ -125,9 +125,10 @@ namespace RemoteHealthcare.Server.Client
                 _log.Debug($"Doctor name: {doctor.username} Password: {doctor.password}");
             }
 
-
+            Console.WriteLine("uit de iff");
             if (patient != null && _patientData.MatchLoginData(patient))
             {
+                Console.WriteLine("in de iff");
                 SendData(new DataPacket<LoginPacketResponse>
                 {
                     OpperationCode = OperationCodes.LOGIN,
@@ -177,10 +178,6 @@ namespace RemoteHealthcare.Server.Client
 
             Console.WriteLine("Alle verbonden users zijn: "); 
             
-            foreach (Patient sin_cl in _patientData.Patients)
-            {
-                Console.WriteLine(sin_cl.Username);
-            }
             
             SendData(new DataPacket<SessionStartPacketResponse>
             {

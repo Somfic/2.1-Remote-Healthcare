@@ -1,4 +1,6 @@
-﻿namespace RemoteHealthcare.Server.Models;
+﻿using Newtonsoft.Json;
+
+namespace RemoteHealthcare.Server.Models;
 
 public class PatientData
 {
@@ -8,17 +10,34 @@ public class PatientData
     {
         Patients = new List<Patient>();
     }
+    
+    public static List<Patient> readUsersFromJson()
+    {
+        string path = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "AllUsers.json");
+        
+        string returnAllUsersFromText = File.ReadAllText(path);
+        
+        List<Patient> data = JsonConvert.DeserializeObject<List<Patient>>(returnAllUsersFromText);
+       
+        
+        return data;
+    }
 
     public bool MatchLoginData(Patient patient)
     {
+
+        Console.WriteLine("miasiajsiohdasdkasjdkashjkasjdjkashdjkashdjkashdjkshdaskjhdasjkasdjhk");
+
+        Patients = readUsersFromJson();
+
         foreach (var varPatient in Patients)
         {
-            if (varPatient.Username.Equals(patient.Username) && varPatient.Password.Equals(patient.Password) && 
-                varPatient.UserId.Equals(patient.UserId))
+            if (varPatient.UserId.Equals(patient.UserId) && varPatient.Password.Equals(patient.Password))
             {
                 return true;
             }
         }
+        
         return false;
     }
 
