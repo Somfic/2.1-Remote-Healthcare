@@ -34,6 +34,10 @@ public class LoginWindowViewModel : ObservableObject
     }
     public ICommand LogIn { get; }
 
+    /// <summary>
+    /// It takes a window object, closes it, and opens a new window
+    /// </summary>
+    /// <param name="window">The window that is currently open.</param>
     void LogInDoctor(object window)
     {
         Window windowToClose = window as Window;
@@ -57,6 +61,18 @@ public class LoginWindowViewModel : ObservableObject
         doctorView.Show();
     }
 
+    /// <summary>
+    /// "Convert a SecureString to a string by copying the SecureString to unmanaged memory, then copying the unmanaged
+    /// memory to a managed string, then zeroing out the unmanaged memory."
+    /// 
+    /// The first thing to notice is that the function returns a string.  This is the string that you want to use in your
+    /// code.  The SecureString is only used to get the string.  The SecureString is not used in the code that uses the
+    /// string
+    /// </summary>
+    /// <param name="SecureString">The SecureString object that you want to convert to a string.</param>
+    /// <returns>
+    /// A string
+    /// </returns>
     public string SecureStringToString(SecureString value)
     {
         IntPtr valuePtr = IntPtr.Zero;
