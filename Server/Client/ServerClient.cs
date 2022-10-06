@@ -8,7 +8,7 @@ using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.Server.Client
 {
-    internal class ServerClient
+    public class ServerClient
     {
         private readonly Log _log = new(typeof(ServerClient));
 
@@ -72,7 +72,9 @@ namespace RemoteHealthcare.Server.Client
         {
             List<SocketClient> connections = new(SocketServer._clients);
             _log.Information(connections.ToArray().Length + "");
+            
             string clients = "";
+            
             connections.ForEach(connection => clients += connection.ToString() + ";");
             _log.Information(clients);
             SendData(new DataPacket<ConnectedClientsPacketResponse>
@@ -112,8 +114,8 @@ namespace RemoteHealthcare.Server.Client
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
                     packetData.GetData<LoginPacketRequest>().password, "1234");
-                _patientData.Patients.Add(new Patient("user", "password123", "1234"));
-                _log.Debug($"Patient name: {patient.Username} Password: {patient.Password}");
+                
+                _log.Debug($"Patient name: {patient.UserId} Password: {patient.Password}");
             }
             else if (packetData.GetData<LoginPacketRequest>().isDoctor)
             {
@@ -172,6 +174,14 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
+
+            Console.WriteLine("Alle verbonden users zijn: "); 
+            
+            foreach (Patient sin_cl in _patientData.Patients)
+            {
+                Console.WriteLine(sin_cl.Username);
+            }
+            
             SendData(new DataPacket<SessionStartPacketResponse>
             {
                 OpperationCode = OperationCodes.SESSION_START,
@@ -200,7 +210,6 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the emergency stop request
-        //TODO 
         private void EmergencyStopHandler(DataPacket obj)
         {
             _log.Debug("123 server client");
