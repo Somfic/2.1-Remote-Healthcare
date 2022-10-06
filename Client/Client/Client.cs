@@ -92,7 +92,7 @@ namespace RemoteHealthcare.Client
                     else if (newChatMessage.ToLower().StartsWith("setresistance:"))
                     {
                         int resistance = int.Parse(newChatMessage.Remove(0, 14));
-                        vrConnection.setResistance(resistance);
+                        _vrConnection.setResistance(resistance);
                     }
                     else if (newChatMessage.Equals("session start"))
                     {
