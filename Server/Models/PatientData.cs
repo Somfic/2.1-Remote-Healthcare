@@ -25,7 +25,8 @@ public class PatientData
     public bool MatchLoginData(Patient patient)
     {
         Patients = readUsersFromJson();
-
+        
+        //Checks if the Patient parameter exists in the AllUsers.json with LINQ
         if (Patients.Exists(name => name.Password == patient.Password && name.UserId == patient.UserId))
         {
             return true;
