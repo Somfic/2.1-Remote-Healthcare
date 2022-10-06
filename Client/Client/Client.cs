@@ -1,9 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Net.Sockets;
+using System.Text;
+using NetworkEngine.Socket;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 
-namespace RemoteHealthcare.Client.Client
+namespace RemoteHealthcare.Client
 {
     public class Client
     {
@@ -13,8 +17,14 @@ namespace RemoteHealthcare.Client.Client
         private string _password;
         private string _username;
         private bool _loggedIn;
+        private VrConnection _vrConnection;
         
         private Dictionary<string, Action<DataPacket>> _functions;
+        
+        public Client(VrConnection vr)
+        {
+            _vrConnection = vr;
+        }
 
         public async Task RunAsync()
         {
@@ -26,6 +36,13 @@ namespace RemoteHealthcare.Client.Client
             _functions.Add("chat", ChatHandler);
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
+            _functions.Add("Disconnect", DisconnectHandler);
+            
+            Console.WriteLine("Hello Client!");
+            Console.WriteLine("Wat is uw telefoonnummer? ");
+            _username = Console.ReadLine();
+            Console.WriteLine("Wat is uw wachtwoord? ");
+            _password = Console.ReadLine();
 
             _client.OnMessage += (sender, data) =>
             {
@@ -71,6 +88,11 @@ namespace RemoteHealthcare.Client.Client
                         };
 
                         await _client.SendAsync(req);
+                    }
+                    else if (newChatMessage.ToLower().StartsWith("setresistance:"))
+                    {
+                        int resistance = int.Parse(newChatMessage.Remove(0, 14));
+                        vrConnection.setResistance(resistance);
                     }
                     else if (newChatMessage.Equals("session start"))
                     {
