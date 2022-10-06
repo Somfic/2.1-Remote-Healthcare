@@ -86,4 +86,9 @@ public class SocketClient : ISocket
         Socket.Dispose();
         return Task.CompletedTask;
     }
+
+    public override string ToString()
+    {
+        return $"IP Adress: {((IPEndPoint)Socket.Client.RemoteEndPoint).Address}; Port: {((IPEndPoint)Socket.Client.RemoteEndPoint).Port}";
+    }
 }

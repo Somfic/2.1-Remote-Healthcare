@@ -73,7 +73,7 @@ namespace RemoteHealthcare.Server.Client
             List<SocketClient> connections = new(SocketServer._clients);
             _log.Information(connections.ToArray().Length + "");
             string clients = "";
-            connections.ForEach(connection => clients += connection.Socket.Client + ";");
+            connections.ForEach(connection => clients += connection.ToString() + ";");
             _log.Information(clients);
             SendData(new DataPacket<ConnectedClientsPacketResponse>
             {
