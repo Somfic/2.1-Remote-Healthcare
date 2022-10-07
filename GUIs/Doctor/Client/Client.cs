@@ -97,15 +97,23 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         private async void SendChatAsync()
         {
             await requestClients();
+            
             /* This is a while loop that will do nothing until connected is filled */
-            while (_connected == null)
+            _log.Debug(_connected.Count.ToString());
+            while (_connected.Count == 0)
             {
+                _log.Debug("Loading...");
+            }
+            _log.Information("escaped loading");
+            string savedConnections = " ";
+            foreach (string id in _connected)
+            {
+                savedConnections += id + "; ";
+                _log.Debug($"{id} has been added, saved connections is now: [{savedConnections}]");
             }
 
-            string savedConnections = "";
-            _connected.ForEach(c => savedConnections += c + "; ");
             string? target = 0000 + "";
-            
+
             /* This is a while loop that will keep asking for a target until the target is in the list of connected
             clients. */
             while (!_connected.Contains(target) && !target.Contains(";"))
@@ -114,7 +122,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                                  $"gebruik een ; tussen de nummers. Kies uit de volgende beschikbare " +
                                  $"accountnummers: \t[{savedConnections}]");
                 target = Console.ReadLine();
-                
+
                 //breaks the while-loop if all targets are correct.
                 if (CheckTargets(target.Split(";").ToList(), _connected))
                     break;
@@ -158,6 +166,8 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
         private async Task requestClients()
         {
+            if (_connected != null)
+                _connected.Clear();
             var req = new DataPacket<ConnectedClientsPacketRequest>
             {
                 OpperationCode = OperationCodes.USERS
@@ -227,9 +237,11 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             _log.Debug(packetData.ToJson());
             if (((int)packetData.GetData<ConnectedClientsPacketResponse>().statusCode).Equals(200))
             {
-                // _connected.Clear();
-                // _log.Debug(_connected.ToString());
+                // _log.Debug(_connected.Count.ToString());
+                // _connected.RemoveRange(0, _connected.Count - 1);
+                // _log.Debug(_connected.Count.ToString());
                 _connected = packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Split(";").ToList();
+                _log.Critical(_connected.Count.ToString());
             }
         }
 
