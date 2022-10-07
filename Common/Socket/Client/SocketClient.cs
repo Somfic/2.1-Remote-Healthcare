@@ -69,9 +69,14 @@ public class SocketClient : ISocket
                 }
                 catch (Exception ex)
                 {
-                    _log.Error(ex.Message);
-                    _log.Debug("Stopping a client");
+                    Console.WriteLine("Client disconnected");
                     await DisconnectAsync();
+                    
+                    /*var req = new DataPacket<SessionStopPacketRequest> {
+                        OpperationCode = OperationCodes.DISCONNECT,
+                    };
+
+                    SendAsync(req);*/
                 }
             }
 
@@ -83,8 +88,9 @@ public class SocketClient : ISocket
     
     public Task DisconnectAsync()
     {
-        SocketServer._clients.Remove(this);
+        SocketServer._clients.Remove(SocketServer.Localclient); 
         Socket.Dispose();
+        
         return Task.CompletedTask;
     }
 

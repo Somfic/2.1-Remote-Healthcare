@@ -45,6 +45,8 @@ public class SocketServer : ISocket
         }
     }
 
+    public static SocketClient Localclient;
+    
     private async Task AcceptConnection()
     {
         while (_shouldRun)
@@ -57,8 +59,8 @@ public class SocketServer : ISocket
                 
                 _log.Debug($"Socket client connected");
                 
-                var client = SocketClient.CreateFromSocket(socket, _useEncryption);
-
+                 var client = SocketClient.CreateFromSocket(socket, _useEncryption);
+                 Localclient = client;
                 client.OnMessage += (sender, message) => OnMessage?.Invoke(this, (client, message));
                 _clients.Add(client);
 
