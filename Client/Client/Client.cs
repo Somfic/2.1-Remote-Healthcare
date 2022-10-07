@@ -48,7 +48,7 @@ namespace RemoteHealthcare.Client.Client
                 if (_loggedIn)
                 {
                     _log.Information("Voer een commando in om naar de server te sturen: \r\n" +
-                                     "[BERICHT] [NOODSTOP]");
+                                     "[BERICHT] [NOODSTOP] [VERBREEK VERBINDING]");
                     string command = Console.ReadLine();
                     
                     if (command.ToLower().Equals("bericht"))
@@ -77,7 +77,7 @@ namespace RemoteHealthcare.Client.Client
                             OpperationCode = OperationCodes.EMERGENCY_STOP,
                         };
 
-                    }else if (newChatMessage.Equals("disconnect")) {
+                    }else if (command.ToLower().Contains("verbreek") && command.ToLower().Contains("verbinding")) {
 
                         var req = new DataPacket<DisconnectPacketRequest> {
                             OpperationCode = OperationCodes.DISCONNECT

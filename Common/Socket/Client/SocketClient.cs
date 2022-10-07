@@ -71,12 +71,6 @@ public class SocketClient : ISocket
                 {
                     Console.WriteLine("Client disconnected");
                     await DisconnectAsync();
-                    
-                    /*var req = new DataPacket<SessionStopPacketRequest> {
-                        OpperationCode = OperationCodes.DISCONNECT,
-                    };
-
-                    SendAsync(req);*/
                 }
             }
 

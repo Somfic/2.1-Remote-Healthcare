@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
@@ -328,6 +329,13 @@ namespace RemoteHealthcare.Server.Client
                     message = "Gebruiker wordt nu gedisconnect!"
                 }
             });
+        }
+
+        public override string ToString()
+        {
+            return $"UserId: {_userId}, Is Doctor: {_isDoctor}, " +
+                   $"IP Adress: {((IPEndPoint)_client.Socket.Client.RemoteEndPoint).Address}, " +
+                   $"Port: {((IPEndPoint)_client.Socket.Client.RemoteEndPoint).Port}";
         }
     }
 }

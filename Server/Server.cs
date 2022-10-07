@@ -30,7 +30,7 @@ public class Server
         Console.WriteLine("ALLE HUIDIGE TCP-USER ZIJN:");
         foreach (SocketClient user in SocketServer.Clients)
         {
-            Console.WriteLine(user);
+            _log.Debug(user.ToString());
         }
 
         Console.WriteLine("\n");
@@ -38,7 +38,7 @@ public class Server
         Console.WriteLine("ALLE HUIDIGE ServerClients-USER ZIJN:");
         foreach (ServerClient user in _connectedClients)
         {
-            Console.WriteLine(user);
+            _log.Debug(user.ToString());
         }
     }
 
