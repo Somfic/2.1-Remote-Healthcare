@@ -213,7 +213,6 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         }
 
         //the methode for the emergency stop request
-        //TODO 
         private void EmergencyStopHandler(DataPacket obj)
         {
             _log.Information(obj.GetData<SessionStopPacketResponse>().message);

@@ -214,7 +214,6 @@ namespace RemoteHealthcare.Server.Client
                 _log.Debug($"Doctor name: {doctor.Username} Password: {doctor.Password}");
             }
 
-
             if (patient != null && _patientData.MatchLoginData(patient))
             {
                 _userId = patient.UserId;
@@ -267,6 +266,10 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
+
+            Console.WriteLine("Alle verbonden users zijn: "); 
+            
+            
             SendData(new DataPacket<SessionStartPacketResponse>
             {
                 OpperationCode = OperationCodes.SESSION_START,
@@ -295,7 +298,6 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the emergency stop request
-        //TODO 
         private void EmergencyStopHandler(DataPacket obj)
         {
             _log.Debug("123 server client");

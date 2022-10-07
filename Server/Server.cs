@@ -12,6 +12,9 @@ public class Server
     private readonly SocketServer _server = new(true);
     private readonly Log _log = new(typeof(Server));
     public static List<ServerClient> _connectedClients { get; private set; } = new List<ServerClient>();
+    
+    public static IReadOnlyList<ServerClient> Clients => _connectedClients.AsReadOnly();
+
 
     public async Task StartAsync()
     {
