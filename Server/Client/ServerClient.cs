@@ -312,18 +312,22 @@ namespace RemoteHealthcare.Server.Client
 
         private void DisconnectHandler(DataPacket obj)
         {
-            //Console.WriteLine(_patientData.);
             Console.WriteLine("in de server-client methode disconnectHandler");
             Server.Disconnect(this);
+            _client.DisconnectAsync();
 
-            /*SendData(new DataPacket<DisconnectPacketResponse> {
+            Server.printUsers();
+
+            SendData(new DataPacket<DisconnectPacketResponse>
+            {
                 OpperationCode = OperationCodes.DISCONNECT,
-                
-                data = new DisconnectPacketResponse() {
+
+                data = new DisconnectPacketResponse()
+                {
                     statusCode = StatusCodes.OK,
-                    message =  "Gebruiker wordt nu gedisconnect!" 
+                    message = "Gebruiker wordt nu gedisconnect!"
                 }
-            });*/
+            });
         }
     }
 }
