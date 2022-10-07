@@ -70,11 +70,13 @@ public class SocketClient
                 catch (Exception ex)
                 {
                     Console.WriteLine("Client disconnected");
-                    DisconnectAsync();
-                    foreach (SocketClient user in SocketServer.Clients)
-                    {
-                        Console.WriteLine(user);
-                    }
+                    await DisconnectAsync();
+                    
+                    /*var req = new DataPacket<SessionStopPacketRequest> {
+                        OpperationCode = OperationCodes.DISCONNECT,
+                    };
+
+                    SendAsync(req);*/
                 }
             }
             
@@ -86,8 +88,9 @@ public class SocketClient
     
     public Task DisconnectAsync()
     {
-        SocketServer._clients.Remove(this); 
+        SocketServer._clients.Remove(SocketServer.Localclient); 
         Socket.Dispose();
+        
         return Task.CompletedTask;
     }
 }

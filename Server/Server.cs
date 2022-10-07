@@ -29,8 +29,16 @@ public class Server
         _log.Information($"Client connected: {client.Socket}");
         _connectedClients.Add(new ServerClient(client));
 
-        Console.WriteLine("ALLE INGELOGDE USER ZIJN:");
+        Console.WriteLine("ALLE HUIDIGE TCP-USER ZIJN:");
         foreach (SocketClient user in SocketServer.Clients)
+        {
+            Console.WriteLine(user);
+        }
+
+        Console.WriteLine("\n");
+        
+        Console.WriteLine("ALLE HUIDIGE ServerClients-USER ZIJN:");
+        foreach (ServerClient user in _connectedClients)
         {
             Console.WriteLine(user);
         }
@@ -43,6 +51,24 @@ public class Server
             return;
         }
         _connectedClients.Remove(client);
+    }
+
+    internal static void printUsers()
+    {
+        Console.WriteLine("ALLE HUIDIGDE USER NA DE DISCONNECT ZIJN:");
+        foreach (SocketClient user in SocketServer.Clients)
+        {
+            Console.WriteLine("Socketserver Client:  " + user);
+        }
+        
+        Console.WriteLine(" \n ");
+        
+        Console.WriteLine("ALLE HUIDIGE ServerClients-USER NA DE DISCONNECT ZIJN:");
+        
+        foreach (ServerClient user in _connectedClients)
+        {
+            Console.WriteLine("_connected Clients:  " +user);
+        }
     }
 
     private async Task BroadcastAsync(string message)

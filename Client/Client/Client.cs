@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
+using RemoteHealthcare.Common.Socket.Server;
 
 namespace RemoteHealthcare.Client {
     public class Client
@@ -28,7 +29,7 @@ namespace RemoteHealthcare.Client {
             _functions.Add("chat", ChatHandler);
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
-            _functions.Add("Disconnect", DisconnectHandler);
+            _functions.Add("disconnect", DisconnectHandler);
             
             Console.WriteLine("Hello Client!");
             Console.WriteLine("Wat is uw telefoonnummer? ");
@@ -91,9 +92,8 @@ namespace RemoteHealthcare.Client {
                        await _client.SendAsync(req);
                     }else if (newChatMessage.Equals("disconnect")) {
 
-                        Console.WriteLine("in de disconnect else if");
-                        var req = new DataPacket<SessionStopPacketRequest> {
-                            OpperationCode = OperationCodes.DISCONNECT,
+                        var req = new DataPacket<DisconnectPacketRequest> {
+                            OpperationCode = OperationCodes.DISCONNECT
                         };
 
                         await _client.SendAsync(req);
@@ -120,7 +120,7 @@ namespace RemoteHealthcare.Client {
         
         private void DisconnectHandler(DataPacket obj)
         {
-            throw new NotImplementedException();
+            Console.WriteLine(obj.GetData<DisconnectPacketResponse>().message);
         }
 
         //the methode for the session stop request

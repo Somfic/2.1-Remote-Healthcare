@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using RemoteHealthcare.CentralServer.Models;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Socket.Client;
+using RemoteHealthcare.Common.Socket.Server;
 
 namespace RemoteHealthcare.CentralServer.Client
 {
@@ -76,15 +77,12 @@ namespace RemoteHealthcare.CentralServer.Client
         //the methode for the login request
         private void LoginFeature(DataPacket packetData)
         {
-            Console.WriteLine("test 123");
 
             Patient patient = new Patient(packetData.GetData<LoginPacketRequest>().username, packetData.GetData<LoginPacketRequest>().password, "1234");
             _patientData.Patients.Add(new Patient("user", "password123", "1234"));
             
-            Console.WriteLine("test");
 
             if (_patientData.MatchLoginData(patient)) {
-                Console.WriteLine("gesaved");
                 SendData(new DataPacket<LoginPacketResponse> {
                     OpperationCode = OperationCodes.LOGIN,
                 
@@ -95,7 +93,6 @@ namespace RemoteHealthcare.CentralServer.Client
                 });
 
             } else {
-                Console.WriteLine("gefaald");
                 SendData(new DataPacket<ChatPacketResponse> {
                     OpperationCode = OperationCodes.LOGIN,
                 
@@ -135,18 +132,21 @@ namespace RemoteHealthcare.CentralServer.Client
         
         private void DisconnectHandler(DataPacket obj)
         {
-            //Console.WriteLine(_patientData.);
             Console.WriteLine("in de server-client methode disconnectHandler");
             Server.Disconnect(this);
+            _client.DisconnectAsync();
+            
+            Server.printUsers();
 
-            /*SendData(new DataPacket<DisconnectPacketResponse> {
+            SendData(new DataPacket<DisconnectPacketResponse> {
                 OpperationCode = OperationCodes.DISCONNECT,
                 
                 data = new DisconnectPacketResponse() {
                     statusCode = StatusCodes.OK,
                     message =  "Gebruiker wordt nu gedisconnect!" 
                 }
-            });*/
+            });
+           
         }
     }
 }
