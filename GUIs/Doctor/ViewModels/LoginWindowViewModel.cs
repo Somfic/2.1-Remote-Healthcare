@@ -76,8 +76,6 @@ public class LoginWindowViewModel : ObservableObject
                 //_client.RunAsync();
             }
         }
-
-        
     }
 
     /// <summary>

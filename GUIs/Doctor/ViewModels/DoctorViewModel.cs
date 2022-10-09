@@ -1,40 +1,36 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Windows.Media;
+using LiveCharts;
+using LiveCharts.Defaults;
+using LiveCharts.Wpf;
+using MvvmHelpers;
+using RemoteHealthcare.GUIs.Doctor.Models;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
-public class DoctorViewModel
+public class DoctorViewModel : ObservableObject
 {
-    public DoctorViewModel() 
-    {
-        
-    }
-
     private string _doctorName;
-    private string _chartTitle = "Hello World";
-    private string _xAxisTitle = "XAxis";
-    private string _yAxisTitle = "YAxis";
+    private UserModel _currentUser;
+    private ObservableCollection<string> _users;
+    private ChartValues<float> _speedData;
 
+    public DoctorViewModel()
+    {
+    }
+    
     public string DoctorName
     {
         get => _doctorName;
         set => _doctorName = value;
     }
 
-    public string ChartTitle
+    public ObservableCollection<string> Users
     {
-        get => _chartTitle;
-        set => _chartTitle = value ?? throw new ArgumentNullException(nameof(value));
+        get => _users;
+        set => _users = value;
     }
 
-    public string XAxisTitle
-    {
-        get => _xAxisTitle;
-        set => _xAxisTitle = value ?? throw new ArgumentNullException(nameof(value));
-    }
-
-    public string YAxisTitle
-    {
-        get => _yAxisTitle;
-        set => _yAxisTitle = value ?? throw new ArgumentNullException(nameof(value));
-    }
+    public ChartValues<float> SpeedData { get; set; }
 }
