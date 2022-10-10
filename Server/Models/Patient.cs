@@ -19,6 +19,11 @@ public class Patient
         Sessions = new List<SessionData>();
     }
 
+    /// <summary>
+    /// It takes a folder name as a parameter, creates a directory with the user's username, and then creates a file for
+    /// each session in the user's session list
+    /// </summary>
+    /// <param name="folderName">The name of the folder you want to save the data to.</param>
     public void SaveSessionData(string folderName)
     {
         //TODO kijken hoe dit precies opgeslagen wordt.
