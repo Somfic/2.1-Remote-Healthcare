@@ -6,6 +6,7 @@ using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using MvvmHelpers;
 using RemoteHealthcare.GUIs.Doctor.Models;
+using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
@@ -13,7 +14,7 @@ public class DoctorViewModel : ObservableObject
 {
     private string _doctorName;
     private UserModel _currentUser;
-    private ObservableCollection<string> _users;
+    private ObservableCollection<Patient> _users;
     private ChartValues<float> _speedData;
 
     public DoctorViewModel()
