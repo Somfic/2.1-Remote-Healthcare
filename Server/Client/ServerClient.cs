@@ -14,7 +14,7 @@ namespace RemoteHealthcare.Server.Client
     {
         private readonly Log _log = new(typeof(ServerClient));
 
-        private SocketClient _client;
+        public SocketClient Client { get; private set; }
         private PatientData _patientData;
         private DoctorData _doctorData;
         private string _userId;
@@ -27,8 +27,8 @@ namespace RemoteHealthcare.Server.Client
         //Set-ups the client constructor
         public ServerClient(SocketClient client)
         {
-            _client = client;
-            _client.OnMessage += (sender, data) =>
+            Client = client;
+            Client.OnMessage += (sender, data) =>
             {
                 var dataPacket = JsonConvert.DeserializeObject<DataPacket>(data);
 
@@ -71,9 +71,9 @@ namespace RemoteHealthcare.Server.Client
         {
             _log.Debug($"sending: {packet.ToJson()}");
             if (packet.ToJson().Contains("chat"))
-                calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
+                calculateTarget(targetId).Client.SendAsync(packet).GetAwaiter().GetResult();
             else
-                _client.SendAsync(packet).GetAwaiter().GetResult();
+                Client.SendAsync(packet).GetAwaiter().GetResult();
         }
 
         //This methode used to send an request from the Server to the Client
@@ -84,7 +84,7 @@ namespace RemoteHealthcare.Server.Client
             if (packet.ToJson().Contains("chat"))
             {
                 foreach (string targetId in targetIds)
-                    calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
+                    calculateTarget(targetId).Client.SendAsync(packet).GetAwaiter().GetResult();
             }
         }
 
@@ -318,7 +318,7 @@ namespace RemoteHealthcare.Server.Client
         {
             Console.WriteLine("in de server-client methode disconnectHandler");
             Server.Disconnect(this);
-            _client.DisconnectAsync();
+            Client.DisconnectAsync();
 
             Server.printUsers();
 
@@ -337,8 +337,8 @@ namespace RemoteHealthcare.Server.Client
         public override string ToString()
         {
             return $"UserId: {_userId}, Is Doctor: {_isDoctor}, " +
-                   $"IP Adress: {((IPEndPoint)_client.Socket.Client.RemoteEndPoint).Address}, " +
-                   $"Port: {((IPEndPoint)_client.Socket.Client.RemoteEndPoint).Port}";
+                   $"IP Adress: {((IPEndPoint)Client.Socket.Client.RemoteEndPoint).Address}, " +
+                   $"Port: {((IPEndPoint)Client.Socket.Client.RemoteEndPoint).Port}";
         }
     }
 }
