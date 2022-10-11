@@ -30,7 +30,7 @@ public class DoctorViewModel : ObservableObject
     public DoctorViewModel()
     {
         this._currentUser = new UserModel();
-        //SessionStartCommand = new Command(SessieStart);
+        SessionStartCommand = new Command(SessieStart);
     }
 
     async void SessieStart()

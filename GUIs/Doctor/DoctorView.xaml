@@ -57,7 +57,7 @@
         <TextBox Grid.Column="5" Grid.Row="7"></TextBox>
         <Button Grid.Column="6" Grid.Row="7" Content="Send Message"></Button>
         
-        <Button Margin="10,0,0,10" Content="Start Sessie!!!"></Button>
+        <Button Margin="10,0,0,10" Content="Start Sessie!!!" Command="{Binding Path=SessionStartCommand}" ></Button>
 
     </Grid>
 
