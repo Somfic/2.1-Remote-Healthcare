@@ -7,21 +7,21 @@ public class Doctor
 {
     
     public List<SessionData> _sessions { get; set; }
-    internal string username { get; set; }
-    internal string userId { get; set; }
-    internal string password { get; set; }
+    internal string Username { get; set; }
+    internal string UserId { get; set; }
+    internal string Password { get; set; }
 
-    public Doctor(string user, string pass, string userId)
+    public Doctor(string user, string pass, string UserId)
     {
-        this.username = user;
-        this.password = pass;
-        this.userId = userId;
+        this.Username = user;
+        this.Password = pass;
+        this.UserId = UserId;
         this._sessions = new List<SessionData>();
     }
 
     public void SaveSessionData(string foldername)
     {
-        string pathString = Path.Combine(foldername, username);
+        string pathString = Path.Combine(foldername, Username);
         Directory.CreateDirectory(pathString);
         foreach (var session in _sessions)
         {

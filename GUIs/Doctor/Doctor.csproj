@@ -13,4 +13,15 @@
       <ProjectReference Include="..\..\Server\Server.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Images\fiets.png" />
+      <Resource Include="Images\fiets.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="DotNetProjects.WpfToolkit.DataVisualization" Version="6.1.94" />
+      <PackageReference Include="Extended.Wpf.Toolkit" Version="4.4.0" />
+      <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
+    </ItemGroup>
+
 </Project>

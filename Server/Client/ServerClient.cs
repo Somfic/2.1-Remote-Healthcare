@@ -1,4 +1,6 @@
+using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
@@ -8,13 +10,15 @@ using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.Server.Client
 {
-    internal class ServerClient
+    public class ServerClient
     {
         private readonly Log _log = new(typeof(ServerClient));
 
         private SocketClient _client;
         private PatientData _patientData;
         private DoctorData _doctorData;
+        private string _userId;
+        private bool _isDoctor;
 
 
         public string UserName { get; set; }
@@ -63,22 +67,85 @@ namespace RemoteHealthcare.Server.Client
 
         //This methode used to send an request from the Server to the Client
         //The parameter is an JsonFile object
-        private void SendData(DAbstract packet)
+        private void SendData(DAbstract packet, string? targetId = null)
         {
-            _client.SendAsync(packet).GetAwaiter().GetResult();
+            _log.Debug($"sending: {packet.ToJson()}");
+            if (packet.ToJson().Contains("chat"))
+                calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
+            else
+                _client.SendAsync(packet).GetAwaiter().GetResult();
+        }
+
+        //This methode used to send an request from the Server to the Client
+        //The parameter is an JsonFile object
+        private void SendData(DAbstract packet, List<string> targetIds)
+        {
+            _log.Debug($"sending: {packet.ToJson()}");
+            if (packet.ToJson().Contains("chat"))
+            {
+                foreach (string targetId in targetIds)
+                    calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
+            }
+        }
+
+        //If userid == null, then search for doctor otherwise search for patient
+        private ServerClient calculateTarget(string? userId = null)
+        {
+            foreach (ServerClient client in Server._connectedClients)
+            {
+                if (userId == null && client._isDoctor)
+                {
+                    return client;
+                }
+
+                if (userId != null && client._userId.Equals(userId))
+                {
+                    return client;
+                }
+            }
+
+            return null;
         }
 
         private void RequestConnectionsFeature(DataPacket obj)
         {
-            List<SocketClient> connections = new(SocketServer._clients);
-            _log.Information(connections.ToArray().Length + "");
+            List<ServerClient> connections = new();
+
+            foreach (ServerClient sc in Server._connectedClients)
+            {
+                if (!sc._isDoctor)
+                    connections.Add(sc);
+            }
+
             string clients = "";
-            connections.ForEach(connection => clients += connection.ToString() + ";");
-            _log.Information(clients);
+            _log.Debug(
+                $"RequestConnectionsFeature.clients: {clients}, Server._connectedClients.Count: {Server._connectedClients.Count}");
+
+            int clientCount = 0;
+            foreach (ServerClient client in connections)
+            {
+                if (!client._isDoctor && client._userId != null)
+                {
+                    //connections.count - 2 because we subtract the doctor and count is 1 up on the index.
+                    if ((connections.Count - 1) <= clientCount)
+                    {
+                        clients += client._userId;
+                    }
+                    else
+                    {
+                        clients += client._userId + ";";
+                    }
+
+                    clientCount++;
+                }
+            }
+
+            _log.Debug($"RequestConnectionsFeature.clients: {clients}");
+
             SendData(new DataPacket<ConnectedClientsPacketResponse>
             {
                 OpperationCode = OperationCodes.USERS,
-                
+
                 data = new ConnectedClientsPacketResponse()
                 {
                     statusCode = StatusCodes.OK,
@@ -90,42 +157,69 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the chat request
         private void ChatHandler(DataPacket packetData)
         {
-            SendData(new DataPacket<ChatPacketResponse>
-            {
-                OpperationCode = OperationCodes.CHAT,
+            ChatPacketRequest data = packetData.GetData<ChatPacketRequest>();
+            _log.Debug($"ChatHandler: {data.ToJson()}");
 
-                data = new ChatPacketResponse()
+            if (data.receiverId == null)
+            {
+                SendData(new DataPacket<ChatPacketResponse>
                 {
-                    statusCode = StatusCodes.OK,
-                    message = "Dit is de response van uit de server, het bericht is: " +
-                              packetData.GetData<ChatPacketRequest>().message
-                }
-            });
+                    OpperationCode = OperationCodes.CHAT,
+
+                    data = new ChatPacketResponse()
+                    {
+                        senderId = data.senderId,
+                        statusCode = StatusCodes.OK,
+                        message = data.message
+                    }
+                });
+            }
+            else
+            {
+                List<string>? targetIds = data.receiverId.Split(";").ToList();
+                targetIds.ForEach(t => _log.Debug($"Target: {t}"));
+
+                SendData(new DataPacket<ChatPacketResponse>
+                {
+                    OpperationCode = OperationCodes.CHAT,
+
+                    data = new ChatPacketResponse()
+                    {
+                        senderId = data.senderId,
+                        statusCode = StatusCodes.OK,
+                        message = data.message
+                    }
+                }, targetIds);
+            }
         }
 
         //the methode for the login request
-        private void LoginFeature(DataPacket packetData)
+        private void LoginFeature(DataPacket packetData) //TODO: spam on incorrect login
         {
             Patient? patient = null;
             Doctor? doctor = null;
+            string randomUserId = new Random().Next(1001, 2000).ToString();
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
-                    packetData.GetData<LoginPacketRequest>().password, "1234");
-                _patientData.Patients.Add(new Patient("user", "password123", "1234"));
-                _log.Debug($"Patient name: {patient.Username} Password: {patient.Password}");
+                    packetData.GetData<LoginPacketRequest>().password);
+                    
+                _log.Debug($"Patient name: {patient.UserId} Password: {patient.Password}");
             }
             else if (packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 doctor = new Doctor(packetData.GetData<LoginPacketRequest>().username,
                     packetData.GetData<LoginPacketRequest>().password, "Dhr145");
                 _doctorData._doctor = new Doctor("Piet", "dhrPiet", "Dhr145");
-                _log.Debug($"Doctor name: {doctor.username} Password: {doctor.password}");
+                
+                _log.Debug($"Doctor name: {doctor.Username} Password: {doctor.Password}");
             }
-
 
             if (patient != null && _patientData.MatchLoginData(patient))
             {
+                _userId = patient.UserId;
+                _isDoctor = false;
+
                 SendData(new DataPacket<LoginPacketResponse>
                 {
                     OpperationCode = OperationCodes.LOGIN,
@@ -133,28 +227,29 @@ namespace RemoteHealthcare.Server.Client
                     data = new LoginPacketResponse()
                     {
                         userId = patient.UserId,
-                        doctorId = (_doctorData._doctor != null ? _doctorData._doctor.userId : ""),
                         statusCode = StatusCodes.OK,
                         message = "U bent succesvol ingelogd."
                     }
                 });
-            } 
+            }
             else if (doctor != null && _doctorData.MatchLoginData(doctor))
             {
+                _userId = doctor.UserId;
+                _isDoctor = true;
+
                 SendData(new DataPacket<LoginPacketResponse>
                 {
                     OpperationCode = OperationCodes.LOGIN,
 
                     data = new LoginPacketResponse()
                     {
-                        userId = doctor.userId,
+                        userId = doctor.UserId,
                         statusCode = StatusCodes.OK,
                         message = "U bent succesvol ingelogd."
                     }
                 });
-                
             }
-            else 
+            else
             {
                 SendData(new DataPacket<ChatPacketResponse>
                 {
@@ -172,6 +267,10 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
+
+            Console.WriteLine("Alle verbonden users zijn: "); 
+            
+            
             SendData(new DataPacket<SessionStartPacketResponse>
             {
                 OpperationCode = OperationCodes.SESSION_START,
@@ -200,7 +299,6 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the emergency stop request
-        //TODO 
         private void EmergencyStopHandler(DataPacket obj)
         {
             _log.Debug("123 server client");
@@ -218,18 +316,29 @@ namespace RemoteHealthcare.Server.Client
 
         private void DisconnectHandler(DataPacket obj)
         {
-            //Console.WriteLine(_patientData.);
             Console.WriteLine("in de server-client methode disconnectHandler");
             Server.Disconnect(this);
+            _client.DisconnectAsync();
 
-            /*SendData(new DataPacket<DisconnectPacketResponse> {
+            Server.printUsers();
+
+            SendData(new DataPacket<DisconnectPacketResponse>
+            {
                 OpperationCode = OperationCodes.DISCONNECT,
-                
-                data = new DisconnectPacketResponse() {
+
+                data = new DisconnectPacketResponse()
+                {
                     statusCode = StatusCodes.OK,
-                    message =  "Gebruiker wordt nu gedisconnect!" 
+                    message = "Gebruiker wordt nu gedisconnect!"
                 }
-            });*/
+            });
+        }
+
+        public override string ToString()
+        {
+            return $"UserId: {_userId}, Is Doctor: {_isDoctor}, " +
+                   $"IP Adress: {((IPEndPoint)_client.Socket.Client.RemoteEndPoint).Address}, " +
+                   $"Port: {((IPEndPoint)_client.Socket.Client.RemoteEndPoint).Port}";
         }
     }
 }

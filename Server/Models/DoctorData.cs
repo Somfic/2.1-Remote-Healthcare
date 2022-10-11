@@ -16,8 +16,8 @@ public class DoctorData
         if (_doctor == null)
             return false;
         
-        if (_doctor.username.Equals(d.username) && _doctor.password.Equals(d.password) &&
-            _doctor.userId.Equals(d.userId))
+        if (_doctor.Username.Equals(d.Username) && _doctor.Password.Equals(d.Password) &&
+            _doctor.UserId.Equals(d.UserId))
             return true;
         else 
             return false;

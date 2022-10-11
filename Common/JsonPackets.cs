@@ -49,7 +49,6 @@ public class LoginPacketRequest : DAbstract
 public class LoginPacketResponse : DAbstract
 {
     public string userId;
-    public string doctorId;
     public StatusCodes statusCode;
     public string message;
 }
@@ -75,7 +74,6 @@ public class ChatPacketRequest : DAbstract
 public class ChatPacketResponse : DAbstract
 {
     public string senderId;
-    public string receiverId;
     public StatusCodes statusCode;
     public string message;
 }
