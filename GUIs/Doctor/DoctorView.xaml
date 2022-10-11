@@ -4,14 +4,55 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:viewModels="clr-namespace:RemoteHealthcare.GUIs.Doctor.ViewModels"
-        xmlns:DVC="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=DotNetProjects.DataVisualization.Toolkit"
-        xmlns:DV="clr-namespace:System.Windows.Controls.DataVisualization;assembly=DotNetProjects.DataVisualization.Toolkit"
+        xmlns:wpf="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
         Title="DoctorView" Height="450" Width="800">
     <Window.DataContext>
         <viewModels:DoctorViewModel/>
     </Window.DataContext>
     <Grid>
-        <DVC:Chart Name="Chart" Width="500" Height="300" Background="Salmon"></DVC:Chart>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <Label Margin="10,10,10,10" Name="NameLabel" Content="{Binding CurrentUser.Name}"></Label>
+        <ComboBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="25" Margin="10,10,10,10" ItemsSource="{Binding Users}" SelectedItem="{Binding CurrentUser}"></ComboBox>
+        <Label Grid.Column="0" Grid.Row="2" Content="Resistance" VerticalAlignment="Bottom"></Label>
+        <Slider Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Margin="10,10,10,10"></Slider>
+        
+        <Rectangle Grid.Column="0" Grid.Row="4"></Rectangle>
+        <Label Grid.Column="0" Grid.Row="5" Content="{Binding CurrentUser.Speed}"></Label>
+        <Rectangle Grid.Column="0" Grid.Row="6"></Rectangle>
+        <Label Grid.Column="0" Grid.Row="7" Content="{Binding CurrentUser.TotalElapsed}"></Label>
+        <Rectangle Grid.Column="1" Grid.Row="4"></Rectangle>
+        <Label Grid.Column="1" Grid.Row="5" Content="{Binding CurrentUser.Bpm}"></Label>
+        <Rectangle Grid.Column="1" Grid.Row="6"></Rectangle>
+        <Label Grid.Column="1" Grid.Row="7" Content="{Binding CurrentUser.Distance}"></Label>
+        
+        <Label Grid.Row="0" Grid.Column="2" VerticalAlignment="Bottom" Content="Speed"/>
+        <wpf:CartesianChart Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" Grid.RowSpan="2"></wpf:CartesianChart>
+        <Button Grid.Column="2" Grid.Row="3" Background="Red" Content="NOODSTOP"></Button>
+        <Label Grid.Column="2" Grid.Row="4" VerticalAlignment="Bottom" Content="BPM"></Label>
+        <wpf:CartesianChart Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" Grid.RowSpan="2"></wpf:CartesianChart>
+        
+        <ListView Grid.Column="5" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="7" ItemsSource="{Binding ChatMessages}"></ListView>
+        <TextBox Grid.Column="5" Grid.Row="7"></TextBox>
+        <Button Grid.Column="6" Grid.Row="7" Content="Send Message"></Button>
     </Grid>
 </Window>

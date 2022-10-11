@@ -12,7 +12,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 {
     public class Client
     {
-        private SocketClient _client = new(true);
+        public SocketClient _client { get; set; } = new(true);
         private List<string> _connected;
         private Log _log = new(typeof(Client));
 
@@ -23,7 +23,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
         private Dictionary<string, Action<DataPacket>> _functions = new();
 
-        public async Task RunAsync()
+        public Client()
         {
             loggedIn = false;
             _functions = new Dictionary<string, Action<DataPacket>>();
@@ -41,11 +41,10 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                 var packet = JsonConvert.DeserializeObject<DataPacket>(data);
                 HandleData(packet);
             };
+        }
 
-            await _client.ConnectAsync("127.0.0.1", 15243);
-
-            AskForLoginAsync();
-
+        public async Task RunAsync()
+        {
             while (true)
             {
                 //if the user isn't logged in, the user cant send any command to the server
@@ -53,7 +52,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                 {
                     _log.Information("Voer een commando in om naar de server te sturen: \r\n" +
                                      "[BERICHT] [START SESSIE] [STOP SESSIE] [NOODSTOP]");
-                    string userCommand = Console.ReadLine();
+                    string userCommand = "";
 
                     if (userCommand.ToLower().Equals("bericht"))
                     {
@@ -176,7 +175,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             await _client.SendAsync(req);
         }
 
-        private async void AskForLoginAsync()
+        public async Task AskForLoginAsync()
         {
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
@@ -193,7 +192,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         }
 
         //this methode will get the right methode that will be used for the response from the server
-        private void HandleData(DataPacket packet)
+        public void HandleData(DataPacket packet)
         {
             //Checks if the OppCode (OperationCode) does exist.
             if (_functions.TryGetValue(packet.OpperationCode, out var action))
@@ -258,7 +257,6 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             {
                 _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
                            packetData.GetData<LoginPacketResponse>().message);
-                AskForLoginAsync();
             }
         }
     }
