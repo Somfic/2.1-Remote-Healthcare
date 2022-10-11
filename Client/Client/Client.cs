@@ -115,13 +115,12 @@ namespace RemoteHealthcare.Client.Client
 
                     data = new BikeDataPacket()
                     {
-                        Speed = bikedata.Speed,
-                        Distance = bikedata.Distance,
-                        HeartRate = hearthdata.HeartRate,
-                        TotalElapsed = bikedata.TotalElapsed,
-                        Elapsed = bikedata.Elapsed,
-                        DeviceType = bikedata.DeviceType.ToString(),
-                        Id = bikedata.Id
+                        speed = bikedata.Speed,
+                        distance = bikedata.Distance,
+                        heartRate = hearthdata.HeartRate,
+                        elapsed = bikedata.TotalElapsed,
+                        deviceType = bikedata.DeviceType.ToString(),
+                        id = bikedata.Id
 
                     }
                 };

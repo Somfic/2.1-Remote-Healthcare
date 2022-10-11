@@ -129,11 +129,11 @@ public class DisconnectPacketResponse : DAbstract
 
 public class BikeDataPacket : DAbstract
 {
-    public float Distance;
-    public float Speed;
-    public int HeartRate;
-    public TimeSpan Elapsed;
-    public TimeSpan TotalElapsed;
-    public string DeviceType;
-    public string Id;
+    //public string SessionId;
+    public float distance;
+    public float speed;
+    public int heartRate;
+    public TimeSpan elapsed;
+    public string deviceType;
+    public string id;
 }
