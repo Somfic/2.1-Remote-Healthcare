@@ -1,24 +1,18 @@
-using NetworkEngine.Socket;
-using RemoteHealthcare.Client;
-
-using RemoteHealthcare.Client.Data.Providers;
+using RemoteHealthcare.Client.Client;
 using RemoteHealthcare.Common.Logger;
-using RemoteHealthcare.NetworkEngine;
 
 try
 {
-
+    /*
     var engine = new EngineConnection();
     await engine.ConnectAsync("cave");
-
+    
     Console.WriteLine("Enter Bike ID:");
     var bike = await DataProvider.GetBike(Console.ReadLine());
     var heart = await DataProvider.GetHeart();
-    var vrConnection = new VrConnection(bike, heart, engine);
-    vrConnection.Start();
+    */
 
-
-    var client = new Client(vrConnection);
+    var client = new Client();
     client.RunAsync();
     await Task.Delay(-1);
 }
