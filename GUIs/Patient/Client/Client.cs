@@ -21,7 +21,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
 
         public async Task RunAsync()
         {
-            _loggedIn = false;
+            _loggedIn = true;
             functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 

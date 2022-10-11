@@ -6,6 +6,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:viewModels="clr-namespace:RemoteHealthcare.GUIs.Patient.ViewModels"
         mc:Ignorable="d"
+        Background="#4966CD"
+        ResizeMode="NoResize"
         Title="LoginWindow" Height="450" Width="800">
    <Window.DataContext>
         <viewModels:UserViewModel/>

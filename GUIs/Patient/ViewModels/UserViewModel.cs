@@ -13,13 +13,14 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
     {
         
         private string _username;
-        private SecureString _password;
+        private SecureString _securePassword;
         private Client.Client _client;
 
         public UserViewModel()
         {
-            _client = new Client.Client();
             LogIn = new Command(LogInPatient);
+            _client = new Client.Client();
+            
         }
 
         public string Username
@@ -28,10 +29,10 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             set => _username = value;
         }
 
-        public SecureString Password
+        public SecureString SecurePassword
         {
-            get => _password;
-            set => _password = value;
+            get => _securePassword;
+            set => _securePassword = value;
         }
         
         public ICommand LogIn { get; }
@@ -41,7 +42,9 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             Window windowToClose = window as Window;
             Console.WriteLine("Got window, logging in patient");
             _client.username = Username;
-            _client.password = SecureStringToString(Password);
+            
+            _client.password = SecureStringToString(SecurePassword);
+            Console.WriteLine(_client.password);
             try
             {
                 new Thread(async () =>
@@ -56,7 +59,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             }
 
             PatientView patientView= new PatientView();
-            windowToClose.Close();
+            // windowToClose.Close();
             patientView.Show();
         }
         public string SecureStringToString(SecureString value)
