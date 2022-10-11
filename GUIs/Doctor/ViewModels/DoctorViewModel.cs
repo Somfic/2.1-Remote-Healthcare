@@ -14,6 +14,7 @@ using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
 using RemoteHealthcare.Server.Client;
 using RemoteHealthcare.Server.Models;
+using RemoteHealthcare.Server;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
@@ -30,16 +31,16 @@ public class DoctorViewModel : ObservableObject
     {
         _patients = new ObservableCollection<Patient>();
         chatMessages = new ObservableCollection<string>();
-        foreach (ServerClient client in Server.Server._connectedClients)
+        var newList = Server.Server.Patients;
+        _log.Debug(newList.ToString());
+        foreach (var patient in newList)
         {
-            foreach (var patient in Server.Server._patientData.Patients)
-            {
-                if (client._userId.Equals(patient.UserId))
-                {
-                    _patients.Add(patient);
-                }
-            }
+            _patients.Add(patient);
         }
+        /*foreach (ServerClient client in Server.Server._connectedClients)
+        {
+            
+        }*/
 
         _log.Debug(string.Join(", ", _patients.Select(x => x.ToString())));
     }

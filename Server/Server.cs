@@ -13,6 +13,8 @@ public class Server
     private readonly SocketServer _server = new(true);
     private readonly Log _log = new(typeof(Server));
     public static PatientData _patientData { get; set; }
+    
+    public static List<Patient> Patients { get; set; }
     public static DoctorData _doctorData { get; set; }
     public static List<ServerClient> _connectedClients { get; private set; } = new List<ServerClient>();
 
@@ -24,7 +26,14 @@ public class Server
         
         _patientData = new PatientData();
         
-        _log.Debug(string.Join(", ", _patientData.Patients.Select(x => x.ToString())));
+        Patients = new List<Patient>
+        {
+            new("Johan Talboom", "1234", "3245"),
+            new("Hans Van der linden", "1234", "3245"),
+            new("Co Nelen", "1234", "3245")
+        };
+        
+        _log.Debug(string.Join(", ", Patients.Select(x => x.ToString())));
         
         _doctorData = new DoctorData();
 
