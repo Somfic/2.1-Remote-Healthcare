@@ -10,6 +10,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Common\Common.csproj" />
+      <ProjectReference Include="..\..\Server\Server.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -18,6 +19,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="DotNetProjects.WpfToolkit.DataVisualization" Version="6.1.94" />
+      <PackageReference Include="Extended.Wpf.Toolkit" Version="4.4.0" />
       <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
     </ItemGroup>
 

@@ -10,6 +10,7 @@
         public readonly static String USERS = "users";
         public readonly static String SESSION_START = "session start";
         public readonly static String SESSION_STOP = "session stop";
+        public readonly static String EMERGENCY_STOP = "emergency stop";
     }
 
     public enum StatusCodes

@@ -1,11 +1,9 @@
-﻿using System.Net.Sockets;
-using System.Text;
 using NetworkEngine.Socket;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
+using RemoteHealthcare.Common.Socket.Server;
 
 namespace RemoteHealthcare.Client
 {
@@ -14,9 +12,12 @@ namespace RemoteHealthcare.Client
         private SocketClient _client = new(true);
         private Log _log = new(typeof(Client));
 
+        private bool _loggedIn;
         private string _password;
         private string _username;
-        private bool _loggedIn;
+        private string userId;
+        private string doctorId;
+        
         private VrConnection _vrConnection;
         
         private Dictionary<string, Action<DataPacket>> _functions;
@@ -36,13 +37,7 @@ namespace RemoteHealthcare.Client
             _functions.Add("chat", ChatHandler);
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
-            _functions.Add("Disconnect", DisconnectHandler);
-            
-            Console.WriteLine("Hello Client!");
-            Console.WriteLine("Wat is uw telefoonnummer? ");
-            _username = Console.ReadLine();
-            Console.WriteLine("Wat is uw wachtwoord? ");
-            _password = Console.ReadLine();
+            _functions.Add("disconnect", DisconnectHandler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -51,6 +46,67 @@ namespace RemoteHealthcare.Client
             };
 
             await _client.ConnectAsync("127.0.0.1", 15243);
+
+            AskForLoginAsync();
+
+            while (true)
+            {
+                //if the user isn't logged in, the user cant send any command to the server
+                if (_loggedIn)
+                {
+                    _log.Information("Voer een commando in om naar de server te sturen: \r\n" +
+                                     "[BERICHT] [NOODSTOP] [VERBREEK VERBINDING]");
+                    string command = Console.ReadLine();
+                    
+                    if (command.ToLower().Equals("bericht"))
+                    {
+                        _log.Information("Voer uw bericht in: ");
+                        string ChatMessage = Console.ReadLine();
+
+                        var req = new DataPacket<ChatPacketRequest>
+                        {
+                            OpperationCode = OperationCodes.CHAT,
+                            
+                            data = new ChatPacketRequest()
+                            {
+                                senderId = userId,
+                                receiverId = null,
+                                message = ChatMessage
+                            }
+                        };
+
+                        await _client.SendAsync(req);
+                    }
+                    else if (command.ToLower().Equals("noodstop"))
+                    {
+                        var req = new DataPacket<EmergencyStopPacketRequest>
+                        {
+                            OpperationCode = OperationCodes.EMERGENCY_STOP,
+                        };
+
+                    }else if (command.ToLower().Contains("verbreek") && command.ToLower().Contains("verbinding")) {
+
+                        var req = new DataPacket<DisconnectPacketRequest> {
+                            OpperationCode = OperationCodes.DISCONNECT
+                        };
+
+                        await _client.SendAsync(req);
+                    }
+                    else
+                    {
+                        _log.Warning("Het commando dat u heeft ingevoerd is incorrect.");
+                    }
+                }
+            }
+        }
+
+        private async void AskForLoginAsync()
+        {
+            _log.Information("Hello Client!");
+            _log.Information("Wat is uw telefoonnummer? ");
+            _username = Console.ReadLine();
+            _log.Information("Wat is uw wachtwoord? ");
+            _password = Console.ReadLine();
 
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
@@ -64,70 +120,6 @@ namespace RemoteHealthcare.Client
             };
 
             await _client.SendAsync(loginReq);
-
-            while (true)
-            {
-                Console.WriteLine("Voer een command in om naar de server te sturen: ");
-                var newChatMessage = Console.ReadLine();
-
-                //if the user isn't logged in, the user cant send any command to the server
-                if (_loggedIn)
-                {
-                    if (newChatMessage.Equals("chat"))
-                    {
-                        Console.WriteLine("Voer uw bericht in: ");
-                        newChatMessage = Console.ReadLine();
-
-                        var req = new DataPacket<ChatPacketRequest>
-                        {
-                            OpperationCode = OperationCodes.CHAT,
-                            data = new ChatPacketRequest()
-                            {
-                                message = newChatMessage
-                            }
-                        };
-
-                        await _client.SendAsync(req);
-                    }
-                    else if (newChatMessage.ToLower().StartsWith("setresistance:"))
-                    {
-                        int resistance = int.Parse(newChatMessage.Remove(0, 14));
-                        _vrConnection.setResistance(resistance);
-                    }
-                    else if (newChatMessage.Equals("session start"))
-                    {
-                        var req = new DataPacket<SessionStartPacketRequest>
-                        {
-                            OpperationCode = OperationCodes.SESSION_START,
-                        };
-
-                        await _client.SendAsync(req);
-                    }
-                    else if (newChatMessage.Equals("session stop"))
-                    {
-                        var req = new DataPacket<SessionStopPacketRequest>
-                        {
-                            OpperationCode = OperationCodes.SESSION_STOP,
-                        };
-
-                       await _client.SendAsync(req);
-                    }else if (newChatMessage.Equals("disconnect")) {
-
-                        Console.WriteLine("in de disconnect else if");
-                        var req = new DataPacket<SessionStopPacketRequest> {
-                            OpperationCode = OperationCodes.DISCONNECT,
-                        };
-
-                        await _client.SendAsync(req);
-                    }else {
-                        Console.WriteLine("in de else bij de client if else elsif statements!");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Je bent nog niet ingelogd");
-                }
-            }
         }
 
         //this methode will get the right methode that will be used for the response from the server
@@ -143,44 +135,46 @@ namespace RemoteHealthcare.Client
                 throw new Exception("Function not implemented");
             }
         }
-        
+
         private void DisconnectHandler(DataPacket obj)
         {
-            throw new NotImplementedException();
+            Console.WriteLine(obj.GetData<DisconnectPacketResponse>().message);
         }
 
         //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
-            Console.WriteLine(obj.GetData<SessionStopPacketResponse>().message);
+            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
         }
 
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            Console.WriteLine(obj.GetData<SessionStartPacketResponse>().message);
+            _log.Information(obj.GetData<SessionStartPacketResponse>().message);
         }
 
         //the methode for the send chat request
         private void ChatHandler(DataPacket packetData)
         {
-            Console.WriteLine(packetData.GetData<ChatPacketResponse>().message);
+            _log.Information($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
         }
 
         //the methode for the login request
         private void LoginFeature(DataPacket packetData)
         {
+            _log.Debug($"Responce: {packetData.ToJson()}");
             int statusCode = (int)packetData.GetData<LoginPacketResponse>().statusCode;
-
             if (statusCode.Equals(200))
             {
-                Console.WriteLine("Logged in!");
+                userId = packetData.GetData<LoginPacketResponse>().userId;
+                _log.Information($"Succesfully logged in to the user: {_username}; {_password}; {userId}.");
                 _loggedIn = true;
             }
             else
             {
-                Console.WriteLine(packetData.GetData<LoginPacketResponse>().statusCode);
-                Console.WriteLine(packetData.GetData<LoginPacketResponse>().message);
+                _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
+                           packetData.GetData<LoginPacketResponse>().message);
+                AskForLoginAsync();
             }
         }
     }
