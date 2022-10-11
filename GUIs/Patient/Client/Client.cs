@@ -49,7 +49,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                 }
             };
 
-            await client.SendAsync(loginReq);
+            
         }
         public async Task RunAsync()
         {
