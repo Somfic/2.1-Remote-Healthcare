@@ -44,7 +44,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             _client.username = Username;
             
             _client.password = SecureStringToString(SecurePassword);
-            await _client.ConnectAsync("127.0.0.1", 15243);
+       
             Console.WriteLine(_client.password);
             try
             {

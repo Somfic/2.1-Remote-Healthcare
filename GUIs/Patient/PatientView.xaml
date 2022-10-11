@@ -19,10 +19,10 @@
         <Label Content="Afstand" HorizontalAlignment="Left" Margin="334,46,0,0" VerticalAlignment="Top"/>
         <Label Content="Tijd" HorizontalAlignment="Left" Margin="440,46,0,0" VerticalAlignment="Top"/>
         <Image HorizontalAlignment="Left" Height="100" Margin="122,72,0,0" VerticalAlignment="Top" Width="379" Source="/Images/logos.JPG"/>
-        <Label Content="Label" HorizontalAlignment="Left" Margin="148,154,0,0" VerticalAlignment="Top"/>
-        <Label Content="Label" HorizontalAlignment="Left" Margin="243,154,0,0" VerticalAlignment="Top"/>
-        <Label Content="Label" HorizontalAlignment="Left" Margin="340,154,0,0" VerticalAlignment="Top"/>
-        <Label Content="Label" HorizontalAlignment="Left" Margin="436,154,0,0" VerticalAlignment="Top"/>
+        <Label Content="{Binding Speed}" HorizontalAlignment="Left" Margin="148,154,0,0" VerticalAlignment="Top"/>
+        <Label Content="{Binding HeartRate}" HorizontalAlignment="Left" Margin="243,154,0,0" VerticalAlignment="Top"/>
+        <Label Content="{Binding Distance}" HorizontalAlignment="Left" Margin="340,154,0,0" VerticalAlignment="Top"/>
+        <Label Content="{Binding Time}" HorizontalAlignment="Left" Margin="436,154,0,0" VerticalAlignment="Top"/>
         <Button Content="Button" HorizontalAlignment="Left" Height="50" Margin="122,262,0,0" VerticalAlignment="Top" Width="228"/>
 
     </Grid>

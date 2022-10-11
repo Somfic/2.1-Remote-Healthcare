@@ -16,11 +16,16 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private ObservableCollection<string>_messages;
         
         private string _message;
+        private string _speed;
+        private string _distance;
+        private string _time;
+        private string _heartrate;
         private Client.Client _client;
         
 
         public MainViewModel(Client.Client client)
         {
+            
             _client = client;
             _messages = new ObservableCollection<string>();
             Send = new Command(SendMessage);
