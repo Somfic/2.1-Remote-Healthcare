@@ -69,11 +69,11 @@ public class LoginWindowViewModel : ObservableObject
             
             if (_client.loggedIn)
             {
+                _client.RequestClients();
+                DoctorViewModel doctorViewModel = new DoctorViewModel();
                 DoctorView doctorView = new DoctorView();
                 windowToClose.Close();
                 doctorView.Show();
-                
-                //_client.RunAsync();
             }
         }
     }

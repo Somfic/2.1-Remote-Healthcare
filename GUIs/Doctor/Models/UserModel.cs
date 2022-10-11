@@ -5,11 +5,11 @@ namespace RemoteHealthcare.GUIs.Doctor.Models;
 
 public class UserModel : ObservableObject
 {
-    private string _name;
-    private float _speed;
-    private float _distance;
+    private string _name = "Richard Elean";
+    private float _speed = 100;
+    private float _distance = 250;
     private TimeSpan _totalElapsed;
-    private int _bpm;
+    private int _bpm = 200;
 
     public string Name
     {

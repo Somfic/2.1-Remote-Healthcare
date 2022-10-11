@@ -94,7 +94,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
         private async void SendChatAsync()
         {
-            await requestClients();
+            await RequestClients();
             while (_connected == null)
             {
             }
@@ -120,7 +120,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             await _client.SendAsync(req);
         }
 
-        private async Task requestClients()
+        public async Task RequestClients()
         {
             var req = new DataPacket<ConnectedClientsPacketRequest>
             {
