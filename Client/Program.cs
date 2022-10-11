@@ -1,13 +1,8 @@
-using NetworkEngine.Socket;
-using RemoteHealthcare.Client;
-
-using RemoteHealthcare.Client.Data.Providers;
+using RemoteHealthcare.Client.Client;
 using RemoteHealthcare.Common.Logger;
-using RemoteHealthcare.NetworkEngine;
 
 try
 {
-
     var engine = new EngineConnection();
     await engine.ConnectAsync();
 
