@@ -194,19 +194,19 @@ namespace RemoteHealthcare.Server.Client
         {
             Patient? patient = null;
             Doctor? doctor = null;
-            string randomUserId = new Random().Next(1001, 2000).ToString();
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
-                    packetData.GetData<LoginPacketRequest>().password, "1234");
-                Server._patientData.Patients.Add(new Patient("user", "password123", "1234"));
-                _log.Debug($"Patient name: {patient.Username} Password: {patient.Password}");
+                    packetData.GetData<LoginPacketRequest>().password);
+                    
+                _log.Debug($"Patient name: {patient.UserId} Password: {patient.Password}");
             }
             else if (packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 doctor = new Doctor(packetData.GetData<LoginPacketRequest>().username,
                     packetData.GetData<LoginPacketRequest>().password, "Dhr145");
                 Server._doctorData._doctor = new Doctor("Piet", "dhrPiet", "Dhr145");
+                
                 _log.Debug($"Doctor name: {doctor.Username} Password: {doctor.Password}");
             }
 
