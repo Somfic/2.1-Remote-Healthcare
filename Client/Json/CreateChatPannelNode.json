@@ -10,12 +10,12 @@
         "parent": "guid",
         "components": {
           "transform": {
-            "position": [ -55, 200, 0 ],
+            "position": [ -25, 150, 80 ],
             "scale": 1,
-            "rotation": [ -45, 90, 0 ]
+            "rotation": [ -15, 130, 0 ]
           },
           "panel": {
-            "size": [ 20, 20 ],
+            "size": [ 100, 100 ],
             "resolution": [ 500, 500 ],
             "background": [ 0, 0, 0, 0.5 ],
             "castShadow": true

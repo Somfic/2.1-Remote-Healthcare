@@ -20,6 +20,7 @@ namespace NetworkEngine.Socket
 
         public async void Start()
         {
+            var count = 0;
             while (true)
             {
                 await bike.ProcessRawData();
@@ -31,7 +32,16 @@ namespace NetworkEngine.Socket
                     heart.GetData().HeartRate.ToString(), 
                     resistance.ToString());
                 Thread.Sleep(300);
+                // count++;
+                // if (count % 10 == 7)
+                    updateChatAsync("Dokter: test bericht weergeven om de 3 seconde");
             }
+        }
+
+        public async void updateChatAsync(string chatMessage)
+        {
+            Console.WriteLine("updating chat");
+            await engine.SendTextToChatPannel(chatMessage);
         }
 
         public void setResistance(int resistance)
