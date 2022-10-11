@@ -71,8 +71,10 @@ public class LoginWindowViewModel : ObservableObject
             {
                 //_client.RequestClients();
                 DoctorViewModel doctorViewModel = new DoctorViewModel();
-                DoctorView doctorView = new DoctorView();
-                doctorView.DataContext = doctorViewModel;
+                DoctorView doctorView = new DoctorView
+                {
+                    DataContext = doctorViewModel
+                };
                 windowToClose.Close();
                 doctorView.Show();
             }

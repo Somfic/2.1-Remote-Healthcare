@@ -40,6 +40,9 @@ public class Patient
             }
         }
     }
-    
-    
+
+    public override string ToString()
+    {
+        return $" Patient: {Username} + UserId {UserId}";
+    }
 }

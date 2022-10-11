@@ -18,14 +18,15 @@ public class Server
 
     public async Task StartAsync()
     {
-        _patientData = new PatientData();
-        
-        _log.Debug(_patientData.Patients.ToString());
-        _doctorData = new DoctorData();
-        
         _server.OnClientConnected += async (sender, e) => await OnClientConnectedAsync(e);
 
         await _server.ConnectAsync("127.0.0.1", Port);
+        
+        _patientData = new PatientData();
+        
+        _log.Debug(string.Join(", ", _patientData.Patients.Select(x => x.ToString())));
+        
+        _doctorData = new DoctorData();
 
         _log.Information($"Server running on port {Port}");
     }

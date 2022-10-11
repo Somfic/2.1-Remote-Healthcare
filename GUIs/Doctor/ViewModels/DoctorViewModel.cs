@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -8,6 +9,7 @@ using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using MvvmHelpers;
+using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
 using RemoteHealthcare.Server.Client;
@@ -18,6 +20,7 @@ namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 public class DoctorViewModel : ObservableObject
 {
     private string _doctorName;
+    private Log _log = new Log(typeof(DoctorViewModel));
     private Patient _currentUser;
     private ObservableCollection<Patient> _patients;
     private ObservableCollection<string> chatMessages;
@@ -26,10 +29,10 @@ public class DoctorViewModel : ObservableObject
     public DoctorViewModel()
     {
         _patients = new ObservableCollection<Patient>();
-        List<Patient> patients = Server.Server._patientData.Patients;
+        chatMessages = new ObservableCollection<string>();
         foreach (ServerClient client in Server.Server._connectedClients)
         {
-            foreach (var patient in patients)
+            foreach (var patient in Server.Server._patientData.Patients)
             {
                 if (client._userId.Equals(patient.UserId))
                 {
@@ -37,7 +40,10 @@ public class DoctorViewModel : ObservableObject
                 }
             }
         }
+
+        _log.Debug(string.Join(", ", _patients.Select(x => x.ToString())));
     }
+
     public string DoctorName
     {
         get => _doctorName;
