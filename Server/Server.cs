@@ -19,6 +19,8 @@ public class Server
     public async Task StartAsync()
     {
         _patientData = new PatientData();
+        
+        _log.Debug(_patientData.Patients.ToString());
         _doctorData = new DoctorData();
         
         _server.OnClientConnected += async (sender, e) => await OnClientConnectedAsync(e);

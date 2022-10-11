@@ -6,7 +6,12 @@ public class PatientData
 
     public PatientData()
     {
-        Patients = new List<Patient>();
+        Patients = new List<Patient>
+        {
+            new Patient("Johan Talboom", "1234", "3245"),
+            new Patient("Hans Van der linden", "1234", "3245"),
+            new Patient("Co Nelen", "1234", "3245")
+        };
     }
 
     /// <summary>
