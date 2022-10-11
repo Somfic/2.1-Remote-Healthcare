@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RemoteHealthcare.Common.Socket.Client;
 
 namespace RemoteHealthcare.Common;
 
@@ -47,24 +48,39 @@ public class LoginPacketRequest : DAbstract
 
 public class LoginPacketResponse : DAbstract
 {
+    public string userId;
     public StatusCodes statusCode;
     public string message;
 }
 
+public class ConnectedClientsPacketRequest : DAbstract
+{
+    public string operationCode;
+}
+
+public class ConnectedClientsPacketResponse : DAbstract
+{
+    public StatusCodes statusCode;
+    public string connectedIds;
+}
+
 public class ChatPacketRequest : DAbstract
 {
+    public string senderId;
+    public string receiverId;
     public string message;
 }
 
 public class ChatPacketResponse : DAbstract
 {
+    public string senderId;
     public StatusCodes statusCode;
     public string message;
 }
 
 public class SessionStartPacketRequest : DAbstract
 {
-    //voorlopig leeg laten
+    //TODO: voorlopig leeg laten
 }
 
 public class SessionStartPacketResponse : DAbstract
@@ -75,7 +91,7 @@ public class SessionStartPacketResponse : DAbstract
 
 public class SessionStopPacketRequest : DAbstract
 {
-    //voorlopig leeg laten
+    //TODO: voorlopig leeg laten
 }
 
 public class SessionStopPacketResponse : DAbstract
@@ -83,9 +99,20 @@ public class SessionStopPacketResponse : DAbstract
     public StatusCodes statusCode;
     public string message;
 }
+
+public class EmergencyStopPacketRequest : DAbstract
+{
+    //TODO: voorlopig leeg laten
+}
+
+public class EmergencyStopPacketResponse : DAbstract
+{
+    public StatusCodes statusCode;
+    public string message;
+}
 public class DisconnectPacketRequest : DAbstract
 {
-    //voorlopig leeg laten
+    //TODO: voorlopig leeg laten
 }
 
 public class DisconnectPacketResponse : DAbstract

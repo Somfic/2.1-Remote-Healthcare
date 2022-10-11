@@ -7,21 +7,27 @@ namespace RemoteHealthcare.Server.Models;
 public class Patient
 {
     public List<SessionData> Sessions { get; set; }
-    internal string Username { get; set; }
     internal string UserId { get; set; }
+    internal string? Nickname { get; set; }
     internal string Password { get; set; }
 
-    public Patient(string user, string pass, string userId)
+    public Patient(string user_id, string password)
     {
-        Username = user;
-        Password = pass;
-        UserId = userId;
+        UserId = user_id;
+        Password = password;
+        Nickname = "test";
         Sessions = new List<SessionData>();
     }
 
+    /// <summary>
+    /// It takes a folder name as a parameter, creates a directory with the user's username, and then creates a file for
+    /// each session in the user's session list
+    /// </summary>
+    /// <param name="folderName">The name of the folder you want to save the data to.</param>
     public void SaveSessionData(string folderName)
     {
-        var pathString = Path.Combine(folderName, Username);
+        //TODO kijken hoe dit precies opgeslagen wordt.
+        var pathString = Path.Combine(folderName, UserId);
         Directory.CreateDirectory(pathString);
         foreach (var session in Sessions)
         {
