@@ -9,5 +9,7 @@ public partial class PatientView : Window
     {
         InitializeComponent();
     }
+
    
+  
 }

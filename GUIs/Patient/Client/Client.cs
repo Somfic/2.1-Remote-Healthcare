@@ -19,7 +19,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
 
         private static Dictionary<string, Action<DataPacket>> functions;
 
-        public async Task RunAsync()
+        public  Client()
         {
             _loggedIn = true;
             functions = new Dictionary<string, Action<DataPacket>>();
@@ -36,7 +36,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                 HandleData(packet);
             };
 
-            await client.ConnectAsync("127.0.0.1", 15243);
+           
 
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
@@ -50,6 +50,10 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             };
 
             await client.SendAsync(loginReq);
+        }
+        public async Task RunAsync()
+        {
+           
 
             while (true)
             {

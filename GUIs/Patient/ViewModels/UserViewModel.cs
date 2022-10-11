@@ -37,13 +37,14 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         
         public ICommand LogIn { get; }
         
-        void LogInPatient(object window)
+      async void LogInPatient(object window)
         { 
             Window windowToClose = window as Window;
             Console.WriteLine("Got window, logging in patient");
             _client.username = Username;
             
             _client.password = SecureStringToString(SecurePassword);
+            await _client.ConnectAsync("127.0.0.1", 15243);
             Console.WriteLine(_client.password);
             try
             {
@@ -58,7 +59,9 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 throw;
             }
 
+            MainViewModel m = new MainViewModel(_client);
             PatientView patientView= new PatientView();
+            patientView.DataContext = m;
             // windowToClose.Close();
             patientView.Show();
         }
