@@ -1,5 +1,6 @@
 using NetworkEngine.Socket;
 using Newtonsoft.Json;
+using RemoteHealthcare.Client.Data;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
@@ -48,6 +49,8 @@ namespace RemoteHealthcare.Client
             await _client.ConnectAsync("127.0.0.1", 15243);
 
             AskForLoginAsync();
+            SendBikeDataAsync();
+            
 
             while (true)
             {
@@ -100,6 +103,29 @@ namespace RemoteHealthcare.Client
             }
         }
 
+        private async void SendBikeDataAsync()
+        {
+            while (true)
+            {
+                BikeData bikedata = _vrConnection.getBikeData();
+                HeartData hearthdata = _vrConnection.getHearthData();
+                var req = new DataPacket<BikeDataPacket>
+                {
+                    OpperationCode = OperationCodes.BIKEDATA,
+
+                    data = new BikeDataPacket()
+                    {
+                        Speed = bikedata.Speed,
+                        Distance = bikedata.Distance,
+                        HeartRate = hearthdata.HeartRate,
+                        TotalElapsed = bikedata.TotalElapsed,
+                        Elapsed = bikedata.Elapsed,
+
+                    }
+                };
+            }
+        }
+
         private async void AskForLoginAsync()
         {
             _log.Information("Hello Client!");
@@ -134,6 +160,11 @@ namespace RemoteHealthcare.Client
             {
                 throw new Exception("Function not implemented");
             }
+        }
+
+        private void SetResistanceHandeler(DataPacket obj)
+        {
+            _vrConnection.setResistance(obj.GetData<SetResistancePacket>().resistance);
         }
 
         private void DisconnectHandler(DataPacket obj)

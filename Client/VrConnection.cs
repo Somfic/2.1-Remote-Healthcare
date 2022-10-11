@@ -1,5 +1,6 @@
 ﻿
 
+using RemoteHealthcare.Client.Data;
 using RemoteHealthcare.Client.Data.Providers.Bike;
 using RemoteHealthcare.Client.Data.Providers.Heart;
 using RemoteHealthcare.NetworkEngine;
@@ -54,6 +55,15 @@ namespace NetworkEngine.Socket
 
             Console.WriteLine(BitConverter.ToString(data));
             bike.SendMessage(data);
+        }
+        public BikeData getBikeData()
+        {
+            return bike.GetData();
+        }
+
+        internal HeartData getHearthData()
+        {
+            return heart.GetData();
         }
     }
 }

@@ -9,7 +9,7 @@ try
 {
 
     var engine = new EngineConnection();
-    await engine.ConnectAsync("cave");
+    await engine.ConnectAsync();
 
     Console.WriteLine("Enter Bike ID:");
     var bike = await DataProvider.GetBike(Console.ReadLine());

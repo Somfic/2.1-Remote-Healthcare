@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common.Socket.Client;
 
+
 namespace RemoteHealthcare.Common;
 
 
@@ -115,8 +116,24 @@ public class DisconnectPacketRequest : DAbstract
     //TODO: voorlopig leeg laten
 }
 
+public class SetResistancePacket : DAbstract
+{
+    public int resistance;
+}
+
 public class DisconnectPacketResponse : DAbstract
 {
     public StatusCodes statusCode;
     public string message;
+}
+
+public class BikeDataPacket : DAbstract
+{
+    public float Distance;
+    public float Speed;
+    public int HeartRate;
+    public TimeSpan Elapsed;
+    public TimeSpan TotalElapsed;
+    public string DeviceType;
+    public string Id;
 }
