@@ -76,6 +76,8 @@ namespace RemoteHealthcare.Client.Client
                         {
                             OpperationCode = OperationCodes.EMERGENCY_STOP,
                         };
+                        await _client.SendAsync(req);
+
 
                     }else if (command.ToLower().Contains("verbreek") && command.ToLower().Contains("verbinding")) {
 

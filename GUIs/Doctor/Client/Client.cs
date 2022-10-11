@@ -221,6 +221,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
+            Console.WriteLine("maisodhsdakfhsadkfhsdklf isdlfhksdhflkdsaf klisdhfkhdsgkfj");
             _log.Information(obj.GetData<SessionStartPacketResponse>().message);
         }
 

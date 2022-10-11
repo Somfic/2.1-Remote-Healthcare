@@ -47,13 +47,13 @@ public class LoginWindowViewModel : ObservableObject
     {
         Window windowToClose = window as Window;
         await _client._client.ConnectAsync("127.0.0.1", 15243);
-
+  
         if (!_client.loggedIn)
         {
             _client.username = Username;
             _client.password = SecureStringToString(SecurePassword);
             try
-            {
+            { 
                 new Thread(async () =>
                 {
                     await _client.AskForLoginAsync();
@@ -64,16 +64,19 @@ public class LoginWindowViewModel : ObservableObject
                 Console.WriteLine(exception);
                 throw;
             }
-
+            
             await Task.Delay(1000);
             
             if (_client.loggedIn)
             {
                 // _client.RequestClients();
+                //DoctorViewModel doctorViewModel = new DoctorViewModel();
                 DoctorViewModel doctorViewModel = new DoctorViewModel();
-                DoctorView doctorView = new DoctorView();
+                DoctorView doctorView = new DoctorView(_client);
+                doctorView.DataContext = doctorViewModel;
                 windowToClose.Close();
                 doctorView.Show();
+                
             }
         }
     }
