@@ -24,7 +24,7 @@ namespace NetworkEngine.Socket
             {
                 await bike.ProcessRawData();
                 await engine.ChangeBikeSpeed(bike.GetData().Speed);
-                await engine.SendTextToPannel(
+                await engine.SendTextToInformationPannel(
                     (int)bike.GetData().Speed + "", 
                     (int)bike.GetData().Distance + "", 
                     bike.GetData().TotalElapsed, 

@@ -29,7 +29,8 @@ public class EngineConnection
 
     private string _tunnelId;
     private string _userId;
-    private string _pannelId;
+    private string _informationPannelId;
+    private string _chatPannelId;
     private string _bikeId;
     private string _terrainNodeId;
     private string _filePath;
@@ -136,7 +137,10 @@ public class EngineConnection
         // await ChangeBikeSpeed(0);
 
         await Task.Delay(1000);
-        await AddPanelNode(_tunnelId);
+        await AddInformationPannelNode(_tunnelId);
+
+        await Task.Delay(1000);
+        await AddChatPannelNode(_tunnelId);
 
         await Task.Delay(1000);
         await MoveCameraPosition();
@@ -279,8 +283,8 @@ public class EngineConnection
                         }
                         case "10":
                         {
-                            _pannelId = result.Data.Data.Data.Uuid;
-                            _log.Information("Pannel Node ID is: " + _pannelId);
+                            _informationPannelId = result.Data.Data.Data.Uuid;
+                            _log.Information("Pannel Node ID is: " + _informationPannelId);
                             break;
                         }
                         case "9":
@@ -290,8 +294,12 @@ public class EngineConnection
                                 raw.data.data.data[0].components[0].position[2].ToString());
                             break;
                         }
-
-
+                        case "11":
+                        {
+                            _chatPannelId = result.Data.Data.Data.Uuid;
+                            _log.Information("Pannel Node ID is: " + _chatPannelId);
+                            break;
+                        }
                         default:
                         {
                             //_log.Information(JObject.Parse(json).ToString()); 
@@ -430,7 +438,7 @@ public class EngineConnection
             }
         }
 
-        _log.Debug(jObject.ToString());
+        // _log.Debug(jObject.ToString());
         _hightForHouse = heights;
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
@@ -520,9 +528,21 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
-    public async Task AddPanelNode(string dest)
+    public async Task AddInformationPannelNode(string dest)
     {
-        string path = Path.Combine(_filePath, "Json", "CreatePannelNode.json");
+        string path = Path.Combine(_filePath, "Json", "CreateInformationPannelNode.json");
+        var jObject = JObject.Parse(File.ReadAllText(path));
+
+        jObject["data"]["dest"] = dest;
+        jObject["data"]["data"]["data"]["parent"] = _bikeId;
+
+        var json = JsonConvert.SerializeObject(jObject);
+        await _socket.SendAsync(json);
+    }
+
+    public async Task AddChatPannelNode(string dest)
+    {
+        string path = Path.Combine(_filePath, "Json", "CreateChatPannelNode.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = dest;
@@ -539,8 +559,6 @@ public class EngineConnection
         int x1 = (int)Convert.ToDecimal(x);
         int z1 = (int)Convert.ToDecimal(z);
         _roadcount++;
-
-        // _log.Information($"x = {x1} and z ={z1}");
 
         if (!(_firstx == x1 && _firstz == z1))
 
@@ -642,32 +660,30 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
-    public async Task SendTextToPannel(string speed, string distance, TimeSpan timespan, string bpm, string resistance)
+    public async Task SendTextToInformationPannel(string speed, string distance, TimeSpan timespan, string bpm, string resistance)
     {
         var text =
             $"Snelheid: {speed} \\nAfstand: {distance} \\nTijd: {timespan.Minutes + ":" + timespan.Seconds} \\nHartslag: {bpm} \\nWeerstand: {resistance}";
-        await SetBackgroundColor(1, 1, 1, 0.2f);
-        await ClearPannel();
-        await AddTextToPannel(text);
-        await SwapPannel();
-
-
+        await SetBackgroundColor(1, 1, 1, 0.2f, _informationPannelId);
+        await ClearPannel(_informationPannelId);
+        await AddTextToPannel(text, _informationPannelId);
+        await SwapPannel(_informationPannelId);
     }
 
-    public async Task ClearPannel()
+    public async Task ClearPannel(string id)
     {
         string path = Path.Combine(_filePath, "Json", "ClearPannel.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = _tunnelId;
-        jObject["data"]["data"]["data"]["id"] = _pannelId;
+        jObject["data"]["data"]["data"]["id"] = id;
 
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
 
     }
 
-    public async Task SetBackgroundColor(float r, float g, float b, float t)
+    public async Task SetBackgroundColor(float r, float g, float b, float t, string id)
     {
         string path = Path.Combine(_filePath, "Json", "ChangeBackgroundColor.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
@@ -682,33 +698,33 @@ public class EngineConnection
 
 
         jObject["data"]["dest"] = _tunnelId;
-        jObject["data"]["data"]["data"]["id"] = _pannelId;
+        jObject["data"]["data"]["data"]["id"] = id;
 
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
 
     }
-    public async Task AddTextToPannel(string text)
+    public async Task AddTextToPannel(string text, string id)
     {
         string path = Path.Combine(_filePath, "Json", "DrawTextOnPannel.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
-        Console.WriteLine(text);
+        // Console.WriteLine(text);
 
         jObject["data"]["dest"] = _tunnelId;
-        jObject["data"]["data"]["data"]["id"] = _pannelId;
+        jObject["data"]["data"]["data"]["id"] = id;
         jObject["data"]["data"]["data"]["text"] = text;
 
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
 
     }
-    public async Task SwapPannel()
+    public async Task SwapPannel(string id)
     {
         string path = Path.Combine(_filePath, "Json", "SwapPannel.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = _tunnelId;
-        jObject["data"]["data"]["data"]["id"] = _pannelId;
+        jObject["data"]["data"]["data"]["id"] = id;
 
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
