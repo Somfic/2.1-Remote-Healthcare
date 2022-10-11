@@ -14,10 +14,9 @@ namespace RemoteHealthcare.Server.Client
         private readonly Log _log = new(typeof(ServerClient));
 
         private SocketClient _client;
-        private string _userId;
+        public string _userId { get; set; }
         private bool _isDoctor;
-
-
+        
         public string UserName { get; set; }
         private Dictionary<string, Action<DataPacket>> _functions;
 

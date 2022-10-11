@@ -7,9 +7,9 @@ namespace RemoteHealthcare.Server.Models;
 public class Patient
 {
     public List<SessionData> Sessions { get; set; }
-    internal string Username { get; set; }
-    internal string UserId { get; set; }
-    internal string Password { get; set; }
+    public string Username { get; set; }
+    public string UserId { get; set; }
+    public string Password { get; set; }
 
     public Patient(string user, string pass, string userId)
     {
