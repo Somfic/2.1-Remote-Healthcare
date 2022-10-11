@@ -18,9 +18,6 @@ namespace NetworkEngine.Socket
             this.bike = bike;
             this.heart = heart;
             this.engine = engine;
-
-            
-
             /* Unmerged change from project 'Client (net6.0)'
             Before:
                     }
