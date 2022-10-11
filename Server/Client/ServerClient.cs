@@ -192,6 +192,7 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the login request
         private void LoginFeature(DataPacket packetData) //TODO: spam on incorrect login
         {
+            _log.Debug($"loginfeature: {packetData.ToJson()}");
             Patient? patient = null;
             Doctor? doctor = null;
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
@@ -264,7 +265,7 @@ namespace RemoteHealthcare.Server.Client
         private void SessionStartHandler(DataPacket obj)
         {
 
-            Console.WriteLine("Alle verbonden users zijn: "); 
+            _log.Debug("sessionstarthandler");
             
             
             SendData(new DataPacket<SessionStartPacketResponse>
@@ -297,7 +298,7 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the emergency stop request
         private void EmergencyStopHandler(DataPacket obj)
         {
-            _log.Debug("123 server client");
+            _log.Debug("emergencystophandler");
             SendData(new DataPacket<EmergencyStopPacketResponse>
             {
                 OpperationCode = OperationCodes.EMERGENCY_STOP,
@@ -312,7 +313,7 @@ namespace RemoteHealthcare.Server.Client
 
         private void DisconnectHandler(DataPacket obj)
         {
-            Console.WriteLine("in de server-client methode disconnectHandler");
+            _log.Debug("disconnectHandler");
             Server.Disconnect(this);
             _client.DisconnectAsync();
 
