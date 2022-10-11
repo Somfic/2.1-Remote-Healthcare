@@ -69,7 +69,7 @@ public class SocketClient : ISocket
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Client disconnected");
+                    _log.Error(ex, "Client disconnected");
                     await DisconnectAsync();
                 }
             }

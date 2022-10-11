@@ -44,6 +44,7 @@ namespace RemoteHealthcare.Server.Client
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("disconnect", DisconnectHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
+            _functions.Add("bikedata", GetBikeData);
 
             _patientData = new PatientData();
             _doctorData = new DoctorData();
@@ -86,6 +87,12 @@ namespace RemoteHealthcare.Server.Client
                 foreach (string targetId in targetIds)
                     calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
             }
+        }
+
+        private void GetBikeData(DataPacket obj)
+        {
+            BikeDataPacket data = obj.GetData<BikeDataPacket>();
+            
         }
 
         //If userid == null, then search for doctor otherwise search for patient
