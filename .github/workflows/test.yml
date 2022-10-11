@@ -37,5 +37,4 @@ jobs:
       uses: microsoft/setup-msbuild@v1
 
     - name: Test codebase
-      working-directory: Tests
       run: dotnet build
