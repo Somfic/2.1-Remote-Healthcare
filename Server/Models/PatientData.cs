@@ -22,6 +22,14 @@ public class PatientData
         return data;
     }
 
+    /// <summary>
+    /// This function checks if the username, password and userid of the patient object passed in as a parameter matches the
+    /// username, password and userid of any of the patients in the list of patients
+    /// </summary>
+    /// <param name="Patient">The patient object that is being passed in.</param>
+    /// <returns>
+    /// A boolean value.
+    /// </returns>
     public bool MatchLoginData(Patient patient)
     {
         Patients = readUsersFromJson();
@@ -35,6 +43,10 @@ public class PatientData
         return false;
     }
 
+    /// <summary>
+    /// It takes the current directory, removes the last instance of "bin" from it, and then adds "PatientDataFiles" to the
+    /// end of it
+    /// </summary>
     public void SavePatientData()
     {
         var folderName = Environment.CurrentDirectory;
