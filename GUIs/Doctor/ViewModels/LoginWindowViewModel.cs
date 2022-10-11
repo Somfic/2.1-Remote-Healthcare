@@ -2,16 +2,20 @@
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using MvvmHelpers;
 using MvvmHelpers.Commands;
+using Newtonsoft.Json;
+using RemoteHealthcare.Common;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class LoginWindowViewModel : ObservableObject
 {
     private Client.Client _client;
+
     public LoginWindowViewModel()
     {
         _client = new Client.Client();
@@ -32,35 +36,45 @@ public class LoginWindowViewModel : ObservableObject
         private get => _password;
         set => _password = value;
     }
+
     public ICommand LogIn { get; }
 
     /// <summary>
     /// It takes a window object, closes it, and opens a new window
     /// </summary>
     /// <param name="window">The window that is currently open.</param>
-    void LogInDoctor(object window)
+    async void LogInDoctor(object window)
     {
         Window windowToClose = window as Window;
-        _client.username = Username;
-        _client.password = SecureStringToString(SecurePassword);
-        try
-        {
-            new Thread(async () =>
-            {
-                await _client.RunAsync();
-            }).Start();
-        }
-        catch (Exception exception)
-        {
-            Console.WriteLine(exception);
-            throw;
-        }
+        await _client._client.ConnectAsync("127.0.0.1", 15243);
 
-        if (_client.loggedIn)
+        if (!_client.loggedIn)
         {
-            DoctorView doctorView = new DoctorView();
-            windowToClose.Close();
-            doctorView.Show();
+            _client.username = Username;
+            _client.password = SecureStringToString(SecurePassword);
+            try
+            {
+                new Thread(async () =>
+                {
+                    await _client.AskForLoginAsync();
+                }).Start();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
+
+            await Task.Delay(1000);
+            
+            if (_client.loggedIn)
+            {
+                // _client.RequestClients();
+                DoctorViewModel doctorViewModel = new DoctorViewModel();
+                DoctorView doctorView = new DoctorView();
+                windowToClose.Close();
+                doctorView.Show();
+            }
         }
     }
 
@@ -79,10 +93,13 @@ public class LoginWindowViewModel : ObservableObject
     public string SecureStringToString(SecureString value)
     {
         IntPtr valuePtr = IntPtr.Zero;
-        try {
+        try
+        {
             valuePtr = Marshal.SecureStringToGlobalAllocUnicode(value);
             return Marshal.PtrToStringUni(valuePtr);
-        } finally {
+        }
+        finally
+        {
             Marshal.ZeroFreeGlobalAllocUnicode(valuePtr);
         }
     }

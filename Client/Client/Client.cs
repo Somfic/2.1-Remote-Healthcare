@@ -1,11 +1,11 @@
-using NetworkEngine.Socket;
+﻿using System.Net.Cache;
 using Newtonsoft.Json;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
 
-namespace RemoteHealthcare.Client
+namespace RemoteHealthcare.Client.Client
 {
     public class Client
     {
@@ -18,14 +18,7 @@ namespace RemoteHealthcare.Client
         private string userId;
         private string doctorId;
         
-        private VrConnection _vrConnection;
-        
         private Dictionary<string, Action<DataPacket>> _functions;
-        
-        public Client(VrConnection vr)
-        {
-            _vrConnection = vr;
-        }
 
         public async Task RunAsync()
         {
