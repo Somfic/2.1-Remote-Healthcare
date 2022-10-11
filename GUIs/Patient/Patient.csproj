@@ -8,8 +8,4 @@
         <RootNamespace>RemoteHealthcare.GUIs.Patient</RootNamespace>
     </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
-    </ItemGroup>
-
 </Project>

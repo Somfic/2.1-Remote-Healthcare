@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.GUIs.Doctor
@@ -12,6 +11,7 @@ namespace RemoteHealthcare.GUIs.Doctor
     public partial class MainWindow : Window
     {
         private readonly Log _log = new(typeof(MainWindow));
+
         public MainWindow()
         {
             InitializeComponent();
@@ -31,12 +31,9 @@ namespace RemoteHealthcare.GUIs.Doctor
             }
         }
 
-        private void PasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            if (this.DataContext != null)
-            {
-                ((dynamic)this.DataContext).SecurePassword = ((PasswordBox)sender).SecurePassword;
-            }
+            Console.WriteLine("Button pressed");
         }
     }
 }

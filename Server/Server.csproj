@@ -15,7 +15,6 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
     </ItemGroup>
 
 </Project>
