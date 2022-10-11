@@ -39,10 +39,10 @@ public class Server
         Console.WriteLine("\n");
         
         Console.WriteLine("ALLE HUIDIGE ServerClients-USER ZIJN:");
-        foreach (ServerClient user in _connectedClients)
+       /* foreach (ServerClient user in _connectedClients)
         {
             _log.Debug(user.ToString());
-        }
+        }*/
     }
 
     internal static void Disconnect(ServerClient client)
