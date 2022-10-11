@@ -19,4 +19,8 @@
       <Resource Include="Images\fiets.png" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Common\Common.csproj" />
+    </ItemGroup>
+
 </Project>

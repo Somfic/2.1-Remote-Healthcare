@@ -40,6 +40,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
       async void LogInPatient(object window)
         { 
             Window windowToClose = window as Window;
+            await _client.client.ConnectAsync("127.0.0.1", 15243);
             Console.WriteLine("Got window, logging in patient");
             _client.username = Username;
             

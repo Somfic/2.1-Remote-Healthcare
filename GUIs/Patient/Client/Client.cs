@@ -10,12 +10,12 @@ namespace RemoteHealthcare.GUIs.Patient.Client
 {
     public class Client
     {
-        private SocketClient client = new(true);
+        public SocketClient client = new(true);
         private Log _log = new(typeof(Client));
 
         public string password { get; set; }
         public string username { get; set; }
-        private bool _loggedIn;
+        public bool _loggedIn;
 
         private static Dictionary<string, Action<DataPacket>> functions;
 
@@ -38,6 +38,13 @@ namespace RemoteHealthcare.GUIs.Patient.Client
 
            
 
+           
+
+            
+        }
+
+        public async Task PatientLogin()
+        {
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
                 OpperationCode = OperationCodes.LOGIN,
@@ -48,8 +55,9 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                     isDoctor = false
                 }
             };
-
+            _log.Debug(loginReq.ToJson());
             
+            await client.SendAsync(loginReq);
         }
         public async Task RunAsync()
         {

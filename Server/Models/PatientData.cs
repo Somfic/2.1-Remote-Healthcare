@@ -9,7 +9,7 @@ public class PatientData
     public PatientData()
     {
         Patients = new List<Patient>();
-        Patients.Add(new Patient("test", "test", "test"));
+        Patients.Add(new Patient("test", "test"));
     }
     
     public static List<Patient> readUsersFromJson()
