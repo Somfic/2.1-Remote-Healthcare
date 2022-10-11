@@ -39,6 +39,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         
       async void LogInPatient(object window)
         { 
+            
             Window windowToClose = window as Window;
             await _client.client.ConnectAsync("127.0.0.1", 15243);
             Console.WriteLine("Got window, logging in patient");
@@ -51,7 +52,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             {
                 new Thread(async () =>
                 {
-                    await _client.RunAsync();
+                    await _client.PatientLogin();
                 }).Start();
             }
             catch (Exception exception)

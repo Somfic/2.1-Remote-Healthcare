@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using NetworkEngine.Socket;
+using RemoteHealthcare.NetworkEngine;
 
 namespace RemoteHealthcare.GUIs.Patient.ViewModels
 {
@@ -19,8 +21,11 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private string _speed;
         private string _distance;
         private string _time;
-        private string _heartrate;
-        private Client.Client _client;
+        private VrConnection vr;
+        private EngineConnection e;
+        
+
+            private Client.Client _client;
         
 
         public MainViewModel(Client.Client client)
@@ -40,6 +45,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             set => _messages = value;
         }
 
+        
         public string Message
         {
             get => _message;
