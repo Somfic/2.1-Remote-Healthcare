@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Documents;
 using System.Windows.Media;
 using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using MvvmHelpers;
 using RemoteHealthcare.Common.Socket.Server;
-using RemoteHealthcare.GUIs.Doctor.Models;
 using RemoteHealthcare.Server.Client;
 using RemoteHealthcare.Server.Models;
 
@@ -15,14 +16,25 @@ namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 public class DoctorViewModel : ObservableObject
 {
     private string _doctorName;
-    private UserModel _currentUser;
+    private Patient _currentUser;
     private ObservableCollection<Patient> _users;
     private ObservableCollection<string> chatMessages;
     private ChartValues<float> _speedData;
 
     public DoctorViewModel()
     {
-        this._currentUser = new UserModel();
+        _users = new ObservableCollection<Patient>();
+        List<Patient> patients = Server.Server._patientData.Patients;
+        foreach (ServerClient client in Server.Server._connectedClients)
+        {
+            foreach (var patient in patients)
+            {
+                if (client._userId.Equals(patient.UserId))
+                {
+                    _users.Add(patient);
+                }
+            }
+        }
     }
     
     public string DoctorName
@@ -31,7 +43,7 @@ public class DoctorViewModel : ObservableObject
         set => _doctorName = value;
     }
 
-    public UserModel CurrentUser
+    public Patient CurrentUser
     {
         get => _currentUser;
         set => _currentUser = value;

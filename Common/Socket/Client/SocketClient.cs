@@ -80,7 +80,8 @@ public class SocketClient : ISocket
                 }
                 catch (Exception ex)
                 {
-                    _log.Error(ex, "Error while trying to read message from socket");
+                    _log.Error(ex, "Client disconnected");
+                    await DisconnectAsync();
                 }
                 
                 try
@@ -105,6 +106,7 @@ public class SocketClient : ISocket
     
     public Task DisconnectAsync()
     {
+        OnDisconnect?.Invoke(this,new EventArgs());
         SocketServer._clients.Remove(SocketServer.Localclient); 
         Socket.Dispose();
         

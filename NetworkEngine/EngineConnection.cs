@@ -693,7 +693,6 @@ public class EngineConnection
     {
         string path = Path.Combine(_filePath, "Json", "DrawTextOnPannel.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
-        Console.WriteLine(text);
 
         jObject["data"]["dest"] = _tunnelId;
         jObject["data"]["data"]["data"]["id"] = _pannelId;

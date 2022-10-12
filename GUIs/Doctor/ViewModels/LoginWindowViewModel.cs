@@ -61,7 +61,7 @@ public class LoginWindowViewModel : ObservableObject
             }
             catch (Exception exception)
             {
-                Console.WriteLine(exception);
+                _log.Debug(exception);
                 throw;
             }
 

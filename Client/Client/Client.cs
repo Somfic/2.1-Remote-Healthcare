@@ -1,9 +1,12 @@
 ﻿using System.Net.Cache;
 using Newtonsoft.Json;
+using RemoteHealthcare.Client.Data;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
+using RemoteHealthcare.Client;
+using NetworkEngine.Socket;
 
 namespace RemoteHealthcare.Client.Client
 {
@@ -17,6 +20,15 @@ namespace RemoteHealthcare.Client.Client
         private string _username;
         private string userId;
         private string doctorId;
+        private string _sessionId;
+
+        private VrConnection _vrConnection;
+
+        public Client(VrConnection connection)
+        {
+            _vrConnection = connection;
+            _sessionId = DateTime.Now.ToString();
+        }
         
         private Dictionary<string, Action<DataPacket>> _functions;
 
@@ -40,8 +52,8 @@ namespace RemoteHealthcare.Client.Client
 
             await _client.ConnectAsync("127.0.0.1", 15243);
 
-            AskForLoginAsync();
-
+            await AskForLoginAsync();
+            new Thread(e => SendBikeDataAsync()).Start();
             while (true)
             {
                 //if the user isn't logged in, the user cant send any command to the server
@@ -93,7 +105,35 @@ namespace RemoteHealthcare.Client.Client
             }
         }
 
-        private async void AskForLoginAsync()
+        private async void SendBikeDataAsync()
+        {
+            while (true)
+            {
+                BikeData bikedata = _vrConnection.getBikeData();
+                HeartData hearthdata = _vrConnection.getHearthData();
+                var req = new DataPacket<BikeDataPacket>
+                {
+                    OpperationCode = OperationCodes.BIKEDATA,
+
+                    data = new BikeDataPacket()
+                    {
+                        SessionId = _sessionId,
+                        speed = bikedata.Speed,
+                        distance = bikedata.Distance,
+                        heartRate = hearthdata.HeartRate,
+                        elapsed = bikedata.TotalElapsed,
+                        deviceType = bikedata.DeviceType.ToString(),
+                        id = bikedata.Id
+
+                    }
+                };
+                _log.Information("sending bike data to server");
+                await _client.SendAsync(req);
+                await Task.Delay(1000);
+            }
+        }
+
+        private async Task AskForLoginAsync()
         {
             _log.Information("Hello Client!");
             _log.Information("Wat is uw telefoonnummer? ");
@@ -129,9 +169,14 @@ namespace RemoteHealthcare.Client.Client
             }
         }
 
+        private void SetResistanceHandeler(DataPacket obj)
+        {
+            _vrConnection.setResistance(obj.GetData<SetResistancePacket>().resistance);
+        }
+
         private void DisconnectHandler(DataPacket obj)
         {
-            Console.WriteLine(obj.GetData<DisconnectPacketResponse>().message);
+            _log.Debug(obj.GetData<DisconnectPacketResponse>().message);
         }
 
         //the methode for the session stop request
@@ -156,6 +201,7 @@ namespace RemoteHealthcare.Client.Client
         private void LoginFeature(DataPacket packetData)
         {
             _log.Debug($"Responce: {packetData.ToJson()}");
+         
             int statusCode = (int)packetData.GetData<LoginPacketResponse>().statusCode;
             if (statusCode.Equals(200))
             {
