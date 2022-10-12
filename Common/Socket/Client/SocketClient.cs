@@ -6,7 +6,6 @@ using RemoteHealthcare.Common.Socket.Server;
 
 namespace RemoteHealthcare.Common.Socket.Client;
 
-
 public class SocketClient : ISocket
 {
     private readonly bool _useEncryption;
@@ -55,7 +54,15 @@ public class SocketClient : ISocket
     
     public Task SendAsync(string text)
     {
-        return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);
+        try
+        {
+            return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Could not send message: '{text}'");
+            return Task.CompletedTask;
+        }
     }
 
   
@@ -65,19 +72,29 @@ public class SocketClient : ISocket
         {
             while (Socket.Connected)
             {
+                var text = string.Empty;
+                
                 try
                 {
-                    var text = await SocketHelper.ReadMessage(Socket.GetStream(), _useEncryption);
-                    OnMessage?.Invoke(this, text);
+                    text = await SocketHelper.ReadMessage(Socket.GetStream(), _useEncryption);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Client disconnected");
-                    await DisconnectAsync();
+                    _log.Error(ex, "Error while trying to read message from socket");
+                }
+                
+                try
+                {
+                    if(!string.IsNullOrWhiteSpace(text))
+                        OnMessage?.Invoke(this, text);
+                }
+                catch (Exception ex)
+                {
+                    _log.Error(ex, $"Error while handling message: '{text}'");
                 }
             }
 
-            _log.Debug($"Client stopped");
+            _log.Debug($"Client disconnected");
             OnDisconnect?.Invoke(this, EventArgs.Empty);
         });
     }

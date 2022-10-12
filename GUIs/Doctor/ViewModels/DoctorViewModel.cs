@@ -1,40 +1,53 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Windows.Media;
+using LiveCharts;
+using LiveCharts.Defaults;
+using LiveCharts.Wpf;
+using MvvmHelpers;
+using RemoteHealthcare.Common.Socket.Server;
+using RemoteHealthcare.GUIs.Doctor.Models;
+using RemoteHealthcare.Server.Client;
+using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
-public class DoctorViewModel
+public class DoctorViewModel : ObservableObject
 {
-    public DoctorViewModel() 
-    {
-        
-    }
-
     private string _doctorName;
-    private string _chartTitle = "Hello World";
-    private string _xAxisTitle = "XAxis";
-    private string _yAxisTitle = "YAxis";
+    private UserModel _currentUser;
+    private ObservableCollection<Patient> _users;
+    private ObservableCollection<string> chatMessages;
+    private ChartValues<float> _speedData;
 
+    public DoctorViewModel()
+    {
+        this._currentUser = new UserModel();
+    }
+    
     public string DoctorName
     {
         get => _doctorName;
         set => _doctorName = value;
     }
 
-    public string ChartTitle
+    public UserModel CurrentUser
     {
-        get => _chartTitle;
-        set => _chartTitle = value ?? throw new ArgumentNullException(nameof(value));
+        get => _currentUser;
+        set => _currentUser = value;
     }
 
-    public string XAxisTitle
+    public ObservableCollection<string> ChatMessages
     {
-        get => _xAxisTitle;
-        set => _xAxisTitle = value ?? throw new ArgumentNullException(nameof(value));
+        get => chatMessages;
+        set => chatMessages = value;
     }
 
-    public string YAxisTitle
+    public ObservableCollection<Patient> Users
     {
-        get => _yAxisTitle;
-        set => _yAxisTitle = value ?? throw new ArgumentNullException(nameof(value));
+        get => _users;
+        set => _users = value;
     }
+
+    public ChartValues<float> SpeedData { get; set; }
 }

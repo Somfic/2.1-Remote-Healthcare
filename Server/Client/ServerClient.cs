@@ -13,7 +13,7 @@ namespace RemoteHealthcare.Server.Client
     public class ServerClient
     {
         private readonly Log _log = new(typeof(ServerClient));
-
+        
         public SocketClient Client { get; private set; }
         private PatientData _patientData;
         private DoctorData _doctorData;
@@ -44,9 +44,6 @@ namespace RemoteHealthcare.Server.Client
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("disconnect", DisconnectHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
-
-            _patientData = new PatientData();
-            _doctorData = new DoctorData();
         }
 
         //determines which methode exactly will be executed 
@@ -100,6 +97,7 @@ namespace RemoteHealthcare.Server.Client
 
                 if (userId != null && client._userId.Equals(userId))
                 {
+                    _log.Warning($"Client: {client._userId}; Is Doctor: {Server._doctorData}");
                     return client;
                 }
             }
@@ -198,7 +196,6 @@ namespace RemoteHealthcare.Server.Client
         {
             Patient? patient = null;
             Doctor? doctor = null;
-            string randomUserId = new Random().Next(1001, 2000).ToString();
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
@@ -210,12 +207,13 @@ namespace RemoteHealthcare.Server.Client
             {
                 doctor = new Doctor(packetData.GetData<LoginPacketRequest>().username,
                     packetData.GetData<LoginPacketRequest>().password, "Dhr145");
-                _doctorData._doctor = new Doctor("Piet", "dhrPiet", "Dhr145");
+                Server._doctorData._doctor = new Doctor("Piet", "dhrPiet", "Dhr145");
                 
                 _log.Debug($"Doctor name: {doctor.Username} Password: {doctor.Password}");
             }
 
-            if (patient != null && _patientData.MatchLoginData(patient))
+
+            if (patient != null && Server._patientData.MatchLoginData(patient))
             {
                 _userId = patient.UserId;
                 _isDoctor = false;
@@ -232,7 +230,7 @@ namespace RemoteHealthcare.Server.Client
                     }
                 });
             }
-            else if (doctor != null && _doctorData.MatchLoginData(doctor))
+            else if (doctor != null && Server._doctorData.MatchLoginData(doctor))
             {
                 _userId = doctor.UserId;
                 _isDoctor = true;

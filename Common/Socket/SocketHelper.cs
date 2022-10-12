@@ -90,15 +90,21 @@ public static class SocketHelper
 
     public static byte[] Encrypt(byte[] data)
     {
-        var encryptor = Aes.CreateEncryptor(Aes.Key, Aes.IV);
-        var encrypted = encryptor.TransformFinalBlock(data, 0, data.Length);
-        return encrypted;
+        return data;
+        // Aes.Padding = PaddingMode.PKCS7;
+        //
+        // var encryptor = Aes.CreateEncryptor(Aes.Key, Aes.IV);
+        // var encrypted = encryptor.TransformFinalBlock(data, 0, data.Length);
+        // return encrypted;
     }
 
     public static byte[] Decrypt(byte[] data)
     {
-        var decryptor = Aes.CreateDecryptor(Aes.Key, Aes.IV);
-        var decrypted = decryptor.TransformFinalBlock(data, 0, data.Length);
-        return decrypted;
+        return data;
+        // Aes.Padding = PaddingMode.PKCS7;
+        //
+        // var decryptor = Aes.CreateDecryptor(Aes.Key, Aes.IV);
+        // var decrypted = decryptor.TransformFinalBlock(data, 0, data.Length);
+        // return decrypted;
     }
 }

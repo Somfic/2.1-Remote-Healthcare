@@ -2,6 +2,7 @@ using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
 using RemoteHealthcare.Server.Client;
+using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.Server;
 
@@ -11,6 +12,8 @@ public class Server
 
     private readonly SocketServer _server = new(true);
     private readonly Log _log = new(typeof(Server));
+    public static PatientData _patientData { get; set; }
+    public static DoctorData _doctorData { get; set; }
     public static List<ServerClient> _connectedClients { get; private set; } = new List<ServerClient>();
     
     public static IReadOnlyList<ServerClient> Clients => _connectedClients.AsReadOnly();
@@ -18,6 +21,9 @@ public class Server
 
     public async Task StartAsync()
     {
+        _patientData = new PatientData();
+        _doctorData = new DoctorData();
+        
         _server.OnClientConnected += async (sender, e) => await OnClientConnectedAsync(e);
         _server.OnClientDisconnected += async (sender, e) => await OnClientDisconnectedAsync(e);
 
@@ -42,13 +48,13 @@ public class Server
             _log.Debug(user.ToString());
         }
 
-        Console.WriteLine("\n");
-        
-        Console.WriteLine("ALLE HUIDIGE ServerClients-USER ZIJN:");
-        foreach (ServerClient user in _connectedClients)
-        {
-            _log.Debug(user.ToString());
-        }
+        // Console.WriteLine("\n");
+        //
+        // Console.WriteLine("ALLE HUIDIGE ServerClients-USER ZIJN:");
+        // foreach (ServerClient user in _connectedClients)
+        // {
+        //     _log.Debug(user.ToString());
+        // }
     }
 
     internal static void Disconnect(ServerClient client)
