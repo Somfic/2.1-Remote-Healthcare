@@ -98,7 +98,6 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             await requestClients();
             
             /* This is a while loop that will do nothing until connected is filled */
-            _log.Debug(_connected.Count.ToString());
             while (_connected.Count == 0)
             {
                 _log.Debug("Loading...");
@@ -188,6 +187,8 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                 }
             };
 
+            _log.Debug(loginReq.ToJson());
+            
             await _client.SendAsync(loginReq);
         }
 

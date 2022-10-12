@@ -88,27 +88,23 @@ public static class SocketHelper
         return text;
     }
 
-    public static byte[] Concat(byte[] b1, byte[] b2, int count)
-    {
-        var r = new byte[b1.Length + count];
-        Buffer.BlockCopy(b1, 0, r, 0, b1.Length);
-        Buffer.BlockCopy(b2, 0, r, b1.Length, count);
-        return r;
-    }
-
     public static byte[] Encrypt(byte[] data)
     {
         return data;
-       /* var encryptor = Aes.CreateEncryptor(Aes.Key, Aes.IV);
-        var encrypted = encryptor.TransformFinalBlock(data, 0, data.Length);
-        return encrypted;*/
+        // Aes.Padding = PaddingMode.PKCS7;
+        //
+        // var encryptor = Aes.CreateEncryptor(Aes.Key, Aes.IV);
+        // var encrypted = encryptor.TransformFinalBlock(data, 0, data.Length);
+        // return encrypted;
     }
 
     public static byte[] Decrypt(byte[] data)
     {
         return data;
-        /*var decryptor = Aes.CreateDecryptor(Aes.Key, Aes.IV);
-        var decrypted = decryptor.TransformFinalBlock(data, 0, data.Length);
-        return decrypted;*/
+        // Aes.Padding = PaddingMode.PKCS7;
+        //
+        // var decryptor = Aes.CreateDecryptor(Aes.Key, Aes.IV);
+        // var decrypted = decryptor.TransformFinalBlock(data, 0, data.Length);
+        // return decrypted;
     }
 }

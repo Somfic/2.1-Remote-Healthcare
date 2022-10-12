@@ -25,10 +25,16 @@ public class Server
         _doctorData = new DoctorData();
         
         _server.OnClientConnected += async (sender, e) => await OnClientConnectedAsync(e);
+        _server.OnClientDisconnected += async (sender, e) => await OnClientDisconnectedAsync(e);
 
         await _server.ConnectAsync("127.0.0.1", Port);
 
         _log.Information($"Server running on port {Port}");
+    }
+
+    private async Task OnClientDisconnectedAsync(SocketClient socketClient)
+    {
+        _connectedClients.Remove(_connectedClients.Find(x => x.Client.Id == socketClient.Id));
     }
 
     private async Task OnClientConnectedAsync(SocketClient client)
@@ -42,13 +48,13 @@ public class Server
             _log.Debug(user.ToString());
         }
 
-        Console.WriteLine("\n");
-        
-        Console.WriteLine("ALLE HUIDIGE ServerClients-USER ZIJN:");
-       /* foreach (ServerClient user in _connectedClients)
-        {
-            _log.Debug(user.ToString());
-        }*/
+        // Console.WriteLine("\n");
+        //
+        // Console.WriteLine("ALLE HUIDIGE ServerClients-USER ZIJN:");
+        // foreach (ServerClient user in _connectedClients)
+        // {
+        //     _log.Debug(user.ToString());
+        // }
     }
 
     internal static void Disconnect(ServerClient client)
