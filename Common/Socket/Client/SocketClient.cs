@@ -10,6 +10,9 @@ public class SocketClient : ISocket
 {
     private readonly bool _useEncryption;
     public TcpClient Socket { get; private set; } = new();
+    
+    public Guid Id { get; } = Guid.NewGuid();
+    
     private readonly Log _log = new(typeof(SocketClient));
 
     public SocketClient(bool useEncryption)
@@ -92,10 +95,13 @@ public class SocketClient : ISocket
             }
 
             _log.Debug($"Client disconnected");
+            OnDisconnect?.Invoke(this, EventArgs.Empty);
         });
     }
     
     public event EventHandler<string>? OnMessage;
+    
+    public event EventHandler? OnDisconnect;
     
     public Task DisconnectAsync()
     {

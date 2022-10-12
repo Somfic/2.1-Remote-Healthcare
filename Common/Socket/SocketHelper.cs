@@ -88,14 +88,6 @@ public static class SocketHelper
         return text;
     }
 
-    public static byte[] Concat(byte[] b1, byte[] b2, int count)
-    {
-        var r = new byte[b1.Length + count];
-        Buffer.BlockCopy(b1, 0, r, 0, b1.Length);
-        Buffer.BlockCopy(b2, 0, r, b1.Length, count);
-        return r;
-    }
-
     public static byte[] Encrypt(byte[] data)
     {
         return data;
