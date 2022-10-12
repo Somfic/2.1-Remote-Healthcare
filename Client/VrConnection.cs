@@ -34,7 +34,7 @@ namespace NetworkEngine.Socket
                 
                 count++;
                 if (count % 10 == 7)
-                    await engine.SendTextToChatPannel("Dokter: test bericht weergeven om de 3 seconde");
+                    await engine.SendTextToChatPannel($"Dokter: test bericht weergeven om de 3 seconde : {count/7}");
                 
                 Thread.Sleep(300);
             }

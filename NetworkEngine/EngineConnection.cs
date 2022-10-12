@@ -677,7 +677,7 @@ public class EngineConnection
         string displayMessage = displayMessages();
         await SetBackgroundColor(1, 1, 1, 0.2f, _chatPannelId);
         await ClearPannel(_chatPannelId);
-        await AddTextToPannel(displayMessage, _chatPannelId, 25);
+        await AddTextToPannel(displayMessage, _chatPannelId, 40);
         await SwapPannel(_chatPannelId);
     }
 
