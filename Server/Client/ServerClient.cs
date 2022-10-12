@@ -1,11 +1,13 @@
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
 using RemoteHealthcare.Server.Models;
+using Xceed.Wpf.AvalonDock.Layout;
 
 namespace RemoteHealthcare.Server.Client
 {
@@ -40,9 +42,12 @@ namespace RemoteHealthcare.Server.Client
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("disconnect", DisconnectHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
+            _functions.Add("get patient data", GetPatientDataHandler);
         }
 
+
         //determines which methode exactly will be executed 
+
         private void HandleData(DataPacket packetData)
         {
             _log.Debug($"Got a packet server: {packetData.OpperationCode}");
@@ -59,7 +64,9 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //This methode used to send an request from the Server to the Client
+
         //The parameter is an JsonFile object
+
         private void SendData(DAbstract packet, string? targetId = null)
         {
             // _log.Critical(target._userId + " : " + targetId);
@@ -72,6 +79,7 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //If userid == null, then search for doctor otherwise search for patient
+
         private ServerClient calculateTarget(string? userId = null)
         {
             _log.Warning($"userId: {userId}");
@@ -119,6 +127,7 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the chat request
+
         private void ChatHandler(DataPacket packetData)
         {
             _log.Debug($"{(packetData.GetData<ChatPacketRequest>().receiverId) == null}");
@@ -137,6 +146,7 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the login request
+
         private void LoginFeature(DataPacket packetData)
         {
             Patient? patient = null;
@@ -209,6 +219,7 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the session start request
+
         private void SessionStartHandler(DataPacket obj)
         {
             SendData(new DataPacket<SessionStartPacketResponse>
@@ -224,6 +235,7 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the session stop request
+
         private void SessionStopHandler(DataPacket obj)
         {
             SendData(new DataPacket<SessionStopPacketResponse>
@@ -239,7 +251,9 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the emergency stop request
+
         //TODO 
+
         private void EmergencyStopHandler(DataPacket obj)
         {
             _log.Debug("123 server client");
@@ -269,6 +283,29 @@ namespace RemoteHealthcare.Server.Client
                     message =  "Gebruiker wordt nu gedisconnect!" 
                 }
             });*/
+        }
+
+        /// <summary>
+        /// This function is called when the client sends a request to the server to get all the patient data. The server
+        /// then sends back all the patient data to the client
+        /// </summary>
+        /// <param name="DataPacket">This is the data packet that is sent from the client to the server.</param>
+        private void GetPatientDataHandler(DataPacket packetData)
+        {
+            _log.Debug($"Got request all patientdata from doctor client: {packetData.OpperationCode}");
+
+            JObject[] jObjects = Server._patientData.GetPatientDataAsJObjects();
+            SendData(new DataPacket<GetAllPatientsDataResponse>
+            {
+                OpperationCode = OperationCodes.GET_PATIENT_DATA,
+                
+                data = new GetAllPatientsDataResponse()
+                {
+                    statusCode = StatusCodes.OK,
+                    JObjects = jObjects,
+                    message = "Got patient data from server successfully"
+                }
+            });
         }
     }
 }

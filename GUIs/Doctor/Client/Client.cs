@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
+using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.GUIs.Doctor.Client
 {
@@ -13,6 +14,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
     {
         public SocketClient _client { get; set; } = new(true);
         private List<string> _connected;
+        public List<Patient> _patientList;
         private Log _log = new(typeof(Client));
 
         public string password { get; set; }
@@ -34,6 +36,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
+            _functions.Add("get patient data", GetPatientDataHandler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -205,6 +208,17 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             {
                 _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
                            packetData.GetData<LoginPacketResponse>().message);
+            }
+        }
+        
+        private void GetPatientDataHandler(DataPacket packetData)
+        {
+            _log.Debug($"Got all patientdata from server: {packetData.OpperationCode}");
+
+            JObject[] jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
+
+            foreach (var jObject in jObjects)
+            {
             }
         }
     }

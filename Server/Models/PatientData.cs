@@ -1,4 +1,6 @@
-﻿namespace RemoteHealthcare.Server.Models;
+﻿using Newtonsoft.Json.Linq;
+
+namespace RemoteHealthcare.Server.Models;
 
 public class PatientData
 {
@@ -43,5 +45,17 @@ public class PatientData
         {
             patient.SaveSessionData(folderName);
         }
+    }
+
+    public JObject[] GetPatientDataAsJObjects()
+    {
+        JObject[] jObjects = Array.Empty<JObject>();
+
+        for (int i = 0; i < Patients.Count; i++)
+        {
+            jObjects[i] = Patients.ElementAt(i).GetPatientAsJObject();
+        }
+
+        return jObjects;
     }
 }

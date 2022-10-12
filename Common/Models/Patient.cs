@@ -45,4 +45,9 @@ public class Patient
     {
         return $" Patient: {Username} + UserId {UserId}";
     }
+
+    public JObject GetPatientAsJObject()
+    {
+        return JObject.Parse(JsonConvert.SerializeObject(this));
+    }
 }

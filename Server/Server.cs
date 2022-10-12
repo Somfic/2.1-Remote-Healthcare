@@ -34,9 +34,7 @@ public class Server
         };
         
         _log.Debug(string.Join(", ", Patients.Select(x => x.ToString())));
-        
         _doctorData = new DoctorData();
-
         _log.Information($"Server running on port {Port}");
     }
 

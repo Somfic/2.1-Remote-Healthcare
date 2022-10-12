@@ -120,3 +120,15 @@ public class DisconnectPacketResponse : DAbstract
     public StatusCodes statusCode;
     public string message;
 }
+
+public class GetAllPatientsDataRequest : DAbstract
+{
+    //TODO voorlopig leeg laten
+}
+
+public class GetAllPatientsDataResponse : DAbstract
+{
+    public StatusCodes statusCode;
+    public string message;
+    public JObject[] JObjects;
+}

@@ -7,5 +7,8 @@ namespace RemoteHealthcare.GUIs.Doctor
     /// </summary>
     public partial class App : Application
     {
+        private Client.Client _client;
+        
+        
     }
 }

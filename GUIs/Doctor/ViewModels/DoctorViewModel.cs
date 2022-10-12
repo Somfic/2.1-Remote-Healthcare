@@ -29,20 +29,7 @@ public class DoctorViewModel : ObservableObject
 
     public DoctorViewModel()
     {
-        _patients = new ObservableCollection<Patient>();
-        chatMessages = new ObservableCollection<string>();
-        var newList = Server.Server.Patients;
-        _log.Debug(newList.ToString());
-        foreach (var patient in newList)
-        {
-            _patients.Add(patient);
-        }
-        /*foreach (ServerClient client in Server.Server._connectedClients)
-        {
-            
-        }*/
-
-        _log.Debug(string.Join(", ", _patients.Select(x => x.ToString())));
+        
     }
 
     public string DoctorName
