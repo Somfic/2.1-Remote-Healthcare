@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
@@ -27,6 +28,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         public Client()
         {
             loggedIn = false;
+            _patientList = new List<Patient>();
             _functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
@@ -149,6 +151,16 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             await _client.SendAsync(loginReq);
         }
 
+        public async Task RequestPatientDataAsync()
+        {
+            DataPacket<GetAllPatientsDataRequest> patientReq = new DataPacket<GetAllPatientsDataRequest>
+            {
+                OpperationCode = OperationCodes.GET_PATIENT_DATA
+            };
+
+            await _client.SendAsync(patientReq);
+        }
+
         //this methode will get the right methode that will be used for the response from the server
         public void HandleData(DataPacket packet)
         {
@@ -214,12 +226,17 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         private void GetPatientDataHandler(DataPacket packetData)
         {
             _log.Debug($"Got all patientdata from server: {packetData.OpperationCode}");
+            _log.Debug($"Received: {packetData.ToJson()}");
 
             JObject[] jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
 
-            foreach (var jObject in jObjects)
+            foreach (JObject jObject in jObjects)
             {
+                Patient patient = jObject.ToObject<Patient>();
+                _patientList.Add(patient);
             }
+            
+            // _log.Debug(_patientList[0].ToString());
         }
     }
 }

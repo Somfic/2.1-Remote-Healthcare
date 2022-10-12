@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.Server.Models;
 
@@ -8,7 +9,12 @@ public class PatientData
 
     public PatientData()
     {
-        
+        Patients = new List<Patient>
+        {
+            new("Johan Talboom", "1234", "3245"),
+            new("Hans Van der linden", "1234", "3245"),
+            new("Co Nelen", "1234", "3245")
+        };
     }
 
     /// <summary>
@@ -49,11 +55,11 @@ public class PatientData
 
     public JObject[] GetPatientDataAsJObjects()
     {
-        JObject[] jObjects = Array.Empty<JObject>();
-
+        JObject[] jObjects = new JObject[Patients.Count];
+        
         for (int i = 0; i < Patients.Count; i++)
         {
-            jObjects[i] = Patients.ElementAt(i).GetPatientAsJObject();
+            jObjects[i] = Patients[i].GetPatientAsJObject();
         }
 
         return jObjects;

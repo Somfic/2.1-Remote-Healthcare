@@ -71,7 +71,7 @@ namespace RemoteHealthcare.Server.Client
         {
             // _log.Critical(target._userId + " : " + targetId);
 
-            _log.Critical(packet.ToJson());
+            _log.Critical($"Sending: {packet.ToJson()}");
             if (packet.ToJson().Contains("chat"))
                 calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
             else

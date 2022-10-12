@@ -25,15 +25,6 @@ public class Server
         await _server.ConnectAsync("127.0.0.1", Port);
         
         _patientData = new PatientData();
-        
-        Patients = new List<Patient>
-        {
-            new("Johan Talboom", "1234", "3245"),
-            new("Hans Van der linden", "1234", "3245"),
-            new("Co Nelen", "1234", "3245")
-        };
-        
-        _log.Debug(string.Join(", ", Patients.Select(x => x.ToString())));
         _doctorData = new DoctorData();
         _log.Information($"Server running on port {Port}");
     }

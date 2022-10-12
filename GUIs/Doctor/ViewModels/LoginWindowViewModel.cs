@@ -70,6 +70,7 @@ public class LoginWindowViewModel : ObservableObject
             if (_client.loggedIn)
             {
                 //_client.RequestClients();
+                await _client.RequestPatientDataAsync();
                 DoctorViewModel doctorViewModel = new DoctorViewModel();
                 DoctorView doctorView = new DoctorView
                 {
