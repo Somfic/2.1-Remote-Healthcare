@@ -62,6 +62,7 @@ public class SocketServer : ISocket
                  var client = SocketClient.CreateFromSocket(socket, _useEncryption);
                  Localclient = client;
                 client.OnMessage += (sender, message) => OnMessage?.Invoke(this, (client, message));
+                client.OnDisconnect += (sender, args) => OnClientDisconnected?.Invoke(this, client);
                 _clients.Add(client);
 
                 Task.Run(() => { OnClientConnected?.Invoke(this, client); });
@@ -76,6 +77,8 @@ public class SocketServer : ISocket
     }
 
     public event EventHandler<SocketClient>? OnClientConnected;
+    
+    public event EventHandler<SocketClient>? OnClientDisconnected;
 
     public event EventHandler<(SocketClient client, string message)>? OnMessage; 
 
