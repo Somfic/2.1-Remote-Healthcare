@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using NetworkEngine.Socket;
 using Newtonsoft.Json;
+using RemoteHealthcare.Client.Data;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
@@ -10,27 +13,29 @@ namespace RemoteHealthcare.GUIs.Patient.Client
 {
     public class Client
     {
-        public SocketClient client = new(true);
+        public SocketClient _client = new(true);
         private Log _log = new(typeof(Client));
+        private string userId;
+        private VrConnection _vrConnection;
 
-        public string password { get; set; }
-        public string username { get; set; }
+        public string _password { get; set; }
+        public string _username { get; set; }
         public bool _loggedIn;
 
-        private static Dictionary<string, Action<DataPacket>> functions;
+        private static Dictionary<string, Action<DataPacket>> _functions;
 
-        public  Client()
+        public  Client(VrConnection v)
         {
             _loggedIn = true;
-            functions = new Dictionary<string, Action<DataPacket>>();
+            _functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
-            functions.Add("login", LoginFeature);
-            functions.Add("chat", ChatHandler);
-            functions.Add("session start", SessionStartHandler);
-            functions.Add("session stop", SessionStopHandler);
+            _functions.Add("login", LoginFeature);
+            _functions.Add("chat", ChatHandler);
+            _functions.Add("session start", SessionStartHandler);
+            _functions.Add("session stop", SessionStopHandler);
 
-            client.OnMessage += (sender, data) =>
+            _client.OnMessage += (sender, data) =>
             {
                 var packet = JsonConvert.DeserializeObject<DataPacket>(data);
                 HandleData(packet);
@@ -50,101 +55,143 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                 OpperationCode = OperationCodes.LOGIN,
                 data = new LoginPacketRequest()
                 {
-                    username = username,
-                    password = password,
+                    username = _username,
+                    password = _password,
                     isDoctor = false
                 }
             };
             _log.Debug(loginReq.ToJson());
             
-            await client.SendAsync(loginReq);
+            await _client.SendAsync(loginReq);
         }
-        public async Task RunAsync()
+         public async Task RunAsync()
         {
-           
+            _loggedIn = false;
+            _functions = new Dictionary<string, Action<DataPacket>>();
 
+            //Adds for each key an callback methode in the dictionary 
+            _functions.Add("login", LoginFeature);
+            _functions.Add("chat", ChatHandler);
+            _functions.Add("session start", SessionStartHandler);
+            _functions.Add("session stop", SessionStopHandler);
+            _functions.Add("disconnect", DisconnectHandler);
+
+            _client.OnMessage += (sender, data) =>
+            {
+                var packet = JsonConvert.DeserializeObject<DataPacket>(data);
+                HandleData(packet);
+            };
+
+            await _client.ConnectAsync("127.0.0.1", 15243);
+
+            await AskForLoginAsync();
+            new Thread(e => SendBikeDataAsync()).Start();
             while (true)
             {
-                Console.WriteLine("Voer een command in om naar de server te sturen: ");
-                string newChatMessage = Console.ReadLine();
-
                 //if the user isn't logged in, the user cant send any command to the server
                 if (_loggedIn)
                 {
-                    if (newChatMessage.Equals("chat"))
+                    _log.Information("Voer een commando in om naar de server te sturen: \r\n" +
+                                     "[BERICHT] [NOODSTOP] [VERBREEK VERBINDING]");
+                    string command = Console.ReadLine();
+                    
+                    if (command.ToLower().Equals("bericht"))
                     {
                         _log.Information("Voer uw bericht in: ");
-                        newChatMessage = Console.ReadLine();
+                        string ChatMessage = Console.ReadLine();
 
                         var req = new DataPacket<ChatPacketRequest>
                         {
                             OpperationCode = OperationCodes.CHAT,
+                            
                             data = new ChatPacketRequest()
                             {
-                                message = newChatMessage
+                                senderId = userId,
+                                receiverId = null,
+                                message = ChatMessage
                             }
                         };
 
-                        await client.SendAsync(req);
+                        await _client.SendAsync(req);
                     }
-                    else if (newChatMessage.Equals("session start"))
+                    else if (command.ToLower().Equals("noodstop"))
                     {
-                        var req = new DataPacket<SessionStartPacketRequest>
+                        var req = new DataPacket<EmergencyStopPacketRequest>
                         {
-                            OpperationCode = OperationCodes.SESSION_START,
+                            OpperationCode = OperationCodes.EMERGENCY_STOP,
                         };
 
-                        await client.SendAsync(req);
-                    }
-                    else if (newChatMessage.Equals("session stop"))
-                    {
-                        DataPacket<SessionStopPacketRequest> req = new DataPacket<SessionStopPacketRequest>
-                        {
-                            OpperationCode = OperationCodes.SESSION_STOP,
+                    }else if (command.ToLower().Contains("verbreek") && command.ToLower().Contains("verbinding")) {
+
+                        var req = new DataPacket<DisconnectPacketRequest> {
+                            OpperationCode = OperationCodes.DISCONNECT
                         };
 
-                        await client.SendAsync(req);
+                        await _client.SendAsync(req);
                     }
                     else
                     {
-                        _log.Debug("in de else bij de client if else elsif statements!");
+                        _log.Warning("Het commando dat u heeft ingevoerd is incorrect.");
                     }
-                }
-                else
-                {
-                    _log.Critical("Je bent nog niet ingelogd");
                 }
             }
         }
 
-        //This methode will be enterd if the user has made an TCP-connection
-        // private void OnConnectionMade(IAsyncResult ar)
-        // {
-        //     stream = client.GetStream();
-        //
-        //     //Triggers the OnLengthBytesReceived methode
-        //     stream.BeginRead(lengthBytes, 0, lengthBytes.Length, OnLengthBytesReceived, null);
-        //
-        //     //Sends an login request to the server
-        //     DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
-        //     {
-        //         OpperationCode = OperationCodes.LOGIN,
-        //         data = new LoginPacketRequest()
-        //         {
-        //             username = username,
-        //             password = password,
-        //             isDoctor = true
-        //         }
-        //     };
-        //
-        //     SendData(loginReq);
-        // }
+        private async void SendBikeDataAsync()
+        {
+            while (true)
+            {
+                BikeData bikedata = _vrConnection.getBikeData();
+                HeartData hearthdata = _vrConnection.getHearthData();
+                var req = new DataPacket<BikeDataPacket>
+                {
+                    OpperationCode = OperationCodes.BIKEDATA,
+
+                    data = new BikeDataPacket()
+                    {
+                        Speed = bikedata.Speed,
+                        Distance = bikedata.Distance,
+                        HeartRate = hearthdata.HeartRate,
+                        TotalElapsed = bikedata.TotalElapsed,
+                        Elapsed = bikedata.Elapsed,
+                        DeviceType = bikedata.DeviceType.ToString(),
+                        Id = bikedata.Id
+
+                    }
+                };
+                _log.Information("sending bike data to server");
+                await _client.SendAsync(req);
+                await Task.Delay(1000);
+            }
+        }
+
+        private async Task AskForLoginAsync()
+        {
+            _log.Information("Hello Client!");
+            _log.Information("Wat is uw telefoonnummer? ");
+            _username = Console.ReadLine();
+            _log.Information("Wat is uw wachtwoord? ");
+            _password = Console.ReadLine();
+
+            DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
+            {
+                OpperationCode = OperationCodes.LOGIN,
+                data = new LoginPacketRequest()
+                {
+                    username = _username,
+                    password = _password,
+                    isDoctor = false
+                }
+            };
+
+            await _client.SendAsync(loginReq);
+        }
 
         //this methode will get the right methode that will be used for the response from the server
-        private void HandleData(DataPacket packet)
+        public void HandleData(DataPacket packet)
         {
             //Checks if the OppCode (OperationCode) does exist.
-            if (functions.TryGetValue(packet.OpperationCode, out var action))
+            if (_functions.TryGetValue(packet.OpperationCode, out var action))
             {
                 action.Invoke(packet);
             }
@@ -152,40 +199,60 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             {
                 throw new Exception("Function not implemented");
             }
-        } //the methode for the session stop request
+        }
 
+        private void SetResistanceHandeler(DataPacket obj)
+        {
+            _vrConnection.setResistance(obj.GetData<SetResistancePacket>().resistance);
+        }
+
+        private void DisconnectHandler(DataPacket obj)
+        {
+            Console.WriteLine(obj.GetData<DisconnectPacketResponse>().message);
+        }
+
+        //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
-            Console.WriteLine(obj.GetData<SessionStopPacketResponse>().message);
+            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
         }
 
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            Console.WriteLine(obj.GetData<SessionStartPacketResponse>().message);
+            _log.Information(obj.GetData<SessionStartPacketResponse>().message);
         }
 
         //the methode for the send chat request
         private void ChatHandler(DataPacket packetData)
         {
-            Console.WriteLine(packetData.GetData<ChatPacketResponse>().message);
+            _log.Information($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
         }
 
         //the methode for the login request
         private void LoginFeature(DataPacket packetData)
         {
+            _log.Debug($"Responce: {packetData.ToJson()}");
+         
             int statusCode = (int)packetData.GetData<LoginPacketResponse>().statusCode;
-
             if (statusCode.Equals(200))
             {
-                Console.WriteLine("Logged in!");
+                userId = packetData.GetData<LoginPacketResponse>().userId;
+                _log.Information($"Succesfully logged in to the user: {_username}; {_password}; {userId}.");
                 _loggedIn = true;
             }
             else
             {
-                Console.WriteLine(packetData.GetData<LoginPacketResponse>().statusCode);
-                Console.WriteLine(packetData.GetData<LoginPacketResponse>().message);
+                _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
+                           packetData.GetData<LoginPacketResponse>().message);
+                AskForLoginAsync();
             }
         }
+        public bool GetLoggedIn()
+        {
+            return _loggedIn;
+        }
     }
+    
+   
 }

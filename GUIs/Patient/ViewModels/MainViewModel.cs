@@ -18,15 +18,23 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private ObservableCollection<string>_messages;
         
         private string _message;
-        private string _speed;
-        private string _distance;
-        private string _time;
+        private string _speed= "45km/h";
+        private string _distance= "22km";
+        private string _time= "33 min";
+        private string _heartrate= "126 bpm";
         private VrConnection vr;
         private EngineConnection e;
         
 
             private Client.Client _client;
-        
+
+            public MainViewModel()
+            {
+                _client = new Client.Client(null);
+                _messages = new ObservableCollection<string>();
+                Send = new Command(SendMessage);
+                _messages.Add("hello world");
+            }
 
         public MainViewModel(Client.Client client)
         {
@@ -36,6 +44,25 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             Send = new Command(SendMessage);
             _messages.Add("hello world");
 
+        }
+
+        public string Speed
+        {
+            get => _speed;
+            set => _speed = value;
+        }
+        public string Distance
+        {
+            get => _distance;
+            set => _distance = value;
+        }public string Time
+        {
+            get => _time;
+            set => _time = value;
+        }public string Heartrate
+        {
+            get => _heartrate;
+            set => _heartrate = value;
         }
 
 
