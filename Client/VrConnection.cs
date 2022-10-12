@@ -26,33 +26,31 @@ namespace NetworkEngine.Socket
                 await bike.ProcessRawData();
                 await engine.ChangeBikeSpeed(bike.GetData().Speed);
                 await engine.SendTextToInformationPannel(
-                    (int)bike.GetData().Speed + "", 
-                    (int)bike.GetData().Distance + "", 
-                    bike.GetData().TotalElapsed, 
-                    heart.GetData().HeartRate.ToString(), 
+                    (int)bike.GetData().Speed + "",
+                    (int)bike.GetData().Distance + "",
+                    bike.GetData().TotalElapsed,
+                    heart.GetData().HeartRate.ToString(),
                     resistance.ToString());
+                
+                count++;
+                if (count % 10 == 7)
+                    await engine.SendTextToChatPannel("Dokter: test bericht weergeven om de 3 seconde");
+                
                 Thread.Sleep(300);
-                // count++;
-                // if (count % 10 == 7)
-                    updateChatAsync("Dokter: test bericht weergeven om de 3 seconde");
             }
-        }
-
-        public async void updateChatAsync(string chatMessage)
-        {
-            Console.WriteLine("updating chat");
-            await engine.SendTextToChatPannel(chatMessage);
         }
 
         public void setResistance(int resistance)
         {
             this.resistance = resistance;
-            byte[] data = (new byte[] { 164, 9, 78, 5, 48, 255, 255, 255, 255, 255, 255, (byte)((byte)resistance * 2), 0 });
+            byte[] data = (new byte[]
+                { 164, 9, 78, 5, 48, 255, 255, 255, 255, 255, 255, (byte)((byte)resistance * 2), 0 });
             byte checksum = data[0];
             for (int i = 1; i < 12; i++)
             {
                 checksum ^= data[i];
             }
+
             data[12] = (byte)checksum;
 
             Console.WriteLine(BitConverter.ToString(data));
