@@ -49,7 +49,7 @@ public class SocketClient : ISocket
         string json = JsonConvert.SerializeObject(data);
         return SendAsync(json);
     }
-    
+
     public Task SendAsync(string text)
     {
         return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);

@@ -43,6 +43,25 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             };
         }
 
+        public Task SendAsync(dynamic data)
+        {
+            string json = JsonConvert.SerializeObject(data);
+            return _client.SendAsync(json);
+        }
+        
+        public Task SendAsync<T>(DataPacket<T> data, Action<DataPacket> callback) where T : DAbstract
+        {
+            if (_functions.ContainsKey(data.OpperationCode))
+            {
+                _functions[data.OpperationCode] = callback;    
+            } else {
+                _functions.Add(data.OpperationCode, callback);    
+            }
+            
+            string json = JsonConvert.SerializeObject(data);
+            return _client.SendAsync(json);
+        }
+
         public async Task RunAsync()
         {
             while (true)
@@ -102,7 +121,9 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             {
                 _log.Debug("Loading...");
             }
+            
             _log.Information("escaped loading");
+            
             string savedConnections = " ";
             foreach (string id in _connected)
             {

@@ -16,7 +16,7 @@ using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
-public class DoctorViewModel : ObservableObject
+public class DoctorViewModel : BaseViewModel
 {
     private string _doctorName;
     private UserModel _currentUser;
@@ -26,21 +26,35 @@ public class DoctorViewModel : ObservableObject
     private Client.Client _doctorClient; 
     public ICommand SessionStartCommand { get; }
 
+    private readonly NavigationStore _navigationStore;
 
-    public DoctorViewModel()
+    public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
+    
+    public DoctorViewModel(NavigationStore navigationStore)
     {
         this._currentUser = new UserModel();
         SessionStartCommand = new Command(SessieStart);
+        
+        _navigationStore = navigationStore;
+        _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
+    }
+    
+    private void OnCurrentViewModelChanged()
+    {
+        OnPropertyChanged(nameof(_navigationStore.CurrentViewModel));
     }
 
     async void SessieStart()
     {
-        var req = new DataPacket<SessionStartPacketRequest>
+        await _doctorClient.SendAsync(new DataPacket<SessionStartPacketRequest>
         {
             OpperationCode = OperationCodes.SESSION_START,
-        };
+        },sessie_callback );
+    }
 
-        await _doctorClient._client.SendAsync(req);
+    private void sessie_callback(DataPacket obj)
+    {
+        Console.WriteLine("hoii sanhdklsadgkfjmdsakjfghk");
     }
 
     public string DoctorName

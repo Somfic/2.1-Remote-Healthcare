@@ -3,21 +3,25 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
-using MvvmHelpers;
 using MvvmHelpers.Commands;
-using Newtonsoft.Json;
-using RemoteHealthcare.Common;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
-public class LoginWindowViewModel : ObservableObject
+public class LoginWindowViewModel : BaseViewModel
 {
     private Client.Client _client;
 
-    public LoginWindowViewModel()
+    private readonly NavigationStore _navigationStore;
+
+    public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
+    public ICommand LogIn { get; }
+
+    public LoginWindowViewModel(NavigationStore navigationStore)
     {
+        _navigationStore = navigationStore;
+        _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
+
         _client = new Client.Client();
         LogIn = new Command(LogInDoctor);
     }
@@ -37,50 +41,50 @@ public class LoginWindowViewModel : ObservableObject
         set => _password = value;
     }
 
-    public ICommand LogIn { get; }
 
-    /// <summary>
-    /// It takes a window object, closes it, and opens a new window
-    /// </summary>
-    /// <param name="window">The window that is currently open.</param>
+ 
     async void LogInDoctor(object window)
     {
-        Window windowToClose = window as Window;
+        Console.WriteLine("LogInDocotr");
+        //Window windowToClose = window as Window;
         await _client._client.ConnectAsync("127.0.0.1", 15243);
-  
+
         if (!_client.loggedIn)
         {
             _client.username = Username;
             _client.password = SecureStringToString(SecurePassword);
             try
-            { 
-                new Thread(async () =>
-                {
-                    await _client.AskForLoginAsync();
-                }).Start();
+            {
+                new Thread(async () => { await _client.AskForLoginAsync(); }).Start();
             }
             catch (Exception exception)
             {
                 Console.WriteLine(exception);
                 throw;
             }
-            
+
             await Task.Delay(1000);
-            
+
             if (_client.loggedIn)
             {
+                _navigationStore.CurrentViewModel = new DoctorViewModel(_navigationStore);
+                
+
                 // _client.RequestClients();
                 //DoctorViewModel doctorViewModel = new DoctorViewModel();
-                DoctorViewModel doctorViewModel = new DoctorViewModel();
-                DoctorView doctorView = new DoctorView(_client);
-                doctorView.DataContext = doctorViewModel;
-                windowToClose.Close();
-                doctorView.Show();
-                
+                //DoctorViewModel doctorViewModel = new DoctorViewModel();
+                //DoctorView doctorView = new DoctorView();
+                //doctorView.DataContext = doctorViewModel;
+                //windowToClose.Close();
+                //doctorView.Show();
             }
         }
     }
-
+    
+    private void OnCurrentViewModelChanged()
+    {
+        OnPropertyChanged(nameof(_navigationStore.CurrentViewModel));
+    }
     /// <summary>
     /// "Convert a SecureString to a string by copying the SecureString to unmanaged memory, then copying the unmanaged
     /// memory to a managed string, then zeroing out the unmanaged memory."
