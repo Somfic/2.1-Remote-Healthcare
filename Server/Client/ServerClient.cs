@@ -21,6 +21,8 @@ namespace RemoteHealthcare.Server.Client
         private string _userId;
         private bool _isDoctor;
 
+        private string _patientDataLocation = Environment.CurrentDirectory + "\\PatientData";
+
         private Patient patient;
         
         public string UserName { get; set; }
@@ -40,9 +42,9 @@ namespace RemoteHealthcare.Server.Client
                 HandleData(dataPacket);
             };
 
-            _client.OnDisconnect += (sender, data) =>
+            Client.OnDisconnect += (sender, data) =>
             {
-                patient.SaveSessionData("C:\\Users\\nickw\\Documents\\patientdata");
+                patient.SaveSessionData(_patientDataLocation);
             };
             _functions = new Dictionary<string, Action<DataPacket>>();
             _functions.Add("login", LoginFeature);
@@ -108,7 +110,8 @@ namespace RemoteHealthcare.Server.Client
                 }
             }
             patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
-            patient.SaveSessionData("C:\\Users\\nickw\\Documents\\patientdata");
+            Console.WriteLine(Environment.CurrentDirectory);
+            patient.SaveSessionData(_patientDataLocation);
             GetBikeData(obj);
         }
 
