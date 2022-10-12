@@ -9,7 +9,7 @@ namespace RemoteHealthcare.Common.Socket.Client;
 public class SocketClient : ISocket
 {
     private readonly bool _useEncryption;
-    public TcpClient Socket { get; private set; } = new();
+    public TcpClient Socket { get; private set; } = new(); 
     
     public Guid Id { get; } = Guid.NewGuid();
     
@@ -31,18 +31,34 @@ public class SocketClient : ISocket
     {
         if (Socket.Connected)
             return;
-    
-        _log.Debug($"Connecting to {ip}:{port} ({(_useEncryption ? "encrypted" : "unencrypted")})");
 
-        try
+        var attempts = 0;
+
+        while (attempts < 5)
         {
-            await Socket.ConnectAsync(IPAddress.Parse(ip), port);
-            _log.Debug($"Connected to {ip}:{port}");
-            Read();
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, $"Could not connect to {ip}:{port}");
+            attempts++;
+            
+            _log.Debug($"Connecting to {ip}:{port} ({(_useEncryption ? "encrypted" : "unencrypted")}) (attempt #{attempts})");
+
+            try
+            {
+                await Socket.ConnectAsync(IPAddress.Parse(ip), port);
+                _log.Debug($"Connected to {ip}:{port}");
+                Read();
+                break;
+            }
+            catch (Exception ex)
+            {
+                Socket.Close();
+                Socket = new TcpClient();
+                
+                _log.Error(ex, $"Could not connect to {ip}:{port}");
+
+                if (attempts == 5)
+                    throw;
+            }
+            
+            await Task.Delay(1000);
         }
     }
 
@@ -61,7 +77,7 @@ public class SocketClient : ISocket
         catch (Exception ex)
         {
             _log.Error(ex, $"Could not send message: '{text}'");
-            return Task.CompletedTask;
+            throw;
         }
     }
 
