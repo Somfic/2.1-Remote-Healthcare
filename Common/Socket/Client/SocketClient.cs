@@ -106,7 +106,7 @@ public class SocketClient : ISocket
     
     public Task DisconnectAsync()
     {
-        OnDisconnect?.Invoke(this);
+        OnDisconnect?.Invoke(this,new EventArgs());
         SocketServer._clients.Remove(SocketServer.Localclient); 
         Socket.Dispose();
         
