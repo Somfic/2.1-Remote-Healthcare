@@ -21,7 +21,7 @@ namespace RemoteHealthcare.Server.Client
         private string _userId;
         private bool _isDoctor;
 
-        private string _patientDataLocation = Environment.CurrentDirectory + "\\PatientData";
+        private string _patientDataLocation = Path.Combine(Environment.CurrentDirectory, "PatientData");
 
         private Patient patient;
         
@@ -110,7 +110,7 @@ namespace RemoteHealthcare.Server.Client
                 }
             }
             patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
-            Console.WriteLine(Environment.CurrentDirectory);
+            _log.Debug(Environment.CurrentDirectory);
             patient.SaveSessionData(_patientDataLocation);
             GetBikeData(obj);
         }
@@ -298,7 +298,7 @@ namespace RemoteHealthcare.Server.Client
         private void SessionStartHandler(DataPacket obj)
         {
 
-            Console.WriteLine("Alle verbonden users zijn: "); 
+            _log.Debug("Alle verbonden users zijn: "); 
             
             
             SendData(new DataPacket<SessionStartPacketResponse>
@@ -346,7 +346,7 @@ namespace RemoteHealthcare.Server.Client
 
         private void DisconnectHandler(DataPacket obj)
         {
-            Console.WriteLine("in de server-client methode disconnectHandler");
+            _log.Debug("in de server-client methode disconnectHandler");
             Server.Disconnect(this);
             Client.DisconnectAsync();
 

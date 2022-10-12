@@ -1,9 +1,12 @@
 ﻿using Newtonsoft.Json;
+using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.Server.Models;
 
 public class PatientData
 {
+    private readonly Log _log = new Log(typeof(PatientData));
+    
     public List<Patient> Patients { get; set; }
 
     public PatientData()
@@ -50,7 +53,7 @@ public class PatientData
     public void SavePatientData()
     {
         var folderName = Environment.CurrentDirectory;
-        Console.WriteLine(folderName);
+        _log.Debug(folderName);
         folderName = Path.Combine(folderName.Substring(0, folderName.LastIndexOf("bin")) + "PatientDataFiles");
         foreach (var patient in Patients)
         {

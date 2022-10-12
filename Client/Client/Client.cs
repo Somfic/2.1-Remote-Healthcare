@@ -176,7 +176,7 @@ namespace RemoteHealthcare.Client.Client
 
         private void DisconnectHandler(DataPacket obj)
         {
-            Console.WriteLine(obj.GetData<DisconnectPacketResponse>().message);
+            _log.Debug(obj.GetData<DisconnectPacketResponse>().message);
         }
 
         //the methode for the session stop request
