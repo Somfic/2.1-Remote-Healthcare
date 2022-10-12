@@ -20,12 +20,14 @@ namespace RemoteHealthcare.Client.Client
         private string _username;
         private string userId;
         private string doctorId;
+        private string _sessionId;
 
         private VrConnection _vrConnection;
 
         public Client(VrConnection connection)
         {
             _vrConnection = connection;
+            _sessionId = DateTime.Now.ToString();
         }
         
         private Dictionary<string, Action<DataPacket>> _functions;
@@ -115,6 +117,7 @@ namespace RemoteHealthcare.Client.Client
 
                     data = new BikeDataPacket()
                     {
+                        SessionId = _sessionId,
                         speed = bikedata.Speed,
                         distance = bikedata.Distance,
                         heartRate = hearthdata.HeartRate,

@@ -37,6 +37,7 @@ namespace NetworkEngine.Socket
         {
             while (true)
             {
+                await heart.ProcessRawData();
                 await bike.ProcessRawData();
                 await engine.ChangeBikeSpeed(bike.GetData().Speed);
                 Thread.Sleep(300);

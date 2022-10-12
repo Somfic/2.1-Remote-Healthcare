@@ -79,9 +79,11 @@ public class SocketClient : ISocket
     }
     
     public event EventHandler<string>? OnMessage;
-    
+    public event EventHandler<string>? OnDisconnect;
+
     public Task DisconnectAsync()
     {
+        OnDisconnect?.Invoke(this, "Disconnected");
         SocketServer._clients.Remove(SocketServer.Localclient); 
         Socket.Dispose();
         

@@ -24,6 +24,8 @@ namespace RemoteHealthcare.Server.Client
         public string UserName { get; set; }
         private Dictionary<string, Action<DataPacket>> _functions;
 
+
+
         //Set-ups the client constructor
         public ServerClient(SocketClient client)
         {
@@ -36,6 +38,10 @@ namespace RemoteHealthcare.Server.Client
                 HandleData(dataPacket);
             };
 
+            _client.OnDisconnect += (sender, data) =>
+            {
+                patient.SaveSessionData("C:\\Users\\nickw\\Documents\\patientdata");
+            };
             _functions = new Dictionary<string, Action<DataPacket>>();
             _functions.Add("login", LoginFeature);
             _functions.Add("users", RequestConnectionsFeature);
@@ -91,7 +97,17 @@ namespace RemoteHealthcare.Server.Client
         {
             BikeDataPacket data = obj.GetData<BikeDataPacket>();
             
-            patient.Sessions.Add(new SessionData((int)data.speed,(int)data.distance,data.heartRate,data.elapsed.Seconds,data.deviceType,data.id));
+            foreach(SessionData session in patient.Sessions)
+            {
+                if (session.SessionId.Equals(data.SessionId))
+                {
+                    session.addData(data.SessionId,(int)data.speed, (int)data.distance, data.heartRate, data.elapsed.Seconds, data.deviceType, data.id);
+                    return;
+                }
+            }
+            patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
+            patient.SaveSessionData("C:\\Users\\nickw\\Documents\\patientdata");
+            GetBikeData(obj);
         }
 
         //If userid == null, then search for doctor otherwise search for patient

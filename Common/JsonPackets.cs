@@ -129,7 +129,7 @@ public class DisconnectPacketResponse : DAbstract
 
 public class BikeDataPacket : DAbstract
 {
-    //public string SessionId;
+    public string SessionId;
     public float distance;
     public float speed;
     public int heartRate;

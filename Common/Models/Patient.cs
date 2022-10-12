@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
 namespace RemoteHealthcare.Server.Models;
 
 [Serializable]
@@ -29,13 +28,18 @@ public class Patient
         //TODO kijken hoe dit precies opgeslagen wordt.
         var pathString = Path.Combine(folderName, UserId);
         Directory.CreateDirectory(pathString);
+        
         foreach (var session in Sessions)
         {
-            var filename = session.Id;
+            pathString = Path.Combine(folderName, UserId);
+            var filename = session.SessionId.Replace(':','-') + "-" + session.Id;
             var json = JsonConvert.SerializeObject(session);
             pathString = Path.Combine(pathString, filename);
 
             if (!File.Exists(pathString))
+            {
+                File.WriteAllText(pathString, JObject.Parse(json).ToString());
+            } else
             {
                 File.WriteAllText(pathString, JObject.Parse(json).ToString());
             }
