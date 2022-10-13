@@ -34,7 +34,7 @@ namespace RemoteHealthcare.Client.Client
 
             //Adds for each key an callback methode in the dictionary 
             _functions.Add("login", LoginFeature);
-            _functions.Add("chat", ChatHandler);
+            _functions.Add("chat", ChatHandlerAsync);
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("disconnect", DisconnectHandler);
@@ -153,10 +153,13 @@ namespace RemoteHealthcare.Client.Client
             _log.Information(obj.GetData<SessionStartPacketResponse>().message);
         }
 
-        //the methode for the send chat request
-        private void ChatHandler(DataPacket packetData)
+        //the methode for printing out the received message and sending it to the VR Engine
+        private async void ChatHandlerAsync(DataPacket packetData)
         {
-            _log.Information($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+            string messageReceived =
+                $"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}";
+            _log.Information(messageReceived);
+            await _vrConnection.engine.SendTextToChatPannel(messageReceived);
         }
 
         //the methode for the login request

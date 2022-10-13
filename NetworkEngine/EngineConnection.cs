@@ -675,9 +675,9 @@ public class EngineConnection
     {
         _messages.Add(message);
         string displayMessage = displayMessages();
-        await SetBackgroundColor(1, 1, 1, 0.2f, _chatPannelId);
+        await SetBackgroundColor(1, 1, 1, 0.15f, _chatPannelId);
         await ClearPannel(_chatPannelId);
-        await AddTextToPannel(displayMessage, _chatPannelId, 40);
+        await AddTextToPannel(displayMessage, _chatPannelId, 70);
         await SwapPannel(_chatPannelId);
     }
 
@@ -685,7 +685,7 @@ public class EngineConnection
     {
         string result = "";
         
-        for (int i = 1; i <= 4; i++)
+        for (int i = 1; i <= 5; i++)
         {
             int index = _messages.Count - i;
             if (index <= -1)
@@ -694,7 +694,7 @@ public class EngineConnection
                 continue;
             }
             
-            result += $"\\n\\n{Regex.Replace(_messages[index], ".{34}", "$0\\n")}";
+            result += $"{Regex.Replace(_messages[index], ".{30}", "$0\\n")}\\n\\n";
         }
 
         return result;

@@ -65,10 +65,16 @@ namespace RemoteHealthcare.Server.Client
         private void SendData(DAbstract packet, string? targetId = null)
         {
             _log.Debug($"sending: {packet.ToJson()}");
+
             if (packet.ToJson().Contains("chat"))
+            {
                 calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
+            }
             else
+            {
+                _log.Warning($"Client: {_userId}; Is Doctor: {_isDoctor}");
                 _client.SendAsync(packet).GetAwaiter().GetResult();
+            }
         }
 
         //This methode used to send an request from the Server to the Client
@@ -86,20 +92,23 @@ namespace RemoteHealthcare.Server.Client
         //If userid == null, then search for doctor otherwise search for patient
         private ServerClient calculateTarget(string? userId = null)
         {
+            _log.Warning("calculating target:");
             foreach (ServerClient client in Server._connectedClients)
             {
                 if (userId == null && client._isDoctor)
                 {
+                    _log.Warning($"Client: {client._userId}; Is Doctor: {client._isDoctor}");
                     return client;
                 }
 
                 if (userId != null && client._userId.Equals(userId))
                 {
-                    _log.Warning($"Client: {client._userId}; Is Doctor: {Server._doctorData}");
+                    _log.Warning($"Client: {client._userId}; Is Doctor: {client._isDoctor}");
                     return client;
                 }
             }
 
+            _log.Error("No client found");
             return null;
         }
 
@@ -199,7 +208,7 @@ namespace RemoteHealthcare.Server.Client
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
                     packetData.GetData<LoginPacketRequest>().password);
-                    
+
                 _log.Debug($"Patient name: {patient.UserId} Password: {patient.Password}");
             }
             else if (packetData.GetData<LoginPacketRequest>().isDoctor)
@@ -207,7 +216,7 @@ namespace RemoteHealthcare.Server.Client
                 doctor = new Doctor(packetData.GetData<LoginPacketRequest>().username,
                     packetData.GetData<LoginPacketRequest>().password, "Dhr145");
                 Server._doctorData._doctor = new Doctor("Piet", "dhrPiet", "Dhr145");
-                
+
                 _log.Debug($"Doctor name: {doctor.Username} Password: {doctor.Password}");
             }
 
@@ -264,10 +273,9 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-
             _log.Debug("sessionstarthandler");
-            
-            
+
+
             SendData(new DataPacket<SessionStartPacketResponse>
             {
                 OpperationCode = OperationCodes.SESSION_START,

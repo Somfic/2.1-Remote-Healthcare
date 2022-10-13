@@ -13,7 +13,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
     public class Client
     {
         public SocketClient _client { get; set; } = new(true);
-        private List<string> _connected;
+        private List<string> _connected = new();
         private Log _log = new(typeof(Client));
 
         public string password { get; set; }
@@ -95,14 +95,15 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
         private async void SendChatAsync()
         {
+            _log.Debug("requesting clients now");
             await requestClients();
-            
+            _log.Debug("done requesting clients");
+
             /* This is a while loop that will do nothing until connected is filled */
             while (_connected.Count == 0)
             {
-                _log.Debug("Loading...");
             }
-            _log.Information("escaped loading");
+            _log.Debug("requested cliens have been put in a list");
             string savedConnections = " ";
             foreach (string id in _connected)
             {
@@ -224,7 +225,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             _log.Information(obj.GetData<SessionStartPacketResponse>().message);
         }
 
-        //the methode for the send chat request
+        //the methode for printing out the received message
         private void ChatHandler(DataPacket packetData)
         {
             _log.Information(
@@ -253,12 +254,25 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                 _userId = packetData.GetData<LoginPacketResponse>().userId;
                 _log.Information($"Succesfully logged in to the user: {username}; {password}; {_userId}.");
                 loggedIn = true;
+                testChattingVR();
             }
             else
             {
                 _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
                            packetData.GetData<LoginPacketResponse>().message);
             }
+        }
+
+        private Task testChattingVR()
+        {
+            _log.Debug("entereing the chat vr test");
+            // for (int i = 0; i < 6; i++)
+            // {
+                SendChatAsync();
+                // Task.Delay(1000);
+            // }
+
+            return Task.CompletedTask;
         }
     }
 }

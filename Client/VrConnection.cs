@@ -8,7 +8,7 @@ namespace NetworkEngine.Socket
     {
         BikeDataProvider bike;
         HeartDataProvider heart;
-        EngineConnection engine;
+        public EngineConnection engine;
         private int resistance;
 
         public VrConnection(BikeDataProvider bike, HeartDataProvider heart, EngineConnection engine)
@@ -31,10 +31,6 @@ namespace NetworkEngine.Socket
                     bike.GetData().TotalElapsed,
                     heart.GetData().HeartRate.ToString(),
                     resistance.ToString());
-                
-                count++;
-                if (count % 10 == 7)
-                    await engine.SendTextToChatPannel($"Dokter: test bericht weergeven om de 3 seconde : {count/7}");
                 
                 Thread.Sleep(300);
             }

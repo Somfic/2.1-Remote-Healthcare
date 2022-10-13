@@ -10,14 +10,14 @@
         "parent": "guid",
         "components": {
           "transform": {
-            "position": [ -25, 135, 80 ],
+            "position": [ -80, 115, 80 ],
             "scale": 1,
             "rotation": [ -15, 130, 0 ]
           },
           "panel": {
             "size": [ 50, 50 ],
-            "resolution": [ 500, 500 ],
-            "background": [ 0, 0, 0, 0.5 ],
+            "resolution": [ 750, 750 ],
+            "background": [ 0, 0, 0, 0.15 ],
             "castShadow": true
           }
         }
