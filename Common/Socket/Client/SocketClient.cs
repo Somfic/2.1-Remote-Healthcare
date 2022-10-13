@@ -51,11 +51,14 @@ public class SocketClient : ISocket
             {
                 Socket.Close();
                 Socket = new TcpClient();
-                
-                _log.Error(ex, $"Could not connect to {ip}:{port}");
 
                 if (attempts == 5)
+                {
+                    _log.Error(ex, $"Could not connect to {ip}:{port}");
                     throw;
+                }
+
+                _log.Warning(ex, $"Could not connect to {ip}:{port} ... retrying");
             }
             
             await Task.Delay(1000);
