@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using MvvmHelpers;
 using MvvmHelpers.Commands;
 using RemoteHealthcare.GUIs.Doctor.Commands;
 using RemoteHealthcare.GUIs.Doctor.ViewModels;
@@ -8,20 +9,22 @@ namespace RemoteHealthcare.GUIs.Doctor;
 
 public class NavigateCommand : BaseCommand
 {
+    private readonly ObservableObject _viewModel;
     private readonly NavigationStore _navigationStore;
 
-    public NavigateCommand(NavigationStore navigationStore)
+    public NavigateCommand(ObservableObject viewmodel, NavigationStore navigationStore)
     {
+        _viewModel = viewmodel;
         _navigationStore = navigationStore;
     }
 
     public override void Execute(object? parameter)
     {
-        throw new NotImplementedException();
+        ExecuteAsync();
     }
 
-    public override Task ExecuteAsync()
+    public async override Task ExecuteAsync()
     {
-        throw new NotImplementedException();
+        _navigationStore.CurrentViewModel = _viewModel;
     }
 }

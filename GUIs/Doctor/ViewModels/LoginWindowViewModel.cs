@@ -16,15 +16,19 @@ namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 public class LoginWindowViewModel : ObservableObject
 {
     public Client.Client _client;
+    public ICommand LogIn { get; }
+
+    private string _username;
+    private SecureString _password;
 
     public LoginWindowViewModel(NavigationStore navigationStore)
     {
         _client = new Client.Client();
-        LogIn = new LoginCommand(this, navigationStore);
+        LogIn = new LoginCommand(this, 
+            new NavigationService<DoctorViewModel>(navigationStore, 
+            () => new DoctorViewModel(_client, navigationStore)));
+        //LogIn = new LoginCommand(this, navigationStore);
     }
-
-    private string _username;
-    private SecureString _password;
 
     public string Username
     {
@@ -37,52 +41,7 @@ public class LoginWindowViewModel : ObservableObject
         get => _password;
         set => _password = value;
     }
-
-    public ICommand LogIn { get; }
-
-    /// <summary>
-    /// It takes a window object, closes it, and opens a new window
-    /// </summary>
-    /// <param name="window">The window that is currently open.</param>
-    async void LogInDoctor(object window)
-    {
-        //Window windowToClose = window as Window;
-        await _client._client.ConnectAsync("127.0.0.1", 15243);
-
-        if (!_client.loggedIn)
-        {
-            _client.username = Username;
-            _client.password = SecureStringToString(SecurePassword);
-            try
-            {
-                new Thread(async () =>
-                {
-                    await _client.AskForLoginAsync();
-                }).Start();
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine(exception);
-                throw;
-            }
-
-            await Task.Delay(1000);
-            
-            if (_client.loggedIn)
-            {
-                //_client.RequestClients();
-                /*wait _client.RequestPatientDataAsync();
-                DoctorViewModel doctorViewModel = new DoctorViewModel();
-                DoctorView doctorView = new DoctorView
-                {
-                    DataContext = doctorViewModel
-                };*/
-                // windowToClose.Close();
-                // doctorView.Show();
-            }
-        }
-    }
-
+    
     /// <summary>
     /// "Convert a SecureString to a string by copying the SecureString to unmanaged memory, then copying the unmanaged
     /// memory to a managed string, then zeroing out the unmanaged memory."

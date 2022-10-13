@@ -234,8 +234,9 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             {
                 Patient patient = jObject.ToObject<Patient>();
                 _patientList.Add(patient);
+                _log.Debug(patient.ToString());
             }
-            
+
             // _log.Debug(_patientList[0].ToString());
         }
     }

@@ -1,14 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using MvvmHelpers;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.Server.Models;
 
 [Serializable]
-public class Patient
+public class Patient : ObservableObject
 {
     private Log _log = new Log(typeof(Patient));
     public List<SessionData> Sessions { get; set; }
+    
     public string Username { get; set; }
     public string UserId { get; set; }
     public string Password { get; set; }

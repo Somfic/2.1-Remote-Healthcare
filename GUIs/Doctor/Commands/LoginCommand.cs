@@ -9,11 +9,12 @@ public class LoginCommand : BaseCommand
 {
     private readonly NavigationStore _navigationStore;
     private readonly LoginWindowViewModel _loginWindowViewModel;
+    private readonly NavigationService<DoctorViewModel> _navigationService;
 
-    public LoginCommand(LoginWindowViewModel viewModel, NavigationStore navigationStore)
+    public LoginCommand(LoginWindowViewModel viewModel, NavigationService<DoctorViewModel> navigationService)
     {
         _loginWindowViewModel = viewModel;
-        _navigationStore = navigationStore;
+        _navigationService = navigationService;
     }
 
     public override void Execute(object? parameter)
@@ -49,7 +50,11 @@ public class LoginCommand : BaseCommand
             
             if (_loginWindowViewModel._client.loggedIn)
             {
-                _navigationStore.CurrentViewModel = new DoctorViewModel();
+                await _loginWindowViewModel._client.RequestPatientDataAsync();
+                await Task.Delay(1000);
+                
+                _navigationService.Navigate();
+                //_navigationStore.CurrentViewModel = new DoctorViewModel(_navigationStore);
                 //_client.RequestClients();
                 /*wait _client.RequestPatientDataAsync();
                 DoctorViewModel doctorViewModel = new DoctorViewModel();
