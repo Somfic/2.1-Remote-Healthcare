@@ -23,6 +23,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Common\Common.csproj" />
       <ProjectReference Include="..\..\NetworkEngine\NetworkEngine.csproj" />
+      <ProjectReference Include="..\Doctor\Doctor.csproj" />
     </ItemGroup>
 
     <ItemGroup>

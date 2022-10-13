@@ -1,10 +1,8 @@
-<<<<<<< HEAD:GUIs/Patient/ViewModels/SessionViewModel.cs
 ﻿using MvvmHelpers;
 using MvvmHelpers.Commands;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -12,14 +10,10 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using NetworkEngine.Socket;
 using RemoteHealthcare.NetworkEngine;
-=======
-﻿namespace RemoteHealthcare.GUIs.Patient.ViewModels;
->>>>>>> patient_gui:GUIs/Patient/ViewModels/MainViewModel.cs
 
-public class MainViewModel : BaseViewModel
+namespace RemoteHealthcare.GUIs.Patient.ViewModels
 {
-<<<<<<< HEAD:GUIs/Patient/ViewModels/SessionViewModel.cs
-    public class MainViewModel : ObservableObject, INotifyPropertyChanged
+    public class PatientHomepageViewModel : ObservableObject
     {
         private ObservableCollection<string>_messages;
         
@@ -28,22 +22,21 @@ public class MainViewModel : BaseViewModel
         private string _distance= "22km";
         private string _time= "33 min";
         private string _heartrate= "126 bpm";
-        private VrConnection _vr;
+        private VrConnection vr;
         private EngineConnection e;
         
 
             private Client.Client _client;
 
-            public MainViewModel(VrConnection vr)
+            public PatientHomepageViewModel()
             {
-                _vr = vr;
                 _client = new Client.Client(null);
                 _messages = new ObservableCollection<string>();
                 Send = new Command(SendMessage);
                 _messages.Add("hello world");
             }
 
-        public MainViewModel(Client.Client client)
+        public PatientHomepageViewModel(Client.Client client)
         {
             
             _client = client;
@@ -53,32 +46,16 @@ public class MainViewModel : BaseViewModel
 
         }
 
-        public MainViewModel()
-        {
-            
-        }
-        
-
         public string Speed
         {
-            get
-            {
-                return _vr.getBikeData().Speed + "mps";
-            }
-            set
-            {
-                OnPropertyChanged(_vr.getBikeData().Speed+"mps");
-            }
-           
+            get => _speed;
+            set => _speed = value;
         }
-
-
         public string Distance
         {
             get => _distance;
             set => _distance = value;
-        }
-        public string Time
+        }public string Time
         {
             get => _time;
             set => _time = value;
@@ -88,20 +65,30 @@ public class MainViewModel : BaseViewModel
             set => _heartrate = value;
         }
 
-=======
-    private readonly NavigationStore _navigationStore;
->>>>>>> patient_gui:GUIs/Patient/ViewModels/MainViewModel.cs
 
-    public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
+        public ObservableCollection<string> Messages
+        {
+            get => _messages;
+            set => _messages = value;
+        }
 
-    public MainViewModel(NavigationStore navigationStore)
-    {
-        _navigationStore = navigationStore;
-        _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
+        
+        public string Message
+        {
+            get => _message;
+            set => _message = value;
+        }
+
+        public ICommand Send { get; }
+        void SendMessage()
+        {
+            _messages.Add("You: "+_message);
+        }
+
     }
 
-    private void OnCurrentViewModelChanged()
-    {
-        OnPropertyChanged(nameof(CurrentViewModel));
-    }
+
+   
+    
+    
 }
