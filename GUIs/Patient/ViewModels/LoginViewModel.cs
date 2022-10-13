@@ -4,6 +4,8 @@ using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
+using MvvmHelpers;
 using MvvmHelpers.Commands;
 using System.Windows.Input;
 using NetworkEngine.Socket;
@@ -13,25 +15,25 @@ using RemoteHealthcare.NetworkEngine;
 
 namespace RemoteHealthcare.GUIs.Patient.ViewModels
 {
-    public class LoginViewModel : BaseViewModel
+    public class UserViewModel : ObservableObject
     {
+        
         private string _username;
         private SecureString _securePassword;
+        private string _bikeID;
+        private string _Vrid;
         private Client.Client _client;
         private VrConnection vrConnection;
-        public ICommand LogIn { get; }
-        
-        private readonly NavigationStore _navigationStore;
 
-        public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
-
-        public LoginViewModel(NavigationStore navigationStore)
+        public UserViewModel()
         {
             _navigationStore = navigationStore;
             _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
             
             LogIn = new Command(LogInPatient);
+
             _client = new Client.Client(null);
+
         }
 
         public string Username
@@ -45,10 +47,24 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             get => _securePassword;
             set => _securePassword = value;
         }
-        
-        
-        async void LogInPatient(object window)
+
+        public string BikeId
         {
+            get => _bikeID;
+            set => _bikeID = value;
+        }
+
+        public string VrId
+        {
+            get => _Vrid;
+            set => _Vrid = value;
+        }
+        
+        public ICommand LogIn { get; }
+        
+      async void LogInPatient(object window)
+        { 
+            
             await _client._client.ConnectAsync("127.0.0.1", 15243);
             Console.WriteLine("Got window, logging in patient");
             _client._username = Username;
@@ -56,16 +72,19 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             _client._password = SecureStringToString(SecurePassword);
        
             Console.WriteLine(_client._password);
-            try
-            {
-                new Thread(async () =>
+          
+            
+                try
                 {
-                    await _client.PatientLogin();
-                }).Start();
-            } catch (Exception exception) {
-                Console.WriteLine(exception);
-                throw;
-            }
+                    new Thread(async () => { await _client.PatientLogin(); }).Start();
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                    throw;
+                }
+            
+            
 
             _navigationStore.CurrentViewModel = new PatientHomepageViewModel(_navigationStore);
 
@@ -74,27 +93,23 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             {
                 var engine = new EngineConnection();
                 await engine.ConnectAsync();
+                    Console.WriteLine("Enter Bike ID:");
+                    var bike = await DataProvider.GetBike(_bikeID);
+                    var heart = await DataProvider.GetHeart();
+                    vrConnection = new VrConnection(bike, heart);
+                    // vrConnection.Start();
 
-                Console.WriteLine("Enter Bike ID:");
-                var bike = await DataProvider.GetBike(Console.ReadLine());
-                var heart = await DataProvider.GetHeart();
-                vrConnection = new VrConnection(bike, heart, engine);
-                vrConnection.Start();
+                    // _client = new Client.Client(vrConnection);
 
-                await Task.Delay(-1);
-            }
-            catch (Exception ex)
-            {
-                var log = new Log(typeof(LoginViewModel));
-                log.Critical(ex, "Program stopped because of exception");
-            }
+                    await Task.Delay(-1);
+                }
+                catch (Exception ex)
+                {
+                    var log = new Log(typeof(UserViewModel));
+                    log.Critical(ex, "Program stopped because of exception");
+                }
+            
         }
-        
-        private void OnCurrentViewModelChanged()
-        {
-            OnPropertyChanged(nameof(_navigationStore.CurrentViewModel));
-        }
-      
         public string SecureStringToString(SecureString value)
         {
             IntPtr valuePtr = IntPtr.Zero;
@@ -105,5 +120,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 Marshal.ZeroFreeGlobalAllocUnicode(valuePtr);
             }
         }
+    
     }
+    
 }

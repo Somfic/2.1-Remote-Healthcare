@@ -26,7 +26,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
 
         public  Client(VrConnection v)
         {
-            _loggedIn = true;
+           
             _functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 

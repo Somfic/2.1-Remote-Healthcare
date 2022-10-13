@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using RemoteHealthcare.Client.Bluetooth;
 using RemoteHealthcare.Client.Data;
 using RemoteHealthcare.Client.Data.Providers.Bike;
+using RemoteHealthcare.GUIs.Patient.Bluetooth;
 
 namespace RemoteHealthcare.GUIs.Patient.Data.Providers.Bike;
 

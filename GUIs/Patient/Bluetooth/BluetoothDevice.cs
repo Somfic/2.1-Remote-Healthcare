@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Avans.TI.BLE;
 using RemoteHealthcare.Common.Logger;
 
-namespace RemoteHealthcare.Client.Bluetooth;
+namespace RemoteHealthcare.GUIs.Patient.Bluetooth;
 
 public class BluetoothDevice
 {
@@ -79,7 +79,7 @@ public class BluetoothDevice
             _bluetoothConnection.SubscriptionValueChanged += (sender, e) =>
             {
                 Console.WriteLine(BitConverter.ToString(e.Data) );
-
+                
                 
                 if (e.Data[_idByte] == _id)
                 {
