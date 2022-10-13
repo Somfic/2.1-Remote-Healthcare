@@ -9,17 +9,18 @@ using MvvmHelpers;
 using MvvmHelpers.Commands;
 using Newtonsoft.Json;
 using RemoteHealthcare.Common;
+using RemoteHealthcare.GUIs.Doctor.Commands;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class LoginWindowViewModel : ObservableObject
 {
-    private Client.Client _client;
+    public Client.Client _client;
 
-    public LoginWindowViewModel()
+    public LoginWindowViewModel(NavigationStore navigationStore)
     {
         _client = new Client.Client();
-        LogIn = new Command(LogInDoctor);
+        LogIn = new LoginCommand(this, navigationStore);
     }
 
     private string _username;
@@ -33,7 +34,7 @@ public class LoginWindowViewModel : ObservableObject
 
     public SecureString SecurePassword
     {
-        private get => _password;
+        get => _password;
         set => _password = value;
     }
 
@@ -45,7 +46,7 @@ public class LoginWindowViewModel : ObservableObject
     /// <param name="window">The window that is currently open.</param>
     async void LogInDoctor(object window)
     {
-        Window windowToClose = window as Window;
+        //Window windowToClose = window as Window;
         await _client._client.ConnectAsync("127.0.0.1", 15243);
 
         if (!_client.loggedIn)
@@ -70,14 +71,14 @@ public class LoginWindowViewModel : ObservableObject
             if (_client.loggedIn)
             {
                 //_client.RequestClients();
-                await _client.RequestPatientDataAsync();
+                /*wait _client.RequestPatientDataAsync();
                 DoctorViewModel doctorViewModel = new DoctorViewModel();
                 DoctorView doctorView = new DoctorView
                 {
                     DataContext = doctorViewModel
-                };
-                windowToClose.Close();
-                doctorView.Show();
+                };*/
+                // windowToClose.Close();
+                // doctorView.Show();
             }
         }
     }
