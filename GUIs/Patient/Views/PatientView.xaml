@@ -8,10 +8,9 @@
         Height="450" Width="800">
  
     <Grid>
-        
         <Label Content="Label" HorizontalAlignment="Left" Margin="595,172,0,0" VerticalAlignment="Top" Height="45" Width="183" Background="Red"/>
         <ListView ItemsSource="{Binding Path = Messages}" Margin="595,217,22,68" />
-        <!-- <Image HorizontalAlignment="Left" Height="82" Margin="122,72,0,0" VerticalAlignment="Top" Width="379" Source="Images/logos.JPG" Stretch="Fill"/> -->
+        <Image HorizontalAlignment="Left" Height="82" Margin="122,72,0,0" VerticalAlignment="Top" Width="379" Source="Images/logos.JPG" Stretch="Fill"/> 
 
         <TextBox HorizontalAlignment="Left" Margin="595,371,0,0" TextWrapping="Wrap" Text="{Binding Message}" VerticalAlignment="Top" Width="183"/>
         <Button Content="Button" Command="{Binding Send}" HorizontalAlignment="Left" Margin="738,404,0,0" VerticalAlignment="Top"/>
@@ -20,18 +19,16 @@
         <Label Content="Afstand" HorizontalAlignment="Left" Margin="334,46,0,0" VerticalAlignment="Top"/>
         <Label Content="Tijd" HorizontalAlignment="Left" Margin="440,46,0,0" VerticalAlignment="Top"/>
 
-        <!--<Rectangle Height="82" Margin="-175,72,0,0" VerticalAlignment="Top" Width="379" >
+        <Rectangle Height="82" Margin="-175,72,0,0" VerticalAlignment="Top" Width="379" >
             <Rectangle.Fill>
-                <ImageBrush ImageSource="Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName) = /images/logos.JPG"></ImageBrush>
+                <ImageBrush ImageSource="C:\Users\HP\Desktop\rhc\2.1-Remote-Healthcare\GUIs\Patient\images\logos.JPG"></ImageBrush>
             </Rectangle.Fill>
-        </Rectangle>-->
+        </Rectangle>
         
         <Label Content="{Binding Speed}" HorizontalAlignment="Left" Margin="148,154,0,0" VerticalAlignment="Top"/>
         <Label Content="{Binding Heartrate}" HorizontalAlignment="Left" Margin="243,154,0,0" VerticalAlignment="Top"/>
         <Label Content="{Binding Distance}" HorizontalAlignment="Left" Margin="340,154,0,0" VerticalAlignment="Top"/>
         <Label Content="{Binding Time}" HorizontalAlignment="Left" Margin="436,154,0,0" VerticalAlignment="Top"/>
         <Button Content="Button" HorizontalAlignment="Left" Height="50" Margin="122,262,0,0" VerticalAlignment="Top" Width="228"/>
-
     </Grid>
-
 </UserControl>

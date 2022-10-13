@@ -41,10 +41,6 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                 HandleData(packet);
             };
 
-           
-
-           
-
             
         }
 
