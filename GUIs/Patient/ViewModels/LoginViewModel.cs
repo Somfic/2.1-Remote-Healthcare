@@ -4,9 +4,9 @@ using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
-using MvvmHelpers;
 using MvvmHelpers.Commands;
+using System.Windows.Input;
+
 using NetworkEngine.Socket;
 using RemoteHealthcare.Client.Data.Providers;
 using RemoteHealthcare.Common.Logger;
@@ -14,20 +14,24 @@ using RemoteHealthcare.NetworkEngine;
 
 namespace RemoteHealthcare.GUIs.Patient.ViewModels
 {
-    public class UserViewModel : ObservableObject
+    public class LoginViewModel : BaseViewModel
     {
-        
         private string _username;
         private SecureString _securePassword;
         private Client.Client _client;
         private VrConnection vrConnection;
+        public ICommand LogIn { get; }
+        
+        private readonly NavigationStore _navigationStore;
 
-        public UserViewModel()
+        public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
+
+        public LoginViewModel(NavigationStore navigationStore)
         {
+            _navigationStore = navigationStore;
+            _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
             LogIn = new Command(LogInPatient);
-
             _client = new Client.Client(null);
-
         }
 
         public string Username
@@ -42,11 +46,9 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             set => _securePassword = value;
         }
         
-        public ICommand LogIn { get; }
         
-      async void LogInPatient(object window)
-        { 
-            
+        async void LogInPatient(object window)
+        {
             await _client._client.ConnectAsync("127.0.0.1", 15243);
             Console.WriteLine("Got window, logging in patient");
             _client._username = Username;
@@ -60,18 +62,12 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 {
                     await _client.PatientLogin();
                 }).Start();
-            }
-            catch (Exception exception)
-            {
+            } catch (Exception exception) {
                 Console.WriteLine(exception);
                 throw;
             }
 
-            MainViewModel m = new MainViewModel(_client);
-            PatientView patientView= new PatientView();
-            patientView.DataContext = m;
-            // windowToClose.Close();
-            patientView.Show();
+
             try
             {
                 var engine = new EngineConnection();
@@ -83,18 +79,20 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 vrConnection = new VrConnection(bike, heart, engine);
                 vrConnection.Start();
 
-
-                // _client = new Client.Client(vrConnection);
-                
                 await Task.Delay(-1);
             }
             catch (Exception ex)
             {
-                var log = new Log(typeof(UserViewModel));
+                var log = new Log(typeof(LoginViewModel));
                 log.Critical(ex, "Program stopped because of exception");
             }
-           
         }
+        
+        private void OnCurrentViewModelChanged()
+        {
+            OnPropertyChanged(nameof(_navigationStore.CurrentViewModel));
+        }
+      
         public string SecureStringToString(SecureString value)
         {
             IntPtr valuePtr = IntPtr.Zero;
@@ -105,7 +103,5 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 Marshal.ZeroFreeGlobalAllocUnicode(valuePtr);
             }
         }
-    
     }
-    
 }
