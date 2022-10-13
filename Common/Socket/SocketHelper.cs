@@ -7,18 +7,12 @@ namespace RemoteHealthcare.Common.Socket;
 
 public static class SocketHelper
 {
-    private static readonly RSACryptoServiceProvider Rsa = new(2048);
-    private static readonly Aes Aes = Aes.Create();
-
-    private static readonly Log Log = new(typeof(SocketHelper));
+    private static readonly byte[] Key = { 0x20, 0x0A, 0xB0, 0x03, 0x01, 0xC2, 0xC2, 0x12, 0x05, 0xBC, 0xCC, 0xA9, 0x9F, 0xFF, 0xCD, 0xD2};
+    private static readonly byte[] Iv = { 0x33, 0x02, 0xA0, 0xAF, 0xF3, 0x2C, 0xDD, 0xAA, 0xB8, 0xF9, 0xFF, 0xC0, 0xFD, 0x91, 0x11, 0x69 };
 
     public static async Task SendMessage(Stream stream, string data, bool useEncryption = true)
     {
-        Log.Debug($"Sending: '{data}' ({(useEncryption ? "encrypted" : "unencrypted")})");
-        
         var bytes = Encode(data, useEncryption);
-        
-        Log.Debug($"Sending {string.Join(" ", bytes)} ({bytes.Length})");
         
         await stream.WriteAsync(bytes, 0, bytes.Length);
     }
@@ -34,8 +28,6 @@ public static class SocketHelper
             dataRead += read;
         }
         var dataLength = BitConverter.ToInt32(length, 0);
-
-        Log.Debug("Incoming message length: " + dataLength);
         
         dataRead = 0;
         var data = new byte[dataLength];
@@ -49,8 +41,6 @@ public static class SocketHelper
         var bytes = new List<byte>();
         bytes.AddRange(length);
         bytes.AddRange(data);
-        
-        Log.Debug($"Receiving {string.Join(" ", bytes)} ({bytes.Count})");
 
         return Decode(bytes.ToArray(), useEncryption);
     }
@@ -103,33 +93,49 @@ public static class SocketHelper
 
     public static byte[] Encrypt(byte[] data)
     {
-        Aes.Padding = PaddingMode.PKCS7;
-        
-        var encryptor = Aes.CreateEncryptor(Aes.Key, Aes.IV);
-        var encrypted = encryptor.TransformFinalBlock(data, 0, data.Length);
-        
-        using MemoryStream ms = new();
-        using CryptoStream cs = new(ms, encryptor, CryptoStreamMode.Write);
-        
-        cs.Write(data, 0, data.Length);
-        cs.FlushFinalBlock();
+        using (var aes = Aes.Create())
+        {
+            aes.KeySize = 128;
+            aes.BlockSize = 128;
+            aes.Padding = PaddingMode.PKCS7;
 
-        return ms.ToArray();
+            aes.Key = Key;
+            aes.IV = Iv;
+
+            using (var encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
+            {
+                return PerformCryptography(data, encryptor);
+            }
+        }
     }
 
     public static byte[] Decrypt(byte[] data)
     {
-        Aes.Padding = PaddingMode.PKCS7;
-        
-        var decryptor = Aes.CreateDecryptor(Aes.Key, Aes.IV);
-        var decrypted = decryptor.TransformFinalBlock(data, 0, data.Length);
-        
-        using MemoryStream ms = new();
-        using CryptoStream cs = new(ms, decryptor, CryptoStreamMode.Write);
-        
-        cs.Write(data, 0, data.Length);
-        cs.FlushFinalBlock();
-        
-        return decrypted;
+        using (var aes = Aes.Create())
+        {
+            aes.KeySize = 128;
+            aes.BlockSize = 128;
+            aes.Padding = PaddingMode.PKCS7;
+
+            aes.Key = Key;
+            aes.IV = Iv;
+
+            using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
+            {
+                return PerformCryptography(data, decryptor);
+            }
+        }
+    }
+    
+    private static byte[] PerformCryptography(byte[] data, ICryptoTransform cryptoTransform)
+    {
+        using (var ms = new MemoryStream())
+        using (var cryptoStream = new CryptoStream(ms, cryptoTransform, CryptoStreamMode.Write))
+        {
+            cryptoStream.Write(data, 0, data.Length);
+            cryptoStream.FlushFinalBlock();
+
+            return ms.ToArray();
+        }
     }
 }
