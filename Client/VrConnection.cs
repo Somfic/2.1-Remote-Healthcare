@@ -20,7 +20,6 @@ namespace NetworkEngine.Socket
 
         public async void Start()
         {
-            var count = 0;
             while (true)
             {
                 await bike.ProcessRawData();
@@ -31,7 +30,6 @@ namespace NetworkEngine.Socket
                     bike.GetData().TotalElapsed,
                     heart.GetData().HeartRate.ToString(),
                     resistance.ToString());
-                
                 Thread.Sleep(300);
             }
         }

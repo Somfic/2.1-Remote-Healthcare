@@ -92,9 +92,10 @@ namespace RemoteHealthcare.Server.Client
         //If userid == null, then search for doctor otherwise search for patient
         private ServerClient calculateTarget(string? userId = null)
         {
-            _log.Warning("calculating target:");
+            _log.Warning($"calculating target from id: {userId}");
             foreach (ServerClient client in Server._connectedClients)
             {
+                _log.Debug($"ClientId: {client._userId}, is Doctor: {client._isDoctor}");
                 if (userId == null && client._isDoctor)
                 {
                     _log.Warning($"Client: {client._userId}; Is Doctor: {client._isDoctor}");
@@ -108,19 +109,22 @@ namespace RemoteHealthcare.Server.Client
                 }
             }
 
-            _log.Error("No client found");
+            _log.Error($"No client found for the id: {userId}");
             return null;
         }
 
         private void RequestConnectionsFeature(DataPacket obj)
         {
-            List<ServerClient> connections = new();
+            List<ServerClient> connections = Server._connectedClients;
+            _log.Debug(connections.Count.ToString());
+            connections.RemoveAll(client => _isDoctor);
+            _log.Debug(connections.Count.ToString());
 
-            foreach (ServerClient sc in Server._connectedClients)
-            {
-                if (!sc._isDoctor)
-                    connections.Add(sc);
-            }
+            // foreach (ServerClient sc in Server._connectedClients)
+            // {
+            //     if (!sc._isDoctor)
+            //         connections.Add(sc);
+            // }
 
             string clients = "";
             _log.Debug(
@@ -268,6 +272,8 @@ namespace RemoteHealthcare.Server.Client
                     }
                 });
             }
+
+            _log.Warning(_isDoctor.ToString());
         }
 
         //the methode for the session start request

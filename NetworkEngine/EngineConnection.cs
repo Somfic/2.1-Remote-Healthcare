@@ -45,7 +45,7 @@ public class EngineConnection
     private int _firstz;
     private bool _first;
 
-    private List<string> _messages = new(new[] { "", "", "" });
+    private List<string> _messages = new();
 
     public EngineConnection()
     {
@@ -673,7 +673,7 @@ public class EngineConnection
 
     public async Task SendTextToChatPannel(string message)
     {
-        _messages.Add(message);
+        _messages.Insert(0, message);
         string displayMessage = displayMessages();
         await SetBackgroundColor(1, 1, 1, 0.15f, _chatPannelId);
         await ClearPannel(_chatPannelId);
@@ -685,10 +685,10 @@ public class EngineConnection
     {
         string result = "";
         
-        for (int i = 1; i <= 5; i++)
+        for (int i = 0; i < 5; i++)
         {
-            int index = _messages.Count - i;
-            if (index <= -1)
+            int index = 4 - i;
+            if (index >= _messages.Count)
             {
                 result += "\\n";
                 continue;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Navigation;
 using Newtonsoft.Json;
 using RemoteHealthcare.Common;
@@ -263,16 +264,21 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             }
         }
 
-        private Task testChattingVR()
+        private void testChattingVR()
         {
-            _log.Debug("entereing the chat vr test");
-            // for (int i = 0; i < 6; i++)
-            // {
-                SendChatAsync();
-                // Task.Delay(1000);
-            // }
+            var req = new DataPacket<ChatPacketRequest>
+            {
+                OpperationCode = OperationCodes.CHAT,
+                data = new ChatPacketRequest()
+                {
+                    senderId = _userId,
+                    receiverId = "06111",
+                    message = "testbericht"
+                }
+            };
 
-            return Task.CompletedTask;
+            _log.Debug($"sending {req.ToJson()} now.");
+            _client.SendAsync(req);
         }
     }
 }

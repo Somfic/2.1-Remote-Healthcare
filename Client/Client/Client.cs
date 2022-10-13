@@ -76,6 +76,7 @@ namespace RemoteHealthcare.Client.Client
                         };
 
                         await _client.SendAsync(req);
+                        await _vrConnection.engine.SendTextToChatPannel($"U: {ChatMessage}");
                     }
                     else if (command.ToLower().Equals("noodstop"))
                     {
