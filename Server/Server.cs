@@ -35,7 +35,7 @@ public class Server
 
     private async Task OnClientDisconnectedAsync(SocketClient socketClient)
     {
-        _connectedClients.Remove(_connectedClients.Find(x => x.Client.Id == socketClient.Id));
+        _connectedClients.Remove(_connectedClients.Find(x => x._client.Id == socketClient.Id));
     }
 
     private async Task OnClientConnectedAsync(SocketClient client)

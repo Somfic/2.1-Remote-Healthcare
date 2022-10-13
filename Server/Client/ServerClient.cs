@@ -16,7 +16,7 @@ namespace RemoteHealthcare.Server.Client
     {
         private readonly Log _log = new(typeof(ServerClient));
 
-        private SocketClient _client;
+        public SocketClient _client;
         public string _userId { get; set; }
         private bool _isDoctor;
         
@@ -26,8 +26,8 @@ namespace RemoteHealthcare.Server.Client
         //Set-ups the client constructor
         public ServerClient(SocketClient client)
         {
-            Client = client;
-            Client.OnMessage += (sender, data) =>
+            _client = client;
+            _client.OnMessage += (sender, data) =>
             {
                 var dataPacket = JsonConvert.DeserializeObject<DataPacket>(data);
 
@@ -72,9 +72,9 @@ namespace RemoteHealthcare.Server.Client
         {
             _log.Debug($"sending: {packet.ToJson()}");
             if (packet.ToJson().Contains("chat"))
-                calculateTarget(targetId).Client.SendAsync(packet).GetAwaiter().GetResult();
+                calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
             else
-                Client.SendAsync(packet).GetAwaiter().GetResult();
+                _client.SendAsync(packet).GetAwaiter().GetResult();
         }
 
         //This methode used to send an request from the Server to the Client
@@ -85,7 +85,7 @@ namespace RemoteHealthcare.Server.Client
             if (packet.ToJson().Contains("chat"))
             {
                 foreach (string targetId in targetIds)
-                    calculateTarget(targetId).Client.SendAsync(packet).GetAwaiter().GetResult();
+                    calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
             }
         }
 
@@ -206,7 +206,7 @@ namespace RemoteHealthcare.Server.Client
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
-                    packetData.GetData<LoginPacketRequest>().password);
+                    packetData.GetData<LoginPacketRequest>().password, "1234");
                     
                 _log.Debug($"Patient name: {patient.UserId} Password: {patient.Password}");
             }
@@ -325,7 +325,7 @@ namespace RemoteHealthcare.Server.Client
         {
             Console.WriteLine("in de server-client methode disconnectHandler");
             Server.Disconnect(this);
-            Client.DisconnectAsync();
+            _client.DisconnectAsync();
 
             Server.printUsers();
 
@@ -344,8 +344,8 @@ namespace RemoteHealthcare.Server.Client
         public override string ToString()
         {
             return $"UserId: {_userId}, Is Doctor: {_isDoctor}, " +
-                   $"IP Adress: {((IPEndPoint)Client.Socket.Client.RemoteEndPoint).Address}, " +
-                   $"Port: {((IPEndPoint)Client.Socket.Client.RemoteEndPoint).Port}";
+                   $"IP Adress: {((IPEndPoint)_client.Socket.Client.RemoteEndPoint).Address}, " +
+                   $"Port: {((IPEndPoint)_client.Socket.Client.RemoteEndPoint).Port}";
         }
 
         /// <summary>

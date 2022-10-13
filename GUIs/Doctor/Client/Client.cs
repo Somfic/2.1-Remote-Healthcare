@@ -15,8 +15,11 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
     public class Client
     {
         public SocketClient _client { get; set; } = new(true);
+        
         private List<string> _connected;
+        
         public List<Patient> _patientList;
+        
         private Log _log = new(typeof(Client));
 
         public string password { get; set; }
