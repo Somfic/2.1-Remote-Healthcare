@@ -3,6 +3,7 @@ using MvvmHelpers.Commands;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -13,7 +14,7 @@ using RemoteHealthcare.NetworkEngine;
 
 namespace RemoteHealthcare.GUIs.Patient.ViewModels
 {
-    public class MainViewModel : ObservableObject
+    public class MainViewModel : ObservableObject, INotifyPropertyChanged
     {
         private ObservableCollection<string>_messages;
         
@@ -22,14 +23,15 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private string _distance= "22km";
         private string _time= "33 min";
         private string _heartrate= "126 bpm";
-        private VrConnection vr;
+        private VrConnection _vr;
         private EngineConnection e;
         
 
             private Client.Client _client;
 
-            public MainViewModel()
+            public MainViewModel(VrConnection vr)
             {
+                _vr = vr;
                 _client = new Client.Client(null);
                 _messages = new ObservableCollection<string>();
                 Send = new Command(SendMessage);
@@ -46,16 +48,32 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
         }
 
+        public MainViewModel()
+        {
+            
+        }
+        
+
         public string Speed
         {
-            get => _speed;
-            set => _speed = value;
+            get
+            {
+                return _vr.getBikeData().Speed + "mps";
+            }
+            set
+            {
+                OnPropertyChanged(_vr.getBikeData().Speed+"mps");
+            }
+           
         }
+
+
         public string Distance
         {
             get => _distance;
             set => _distance = value;
-        }public string Time
+        }
+        public string Time
         {
             get => _time;
             set => _time = value;

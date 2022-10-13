@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using RemoteHealthcare.Client.Bluetooth;
+using RemoteHealthcare.GUIs.Patient.Bluetooth;
 
 namespace RemoteHealthcare.Client.Data.Providers.Heart;
 

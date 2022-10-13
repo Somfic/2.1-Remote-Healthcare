@@ -36,9 +36,9 @@
                 <Label Content="Wachtwoord" HorizontalAlignment="Center"></Label>
                 <PasswordBox Name="PasswordBox" Margin="10,0,10,0" PasswordChanged="PasswordBox_OnPasswordChanged"></PasswordBox>
                 <Label Content="Fiets id" HorizontalAlignment="Center"></Label>
-                <TextBox Name="FietsIdBox" Margin="10,0,10,0"></TextBox>
+                <TextBox Name="FietsIdBox" Margin="10,0,10,0" Text="{Binding BikeId}"></TextBox>
                 <Label Content="VR id" HorizontalAlignment="Center"></Label>
-                <TextBox Name="VrIdBox" Margin="10,0,10,0"></TextBox>
+                <TextBox Name="VrIdBox" Margin="10,0,10,0" Text="{Binding VrId}"></TextBox>
                 <Button Margin="10,20,10,30" Content="Log in!" Command="{Binding Path=LogIn}" CommandParameter="{Binding ElementName=Window}"></Button>
             </StackPanel>
         </UserControl>

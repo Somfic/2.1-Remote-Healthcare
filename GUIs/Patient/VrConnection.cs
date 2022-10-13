@@ -15,7 +15,7 @@ namespace NetworkEngine.Socket
         HeartDataProvider heart;
         EngineConnection engine;
 
-        public VrConnection(BikeDataProvider bike, HeartDataProvider heart, EngineConnection engine)
+        public VrConnection(BikeDataProvider bike, HeartDataProvider heart)
         {
             this.bike = bike;
             this.heart = heart;

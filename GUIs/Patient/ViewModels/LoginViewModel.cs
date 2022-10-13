@@ -19,6 +19,8 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         
         private string _username;
         private SecureString _securePassword;
+        private string _bikeID;
+        private string _Vrid;
         private Client.Client _client;
         private VrConnection vrConnection;
 
@@ -41,6 +43,18 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             get => _securePassword;
             set => _securePassword = value;
         }
+
+        public string BikeId
+        {
+            get => _bikeID;
+            set => _bikeID = value;
+        }
+
+        public string VrId
+        {
+            get => _Vrid;
+            set => _Vrid = value;
+        }
         
         public ICommand LogIn { get; }
         
@@ -54,46 +68,47 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             _client._password = SecureStringToString(SecurePassword);
        
             Console.WriteLine(_client._password);
-            try
-            {
-                new Thread(async () =>
+          
+            
+                try
                 {
-                    await _client.PatientLogin();
-                }).Start();
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine(exception);
-                throw;
-            }
+                    new Thread(async () => { await _client.PatientLogin(); }).Start();
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                    throw;
+                }
+            
+            
 
-            MainViewModel m = new MainViewModel(_client);
-            PatientView patientView= new PatientView();
-            patientView.DataContext = m;
-            // windowToClose.Close();
-            patientView.Show();
-            try
-            {
-                var engine = new EngineConnection();
-                await engine.ConnectAsync();
+               
+                try
+                {
+                    // var engine = new EngineConnection();
+                    // await engine.ConnectAsync();
 
-                Console.WriteLine("Enter Bike ID:");
-                var bike = await DataProvider.GetBike(Console.ReadLine());
-                var heart = await DataProvider.GetHeart();
-                vrConnection = new VrConnection(bike, heart, engine);
-                vrConnection.Start();
+                    Console.WriteLine("Enter Bike ID:");
+                    var bike = await DataProvider.GetBike(_bikeID);
+                    var heart = await DataProvider.GetHeart();
+                    vrConnection = new VrConnection(bike, heart);
+                    // vrConnection.Start();
+                    MainViewModel m = new MainViewModel(vrConnection);
+                    PatientView patientView = new PatientView();
+                    patientView.DataContext = m;
+                    // windowToClose.Close();
+                    patientView.Show();
 
+                    // _client = new Client.Client(vrConnection);
 
-                // _client = new Client.Client(vrConnection);
-                
-                await Task.Delay(-1);
-            }
-            catch (Exception ex)
-            {
-                var log = new Log(typeof(UserViewModel));
-                log.Critical(ex, "Program stopped because of exception");
-            }
-           
+                    await Task.Delay(-1);
+                }
+                catch (Exception ex)
+                {
+                    var log = new Log(typeof(UserViewModel));
+                    log.Critical(ex, "Program stopped because of exception");
+                }
+            
         }
         public string SecureStringToString(SecureString value)
         {
