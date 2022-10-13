@@ -30,10 +30,12 @@ public class DoctorViewModel : BaseViewModel
 
     public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
     
-    public DoctorViewModel(NavigationStore navigationStore)
+    public DoctorViewModel(NavigationStore navigationStore, Client.Client client)
     {
         this._currentUser = new UserModel();
         SessionStartCommand = new Command(SessieStart);
+
+        _doctorClient = client;
         
         _navigationStore = navigationStore;
         _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
@@ -52,9 +54,12 @@ public class DoctorViewModel : BaseViewModel
         },sessie_callback );
     }
 
+
     private void sessie_callback(DataPacket obj)
     {
         Console.WriteLine("hoii sanhdklsadgkfjmdsakjfghk");
+        Console.WriteLine(obj.GetData<SessionStartPacketResponse>().message);
+        Console.WriteLine(obj.GetData<SessionStartPacketResponse>().statusCode);
     }
 
     public string DoctorName

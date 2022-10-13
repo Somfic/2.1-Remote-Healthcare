@@ -22,7 +22,7 @@ public class LoginWindowViewModel : BaseViewModel
         _navigationStore = navigationStore;
         _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
 
-        _client = new Client.Client();
+        _client = new();
         LogIn = new Command(LogInDoctor);
     }
 
@@ -67,7 +67,7 @@ public class LoginWindowViewModel : BaseViewModel
 
             if (_client.loggedIn)
             {
-                _navigationStore.CurrentViewModel = new DoctorViewModel(_navigationStore);
+                _navigationStore.CurrentViewModel = new DoctorViewModel(_navigationStore, _client);
                 
 
                 // _client.RequestClients();
