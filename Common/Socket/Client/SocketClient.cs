@@ -6,11 +6,13 @@ using RemoteHealthcare.Common.Socket.Server;
 
 namespace RemoteHealthcare.Common.Socket.Client;
 
-
 public class SocketClient : ISocket
 {
     private readonly bool _useEncryption;
     public TcpClient Socket { get; private set; } = new();
+    
+    public Guid Id { get; } = Guid.NewGuid();
+    
     private readonly Log _log = new(typeof(SocketClient));
 
     public SocketClient(bool useEncryption)
@@ -52,7 +54,15 @@ public class SocketClient : ISocket
     
     public Task SendAsync(string text)
     {
-        return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);
+        try
+        {
+            return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Could not send message: '{text}'");
+            return Task.CompletedTask;
+        }
     }
 
   
@@ -62,30 +72,42 @@ public class SocketClient : ISocket
         {
             while (Socket.Connected)
             {
+                var text = string.Empty;
+                
                 try
                 {
-                    var text = await SocketHelper.ReadMessage(Socket.GetStream(), _useEncryption);
-                    OnMessage?.Invoke(this, text);
+                    text = await SocketHelper.ReadMessage(Socket.GetStream(), _useEncryption);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
-                    _log.Debug("A client disconnected");
-                    await DisconnectAsync();
+                    _log.Error(ex, "Error while trying to read message from socket");
+                }
+                
+                try
+                {
+                    if(!string.IsNullOrWhiteSpace(text))
+                        OnMessage?.Invoke(this, text);
+                }
+                catch (Exception ex)
+                {
+                    _log.Error(ex, $"Error while handling message: '{text}'");
                 }
             }
 
-            await DisconnectAsync();
-            _log.Debug("Stopped client");
+            _log.Debug($"Client disconnected");
+            OnDisconnect?.Invoke(this, EventArgs.Empty);
         });
     }
     
     public event EventHandler<string>? OnMessage;
     
+    public event EventHandler? OnDisconnect;
+    
     public Task DisconnectAsync()
     {
-        SocketServer._clients.Remove(this);
+        SocketServer._clients.Remove(SocketServer.Localclient); 
         Socket.Dispose();
+        
         return Task.CompletedTask;
     }
 

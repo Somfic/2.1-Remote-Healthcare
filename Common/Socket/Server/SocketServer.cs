@@ -45,6 +45,8 @@ public class SocketServer : ISocket
         }
     }
 
+    public static SocketClient Localclient;
+    
     private async Task AcceptConnection()
     {
         while (_shouldRun)
@@ -57,9 +59,10 @@ public class SocketServer : ISocket
                 
                 _log.Debug($"Socket client connected");
                 
-                var client = SocketClient.CreateFromSocket(socket, _useEncryption);
-
+                 var client = SocketClient.CreateFromSocket(socket, _useEncryption);
+                 Localclient = client;
                 client.OnMessage += (sender, message) => OnMessage?.Invoke(this, (client, message));
+                client.OnDisconnect += (sender, args) => OnClientDisconnected?.Invoke(this, client);
                 _clients.Add(client);
 
                 Task.Run(() => { OnClientConnected?.Invoke(this, client); });
@@ -74,6 +77,8 @@ public class SocketServer : ISocket
     }
 
     public event EventHandler<SocketClient>? OnClientConnected;
+    
+    public event EventHandler<SocketClient>? OnClientDisconnected;
 
     public event EventHandler<(SocketClient client, string message)>? OnMessage; 
 

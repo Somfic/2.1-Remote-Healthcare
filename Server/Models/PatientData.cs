@@ -16,6 +16,17 @@ public class PatientData
             new("Co Nelen", "1234", "3245")
         };
     }
+    
+    public static List<Patient> readUsersFromJson()
+    {
+        string path = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "AllUsers.json");
+        
+        string returnAllUsersFromText = File.ReadAllText(path);
+        
+        List<Patient> data = JsonConvert.DeserializeObject<List<Patient>>(returnAllUsersFromText);
+        
+        return data;
+    }
 
     /// <summary>
     /// This function checks if the username, password and userid of the patient object passed in as a parameter matches the
@@ -27,14 +38,14 @@ public class PatientData
     /// </returns>
     public bool MatchLoginData(Patient patient)
     {
-        foreach (var varPatient in Patients)
+        Patients = readUsersFromJson();
+        
+        //Checks if the Patient parameter exists in the AllUsers.json with LINQ
+        if (Patients.Exists(name => name.Password == patient.Password && name.UserId == patient.UserId))
         {
-            if (varPatient.Username.Equals(patient.Username) && varPatient.Password.Equals(patient.Password) && 
-                varPatient.UserId.Equals(patient.UserId))
-            {
-                return true;
-            }
+            return true;
         }
+        
         return false;
     }
 

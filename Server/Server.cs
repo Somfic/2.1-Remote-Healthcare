@@ -17,10 +17,14 @@ public class Server
     public static List<Patient> Patients { get; set; }
     public static DoctorData _doctorData { get; set; }
     public static List<ServerClient> _connectedClients { get; private set; } = new List<ServerClient>();
+    
+    public static IReadOnlyList<ServerClient> Clients => _connectedClients.AsReadOnly();
+
 
     public async Task StartAsync()
     {
         _server.OnClientConnected += async (sender, e) => await OnClientConnectedAsync(e);
+        _server.OnClientDisconnected += async (sender, e) => await OnClientDisconnectedAsync(e);
 
         await _server.ConnectAsync("127.0.0.1", Port);
         
@@ -29,21 +33,55 @@ public class Server
         _log.Information($"Server running on port {Port}");
     }
 
+    private async Task OnClientDisconnectedAsync(SocketClient socketClient)
+    {
+        _connectedClients.Remove(_connectedClients.Find(x => x.Client.Id == socketClient.Id));
+    }
+
     private async Task OnClientConnectedAsync(SocketClient client)
     {
         _log.Information($"Client connected: {client.Socket}");
         _connectedClients.Add(new ServerClient(client));
 
-        // _log.Debug("ALLE GECONNECTTE USER ZIJN:");
-        _log.Debug($"Er zijn {SocketServer._clients.Count} verbindingen.");
+        Console.WriteLine("ALLE HUIDIGE TCP-USER ZIJN:");
+        foreach (SocketClient user in SocketServer.Clients)
+        {
+            _log.Debug(user.ToString());
+        }
+
+        // Console.WriteLine("\n");
+        //
+        // Console.WriteLine("ALLE HUIDIGE ServerClients-USER ZIJN:");
+        // foreach (ServerClient user in _connectedClients)
+        // {
+        //     _log.Debug(user.ToString());
+        // }
     }
 
     internal static void Disconnect(ServerClient client)
     {
         if (!_connectedClients.Contains(client))
             return;
-
+        Console.WriteLine("Disconnecting a client now");
         _connectedClients.Remove(client);
+    }
+
+    internal static void printUsers()
+    {
+        Console.WriteLine("ALLE HUIDIGDE USER NA DE DISCONNECT ZIJN:");
+        foreach (SocketClient user in SocketServer.Clients)
+        {
+            Console.WriteLine("Socketserver Client:  " + user);
+        }
+        
+        Console.WriteLine(" \n ");
+        
+        Console.WriteLine("ALLE HUIDIGE ServerClients-USER NA DE DISCONNECT ZIJN:");
+        
+        foreach (ServerClient user in _connectedClients)
+        {
+            Console.WriteLine("_connected Clients:  " +user);
+        }
     }
 
     private async Task BroadcastAsync(string message)

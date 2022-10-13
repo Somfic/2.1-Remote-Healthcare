@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Navigation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
@@ -54,7 +55,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                 //if the user isn't logged in, the user cant send any command to the server
                 if (loggedIn)
                 {
-                    _log.Information("Voer een command in om naar de server te sturen: \r\n" +
+                    _log.Information("Voer een commando in om naar de server te sturen: \r\n" +
                                      "[BERICHT] [START SESSIE] [STOP SESSIE] [NOODSTOP]");
                     string userCommand = "";
 
@@ -99,17 +100,39 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
         private async void SendChatAsync()
         {
-            await RequestClients();
-            while (_connected == null)
-            {
-            }
+            await requestClients();
             
+            /* This is a while loop that will do nothing until connected is filled */
+            while (_connected.Count == 0)
+            {
+                _log.Debug("Loading...");
+            }
+            _log.Information("escaped loading");
+            string savedConnections = " ";
+            foreach (string id in _connected)
+            {
+                savedConnections += id + "; ";
+                _log.Debug($"{id} has been added, saved connections is now: [{savedConnections}]");
+            }
+
+            string? target = 0000 + "";
+
+            /* This is a while loop that will keep asking for a target until the target is in the list of connected
+            clients. */
+            while (!_connected.Contains(target) && !target.Contains(";"))
+            {
+                _log.Information($"Voor welk accountnummer is dit bedoeld? Voor meerdere accountnummers tegelijk, " +
+                                 $"gebruik een ; tussen de nummers. Kies uit de volgende beschikbare " +
+                                 $"accountnummers: \t[{savedConnections}]");
+                target = Console.ReadLine();
+
+                //breaks the while-loop if all targets are correct.
+                if (CheckTargets(target.Split(";").ToList(), _connected))
+                    break;
+            }
+
             _log.Information("Voer uw bericht in: ");
             String chatInput = Console.ReadLine();
-            string savedConnections = "";
-            _connected.ForEach(c => savedConnections+= c + "; ");
-            _log.Information($"Voor welk accountnummer is dit bedoeld: [{savedConnections}]");
-            String target = Console.ReadLine();
 
             var req = new DataPacket<ChatPacketRequest>
             {
@@ -121,12 +144,33 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                     message = chatInput
                 }
             };
-            
+
             await _client.SendAsync(req);
         }
 
-        public async Task RequestClients()
+        /// <summary>
+        /// It checks if all the targets are in the connections list
+        /// </summary>
+        /// <param name="targets">A list of strings that represent the targets you want to check for.</param>
+        /// <param name="connections">A list of all the connections that are currently active.</param>
+        /// <returns>
+        /// True if all targets are in connections list, false if not so.
+        /// </returns>
+        private bool CheckTargets(List<string> targets, List<string> connections)
         {
+            foreach (string target in targets)
+            {
+                if (!connections.Contains(target))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private async Task requestClients()
+        {
+            if (_connected != null)
+                _connected.Clear();
             var req = new DataPacket<ConnectedClientsPacketRequest>
             {
                 OpperationCode = OperationCodes.USERS
@@ -151,6 +195,8 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                 }
             };
 
+            _log.Debug(loginReq.ToJson());
+            
             await _client.SendAsync(loginReq);
         }
 
@@ -185,7 +231,6 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         }
 
         //the methode for the emergency stop request
-        //TODO 
         private void EmergencyStopHandler(DataPacket obj)
         {
             _log.Information(obj.GetData<SessionStopPacketResponse>().message);
@@ -200,13 +245,21 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         //the methode for the send chat request
         private void ChatHandler(DataPacket packetData)
         {
-            _log.Information(packetData.GetData<ChatPacketResponse>().message);
+            _log.Information(
+                $"Incomming message: {packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
         }
 
         private void RequestConnectionsFeature(DataPacket packetData)
         {
+            _log.Debug(packetData.ToJson());
             if (((int)packetData.GetData<ConnectedClientsPacketResponse>().statusCode).Equals(200))
+            {
+                // _log.Debug(_connected.Count.ToString());
+                // _connected.RemoveRange(0, _connected.Count - 1);
+                // _log.Debug(_connected.Count.ToString());
                 _connected = packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Split(";").ToList();
+                _log.Critical(_connected.Count.ToString());
+            }
         }
 
         //the methode for the login request
