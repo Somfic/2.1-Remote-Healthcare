@@ -27,7 +27,6 @@ public class LoginWindowViewModel : ObservableObject
         LogIn = new LoginCommand(this, 
             new NavigationService<DoctorViewModel>(navigationStore, 
             () => new DoctorViewModel(_client, navigationStore)));
-        //LogIn = new LoginCommand(this, navigationStore);
     }
 
     public string Username

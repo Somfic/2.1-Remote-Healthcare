@@ -22,11 +22,12 @@ public class LoginCommand : BaseCommand
         ExecuteAsync();
     }
 
+    /// <summary>
+    /// It connects to the server, sends the login credentials, waits for the server to respond, and then navigates to the
+    /// next window
+    /// </summary>
     public override async Task ExecuteAsync()
     {
-        Console.WriteLine("Executing async command");
-
-        //Window windowToClose = window as Window;
         await _loginWindowViewModel._client._client.ConnectAsync("127.0.0.1", 15243);
 
         if (!_loginWindowViewModel._client.loggedIn)
@@ -54,16 +55,6 @@ public class LoginCommand : BaseCommand
                 await Task.Delay(1000);
                 
                 _navigationService.Navigate();
-                //_navigationStore.CurrentViewModel = new DoctorViewModel(_navigationStore);
-                //_client.RequestClients();
-                /*wait _client.RequestPatientDataAsync();
-                DoctorViewModel doctorViewModel = new DoctorViewModel();
-                DoctorView doctorView = new DoctorView
-                {
-                    DataContext = doctorViewModel
-                };*/
-                // windowToClose.Close();
-                // doctorView.Show();
             }
         }
     }

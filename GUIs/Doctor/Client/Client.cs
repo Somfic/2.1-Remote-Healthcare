@@ -135,6 +135,9 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             await _client.SendAsync(req);
         }
 
+        /// <summary>
+        /// It sends a login request to the server.
+        /// </summary>
         public async Task AskForLoginAsync()
         {
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
@@ -223,6 +226,11 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             }
         }
         
+        /// <summary>
+        /// It gets all the patient data from the server and adds it to a list
+        /// </summary>
+        /// <param name="DataPacket">This is the object that is sent from the server to the client. It contains the data
+        /// that is sent from the server.</param>
         private void GetPatientDataHandler(DataPacket packetData)
         {
             _log.Debug($"Got all patientdata from server: {packetData.OpperationCode}");
@@ -234,10 +242,8 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             {
                 Patient patient = jObject.ToObject<Patient>();
                 _patientList.Add(patient);
-                _log.Debug(patient.ToString());
             }
-
-            // _log.Debug(_patientList[0].ToString());
+            
         }
     }
 }
