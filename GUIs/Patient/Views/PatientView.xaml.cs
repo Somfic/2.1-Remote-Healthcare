@@ -9,7 +9,4 @@ public partial class PatientView : UserControl
     {
         InitializeComponent();
     }
-
-   
-  
 }

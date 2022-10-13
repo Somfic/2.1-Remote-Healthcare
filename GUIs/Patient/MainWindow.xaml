@@ -1,28 +1,29 @@
 ﻿<Window x:Class="RemoteHealthcare.GUIs.Patient.MainWindow"
-        x:Name="Window"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-         xmlns:local="clr-namespace:RemoteHealthcare.GUIs.Patient"
+        xmlns:local="clr-namespace:RemoteHealthcare.GUIs.Patient"
         xmlns:views="clr-namespace:RemoteHealthcare.GUIs.Patient.Views"
         xmlns:viewModels="clr-namespace:RemoteHealthcare.GUIs.Patient.ViewModels"
-        xmlns:doctor="clr-namespace:RemoteHealthcare.GUIs.Doctor;assembly=Doctor"
 
         mc:Ignorable="d"
-        Background="#4966CD"
-        ResizeMode="NoResize"
-        Title="LoginWindow" Height="450" Width="800">
+        Background="IndianRed"
+        
+        Title="Main Window" Height="450" Width="800">
         <Grid>
             <Grid.Resources>
     
                 <DataTemplate DataType="{x:Type viewModels:LoginViewModel}">
                         <views:LoginView/>
                 </DataTemplate>
+                
                 <DataTemplate DataType="{x:Type viewModels:PatientHomepageViewModel}">
                         <views:PatientView/>
                 </DataTemplate>
             
             </Grid.Resources>
+            <ContentControl Content="{Binding Path=CurrentViewModel}"/>
+
         </Grid>
 </Window>

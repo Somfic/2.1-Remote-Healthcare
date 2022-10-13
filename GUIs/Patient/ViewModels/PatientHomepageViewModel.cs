@@ -13,7 +13,7 @@ using RemoteHealthcare.NetworkEngine;
 
 namespace RemoteHealthcare.GUIs.Patient.ViewModels
 {
-    public class PatientHomepageViewModel : ObservableObject
+    public class PatientHomepageViewModel : BaseViewModel
     {
         private ObservableCollection<string>_messages;
         
@@ -25,17 +25,27 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private VrConnection vr;
         private EngineConnection e;
         
+        private readonly NavigationStore _navigationStore;
+        public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
+        
+        private Client.Client _client;
 
-            private Client.Client _client;
+        public PatientHomepageViewModel(NavigationStore navigationStore)
+        {
+            _client = new Client.Client(null);
+            _messages = new ObservableCollection<string>();
+            Send = new Command(SendMessage);
+            _messages.Add("hello world");
+            
+            _navigationStore = navigationStore;
+            _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
+        }
 
-            public PatientHomepageViewModel()
-            {
-                _client = new Client.Client(null);
-                _messages = new ObservableCollection<string>();
-                Send = new Command(SendMessage);
-                _messages.Add("hello world");
-            }
-
+        private void OnCurrentViewModelChanged()
+        {
+            OnPropertyChanged(nameof(_navigationStore.CurrentViewModel));
+        }
+            
         public PatientHomepageViewModel(Client.Client client)
         {
             

@@ -5,8 +5,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:RemoteHealthcare.GUIs.Patient.ViewModels"
+             xmlns:views="clr-namespace:RemoteHealthcare.GUIs.Patient.Views"
+
              mc:Ignorable="d"
-             Background="#4966CD"
+             Background="IndianRed"
              >
 
     <Grid>
@@ -36,7 +38,7 @@
                 <TextBox Name="FietsIdBox" Margin="10,0,10,0"></TextBox>
                 <Label Content="VR id" HorizontalAlignment="Center"></Label>
                 <TextBox Name="VrIdBox" Margin="10,0,10,0"></TextBox>
-                <Button Margin="10,20,10,30" Content="Log in!" Command="{Binding Path=LogIn}" CommandParameter="{Binding ElementName=Window}"></Button>
+                <Button Margin="10,20,10,30" Content="Log in!" Command="{Binding Path=LogIn}"></Button>
             </StackPanel>
         </UserControl>
     </Grid>

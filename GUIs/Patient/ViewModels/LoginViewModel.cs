@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using MvvmHelpers.Commands;
 using System.Windows.Input;
-
 using NetworkEngine.Socket;
 using RemoteHealthcare.Client.Data.Providers;
 using RemoteHealthcare.Common.Logger;
@@ -30,6 +29,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         {
             _navigationStore = navigationStore;
             _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
+            
             LogIn = new Command(LogInPatient);
             _client = new Client.Client(null);
         }
@@ -66,6 +66,8 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 Console.WriteLine(exception);
                 throw;
             }
+
+            _navigationStore.CurrentViewModel = new PatientHomepageViewModel(_navigationStore);
 
 
             try
