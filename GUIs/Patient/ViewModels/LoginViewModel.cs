@@ -15,7 +15,7 @@ using RemoteHealthcare.NetworkEngine;
 
 namespace RemoteHealthcare.GUIs.Patient.ViewModels
 {
-    public class UserViewModel : ObservableObject
+    public class LoginViewModel : BaseViewModel
     {
         
         private string _username;
@@ -25,7 +25,10 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private Client.Client _client;
         private VrConnection vrConnection;
 
-        public UserViewModel()
+        private readonly NavigationStore _navigationStore;
+        public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
+        
+        public LoginViewModel(NavigationStore navigationStore)
         {
             _navigationStore = navigationStore;
             _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
@@ -35,7 +38,12 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             _client = new Client.Client(null);
 
         }
-
+        
+        private void OnCurrentViewModelChanged()
+        {
+            OnPropertyChanged(nameof(_navigationStore.CurrentViewModel));
+        }
+        
         public string Username
         {
             get => _username;
@@ -105,7 +113,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    var log = new Log(typeof(UserViewModel));
+                    var log = new Log(typeof(LoginViewModel));
                     log.Critical(ex, "Program stopped because of exception");
                 }
             

@@ -5,8 +5,8 @@
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
         <RootNamespace>RemoteHealthcare.GUIs.Patient</RootNamespace>
-        <TargetFrameworks>net48;net6.0-windows</TargetFrameworks>
         <LangVersion>10</LangVersion>
+        <TargetFramework>net6.0-windows</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
