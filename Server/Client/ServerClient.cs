@@ -19,9 +19,15 @@ namespace RemoteHealthcare.Server.Client
         public SocketClient _client;
         public string _userId { get; set; }
         private bool _isDoctor;
+
+        private string _patientDataLocation = Path.Combine(Environment.CurrentDirectory, "PatientData");
+
+        private Patient patient;
         
         public string UserName { get; set; }
         private Dictionary<string, Action<DataPacket>> _functions;
+
+
 
         //Set-ups the client constructor
         public ServerClient(SocketClient client)
@@ -35,6 +41,10 @@ namespace RemoteHealthcare.Server.Client
                 HandleData(dataPacket);
             };
 
+            Client.OnDisconnect += (sender, data) =>
+            {
+                patient.SaveSessionData(_patientDataLocation);
+            };
             _functions = new Dictionary<string, Action<DataPacket>>();
             _functions.Add("login", LoginFeature);
             _functions.Add("users", RequestConnectionsFeature);
@@ -44,6 +54,8 @@ namespace RemoteHealthcare.Server.Client
             _functions.Add("disconnect", DisconnectHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
             _functions.Add("get patient data", GetPatientDataHandler);
+            _functions.Add("bikedata", GetBikeData);
+
         }
 
 
@@ -87,6 +99,24 @@ namespace RemoteHealthcare.Server.Client
                 foreach (string targetId in targetIds)
                     calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
             }
+        }
+
+        private void GetBikeData(DataPacket obj)
+        {
+            BikeDataPacket data = obj.GetData<BikeDataPacket>();
+            
+            foreach(SessionData session in patient.Sessions)
+            {
+                if (session.SessionId.Equals(data.SessionId))
+                {
+                    session.addData(data.SessionId,(int)data.speed, (int)data.distance, data.heartRate, data.elapsed.Seconds, data.deviceType, data.id);
+                    return;
+                }
+            }
+            patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
+            _log.Debug(Environment.CurrentDirectory);
+            patient.SaveSessionData(_patientDataLocation);
+            GetBikeData(obj);
         }
 
         //If userid == null, then search for doctor otherwise search for patient
@@ -201,6 +231,7 @@ namespace RemoteHealthcare.Server.Client
 
         private void LoginFeature(DataPacket packetData)
         {
+            _log.Debug($"loginfeature: {packetData.ToJson()}");
             Patient? patient = null;
             Doctor? doctor = null;
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
@@ -224,6 +255,7 @@ namespace RemoteHealthcare.Server.Client
             {
                 _userId = patient.UserId;
                 _isDoctor = false;
+                this.patient = patient;
 
                 SendData(new DataPacket<LoginPacketResponse>
                 {
@@ -274,7 +306,7 @@ namespace RemoteHealthcare.Server.Client
         private void SessionStartHandler(DataPacket obj)
         {
 
-            Console.WriteLine("Alle verbonden users zijn: "); 
+            _log.Debug("Alle verbonden users zijn: "); 
             
             
             SendData(new DataPacket<SessionStartPacketResponse>
@@ -323,7 +355,7 @@ namespace RemoteHealthcare.Server.Client
 
         private void DisconnectHandler(DataPacket obj)
         {
-            Console.WriteLine("in de server-client methode disconnectHandler");
+            _log.Debug("in de server-client methode disconnectHandler");
             Server.Disconnect(this);
             _client.DisconnectAsync();
 

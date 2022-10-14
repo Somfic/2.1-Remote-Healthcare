@@ -13,6 +13,7 @@ public class Patient : ObservableObject
     
     public string Username { get; set; }
     public string UserId { get; set; }
+    public string? Nickname { get; set; }
     public string Password { get; set; }
 
     public Patient(string user, string pass, string userId)
@@ -32,13 +33,18 @@ public class Patient : ObservableObject
     {
         var pathString = Path.Combine(folderName, Username);
         Directory.CreateDirectory(pathString);
+        
         foreach (var session in Sessions)
         {
-            var filename = session.Id;
+            pathString = Path.Combine(folderName, UserId);
+            var filename = session.SessionId.Replace(':','-') + "-" + session.Id;
             var json = JsonConvert.SerializeObject(session);
             pathString = Path.Combine(pathString, filename);
 
             if (!File.Exists(pathString))
+            {
+                File.WriteAllText(pathString, JObject.Parse(json).ToString());
+            } else
             {
                 File.WriteAllText(pathString, JObject.Parse(json).ToString());
             }
