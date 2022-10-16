@@ -18,6 +18,9 @@ public class NavigationService<TObservableObject>
 
     public void Navigate()
     {
+        Console.WriteLine("Navigating to new Viewmodel");
         _navigationStore.CurrentViewModel = _createViewModel();
+        Console.WriteLine("Navigated to new Viewmodel");
+
     }
 }

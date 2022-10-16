@@ -53,8 +53,10 @@ public class LoginCommand : BaseCommand
             {
                 await _loginWindowViewModel._client.RequestPatientDataAsync();
                 await Task.Delay(1000);
-                
+
+                Console.WriteLine("Navigating to DoctorView");
                 _navigationService.Navigate();
+                Console.WriteLine("Navigated");
             }
         }
     }

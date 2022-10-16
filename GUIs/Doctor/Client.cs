@@ -10,7 +10,7 @@ using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Server.Models;
 
-namespace RemoteHealthcare.GUIs.Doctor.Client
+namespace RemoteHealthcare.GUIs.Doctor
 {
     public class Client
     {
@@ -64,7 +64,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
                     if (userCommand.ToLower().Equals("bericht"))
                     {
-                        SendChatAsync();
+                        //SendChatAsync();
                     }
                     else if (userCommand.ToLower().Equals("start") && userCommand.ToLower().Equals("sessie"))
                     {
@@ -101,11 +101,11 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             }
         }
 
-        private async void SendChatAsync()
+        public async void SendChatAsync(string target, string chatInput)
         {
             await requestClients();
             
-            /* This is a while loop that will do nothing until connected is filled */
+            /*/* This is a while loop that will do nothing until connected is filled #1#
             while (_connected.Count == 0)
             {
                 _log.Debug("Loading...");
@@ -121,7 +121,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             string? target = 0000 + "";
 
             /* This is a while loop that will keep asking for a target until the target is in the list of connected
-            clients. */
+            clients. #1#
             while (!_connected.Contains(target) && !target.Contains(";"))
             {
                 _log.Information($"Voor welk accountnummer is dit bedoeld? Voor meerdere accountnummers tegelijk, " +
@@ -135,7 +135,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             }
 
             _log.Information("Voer uw bericht in: ");
-            String chatInput = Console.ReadLine();
+            String chatInput = Console.ReadLine();*/
 
             var req = new DataPacket<ChatPacketRequest>
             {

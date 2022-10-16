@@ -22,19 +22,23 @@ namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class DoctorViewModel : ObservableObject
 {
-    private Client.Client _client;
-    public ICommand EmergencyStop { get; }
+    private Client _client;
     private Log _log = new Log(typeof(DoctorViewModel));
+    public ICommand EmergencyStop { get; }
+    public ICommand SendChatMessage { get; }
+    
     private Patient _currentUser;
+    private string _chatMessage;
     private ObservableCollection<Patient> _patients;
     private ObservableCollection<string> chatMessages;
     private ChartValues<float> _speedData;
 
-    public DoctorViewModel(Client.Client client, NavigationStore navigationStore)
+    public DoctorViewModel(Client client, NavigationStore navigationStore)
     {
         _client = client;
         _patients = new ObservableCollection<Patient>(_client._patientList);
         EmergencyStop = new EmergencyStopCommand();
+        SendChatMessage = new SendChatMessageCommand(_client, this);
     }
 
     public Patient CurrentUser
@@ -58,6 +62,13 @@ public class DoctorViewModel : ObservableObject
         get => _patients;
         set => _patients = value;
     }
+
+    public string TextBoxChatMessage
+    {
+        get => _chatMessage;
+        set => _chatMessage = value;
+    }
+    
 
     public ChartValues<float> SpeedData { get; set; }
 

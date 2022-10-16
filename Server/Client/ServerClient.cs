@@ -41,7 +41,7 @@ namespace RemoteHealthcare.Server.Client
                 HandleData(dataPacket);
             };
 
-            Client.OnDisconnect += (sender, data) =>
+            _client.OnDisconnect += (sender, data) =>
             {
                 patient.SaveSessionData(_patientDataLocation);
             };
@@ -237,7 +237,7 @@ namespace RemoteHealthcare.Server.Client
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
-                    packetData.GetData<LoginPacketRequest>().password, "1234");
+                    packetData.GetData<LoginPacketRequest>().password, "06111");
                     
                 _log.Debug($"Patient name: {patient.UserId} Password: {patient.Password}");
             }

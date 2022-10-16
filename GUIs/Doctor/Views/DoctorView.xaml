@@ -49,7 +49,7 @@
         <wpf:CartesianChart Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" Grid.RowSpan="2"></wpf:CartesianChart>
         
         <ListView Grid.Column="5" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="7" ItemsSource="{Binding ChatMessages}"></ListView>
-        <TextBox Grid.Column="5" Grid.Row="7"></TextBox>
-        <Button Grid.Column="6" Grid.Row="7" Content="Send Message"></Button>
+        <TextBox Name="ChatMessage" Grid.Column="5" Grid.Row="7" Text="{Binding TextBoxChatMessage}"></TextBox>
+        <Button Grid.Column="6" Grid.Row="7" Content="Send Message" Command="{Binding SendChatMessage}"></Button>
     </Grid>
 </UserControl>

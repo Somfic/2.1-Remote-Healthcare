@@ -13,7 +13,7 @@ public class Patient : ObservableObject
     
     public string Username { get; set; }
     public string UserId { get; set; }
-    public string? Nickname { get; set; }
+    //public string? Nickname { get; set; }
     public string Password { get; set; }
 
     public Patient(string user, string pass, string userId)

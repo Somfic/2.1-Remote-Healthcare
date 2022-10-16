@@ -12,22 +12,26 @@ public class PatientData
 
     public PatientData()
     {
-        Patients = new List<Patient>
+        /*Patients = new List<Patient>
         {
             new("Johan Talboom", "1234", "3245"),
             new("Hans Van der linden", "1234", "3245"),
             new("Co Nelen", "1234", "3245")
-        };
+        };*/
+
+        Patients = readUsersFromJson();
     }
     
-    public static List<Patient> readUsersFromJson()
+    public List<Patient> readUsersFromJson()
     {
         string path = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "AllUsers.json");
         
         string returnAllUsersFromText = File.ReadAllText(path);
         
-        List<Patient> data = JsonConvert.DeserializeObject<List<Patient>>(returnAllUsersFromText);
+        _log.Debug(returnAllUsersFromText);
         
+        List<Patient> data = JsonConvert.DeserializeObject<List<Patient>>(returnAllUsersFromText);
+
         return data;
     }
 
@@ -41,7 +45,7 @@ public class PatientData
     /// </returns>
     public bool MatchLoginData(Patient patient)
     {
-        Patients = readUsersFromJson();
+        //Patients = readUsersFromJson();
         
         //Checks if the Patient parameter exists in the AllUsers.json with LINQ
         if (Patients.Exists(name => name.Password == patient.Password && name.UserId == patient.UserId))

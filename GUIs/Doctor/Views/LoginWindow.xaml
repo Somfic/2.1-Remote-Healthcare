@@ -29,7 +29,7 @@
                 <TextBox Name="LoginIdBox" Margin="10,0,10,0" Text="{Binding Username}"></TextBox>
                 <Label Content="Wachtwoord" HorizontalAlignment="Center"></Label>
                 <PasswordBox Name="PasswordBox" Margin="10,0,10,0" PasswordChanged="PasswordBox_OnPasswordChanged"></PasswordBox>
-                <Button Margin="10,20,10,30" Content="Log in!" Command="{Binding Path=LogIn}" CommandParameter="{Binding ElementName=Window}"></Button>
+                <Button Margin="10,20,10,30" Content="Log in!" Command="{Binding Path=LogIn}"></Button>
             </StackPanel>
         </UserControl>
     </Grid>
