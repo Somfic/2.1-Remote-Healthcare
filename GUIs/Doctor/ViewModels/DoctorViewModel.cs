@@ -37,6 +37,7 @@ public class DoctorViewModel : ObservableObject
     {
         _client = client;
         _patients = new ObservableCollection<Patient>(_client._patientList);
+        chatMessages = new ObservableCollection<string>();
         EmergencyStop = new EmergencyStopCommand();
         SendChatMessage = new SendChatMessageCommand(_client, this);
     }
