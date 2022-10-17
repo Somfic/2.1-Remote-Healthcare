@@ -263,10 +263,7 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-
-            Console.WriteLine("Alle verbonden users zijn: "); 
-            
-            
+            Console.WriteLine("Sessie start van uit de server");
             SendData(new DataPacket<SessionStartPacketResponse>
             {
                 OpperationCode = OperationCodes.SESSION_START,

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using NetworkEngine.Socket;
+using RemoteHealthcare.Common;
 using RemoteHealthcare.NetworkEngine;
 
 namespace RemoteHealthcare.GUIs.Patient.ViewModels
@@ -30,10 +31,11 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         
         private Client.Client _client;
 
-        public PatientHomepageViewModel(NavigationStore navigationStore)
+        public PatientHomepageViewModel(NavigationStore navigationStore, Client.Client client)
         {
-            _client = new Client.Client(null);
+            _client = client;
             _messages = new ObservableCollection<string>();
+            test = new Command(testmethode);
             Send = new Command(SendMessage);
             _messages.Add("hello world");
             
@@ -45,16 +47,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         {
             OnPropertyChanged(nameof(_navigationStore.CurrentViewModel));
         }
-            
-        public PatientHomepageViewModel(Client.Client client)
-        {
-            
-            _client = client;
-            _messages = new ObservableCollection<string>();
-            Send = new Command(SendMessage);
-            _messages.Add("hello world");
-
-        }
+        
 
         public string Speed
         {
@@ -90,9 +83,18 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         }
 
         public ICommand Send { get; }
+        public ICommand test { get; }
         void SendMessage()
         {
             _messages.Add("You: "+_message);
+        }
+        
+        void testmethode()
+        {
+            _client._client.SendAsync(new DataPacket<SessionStartPacketRequest>
+            {
+                OpperationCode = OperationCodes.SESSION_START,
+            });
         }
 
     }

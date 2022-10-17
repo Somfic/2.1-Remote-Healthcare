@@ -91,7 +91,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
                 if (_client._loggedIn)
                 {
-                    _navigationStore.CurrentViewModel = new PatientHomepageViewModel(_navigationStore);
+                    _navigationStore.CurrentViewModel = new PatientHomepageViewModel(_navigationStore, _client);
                 }
             }
 
