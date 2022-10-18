@@ -25,6 +25,7 @@ namespace RemoteHealthcare.Server.Client
         private Patient patient;
         
         public string UserName { get; set; }
+        
         private Dictionary<string, Action<DataPacket>> _functions;
         
 
@@ -305,11 +306,13 @@ namespace RemoteHealthcare.Server.Client
         private void SessionStartHandler(DataPacket obj)
         {
 
+            /*
             _log.Debug("User-ID: ");
             Console.WriteLine(obj.GetData<SessionStartPacketRequest>().userId);
+            */
 
             ServerClient tt = Server._connectedClients.Find(c => c._userId == "06111");
-
+        
             Console.WriteLine("gevonden id: " + tt._userId);
             Console.WriteLine("gevonden name: " + tt.UserName);
             
