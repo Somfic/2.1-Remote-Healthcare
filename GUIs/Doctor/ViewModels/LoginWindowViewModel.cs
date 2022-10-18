@@ -21,6 +21,7 @@ public class LoginWindowViewModel : BaseViewModel
 
     public LoginWindowViewModel(NavigationStore navigationStore)
     {
+        Console.WriteLine("test");
         _client = new Client();
         LogIn = new LoginCommand(this, 
             new NavigationService<DoctorViewModel>(navigationStore, 
