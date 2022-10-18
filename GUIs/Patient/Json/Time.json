@@ -1,0 +1,12 @@
+{
+  "id": "tunnel/send",
+  "data": {
+    "dest": "",
+    "data": {
+      "id": "scene/skybox/settime",
+      "data": {
+        "time": 12
+      }
+    }
+  }
+}

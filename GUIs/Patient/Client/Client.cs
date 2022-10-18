@@ -1,4 +1,8 @@
-﻿using System.Net.Cache;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Cache;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RemoteHealthcare.Client.Data;
 using RemoteHealthcare.Common;
@@ -20,14 +24,12 @@ namespace RemoteHealthcare.Client.Client
         private string _username;
         private string userId;
         private string doctorId;
-        private string _sessionId;
 
         private VrConnection _vrConnection;
 
         public Client(VrConnection connection)
         {
             _vrConnection = connection;
-            _sessionId = DateTime.Now.ToString();
         }
         
         private Dictionary<string, Action<DataPacket>> _functions;
@@ -117,13 +119,13 @@ namespace RemoteHealthcare.Client.Client
 
                     data = new BikeDataPacket()
                     {
-                        SessionId = _sessionId,
-                        speed = bikedata.Speed,
-                        distance = bikedata.Distance,
-                        heartRate = hearthdata.HeartRate,
-                        elapsed = bikedata.TotalElapsed,
-                        deviceType = bikedata.DeviceType.ToString(),
-                        id = bikedata.Id
+                        Speed = bikedata.Speed,
+                        Distance = bikedata.Distance,
+                        HeartRate = hearthdata.HeartRate,
+                        TotalElapsed = bikedata.TotalElapsed,
+                        Elapsed = bikedata.Elapsed,
+                        DeviceType = bikedata.DeviceType.ToString(),
+                        Id = bikedata.Id
 
                     }
                 };
@@ -176,7 +178,7 @@ namespace RemoteHealthcare.Client.Client
 
         private void DisconnectHandler(DataPacket obj)
         {
-            _log.Debug(obj.GetData<DisconnectPacketResponse>().message);
+            Console.WriteLine(obj.GetData<DisconnectPacketResponse>().message);
         }
 
         //the methode for the session stop request

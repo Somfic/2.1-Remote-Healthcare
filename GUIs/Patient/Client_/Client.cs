@@ -1,38 +1,66 @@
-﻿using System.Net.Cache;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using NetworkEngine.Socket;
 using Newtonsoft.Json;
 using RemoteHealthcare.Client.Data;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
-using RemoteHealthcare.Common.Socket.Server;
-using RemoteHealthcare.Client;
-using NetworkEngine.Socket;
 
-namespace RemoteHealthcare.Client.Client
+namespace RemoteHealthcare.GUIs.Patient.Client
 {
     public class Client
     {
-        private SocketClient _client = new(true);
+        public SocketClient _client = new(true);
         private Log _log = new(typeof(Client));
-
-        private bool _loggedIn;
-        private string _password;
-        private string _username;
         private string userId;
-        private string doctorId;
-        private string _sessionId;
-
         private VrConnection _vrConnection;
 
-        public Client(VrConnection connection)
-        {
-            _vrConnection = connection;
-            _sessionId = DateTime.Now.ToString();
-        }
-        
-        private Dictionary<string, Action<DataPacket>> _functions;
+        public string _password { get; set; }
+        public string _username { get; set; }
+        public bool _loggedIn;
 
-        public async Task RunAsync()
+        private static Dictionary<string, Action<DataPacket>> _functions;
+
+        public  Client(VrConnection v)
+        {
+           
+            _functions = new Dictionary<string, Action<DataPacket>>();
+
+            //Adds for each key an callback methode in the dictionary 
+            _functions.Add("login", LoginFeature);
+            _functions.Add("chat", ChatHandler);
+            _functions.Add("session start", SessionStartHandler);
+            _functions.Add("session stop", SessionStopHandler);
+
+            _client.OnMessage += (sender, data) =>
+            {
+                var packet = JsonConvert.DeserializeObject<DataPacket>(data);
+                HandleData(packet);
+            };
+
+            
+        }
+
+        public async Task PatientLogin()
+        {
+            DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
+            {
+                OpperationCode = OperationCodes.LOGIN,
+                data = new LoginPacketRequest()
+                {
+                    username = _username,
+                    password = _password,
+                    isDoctor = false
+                }
+            };
+            _log.Debug(loginReq.ToJson());
+            
+            await _client.SendAsync(loginReq);
+        }
+         public async Task RunAsync()
         {
             _loggedIn = false;
             _functions = new Dictionary<string, Action<DataPacket>>();
@@ -117,13 +145,13 @@ namespace RemoteHealthcare.Client.Client
 
                     data = new BikeDataPacket()
                     {
-                        SessionId = _sessionId,
-                        speed = bikedata.Speed,
-                        distance = bikedata.Distance,
-                        heartRate = hearthdata.HeartRate,
-                        elapsed = bikedata.TotalElapsed,
-                        deviceType = bikedata.DeviceType.ToString(),
-                        id = bikedata.Id
+                        Speed = bikedata.Speed,
+                        Distance = bikedata.Distance,
+                        HeartRate = hearthdata.HeartRate,
+                        TotalElapsed = bikedata.TotalElapsed,
+                        Elapsed = bikedata.Elapsed,
+                        DeviceType = bikedata.DeviceType.ToString(),
+                        Id = bikedata.Id
 
                     }
                 };
@@ -176,7 +204,7 @@ namespace RemoteHealthcare.Client.Client
 
         private void DisconnectHandler(DataPacket obj)
         {
-            _log.Debug(obj.GetData<DisconnectPacketResponse>().message);
+            Console.WriteLine(obj.GetData<DisconnectPacketResponse>().message);
         }
 
         //the methode for the session stop request
