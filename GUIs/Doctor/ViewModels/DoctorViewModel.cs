@@ -1,84 +1,57 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using MvvmHelpers;
-using MvvmHelpers.Commands;
-using RemoteHealthcare.Common;
+using RemoteHealthcare.Common.Logger;
+using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
-using RemoteHealthcare.GUIs.Doctor.Models;
+using RemoteHealthcare.GUIs.Doctor.Commands;
 using RemoteHealthcare.Server.Client;
 using RemoteHealthcare.Server.Models;
+using RemoteHealthcare.Server;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class DoctorViewModel : BaseViewModel
 {
-    private string _doctorName;
-    private UserModel _currentUser;
-    private ObservableCollection<Patient> _users;
+    private Client _client;
+    private Log _log = new Log(typeof(DoctorViewModel));
+    public ICommand EmergencyStop { get; }
+    public ICommand SendChatMessage { get; }
+    
+    private Patient _currentUser;
+    private string _chatMessage;
+    private ObservableCollection<Patient> _patients;
     private ObservableCollection<string> chatMessages;
     private ChartValues<float> _speedData;
     private Client.Client _doctorClient; 
     public ICommand SessionStartCommand { get; }
 
-    private readonly NavigationStore _navigationStore;
-
-    public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
-    
-    public DoctorViewModel(NavigationStore navigationStore, Client.Client client)
+    public DoctorViewModel(Client client, NavigationStore navigationStore)
     {
-        this._currentUser = new UserModel();
-        SessionStartCommand = new Command(SessieStart);
-
-        _doctorClient = client;
-        
-        _navigationStore = navigationStore;
-        _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
-    }
-    
-    private void OnCurrentViewModelChanged()
-    {
-        OnPropertyChanged(nameof(_navigationStore.CurrentViewModel));
+        _client = client;
+        _patients = new ObservableCollection<Patient>(_client._patientList);
+        chatMessages = new ObservableCollection<string>();
+        EmergencyStop = new EmergencyStopCommand();
+        SendChatMessage = new SendChatMessageCommand(_client, this);
     }
 
-    async void SessieStart()
-    {
-        await _doctorClient.SendAsync(new DataPacket<SessionStartPacketRequest>
-        {
-            OpperationCode = OperationCodes.SESSION_START,
-        },sessie_callback );
-    }
-
-
-    private void sessie_callback(DataPacket obj)
-    {
-        Console.WriteLine("hoii sanhdklsadgkfjmdsakjfghk");
-        Console.WriteLine(obj.GetData<SessionStartPacketResponse>().message);
-        Console.WriteLine(obj.GetData<SessionStartPacketResponse>().statusCode);
-    }
-
-    public string DoctorName
-    {
-        get => _doctorName;
-        set => _doctorName = value;
-    }
-    
-    
-    public Client.Client DoctorClient
-    {
-        get => _doctorClient;
-        set => _doctorClient = value;
-    }
-
-    public UserModel CurrentUser
+    public Patient CurrentUser
     {
         get => _currentUser;
-        set => _currentUser = value;
+        set
+        {
+            _currentUser = value;
+            OnPropertyChanged();
+        }
     }
 
     public ObservableCollection<string> ChatMessages
@@ -87,11 +60,20 @@ public class DoctorViewModel : BaseViewModel
         set => chatMessages = value;
     }
 
-    public ObservableCollection<Patient> Users
+    public ObservableCollection<Patient> Patients
     {
-        get => _users;
-        set => _users = value;
+        get => _patients;
+        set => _patients = value;
     }
 
+    public string TextBoxChatMessage
+    {
+        get => _chatMessage;
+        set => _chatMessage = value;
+    }
+    
+
     public ChartValues<float> SpeedData { get; set; }
+
+    
 }

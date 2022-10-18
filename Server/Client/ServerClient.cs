@@ -2,11 +2,13 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
 using RemoteHealthcare.Server.Models;
+using Xceed.Wpf.AvalonDock.Layout;
 
 namespace RemoteHealthcare.Server.Client
 {
@@ -14,13 +16,18 @@ namespace RemoteHealthcare.Server.Client
     {
         private readonly Log _log = new(typeof(ServerClient));
 
-        private SocketClient _client;
-        private string _userId;
+        public SocketClient _client;
+        public string _userId { get; set; }
         private bool _isDoctor;
 
+        private string _patientDataLocation = Path.Combine(Environment.CurrentDirectory, "PatientData");
 
+        private Patient patient;
+        
         public string UserName { get; set; }
         private Dictionary<string, Action<DataPacket>> _functions;
+
+
 
         //Set-ups the client constructor
         public ServerClient(SocketClient client)
@@ -34,6 +41,10 @@ namespace RemoteHealthcare.Server.Client
                 HandleData(dataPacket);
             };
 
+            _client.OnDisconnect += (sender, data) =>
+            {
+                patient.SaveSessionData(_patientDataLocation);
+            };
             _functions = new Dictionary<string, Action<DataPacket>>();
             _functions.Add("login", LoginFeature);
             _functions.Add("users", RequestConnectionsFeature);
@@ -42,9 +53,14 @@ namespace RemoteHealthcare.Server.Client
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("disconnect", DisconnectHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
+            _functions.Add("get patient data", GetPatientDataHandler);
+            _functions.Add("bikedata", GetBikeData);
+
         }
 
+
         //determines which methode exactly will be executed 
+
         private void HandleData(DataPacket packetData)
         {
             _log.Debug($"Got a packet server: {packetData.OpperationCode}");
@@ -61,7 +77,9 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //This methode used to send an request from the Server to the Client
+
         //The parameter is an JsonFile object
+
         private void SendData(DAbstract packet, string? targetId = null)
         {
             _log.Debug($"sending: {packet.ToJson()}");
@@ -83,7 +101,26 @@ namespace RemoteHealthcare.Server.Client
             }
         }
 
+        private void GetBikeData(DataPacket obj)
+        {
+            BikeDataPacket data = obj.GetData<BikeDataPacket>();
+            
+            foreach(SessionData session in patient.Sessions)
+            {
+                if (session.SessionId.Equals(data.SessionId))
+                {
+                    session.addData(data.SessionId,(int)data.speed, (int)data.distance, data.heartRate, data.elapsed.Seconds, data.deviceType, data.id);
+                    return;
+                }
+            }
+            patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
+            _log.Debug(Environment.CurrentDirectory);
+            patient.SaveSessionData(_patientDataLocation);
+            GetBikeData(obj);
+        }
+
         //If userid == null, then search for doctor otherwise search for patient
+
         private ServerClient calculateTarget(string? userId = null)
         {
             foreach (ServerClient client in Server._connectedClients)
@@ -151,6 +188,7 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the chat request
+
         private void ChatHandler(DataPacket packetData)
         {
             ChatPacketRequest data = packetData.GetData<ChatPacketRequest>();
@@ -190,14 +228,16 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the login request
-        private void LoginFeature(DataPacket packetData) //TODO: spam on incorrect login
+
+        private void LoginFeature(DataPacket packetData)
         {
+            _log.Debug($"loginfeature: {packetData.ToJson()}");
             Patient? patient = null;
             Doctor? doctor = null;
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
-                    packetData.GetData<LoginPacketRequest>().password);
+                    packetData.GetData<LoginPacketRequest>().password, "06111");
                     
                 _log.Debug($"Patient name: {patient.UserId} Password: {patient.Password}");
             }
@@ -215,6 +255,7 @@ namespace RemoteHealthcare.Server.Client
             {
                 _userId = patient.UserId;
                 _isDoctor = false;
+                this.patient = patient;
 
                 SendData(new DataPacket<LoginPacketResponse>
                 {
@@ -261,10 +302,11 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the session start request
+
         private void SessionStartHandler(DataPacket obj)
         {
 
-            Console.WriteLine("Alle verbonden users zijn: "); 
+            _log.Debug("Alle verbonden users zijn: "); 
             
             
             SendData(new DataPacket<SessionStartPacketResponse>
@@ -280,6 +322,7 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the session stop request
+
         private void SessionStopHandler(DataPacket obj)
         {
             SendData(new DataPacket<SessionStopPacketResponse>
@@ -312,7 +355,7 @@ namespace RemoteHealthcare.Server.Client
 
         private void DisconnectHandler(DataPacket obj)
         {
-            Console.WriteLine("in de server-client methode disconnectHandler");
+            _log.Debug("in de server-client methode disconnectHandler");
             Server.Disconnect(this);
             _client.DisconnectAsync();
 
@@ -335,6 +378,29 @@ namespace RemoteHealthcare.Server.Client
             return $"UserId: {_userId}, Is Doctor: {_isDoctor}, " +
                    $"IP Adress: {((IPEndPoint)_client.Socket.Client.RemoteEndPoint).Address}, " +
                    $"Port: {((IPEndPoint)_client.Socket.Client.RemoteEndPoint).Port}";
+        }
+
+        /// <summary>
+        /// This function is called when the client sends a request to the server to get all the patient data. The server
+        /// then sends back all the patient data to the client
+        /// </summary>
+        /// <param name="DataPacket">This is the data packet that is sent from the client to the server.</param>
+        private void GetPatientDataHandler(DataPacket packetData)
+        {
+            _log.Debug($"Got request all patientdata from doctor client: {packetData.OpperationCode}");
+
+            JObject[] jObjects = Server._patientData.GetPatientDataAsJObjects();
+            SendData(new DataPacket<GetAllPatientsDataResponse>
+            {
+                OpperationCode = OperationCodes.GET_PATIENT_DATA,
+                
+                data = new GetAllPatientsDataResponse()
+                {
+                    statusCode = StatusCodes.OK,
+                    JObjects = jObjects,
+                    message = "Got patient data from server successfully"
+                }
+            });
         }
     }
 }

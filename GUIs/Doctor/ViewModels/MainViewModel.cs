@@ -1,14 +1,17 @@
-﻿namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
+﻿using MvvmHelpers;
 
-public class MainViewModel : BaseViewModel
+namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
+
+public class MainViewModel : ObservableObject
 {
     private readonly NavigationStore _navigationStore;
-
-    public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
+    
+    public ObservableObject CurrentViewModel => _navigationStore.CurrentViewModel;
 
     public MainViewModel(NavigationStore navigationStore)
     {
         _navigationStore = navigationStore;
+
         _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
     }
 

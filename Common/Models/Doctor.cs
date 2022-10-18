@@ -7,9 +7,9 @@ public class Doctor
 {
     
     public List<SessionData> _sessions { get; set; }
-    internal string Username { get; set; }
-    internal string UserId { get; set; }
-    internal string Password { get; set; }
+    public string Username { get; set; }
+    public string UserId { get; set; }
+    public string Password { get; set; }
 
     public Doctor(string user, string pass, string UserId)
     {

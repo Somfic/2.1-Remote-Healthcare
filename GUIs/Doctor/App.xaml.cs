@@ -8,25 +8,18 @@ namespace RemoteHealthcare.GUIs.Doctor
     /// </summary>
     public partial class App : Application
     {
-        private readonly NavigationStore _navigationStore;
-
-        public App()
-        {
-            _navigationStore = new NavigationStore();
-        }
-
         protected override void OnStartup(StartupEventArgs e)
         {
+            NavigationStore navigationStore = new NavigationStore();
 
-            _navigationStore.CurrentViewModel = new LoginWindowViewModel(_navigationStore);
-            
+            navigationStore.CurrentViewModel = new LoginWindowViewModel(navigationStore);
+                
             MainWindow = new MainWindow()
             {
-                DataContext = new MainViewModel(_navigationStore)
+                DataContext = new MainViewModel(navigationStore)
             };
-
             MainWindow.Show();
-
+            
             base.OnStartup(e);
         }
     }

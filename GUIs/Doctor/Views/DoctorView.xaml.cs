@@ -1,14 +1,12 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using RemoteHealthcare.GUIs.Doctor.ViewModels;
 
-namespace RemoteHealthcare.GUIs.Doctor.Views
+namespace RemoteHealthcare.GUIs.Doctor;
+
+public partial class DoctorView : UserControl
 {
-    public partial class DoctorView : UserControl
+    public DoctorView()
     {
-        public DoctorView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }
