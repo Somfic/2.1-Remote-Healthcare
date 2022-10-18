@@ -81,7 +81,7 @@ public class ChatPacketResponse : DAbstract
 
 public class SessionStartPacketRequest : DAbstract
 {
-    //TODO: voorlopig leeg laten
+    public int userId;
 }
 
 public class SessionStartPacketResponse : DAbstract
