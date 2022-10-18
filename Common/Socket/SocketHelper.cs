@@ -7,42 +7,60 @@ namespace RemoteHealthcare.Common.Socket;
 
 public static class SocketHelper
 {
+    private static readonly Log Log = new(typeof(SocketHelper));
+    
     private static readonly byte[] Key = { 0x20, 0x0A, 0xB0, 0x03, 0x01, 0xC2, 0xC2, 0x12, 0x05, 0xBC, 0xCC, 0xA9, 0x9F, 0xFF, 0xCD, 0xD2};
     private static readonly byte[] Iv = { 0x33, 0x02, 0xA0, 0xAF, 0xF3, 0x2C, 0xDD, 0xAA, 0xB8, 0xF9, 0xFF, 0xC0, 0xFD, 0x91, 0x11, 0x69 };
 
     public static async Task SendMessage(Stream stream, string data, bool useEncryption = true)
     {
-        var bytes = Encode(data, useEncryption);
-        
-        await stream.WriteAsync(bytes, 0, bytes.Length);
+        try
+        {
+            var bytes = Encode(data, useEncryption);
+
+            await stream.WriteAsync(bytes, 0, bytes.Length);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Failed to send message");
+        }
     }
 
     public static async Task<string> ReadMessage(Stream stream, bool useEncryption = true)
     {
-        var length = new byte[4];
-        var dataRead = 0;
-
-        while (dataRead < 4)
+        try
         {
-            var read = await stream.ReadAsync(length, dataRead, 4 - dataRead);
-            dataRead += read;
+            var length = new byte[4];
+            var dataRead = 0;
+
+            while (dataRead < 4)
+            {
+                var read = await stream.ReadAsync(length, dataRead, 4 - dataRead);
+                dataRead += read;
+            }
+
+            var dataLength = BitConverter.ToInt32(length, 0);
+
+            dataRead = 0;
+            var data = new byte[dataLength];
+
+            while (dataRead < dataLength)
+            {
+                var read = await stream.ReadAsync(data, dataRead, dataLength - dataRead);
+                dataRead += read;
+            }
+
+            var bytes = new List<byte>();
+            bytes.AddRange(length);
+            bytes.AddRange(data);
+
+            return Decode(bytes.ToArray(), useEncryption);
         }
-        var dataLength = BitConverter.ToInt32(length, 0);
-        
-        dataRead = 0;
-        var data = new byte[dataLength];
-        
-        while (dataRead < dataLength)
+        catch (Exception ex)
         {
-            var read = await stream.ReadAsync(data, dataRead, dataLength - dataRead);
-            dataRead += read;
+            Log.Warning(ex, "Error reading message from stream");
+            return string.Empty;
         }
-
-        var bytes = new List<byte>();
-        bytes.AddRange(length);
-        bytes.AddRange(data);
-
-        return Decode(bytes.ToArray(), useEncryption);
     }
 
     public static byte[] Encode(string text, bool useEncryption = true)

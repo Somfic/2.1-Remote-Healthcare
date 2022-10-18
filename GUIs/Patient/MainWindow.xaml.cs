@@ -1,6 +1,4 @@
-﻿using System.Windows;
-
-namespace RemoteHealthcare.GUIs.Patient
+﻿namespace RemoteHealthcare.GUIs.Patient
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

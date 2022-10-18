@@ -1,11 +1,8 @@
 using System.Net;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
-using RemoteHealthcare.Common.Socket.Server;
 using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.Server.Client
@@ -318,8 +315,6 @@ namespace RemoteHealthcare.Server.Client
             Server.Disconnect(this);
             Client.DisconnectAsync();
 
-            Server.printUsers();
-
             SendData(new DataPacket<DisconnectPacketResponse>
             {
                 OpperationCode = OperationCodes.DISCONNECT,
@@ -335,8 +330,8 @@ namespace RemoteHealthcare.Server.Client
         public override string ToString()
         {
             return $"UserId: {_userId}, Is Doctor: {_isDoctor}, " +
-                   $"IP Adress: {((IPEndPoint)Client.Socket.Client.RemoteEndPoint).Address}, " +
-                   $"Port: {((IPEndPoint)Client.Socket.Client.RemoteEndPoint).Port}";
+                   $"IP Adress: {((IPEndPoint)Client.EndPoint).Address}, " +
+                   $"Port: {((IPEndPoint)Client.EndPoint).Port}";
         }
     }
 }

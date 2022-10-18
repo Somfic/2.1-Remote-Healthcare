@@ -1,16 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using MvvmHelpers;
-using MvvmHelpers.Commands;
-using Newtonsoft.Json;
-using RemoteHealthcare.Common;
-
-namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
+﻿namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class LoginWindowViewModel : ObservableObject
 {

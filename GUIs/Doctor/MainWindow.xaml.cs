@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Windows;
-using System.Windows.Controls;
-using RemoteHealthcare.Common.Logger;
+﻿using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.GUIs.Doctor
 {

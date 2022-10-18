@@ -2,39 +2,42 @@ using System.Net;
 using System.Net.Sockets;
 using Newtonsoft.Json;
 using RemoteHealthcare.Common.Logger;
-using RemoteHealthcare.Common.Socket.Server;
 
 namespace RemoteHealthcare.Common.Socket.Client;
 
 public class SocketClient : ISocket
 {
     private readonly bool _useEncryption;
-    public TcpClient Socket { get; private set; } = new(); 
+    
+    private TcpClient _socket = new(); 
+    
+    public bool IsConnected => _socket.Connected;
+    public EndPoint EndPoint => _socket.Client.RemoteEndPoint;
     
     public Guid Id { get; } = Guid.NewGuid();
     
     private readonly Log _log = new(typeof(SocketClient));
 
-    public SocketClient(bool useEncryption)
+    public SocketClient(bool useEncryption = true)
     {
         _useEncryption = useEncryption;
     }
 
-    public static SocketClient CreateFromSocket(TcpClient socket, bool useEncryption)
+    public static SocketClient CreateFromSocket(TcpClient socket, bool useEncryption = true)
     {
-        var client = new SocketClient(useEncryption) { Socket = socket };
+        var client = new SocketClient(useEncryption) { _socket = socket };
         client.Read();
         return client;
     } 
 
     public async Task ConnectAsync(string ip, int port)
     {
-        if (Socket.Connected)
+        if (_socket.Connected)
             return;
 
         var attempts = 0;
 
-        while (attempts < 5)
+        while (attempts <= 5)
         {
             attempts++;
             
@@ -42,15 +45,15 @@ public class SocketClient : ISocket
 
             try
             {
-                await Socket.ConnectAsync(IPAddress.Parse(ip), port);
+                await _socket.ConnectAsync(IPAddress.Parse(ip), port);
                 _log.Debug($"Connected to {ip}:{port}");
                 Read();
                 break;
             }
             catch (Exception ex)
             {
-                Socket.Close();
-                Socket = new TcpClient();
+                _socket.Close();
+                _socket = new TcpClient();
 
                 if (attempts == 5)
                 {
@@ -75,7 +78,7 @@ public class SocketClient : ISocket
     {
         try
         {
-            return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);
+            return SocketHelper.SendMessage(_socket.GetStream(), text, _useEncryption);
         }
         catch (Exception ex)
         {
@@ -89,13 +92,13 @@ public class SocketClient : ISocket
     {
         Task.Run(async () =>
         {
-            while (Socket.Connected)
+            while (_socket.Connected)
             {
                 var text = string.Empty;
                 
                 try
                 {
-                    text = await SocketHelper.ReadMessage(Socket.GetStream(), _useEncryption);
+                    text = await SocketHelper.ReadMessage(_socket.GetStream(), _useEncryption);
                 }
                 catch (Exception ex)
                 {
@@ -113,25 +116,32 @@ public class SocketClient : ISocket
                 }
             }
 
-            _log.Debug($"Client disconnected");
-            OnDisconnect?.Invoke(this, EventArgs.Empty);
+            _log.Debug($"Firing disconnect event");
+            OnDisconnect.Invoke(this, EventArgs.Empty);
         });
     }
     
-    public event EventHandler<string>? OnMessage;
+    public event EventHandler<string> OnMessage;
     
-    public event EventHandler? OnDisconnect;
+    public event EventHandler OnDisconnect;
     
     public Task DisconnectAsync()
     {
-        SocketServer._clients.Remove(SocketServer.Localclient); 
-        Socket.Dispose();
-        
-        return Task.CompletedTask;
+        return Task.Run(async () =>
+        {
+            _log.Debug("Disconnecting client");
+            
+            _socket.Close();
+
+            while (_socket.Connected)
+                await Task.Delay(10);
+            
+            _log.Debug("Client disconnected");
+        });
     }
 
     public override string ToString()
     {
-        return $"IP Adress: {((IPEndPoint)Socket.Client.RemoteEndPoint).Address}; Port: {((IPEndPoint)Socket.Client.RemoteEndPoint).Port}";
+        return $"SocketClient({((IPEndPoint)_socket.Client.RemoteEndPoint).Address}:{((IPEndPoint)_socket.Client.RemoteEndPoint).Port})";
     }
 }

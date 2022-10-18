@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Windows.Media;
-using LiveCharts;
-using LiveCharts.Defaults;
-using LiveCharts.Wpf;
-using MvvmHelpers;
-using RemoteHealthcare.Common.Socket.Server;
-using RemoteHealthcare.GUIs.Doctor.Models;
-using RemoteHealthcare.Server.Client;
+﻿using RemoteHealthcare.GUIs.Doctor.Models;
 using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;

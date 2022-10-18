@@ -1,7 +1,4 @@
-﻿using System;
-using MvvmHelpers;
-
-namespace RemoteHealthcare.GUIs.Doctor.Models;
+﻿namespace RemoteHealthcare.GUIs.Doctor.Models;
 
 public class UserModel : ObservableObject
 {

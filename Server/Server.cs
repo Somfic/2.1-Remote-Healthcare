@@ -39,11 +39,11 @@ public class Server
 
     private async Task OnClientConnectedAsync(SocketClient client)
     {
-        _log.Information($"Client connected: {client.Socket}");
+        _log.Information($"Client connected: {client.EndPoint}");
         _connectedClients.Add(new ServerClient(client));
 
         Console.WriteLine("ALLE HUIDIGE TCP-USER ZIJN:");
-        foreach (SocketClient user in SocketServer.Clients)
+        foreach (SocketClient user in _server.Clients)
         {
             _log.Debug(user.ToString());
         }
@@ -65,10 +65,10 @@ public class Server
         _connectedClients.Remove(client);
     }
 
-    internal static void printUsers()
+    internal void printUsers()
     {
         Console.WriteLine("ALLE HUIDIGDE USER NA DE DISCONNECT ZIJN:");
-        foreach (SocketClient user in SocketServer.Clients)
+        foreach (SocketClient user in _server.Clients)
         {
             Console.WriteLine("Socketserver Client:  " + user);
         }

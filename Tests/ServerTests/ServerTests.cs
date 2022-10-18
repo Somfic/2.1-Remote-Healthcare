@@ -6,41 +6,61 @@ namespace RemoteHealthcare.Tests.ServerTests;
 
 public class ServerTests
 {
-    string message = "{\"OpperationCode\":\"login\",\"data\":{\"username\":\"06111\",\"password\":\"welkom01\",\"isDoctor\":false}}";
-
-    
     [Test]
     public async Task Connecting()
     {
-        var server = new SocketServer(false);
-        await server.ConnectAsync("127.0.0.1", 12345);
+        var port = GetRandomPort();
 
-        var connectedClients = 0;
+        var server = await CreateNewServer(port);
 
-        server.OnClientConnected += (sender, e) => connectedClients++;
+        var oldClients = server.Clients.Count;
+
+        var client = await ConnectNewClient(port);
         
-        var client = new SocketClient(false);
-        await client.ConnectAsync("127.0.0.1", 12345);
-
         var stopwatch = Stopwatch.StartNew();
-        while(connectedClients == 0 && stopwatch.ElapsedMilliseconds < 10000)
+        while(oldClients == server.Clients.Count && stopwatch.ElapsedMilliseconds < 10000)
             await Task.Delay(10);
 
-        Assert.That(connectedClients, Is.EqualTo(1));
+        Assert.That(oldClients, Is.LessThan(server.Clients.Count));
+    }
+
+    [Test]
+    public async Task DisconnectingClient()
+    {
+        var port = GetRandomPort();
+
+        var server = await CreateNewServer(port);
+        
+        var oldClients = server.Clients.Count;
+        
+        var client = await ConnectNewClient(port);
+        
+        while(oldClients == server.Clients.Count) { }
+        
+        oldClients = server.Clients.Count;
+
+        await client.DisconnectAsync();
+        
+        var stopwatch = Stopwatch.StartNew();
+        while(oldClients == server.Clients.Count && stopwatch.ElapsedMilliseconds < 10000)
+            await Task.Delay(10);
+        
+        Assert.That(oldClients, Is.GreaterThan(server.Clients.Count));
     }
     
     [Test]
     public async Task ClientToServerMessaging()
     {
-        var server = new SocketServer(true);
-        await server.ConnectAsync("127.0.0.1", 12346);
+        var port = GetRandomPort();
+        
+        var message = TestHelper.GenerateRandomString(10000);
+        
+        var server = await CreateNewServer(port);
+        var client = await ConnectNewClient(port);
 
         var receivedMessage = "";
-
-        server.OnMessage += (sender, e) => receivedMessage = e.message;
+        server.OnMessage += (_, e) => receivedMessage = e.message;
         
-        var client = new SocketClient(true);
-        await client.ConnectAsync("127.0.0.1", 12346);
         await client.SendAsync(message);
 
         var stopwatch = Stopwatch.StartNew();
@@ -53,12 +73,13 @@ public class ServerTests
     [Test]
     public async Task ServerToClientMessaging()
     {
-        var server = new SocketServer(true);
-        await server.ConnectAsync("127.0.0.1", 12347);
-
-        var client = new SocketClient(true);
-        await client.ConnectAsync("127.0.0.1", 12347);
+        var port = GetRandomPort();
         
+        var message = TestHelper.GenerateRandomString(10000);
+
+        var server = await CreateNewServer(port);
+        var client = await ConnectNewClient(port);
+
         var receivedMessage = "";
         client.OnMessage += (sender, e) => receivedMessage = e;
         
@@ -69,5 +90,24 @@ public class ServerTests
             await Task.Delay(10);
 
         Assert.That(receivedMessage, Is.EqualTo(message));
+    }
+
+    private async Task<SocketClient> ConnectNewClient(int port)
+    {
+        SocketClient client = new();
+        await client.ConnectAsync("127.0.0.1", port);
+        return client;
+    }
+    
+    private async Task<SocketServer> CreateNewServer(int port)
+    {
+        SocketServer server = new();
+        await server.ConnectAsync("127.0.0.1", port);
+        return server;
+    }
+    
+    private int GetRandomPort()
+    {
+        return new Random().Next(10000, 40000);
     }
 }

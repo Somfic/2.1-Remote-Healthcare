@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Navigation;
-using Newtonsoft.Json;
-using RemoteHealthcare.Common;
+﻿using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 

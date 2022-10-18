@@ -1,9 +1,7 @@
-﻿using System.Net.Cache;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
-using RemoteHealthcare.Common.Socket.Server;
 
 namespace RemoteHealthcare.Client.Client
 {

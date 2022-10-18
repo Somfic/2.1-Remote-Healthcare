@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RemoteHealthcare.Common.Socket.Client;
 
 namespace RemoteHealthcare.Common;
 

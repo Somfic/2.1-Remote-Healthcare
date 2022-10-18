@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace RemoteHealthcare.Common.Logger;
 
@@ -86,7 +87,7 @@ public class Log
                     builder.AppendLine();
                     builder.Append("         ");
                     builder.Append(Gray);
-                    builder.Append(exception.Data);
+                    builder.Append(JsonConvert.SerializeObject(exception.Data));
                 }
 
                 ex = ex.InnerException;

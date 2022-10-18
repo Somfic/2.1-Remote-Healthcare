@@ -8,14 +8,19 @@ namespace RemoteHealthcare.Common.Socket.Server;
 
 public class SocketServer : ISocket
 {
-    public TcpListener? Socket { get; private set; }
+    private TcpListener? _socket;
+    public bool IsConnected => _socket?.Server.Connected ?? false;
+    public EndPoint EndPoint => _socket?.Server.RemoteEndPoint ?? new IPEndPoint(IPAddress.Any, 0);
+    
     private readonly Log _log = new(typeof(SocketServer));
-    public static readonly List<SocketClient> _clients = new();
-    public static IReadOnlyList<SocketClient> Clients => _clients.AsReadOnly();
+    
+    private readonly List<SocketClient> _clients = new();
+    public IReadOnlyList<SocketClient> Clients => _clients.AsReadOnly();
+    
     private readonly bool _useEncryption;
     private bool _shouldRun;
 
-    public SocketServer(bool useEncryption)
+    public SocketServer(bool useEncryption = true)
     {
         _useEncryption = useEncryption;
     }
@@ -24,48 +29,68 @@ public class SocketServer : ISocket
     {
         _shouldRun = true;
         
-        if (Socket?.Server.Connected == true)
+        if (_socket?.Server.Connected == true)
             return;
 
-        try
+        var attempts = 0;
+
+        while (attempts <= 5)
         {
-            _log.Debug($"Starting server on {ip}:{port} ... ({(_useEncryption ? "encrypted" : "unencrypted")})");
+            attempts++;
 
-            Socket = new TcpListener(IPAddress.Parse(ip), port);
-            Socket.Start(0);
+            _log.Debug($"Starting server on {ip}:{port} ... ({(_useEncryption ? "encrypted" : "unencrypted")}) (attempt #{attempts})");
 
-            _log.Debug($"Started server on {ip}:{port}");
+            try
+            {
+                _socket = new TcpListener(IPAddress.Parse(ip), port);
+                _socket.Start(0);
 
-            // Run on a new thread so that the main thread does not have to wait until a connection is made
-            Task.Run(async () => await AcceptConnection());
-        }
-        catch (Exception ex)
-        {
-            _log.Warning(ex,$"Could not start server on {ip}:{port}");
+                _log.Debug($"Started server on {ip}:{port}");
+
+                // Run on a new thread so that the main thread does not have to wait until a connection is made
+                Task.Run(async () => await AcceptConnection());
+
+                break;
+            }
+            catch (Exception ex)
+            {
+                if (attempts == 5)
+                {
+                    _log.Error(ex, $"Could not start server on {ip}:{port}");
+                    throw;
+                }
+
+                _log.Warning(ex, $"Could not start server on {ip}:{port} ... retrying");
+            }
+
+            await Task.Delay(1000);
         }
     }
-
-    public static SocketClient Localclient;
     
     private async Task AcceptConnection()
     {
         while (_shouldRun)
         {
             try
-            {
-                if (Socket == null) throw new NullReferenceException("Listener is null");
+            { 
+                if (_socket == null) throw new NullReferenceException("Listener is null");
 
-                var socket = await Socket.AcceptTcpClientAsync();
+                var socket = await _socket.AcceptTcpClientAsync();
                 
                 _log.Debug($"Socket client connected");
                 
                  var client = SocketClient.CreateFromSocket(socket, _useEncryption);
-                 Localclient = client;
-                client.OnMessage += (sender, message) => OnMessage?.Invoke(this, (client, message));
-                client.OnDisconnect += (sender, args) => OnClientDisconnected?.Invoke(this, client);
-                _clients.Add(client);
-
-                Task.Run(() => { OnClientConnected?.Invoke(this, client); });
+                 
+                 client.OnMessage += (sender, message) => OnMessage?.Invoke(this, (client, message));
+                 client.OnDisconnect += (sender, args) => 
+                 {
+                     _log.Debug("Server speaking: Removing client ... ");
+                    OnClientDisconnected?.Invoke(this, client);
+                    _clients.RemoveAt(_clients.FindIndex(x => x.Id == client.Id));
+                 };
+                
+                 _clients.Add(client);
+                 OnClientConnected?.Invoke(this, client);
             }
             catch (Exception ex)
             {
@@ -90,15 +115,24 @@ public class SocketServer : ISocket
     
     public async Task BroadcastAsync(string text)
     {
-        foreach (var client in Clients.Where(x => x.Socket.Connected))
+        foreach (var client in _clients)
         {
             await client.SendAsync(text);
         }
     }
 
-    public async Task DisconnectAsync()
+    public Task DisconnectAsync()
     {
-        _shouldRun = false;
-        Socket.Stop();
+        return Task.Run(async () =>
+        {
+            _log.Debug("Disconnecting server");
+            
+            _shouldRun = false;
+
+            while (_socket != null && _clients.Count > 0)
+                await Task.Delay(10);
+            
+            _socket?.Stop();
+        });
     }
 }

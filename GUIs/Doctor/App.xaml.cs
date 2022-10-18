@@ -1,5 +1,3 @@
-using System.Windows;
-
 namespace RemoteHealthcare.GUIs.Doctor
 {
     /// <summary>
