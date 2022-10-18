@@ -1,4 +1,5 @@
-namespace RemoteHealthcare.GUIs.Patient.ViewModels{
+namespace RemoteHealthcare.GUIs.Patient.ViewModels {
+    
 public class MainViewModel : BaseViewModel
 {
     private readonly NavigationStore _navigationStore;

@@ -10,9 +10,9 @@ public class StartSessieCommand : BaseCommand
     private Client _client;
     private DoctorViewModel _viewModel;
     
-    public StartSessieCommand()
+    public StartSessieCommand(Client client)
     {
-        
+        _client = client;
     }
 
     public override void Execute(object? parameter)

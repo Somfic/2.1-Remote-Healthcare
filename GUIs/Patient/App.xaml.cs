@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using RemoteHealthcare.GUIs.Doctor.ViewModels;
 using RemoteHealthcare.GUIs.Patient.ViewModels;
 
 namespace RemoteHealthcare.GUIs.Patient

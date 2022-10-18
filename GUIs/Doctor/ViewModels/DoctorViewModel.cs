@@ -41,7 +41,7 @@ public class DoctorViewModel : ObservableObject
         chatMessages = new ObservableCollection<string>();
         EmergencyStop = new EmergencyStopCommand();
         SendChatMessage = new SendChatMessageCommand(_client, this);
-        StartSessieCommand = new StartSessieCommand();
+        StartSessieCommand = new StartSessieCommand(_client);
     }
 
     public Patient CurrentUser
