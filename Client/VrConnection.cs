@@ -6,15 +6,15 @@ namespace RemoteHealthcare.Client
 {
     public class VrConnection
     {
-        BikeDataProvider bike;
-        HeartDataProvider heart;
-        EngineConnection engine;
+        BikeDataProvider _bike;
+        HeartDataProvider _heart;
+        EngineConnection _engine;
 
         public VrConnection(BikeDataProvider bike, HeartDataProvider heart, EngineConnection engine)
         {
-            this.bike = bike;
-            this.heart = heart;
-            this.engine = engine;
+            this._bike = bike;
+            this._heart = heart;
+            this._engine = engine;
 
             
 
@@ -34,7 +34,7 @@ namespace RemoteHealthcare.Client
         {
             while (true)
             {
-                await bike.ProcessRawData();
+                await _bike.ProcessRawData();
                 ///uncommend
                 //await engine.ChangeBikeSpeed(bike.GetData().Speed); 
                 Thread.Sleep(300);
@@ -48,7 +48,7 @@ namespace RemoteHealthcare.Client
                 data[12] = (byte)checksum;
                 
                 Console.WriteLine(BitConverter.ToString(data));
-                await bike.SendMessage(data);
+                await _bike.SendMessage(data);
             }
         }
     }

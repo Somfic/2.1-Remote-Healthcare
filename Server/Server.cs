@@ -12,17 +12,17 @@ public class Server
 
     private readonly SocketServer _server = new(true);
     private readonly Log _log = new(typeof(Server));
-    public static PatientData _patientData { get; set; }
-    public static DoctorData _doctorData { get; set; }
-    public static List<ServerClient> _connectedClients { get; private set; } = new List<ServerClient>();
+    public static PatientData PatientData { get; set; }
+    public static DoctorData DoctorData { get; set; }
+    public static List<ServerClient> ConnectedClients { get; private set; } = new List<ServerClient>();
     
-    public static IReadOnlyList<ServerClient> Clients => _connectedClients.AsReadOnly();
+    public static IReadOnlyList<ServerClient> Clients => ConnectedClients.AsReadOnly();
 
 
     public async Task StartAsync()
     {
-        _patientData = new PatientData();
-        _doctorData = new DoctorData();
+        PatientData = new PatientData();
+        DoctorData = new DoctorData();
         
         _server.OnClientConnected += async (sender, e) => await OnClientConnectedAsync(e);
         _server.OnClientDisconnected += async (sender, e) => await OnClientDisconnectedAsync(e);
@@ -34,13 +34,13 @@ public class Server
 
     private async Task OnClientDisconnectedAsync(SocketClient socketClient)
     {
-        _connectedClients.Remove(_connectedClients.Find(x => x.Client.Id == socketClient.Id));
+        ConnectedClients.Remove(ConnectedClients.Find(x => x.Client.Id == socketClient.Id));
     }
 
     private async Task OnClientConnectedAsync(SocketClient client)
     {
         _log.Information($"Client connected: {client.EndPoint}");
-        _connectedClients.Add(new ServerClient(client));
+        ConnectedClients.Add(new ServerClient(client));
 
         Console.WriteLine("ALLE HUIDIGE TCP-USER ZIJN:");
         foreach (SocketClient user in _server.Clients)
@@ -59,13 +59,13 @@ public class Server
 
     internal static void Disconnect(ServerClient client)
     {
-        if (!_connectedClients.Contains(client))
+        if (!ConnectedClients.Contains(client))
             return;
         Console.WriteLine("Disconnecting a client now");
-        _connectedClients.Remove(client);
+        ConnectedClients.Remove(client);
     }
 
-    internal void printUsers()
+    internal void PrintUsers()
     {
         Console.WriteLine("ALLE HUIDIGDE USER NA DE DISCONNECT ZIJN:");
         foreach (SocketClient user in _server.Clients)
@@ -77,7 +77,7 @@ public class Server
         
         Console.WriteLine("ALLE HUIDIGE ServerClients-USER NA DE DISCONNECT ZIJN:");
         
-        foreach (ServerClient user in _connectedClients)
+        foreach (ServerClient user in ConnectedClients)
         {
             Console.WriteLine("_connected Clients:  " +user);
         }

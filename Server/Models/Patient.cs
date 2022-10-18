@@ -11,9 +11,9 @@ public class Patient
     internal string? Nickname { get; set; }
     internal string Password { get; set; }
 
-    public Patient(string user_id, string password)
+    public Patient(string userId, string password)
     {
-        UserId = user_id;
+        UserId = userId;
         Password = password;
         Nickname = "test";
         Sessions = new List<SessionData>();

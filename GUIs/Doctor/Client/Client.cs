@@ -6,20 +6,20 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 {
     public class Client
     {
-        public SocketClient _client { get; set; } = new(true);
+        public SocketClient Client { get; set; } = new(true);
         private List<string> _connected;
         private Log _log = new(typeof(Client));
 
-        public string password { get; set; }
-        public string username { get; set; }
-        public bool loggedIn { get; set; }
+        public string Password { get; set; }
+        public string Username { get; set; }
+        public bool LoggedIn { get; set; }
         private string _userId;
 
         private Dictionary<string, Action<DataPacket>> _functions = new();
 
         public Client()
         {
-            loggedIn = false;
+            LoggedIn = false;
             _functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
@@ -30,7 +30,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
 
-            _client.OnMessage += (sender, data) =>
+            Client.OnMessage += (sender, data) =>
             {
                 var packet = JsonConvert.DeserializeObject<DataPacket>(data);
                 HandleData(packet);
@@ -42,7 +42,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             while (true)
             {
                 //if the user isn't logged in, the user cant send any command to the server
-                if (loggedIn)
+                if (LoggedIn)
                 {
                     _log.Information("Voer een commando in om naar de server te sturen: \r\n" +
                                      "[BERICHT] [START SESSIE] [STOP SESSIE] [NOODSTOP]");
@@ -56,28 +56,28 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                     {
                         var req = new DataPacket<SessionStartPacketRequest>
                         {
-                            OpperationCode = OperationCodes.SESSION_START,
+                            OpperationCode = OperationCodes.SessionStart,
                         };
 
-                        await _client.SendAsync(req);
+                        await Client.SendAsync(req);
                     }
                     else if (userCommand.ToLower().Contains(("stop")) && userCommand.ToLower().Contains("Sessie"))
                     {
                         DataPacket<SessionStopPacketRequest> req = new DataPacket<SessionStopPacketRequest>
                         {
-                            OpperationCode = OperationCodes.SESSION_STOP,
+                            OpperationCode = OperationCodes.SessionStop,
                         };
 
-                        await _client.SendAsync(req);
+                        await Client.SendAsync(req);
                     }
                     else if (userCommand.ToLower().Equals("noodstop"))
                     {
                         var req = new DataPacket<EmergencyStopPacketRequest>
                         {
-                            OpperationCode = OperationCodes.EMERGENCY_STOP,
+                            OpperationCode = OperationCodes.EmergencyStop,
                         };
 
-                        await _client.SendAsync(req);
+                        await Client.SendAsync(req);
                     }
                     else
                     {
@@ -89,7 +89,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
         private async void SendChatAsync()
         {
-            await requestClients();
+            await RequestClients();
             
             /* This is a while loop that will do nothing until connected is filled */
             while (_connected.Count == 0)
@@ -125,16 +125,16 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
             var req = new DataPacket<ChatPacketRequest>
             {
-                OpperationCode = OperationCodes.CHAT,
-                data = new ChatPacketRequest()
+                OpperationCode = OperationCodes.Chat,
+                Data = new ChatPacketRequest()
                 {
-                    senderId = _userId,
-                    receiverId = target,
-                    message = chatInput
+                    SenderId = _userId,
+                    ReceiverId = target,
+                    Message = chatInput
                 }
             };
 
-            await _client.SendAsync(req);
+            await Client.SendAsync(req);
         }
 
         /// <summary>
@@ -156,34 +156,34 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             return true;
         }
 
-        private async Task requestClients()
+        private async Task RequestClients()
         {
             if (_connected != null)
                 _connected.Clear();
             var req = new DataPacket<ConnectedClientsPacketRequest>
             {
-                OpperationCode = OperationCodes.USERS
+                OpperationCode = OperationCodes.Users
             };
 
-            await _client.SendAsync(req);
+            await Client.SendAsync(req);
         }
 
         public async Task AskForLoginAsync()
         {
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
-                OpperationCode = OperationCodes.LOGIN,
-                data = new LoginPacketRequest()
+                OpperationCode = OperationCodes.Login,
+                Data = new LoginPacketRequest()
                 {
-                    username = username,
-                    password = password,
-                    isDoctor = true
+                    Username = Username,
+                    Password = Password,
+                    IsDoctor = true
                 }
             };
 
             _log.Debug(loginReq.ToJson());
             
-            await _client.SendAsync(loginReq);
+            await Client.SendAsync(loginReq);
         }
 
         //this methode will get the right methode that will be used for the response from the server
@@ -203,37 +203,37 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
-            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
+            _log.Information(obj.GetData<SessionStopPacketResponse>().Message);
         }
 
         //the methode for the emergency stop request
         private void EmergencyStopHandler(DataPacket obj)
         {
-            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
+            _log.Information(obj.GetData<SessionStopPacketResponse>().Message);
         }
 
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            _log.Information(obj.GetData<SessionStartPacketResponse>().message);
+            _log.Information(obj.GetData<SessionStartPacketResponse>().Message);
         }
 
         //the methode for the send chat request
         private void ChatHandler(DataPacket packetData)
         {
             _log.Information(
-                $"Incomming message: {packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+                $"Incomming message: {packetData.GetData<ChatPacketResponse>().SenderId}: {packetData.GetData<ChatPacketResponse>().Message}");
         }
 
         private void RequestConnectionsFeature(DataPacket packetData)
         {
             _log.Debug(packetData.ToJson());
-            if (((int)packetData.GetData<ConnectedClientsPacketResponse>().statusCode).Equals(200))
+            if (((int)packetData.GetData<ConnectedClientsPacketResponse>().StatusCode).Equals(200))
             {
                 // _log.Debug(_connected.Count.ToString());
                 // _connected.RemoveRange(0, _connected.Count - 1);
                 // _log.Debug(_connected.Count.ToString());
-                _connected = packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Split(";").ToList();
+                _connected = packetData.GetData<ConnectedClientsPacketResponse>().ConnectedIds.Split(";").ToList();
                 _log.Critical(_connected.Count.ToString());
             }
         }
@@ -242,16 +242,16 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         private void LoginFeature(DataPacket packetData)
         {
             _log.Debug($"Responce: {packetData.ToJson()}");
-            if (((int)packetData.GetData<LoginPacketResponse>().statusCode).Equals(200))
+            if (((int)packetData.GetData<LoginPacketResponse>().StatusCode).Equals(200))
             {
-                _userId = packetData.GetData<LoginPacketResponse>().userId;
-                _log.Information($"Succesfully logged in to the user: {username}; {password}; {_userId}.");
-                loggedIn = true;
+                _userId = packetData.GetData<LoginPacketResponse>().UserId;
+                _log.Information($"Succesfully logged in to the user: {Username}; {Password}; {_userId}.");
+                LoggedIn = true;
             }
             else
             {
-                _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
-                           packetData.GetData<LoginPacketResponse>().message);
+                _log.Error(packetData.GetData<LoginPacketResponse>().StatusCode + "; " +
+                           packetData.GetData<LoginPacketResponse>().Message);
             }
         }
     }

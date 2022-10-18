@@ -13,8 +13,8 @@ namespace RemoteHealthcare.Client.Client
         private bool _loggedIn;
         private string _password;
         private string _username;
-        private string userId;
-        private string doctorId;
+        private string _userId;
+        private string _doctorId;
         
         private Dictionary<string, Action<DataPacket>> _functions;
 
@@ -52,17 +52,17 @@ namespace RemoteHealthcare.Client.Client
                     if (command.ToLower().Equals("bericht"))
                     {
                         _log.Information("Voer uw bericht in: ");
-                        string ChatMessage = Console.ReadLine();
+                        string chatMessage = Console.ReadLine();
 
                         var req = new DataPacket<ChatPacketRequest>
                         {
-                            OpperationCode = OperationCodes.CHAT,
+                            OpperationCode = OperationCodes.Chat,
                             
-                            data = new ChatPacketRequest()
+                            Data = new ChatPacketRequest()
                             {
-                                senderId = userId,
-                                receiverId = null,
-                                message = ChatMessage
+                                SenderId = _userId,
+                                ReceiverId = null,
+                                Message = chatMessage
                             }
                         };
 
@@ -72,13 +72,13 @@ namespace RemoteHealthcare.Client.Client
                     {
                         var req = new DataPacket<EmergencyStopPacketRequest>
                         {
-                            OpperationCode = OperationCodes.EMERGENCY_STOP,
+                            OpperationCode = OperationCodes.EmergencyStop,
                         };
 
                     }else if (command.ToLower().Contains("verbreek") && command.ToLower().Contains("verbinding")) {
 
                         var req = new DataPacket<DisconnectPacketRequest> {
-                            OpperationCode = OperationCodes.DISCONNECT
+                            OpperationCode = OperationCodes.Disconnect
                         };
 
                         await _client.SendAsync(req);
@@ -101,12 +101,12 @@ namespace RemoteHealthcare.Client.Client
 
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
-                OpperationCode = OperationCodes.LOGIN,
-                data = new LoginPacketRequest()
+                OpperationCode = OperationCodes.Login,
+                Data = new LoginPacketRequest()
                 {
-                    username = _username,
-                    password = _password,
-                    isDoctor = false
+                    Username = _username,
+                    Password = _password,
+                    IsDoctor = false
                 }
             };
 
@@ -129,42 +129,42 @@ namespace RemoteHealthcare.Client.Client
 
         private void DisconnectHandler(DataPacket obj)
         {
-            Console.WriteLine(obj.GetData<DisconnectPacketResponse>().message);
+            Console.WriteLine(obj.GetData<DisconnectPacketResponse>().Message);
         }
 
         //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
-            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
+            _log.Information(obj.GetData<SessionStopPacketResponse>().Message);
         }
 
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            _log.Information(obj.GetData<SessionStartPacketResponse>().message);
+            _log.Information(obj.GetData<SessionStartPacketResponse>().Message);
         }
 
         //the methode for the send chat request
         private void ChatHandler(DataPacket packetData)
         {
-            _log.Information($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+            _log.Information($"{packetData.GetData<ChatPacketResponse>().SenderId}: {packetData.GetData<ChatPacketResponse>().Message}");
         }
 
         //the methode for the login request
         private void LoginFeature(DataPacket packetData)
         {
             _log.Debug($"Responce: {packetData.ToJson()}");
-            int statusCode = (int)packetData.GetData<LoginPacketResponse>().statusCode;
+            int statusCode = (int)packetData.GetData<LoginPacketResponse>().StatusCode;
             if (statusCode.Equals(200))
             {
-                userId = packetData.GetData<LoginPacketResponse>().userId;
-                _log.Information($"Succesfully logged in to the user: {_username}; {_password}; {userId}.");
+                _userId = packetData.GetData<LoginPacketResponse>().UserId;
+                _log.Information($"Succesfully logged in to the user: {_username}; {_password}; {_userId}.");
                 _loggedIn = true;
             }
             else
             {
-                _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
-                           packetData.GetData<LoginPacketResponse>().message);
+                _log.Error(packetData.GetData<LoginPacketResponse>().StatusCode + "; " +
+                           packetData.GetData<LoginPacketResponse>().Message);
                 AskForLoginAsync();
             }
         }

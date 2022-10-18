@@ -3,16 +3,16 @@ using RemoteHealthcare.Server.Models;
 
 namespace Server
 {
-    public class LoginIO
+    public class LoginIo
     {
         public static List<Patient> AllUsersInList = new List<Patient>();
-        public string path = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "AllUsers.json");
+        public string Path = System.IO.Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "AllUsers.json");
         
 
 
-        public static Patient readUsersFromJson()
+        public static Patient ReadUsersFromJson()
         {
-            string path = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "AllUsers.json"); ;
+            string path = System.IO.Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "AllUsers.json"); ;
 
             string returnAllUsersFromText = File.ReadAllText(path);
 

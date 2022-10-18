@@ -11,7 +11,7 @@ public class PatientData
         Patients = new List<Patient>();
     }
     
-    public static List<Patient> readUsersFromJson()
+    public static List<Patient> ReadUsersFromJson()
     {
         string path = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "AllUsers.json");
         
@@ -32,7 +32,7 @@ public class PatientData
     /// </returns>
     public bool MatchLoginData(Patient patient)
     {
-        Patients = readUsersFromJson();
+        Patients = ReadUsersFromJson();
         
         //Checks if the Patient parameter exists in the AllUsers.json with LINQ
         if (Patients.Exists(name => name.Password == patient.Password && name.UserId == patient.UserId))

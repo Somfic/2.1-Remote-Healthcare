@@ -15,7 +15,7 @@ public abstract class DAbstract
 public class DataPacket<T> : DAbstract where T : DAbstract
 {
     public string OpperationCode;
-    public T data;
+    public T Data;
 }
 
 //DataPacket is the fundament for the specific packets
@@ -25,56 +25,56 @@ public class DataPacket : DAbstract
     
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     
-    private JObject data;
+    private JObject _data;
 
     public T GetData<T>() where T : DAbstract
     {
-        return this.data.ToObject<T>();
+        return this._data.ToObject<T>();
     }
 }
     
 public class ErrorPacket : DAbstract
 {
-    public StatusCodes statusCode;
+    public StatusCodes StatusCode;
 }
 
 public class LoginPacketRequest : DAbstract
 {
-    public string username;
-    public string password;
-    public bool isDoctor;
+    public string Username;
+    public string Password;
+    public bool IsDoctor;
 }
 
 public class LoginPacketResponse : DAbstract
 {
-    public string userId;
-    public StatusCodes statusCode;
-    public string message;
+    public string UserId;
+    public StatusCodes StatusCode;
+    public string Message;
 }
 
 public class ConnectedClientsPacketRequest : DAbstract
 {
-    public string operationCode;
+    public string OperationCode;
 }
 
 public class ConnectedClientsPacketResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public string connectedIds;
+    public StatusCodes StatusCode;
+    public string ConnectedIds;
 }
 
 public class ChatPacketRequest : DAbstract
 {
-    public string senderId;
-    public string receiverId;
-    public string message;
+    public string SenderId;
+    public string ReceiverId;
+    public string Message;
 }
 
 public class ChatPacketResponse : DAbstract
 {
-    public string senderId;
-    public StatusCodes statusCode;
-    public string message;
+    public string SenderId;
+    public StatusCodes StatusCode;
+    public string Message;
 }
 
 public class SessionStartPacketRequest : DAbstract
@@ -84,8 +84,8 @@ public class SessionStartPacketRequest : DAbstract
 
 public class SessionStartPacketResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public string message;
+    public StatusCodes StatusCode;
+    public string Message;
 }
 
 public class SessionStopPacketRequest : DAbstract
@@ -95,8 +95,8 @@ public class SessionStopPacketRequest : DAbstract
 
 public class SessionStopPacketResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public string message;
+    public StatusCodes StatusCode;
+    public string Message;
 }
 
 public class EmergencyStopPacketRequest : DAbstract
@@ -106,8 +106,8 @@ public class EmergencyStopPacketRequest : DAbstract
 
 public class EmergencyStopPacketResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public string message;
+    public StatusCodes StatusCode;
+    public string Message;
 }
 public class DisconnectPacketRequest : DAbstract
 {
@@ -116,6 +116,6 @@ public class DisconnectPacketRequest : DAbstract
 
 public class DisconnectPacketResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public string message;
+    public StatusCodes StatusCode;
+    public string Message;
 }

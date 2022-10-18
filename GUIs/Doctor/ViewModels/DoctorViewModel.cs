@@ -8,7 +8,7 @@ public class DoctorViewModel : ObservableObject
     private string _doctorName;
     private UserModel _currentUser;
     private ObservableCollection<Patient> _users;
-    private ObservableCollection<string> chatMessages;
+    private ObservableCollection<string> _chatMessages;
     private ChartValues<float> _speedData;
 
     public DoctorViewModel()
@@ -30,8 +30,8 @@ public class DoctorViewModel : ObservableObject
 
     public ObservableCollection<string> ChatMessages
     {
-        get => chatMessages;
-        set => chatMessages = value;
+        get => _chatMessages;
+        set => _chatMessages = value;
     }
 
     public ObservableCollection<Patient> Users

@@ -6,24 +6,24 @@ namespace RemoteHealthcare.Server.Models;
 public class Doctor
 {
     
-    public List<SessionData> _sessions { get; set; }
+    public List<SessionData> Sessions { get; set; }
     internal string Username { get; set; }
     internal string UserId { get; set; }
     internal string Password { get; set; }
 
-    public Doctor(string user, string pass, string UserId)
+    public Doctor(string user, string pass, string userId)
     {
         this.Username = user;
         this.Password = pass;
-        this.UserId = UserId;
-        this._sessions = new List<SessionData>();
+        this.UserId = userId;
+        this.Sessions = new List<SessionData>();
     }
 
     public void SaveSessionData(string foldername)
     {
         string pathString = Path.Combine(foldername, Username);
         Directory.CreateDirectory(pathString);
-        foreach (var session in _sessions)
+        foreach (var session in Sessions)
         {
             string filename = session.Id;
             string json = JsonConvert.SerializeObject(session);
