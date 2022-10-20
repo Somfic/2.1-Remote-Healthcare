@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Navigation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
@@ -15,13 +14,10 @@ namespace RemoteHealthcare.GUIs.Doctor
     public class Client
     {
         public SocketClient _client { get; set; } = new(true);
-        
-        private List<string> _connected;
-        
-        public List<Patient> _patientList;
-        
+        private List<string> _connected = new();
         private Log _log = new(typeof(Client));
 
+        public List<Patient> _patientList;
         public string password { get; set; }
         public string username { get; set; }
         public bool loggedIn { get; set; }
@@ -32,8 +28,8 @@ namespace RemoteHealthcare.GUIs.Doctor
         public Client()
         {
             loggedIn = false;
-            _patientList = new List<Patient>();
             _functions = new Dictionary<string, Action<DataPacket>>();
+            _patientList = new List<Patient>();
 
             //Adds for each key an callback methode in the dictionary 
             _functions.Add("login", LoginFeature);
@@ -64,7 +60,7 @@ namespace RemoteHealthcare.GUIs.Doctor
 
                     if (userCommand.ToLower().Equals("bericht"))
                     {
-                        //SendChatAsync();
+                        await requestClients();
                     }
                     else if (userCommand.ToLower().Equals("start") && userCommand.ToLower().Equals("sessie"))
                     {
@@ -72,6 +68,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                         {
                             OpperationCode = OperationCodes.SESSION_START,
                         };
+                        _log.Warning($"sending {req.ToJson()}");
 
                         await _client.SendAsync(req);
                     }
@@ -81,6 +78,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                         {
                             OpperationCode = OperationCodes.SESSION_STOP,
                         };
+                        _log.Warning($"sending {req.ToJson()}");
 
                         await _client.SendAsync(req);
                     }
@@ -90,6 +88,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                         {
                             OpperationCode = OperationCodes.EMERGENCY_STOP,
                         };
+                        _log.Warning($"sending {req.ToJson()}");
 
                         await _client.SendAsync(req);
                     }
@@ -101,17 +100,11 @@ namespace RemoteHealthcare.GUIs.Doctor
             }
         }
 
-        public async void SendChatAsync(string target, string chatInput)
+        public async Task SendChatAsync(string? target = null, string? chatInput = null)
         {
-            await requestClients();
-            
-            /*/* This is a while loop that will do nothing until connected is filled #1#
-            while (_connected.Count == 0)
-            {
-                _log.Debug("Loading...");
-            }
-            _log.Information("escaped loading");
-            string savedConnections = " ";
+            _log.Debug("SendChatAsync(): entered");
+
+            /*string savedConnections = " ";
             foreach (string id in _connected)
             {
                 savedConnections += id + "; ";
@@ -121,8 +114,8 @@ namespace RemoteHealthcare.GUIs.Doctor
             string? target = 0000 + "";
 
             /* This is a while loop that will keep asking for a target until the target is in the list of connected
-            clients. #1#
-            while (!_connected.Contains(target) && !target.Contains(";"))
+            clients. */
+            /*while (!_connected.Contains(target) && !target.Contains(";"))
             {
                 _log.Information($"Voor welk accountnummer is dit bedoeld? Voor meerdere accountnummers tegelijk, " +
                                  $"gebruik een ; tussen de nummers. Kies uit de volgende beschikbare " +
@@ -133,7 +126,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                 if (CheckTargets(target.Split(";").ToList(), _connected))
                     break;
             }
-
+            
             _log.Information("Voer uw bericht in: ");
             String chatInput = Console.ReadLine();*/
 
@@ -147,6 +140,8 @@ namespace RemoteHealthcare.GUIs.Doctor
                     message = chatInput
                 }
             };
+
+            _log.Warning($"sending {req.ToJson()}");
 
             await _client.SendAsync(req);
         }
@@ -172,19 +167,23 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         private async Task requestClients()
         {
+            _log.Debug(_connected.Count.ToString());
             if (_connected != null)
                 _connected.Clear();
+            _log.Debug(_connected.Count.ToString());
             var req = new DataPacket<ConnectedClientsPacketRequest>
             {
-                OpperationCode = OperationCodes.USERS
+                OpperationCode = OperationCodes.USERS,
+                data = new ConnectedClientsPacketRequest()
+                {
+                    requester = _userId
+                }
             };
+            _log.Warning($"sending {req.ToJson()}");
 
             await _client.SendAsync(req);
         }
 
-        /// <summary>
-        /// It sends a login request to the server.
-        /// </summary>
         public async Task AskForLoginAsync()
         {
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
@@ -198,8 +197,8 @@ namespace RemoteHealthcare.GUIs.Doctor
                 }
             };
 
-            _log.Debug(loginReq.ToJson());
-            
+            _log.Warning($"sending {loginReq.ToJson()}");
+
             await _client.SendAsync(loginReq);
         }
 
@@ -216,6 +215,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         //this methode will get the right methode that will be used for the response from the server
         public void HandleData(DataPacket packet)
         {
+            _log.Warning($"Received: {packet.ToJson()}");
             //Checks if the OppCode (OperationCode) does exist.
             if (_functions.TryGetValue(packet.OpperationCode, out var action))
             {
@@ -245,7 +245,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             _log.Information(obj.GetData<SessionStartPacketResponse>().message);
         }
 
-        //the methode for the send chat request
+        //the methode for printing out the received message
         private void ChatHandler(DataPacket packetData)
         {
             _log.Information(
@@ -254,21 +254,18 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         private void RequestConnectionsFeature(DataPacket packetData)
         {
-            _log.Debug(packetData.ToJson());
             if (((int)packetData.GetData<ConnectedClientsPacketResponse>().statusCode).Equals(200))
             {
-                // _log.Debug(_connected.Count.ToString());
-                // _connected.RemoveRange(0, _connected.Count - 1);
-                // _log.Debug(_connected.Count.ToString());
                 _connected = packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Split(";").ToList();
-                _log.Critical(_connected.Count.ToString());
+                _log.Warning($"RequestConnectionsFeature(): {_connected.Count.ToString()}");
+
+                SendChatAsync();
             }
         }
 
         //the methode for the login request
         private void LoginFeature(DataPacket packetData)
         {
-            _log.Debug($"Responce: {packetData.ToJson()}");
             if (((int)packetData.GetData<LoginPacketResponse>().statusCode).Equals(200))
             {
                 _userId = packetData.GetData<LoginPacketResponse>().userId;
@@ -281,7 +278,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                            packetData.GetData<LoginPacketResponse>().message);
             }
         }
-        
+
         /// <summary>
         /// It gets all the patient data from the server and adds it to a list
         /// </summary>
@@ -299,7 +296,6 @@ namespace RemoteHealthcare.GUIs.Doctor
                 Patient patient = jObject.ToObject<Patient>();
                 _patientList.Add(patient);
             }
-            
         }
     }
 }
