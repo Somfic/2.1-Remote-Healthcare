@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
@@ -28,6 +29,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             loggedIn = false;
             _functions = new Dictionary<string, Action<DataPacket>>();
+            _patientList = new List<Patient>();
 
             //Adds for each key an callback methode in the dictionary 
             _functions.Add("login", LoginFeature);
@@ -36,6 +38,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
+            _functions.Add("get patient data", GetPatientDataHandler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -88,7 +91,6 @@ namespace RemoteHealthcare.GUIs.Doctor
                         _log.Warning($"sending {req.ToJson()}");
 
                         await _client.SendAsync(req);
-
                     }
                     else
                     {
@@ -98,10 +100,11 @@ namespace RemoteHealthcare.GUIs.Doctor
             }
         }
 
-        private async Task SendChatAsync()
+        public async Task SendChatAsync(string? target = null, string? chatInput = null)
         {
-           _log.Debug("SendChatAsync(): entered");
-            string savedConnections = " ";
+            _log.Debug("SendChatAsync(): entered");
+
+            /*string savedConnections = " ";
             foreach (string id in _connected)
             {
                 savedConnections += id + "; ";
@@ -112,7 +115,7 @@ namespace RemoteHealthcare.GUIs.Doctor
 
             /* This is a while loop that will keep asking for a target until the target is in the list of connected
             clients. */
-            while (!_connected.Contains(target) && !target.Contains(";"))
+            /*while (!_connected.Contains(target) && !target.Contains(";"))
             {
                 _log.Information($"Voor welk accountnummer is dit bedoeld? Voor meerdere accountnummers tegelijk, " +
                                  $"gebruik een ; tussen de nummers. Kies uit de volgende beschikbare " +
@@ -123,9 +126,9 @@ namespace RemoteHealthcare.GUIs.Doctor
                 if (CheckTargets(target.Split(";").ToList(), _connected))
                     break;
             }
-
+            
             _log.Information("Voer uw bericht in: ");
-            String chatInput = Console.ReadLine();
+            String chatInput = Console.ReadLine();*/
 
             var req = new DataPacket<ChatPacketRequest>
             {
@@ -137,7 +140,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                     message = chatInput
                 }
             };
-            
+
             _log.Warning($"sending {req.ToJson()}");
 
             await _client.SendAsync(req);
@@ -195,8 +198,18 @@ namespace RemoteHealthcare.GUIs.Doctor
             };
 
             _log.Warning($"sending {loginReq.ToJson()}");
-            
+
             await _client.SendAsync(loginReq);
+        }
+
+        public async Task RequestPatientDataAsync()
+        {
+            DataPacket<GetAllPatientsDataRequest> patientReq = new DataPacket<GetAllPatientsDataRequest>
+            {
+                OpperationCode = OperationCodes.GET_PATIENT_DATA
+            };
+
+            await _client.SendAsync(patientReq);
         }
 
         //this methode will get the right methode that will be used for the response from the server
@@ -263,6 +276,25 @@ namespace RemoteHealthcare.GUIs.Doctor
             {
                 _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
                            packetData.GetData<LoginPacketResponse>().message);
+            }
+        }
+
+        /// <summary>
+        /// It gets all the patient data from the server and adds it to a list
+        /// </summary>
+        /// <param name="DataPacket">This is the object that is sent from the server to the client. It contains the data
+        /// that is sent from the server.</param>
+        private void GetPatientDataHandler(DataPacket packetData)
+        {
+            _log.Debug($"Got all patientdata from server: {packetData.OpperationCode}");
+            _log.Debug($"Received: {packetData.ToJson()}");
+
+            JObject[] jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
+
+            foreach (JObject jObject in jObjects)
+            {
+                Patient patient = jObject.ToObject<Patient>();
+                _patientList.Add(patient);
             }
         }
     }
