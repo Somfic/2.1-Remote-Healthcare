@@ -21,11 +21,7 @@ public class StartSessieCommand : BaseCommand
         _client._client.SendAsync(new DataPacket<SessionStartPacketRequest>
         {
             OpperationCode = OperationCodes.SESSION_START,
-
-            data = new SessionStartPacketRequest()
-            {
-                userId = 06111
-            }
+            
         });
     }
 

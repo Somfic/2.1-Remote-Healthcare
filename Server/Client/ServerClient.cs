@@ -316,7 +316,17 @@ namespace RemoteHealthcare.Server.Client
             Console.WriteLine("gevonden id: " + tt._userId);
             Console.WriteLine("gevonden name: " + tt.UserName);
             
-            //tt.SendData();
+            tt.SendData(new DataPacket<SessionStartPacketResponse>
+            {
+                OpperationCode = OperationCodes.SESSION_START,
+
+                data = new SessionStartPacketResponse()
+                {
+                    statusCode = StatusCodes.OK,
+                    message = "Sessie wordt nu gestartdsfdfsdsfdfs."
+                }
+            });
+            
             
             /*SendData(new DataPacket<SessionStartPacketResponse>
             {

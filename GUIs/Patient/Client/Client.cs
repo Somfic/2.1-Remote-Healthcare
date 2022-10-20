@@ -189,6 +189,12 @@ namespace RemoteHealthcare.Client.Client
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
+            Console.WriteLine("maskjfugas sjakdfgsjhdafk jlhsdgfjhsdf jshdfgjhsdfg sdjfgsdjhf");
+            while (true)
+            {
+                Console.WriteLine("sessie gestart");
+                Thread.Sleep(500);
+            }
             _log.Information(obj.GetData<SessionStartPacketResponse>().message);
         }
 
