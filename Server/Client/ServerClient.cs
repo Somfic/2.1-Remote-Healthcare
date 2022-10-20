@@ -64,7 +64,7 @@ namespace RemoteHealthcare.Server.Client
         //The parameter is an JsonFile object
         private void SendData(DAbstract packet, string? targetId = null)
         {
-            _log.Debug($"sending: {packet.ToJson()}");
+            _log.Critical($"sending (single target): {packet.ToJson()} \\nTarget: {targetId}");
 
             if (packet.ToJson().Contains("chat"))
             {
@@ -72,7 +72,6 @@ namespace RemoteHealthcare.Server.Client
             }
             else
             {
-                _log.Warning($"Client: {_userId}; Is Doctor: {_isDoctor}");
                 _client.SendAsync(packet).GetAwaiter().GetResult();
             }
         }
@@ -81,7 +80,7 @@ namespace RemoteHealthcare.Server.Client
         //The parameter is an JsonFile object
         private void SendData(DAbstract packet, List<string> targetIds)
         {
-            _log.Debug($"sending: {packet.ToJson()}");
+            _log.Critical($"sending (multiple targets): {packet.ToJson()}");
             if (packet.ToJson().Contains("chat"))
             {
                 foreach (string targetId in targetIds)
@@ -92,19 +91,17 @@ namespace RemoteHealthcare.Server.Client
         //If userid == null, then search for doctor otherwise search for patient
         private ServerClient calculateTarget(string? userId = null)
         {
-            _log.Warning($"calculating target from id: {userId}");
             foreach (ServerClient client in Server._connectedClients)
             {
-                _log.Debug($"ClientId: {client._userId}, is Doctor: {client._isDoctor}");
                 if (userId == null && client._isDoctor)
                 {
-                    _log.Warning($"Client: {client._userId}; Is Doctor: {client._isDoctor}");
+                    _log.Debug($"returning {client.ToString()}");
                     return client;
                 }
 
                 if (userId != null && client._userId.Equals(userId))
                 {
-                    _log.Warning($"Client: {client._userId}; Is Doctor: {client._isDoctor}");
+                    _log.Debug($"returning {client.ToString()}");
                     return client;
                 }
             }
@@ -115,11 +112,16 @@ namespace RemoteHealthcare.Server.Client
 
         private void RequestConnectionsFeature(DataPacket obj)
         {
-            List<ServerClient> connections = Server._connectedClients;
-            _log.Debug(connections.Count.ToString());
-            connections.RemoveAll(client => _isDoctor);
-            _log.Debug(connections.Count.ToString());
-
+            List<ServerClient> connections = new(Server._connectedClients);
+            
+            _log.Debug(
+                $"[Before]RequestConnectionsFeature.clients.Count: {connections.Count}, Server._connectedClients.Count: {Server._connectedClients.Count}");
+                
+            connections.RemoveAll(client => client._isDoctor);
+            
+            _log.Debug(
+                $"[After]RequestConnectionsFeature.clients.Count: {connections.Count}, Server._connectedClients.Count: {Server._connectedClients.Count}");
+                
             // foreach (ServerClient sc in Server._connectedClients)
             // {
             //     if (!sc._isDoctor)
@@ -127,8 +129,6 @@ namespace RemoteHealthcare.Server.Client
             // }
 
             string clients = "";
-            _log.Debug(
-                $"RequestConnectionsFeature.clients: {clients}, Server._connectedClients.Count: {Server._connectedClients.Count}");
 
             int clientCount = 0;
             foreach (ServerClient client in connections)
@@ -161,6 +161,19 @@ namespace RemoteHealthcare.Server.Client
                     connectedIds = clients
                 }
             });
+
+            /*//LOGIN:
+            SendData(new DataPacket<LoginPacketResponse>
+            {
+                OpperationCode = OperationCodes.LOGIN,
+
+                data = new LoginPacketResponse()
+                {
+                    userId = doctor.UserId,
+                    statusCode = StatusCodes.OK,
+                    message = "U bent succesvol ingelogd."
+                }
+            });*/
         }
 
         //the methode for the chat request
@@ -272,8 +285,6 @@ namespace RemoteHealthcare.Server.Client
                     }
                 });
             }
-
-            _log.Warning(_isDoctor.ToString());
         }
 
         //the methode for the session start request

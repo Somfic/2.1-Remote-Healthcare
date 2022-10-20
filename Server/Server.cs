@@ -14,7 +14,7 @@ public class Server
     private readonly Log _log = new(typeof(Server));
     public static PatientData _patientData { get; set; }
     public static DoctorData _doctorData { get; set; }
-    public static List<ServerClient> _connectedClients { get; private set; } = new List<ServerClient>();
+    public static List<ServerClient> _connectedClients { get; private set; } = new();
     
     public static IReadOnlyList<ServerClient> Clients => _connectedClients.AsReadOnly();
 
@@ -36,7 +36,7 @@ public class Server
         _log.Information($"Client connected: {client.Socket}");
         _connectedClients.Add(new ServerClient(client));
 
-        Console.WriteLine("ALLE HUIDIGE TCP-USER ZIJN:");
+        _log.Information("ALLE HUIDIGE TCP-USER ZIJN:");
         foreach (SocketClient user in SocketServer.Clients)
         {
             _log.Debug(user.ToString());
@@ -55,7 +55,7 @@ public class Server
     {
         if (!_connectedClients.Contains(client))
             return;
-        Console.WriteLine("Disconnecting a client now");
+        Console.WriteLine("!!!Disconnecting a client now!!!");
         _connectedClients.Remove(client);
     }
 

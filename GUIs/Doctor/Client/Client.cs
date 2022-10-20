@@ -57,7 +57,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
                     if (userCommand.ToLower().Equals("bericht"))
                     {
-                        SendChatAsync();
+                        await requestClients();
                     }
                     else if (userCommand.ToLower().Equals("start") && userCommand.ToLower().Equals("sessie"))
                     {
@@ -65,6 +65,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                         {
                             OpperationCode = OperationCodes.SESSION_START,
                         };
+                        _log.Warning($"sending {req.ToJson()}");
 
                         await _client.SendAsync(req);
                     }
@@ -74,6 +75,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                         {
                             OpperationCode = OperationCodes.SESSION_STOP,
                         };
+                        _log.Warning($"sending {req.ToJson()}");
 
                         await _client.SendAsync(req);
                     }
@@ -83,8 +85,10 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                         {
                             OpperationCode = OperationCodes.EMERGENCY_STOP,
                         };
+                        _log.Warning($"sending {req.ToJson()}");
 
                         await _client.SendAsync(req);
+
                     }
                     else
                     {
@@ -94,17 +98,9 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
             }
         }
 
-        private async void SendChatAsync()
+        private async Task SendChatAsync()
         {
-            _log.Debug("requesting clients now");
-            await requestClients();
-            _log.Debug("done requesting clients");
-
-            /* This is a while loop that will do nothing until connected is filled */
-            while (_connected.Count == 0)
-            {
-            }
-            _log.Debug("requested cliens have been put in a list");
+           _log.Debug("SendChatAsync(): entered");
             string savedConnections = " ";
             foreach (string id in _connected)
             {
@@ -141,6 +137,8 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                     message = chatInput
                 }
             };
+            
+            _log.Warning($"sending {req.ToJson()}");
 
             await _client.SendAsync(req);
         }
@@ -166,12 +164,19 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
         private async Task requestClients()
         {
+            _log.Debug(_connected.Count.ToString());
             if (_connected != null)
                 _connected.Clear();
+            _log.Debug(_connected.Count.ToString());
             var req = new DataPacket<ConnectedClientsPacketRequest>
             {
-                OpperationCode = OperationCodes.USERS
+                OpperationCode = OperationCodes.USERS,
+                data = new ConnectedClientsPacketRequest()
+                {
+                    requester = _userId
+                }
             };
+            _log.Warning($"sending {req.ToJson()}");
 
             await _client.SendAsync(req);
         }
@@ -189,7 +194,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
                 }
             };
 
-            _log.Debug(loginReq.ToJson());
+            _log.Warning($"sending {loginReq.ToJson()}");
             
             await _client.SendAsync(loginReq);
         }
@@ -197,6 +202,7 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
         //this methode will get the right methode that will be used for the response from the server
         public void HandleData(DataPacket packet)
         {
+            _log.Warning($"Received: {packet.ToJson()}");
             //Checks if the OppCode (OperationCode) does exist.
             if (_functions.TryGetValue(packet.OpperationCode, out var action))
             {
@@ -235,50 +241,29 @@ namespace RemoteHealthcare.GUIs.Doctor.Client
 
         private void RequestConnectionsFeature(DataPacket packetData)
         {
-            _log.Debug(packetData.ToJson());
             if (((int)packetData.GetData<ConnectedClientsPacketResponse>().statusCode).Equals(200))
             {
-                // _log.Debug(_connected.Count.ToString());
-                // _connected.RemoveRange(0, _connected.Count - 1);
-                // _log.Debug(_connected.Count.ToString());
                 _connected = packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Split(";").ToList();
-                _log.Critical(_connected.Count.ToString());
+                _log.Warning($"RequestConnectionsFeature(): {_connected.Count.ToString()}");
+
+                SendChatAsync();
             }
         }
 
         //the methode for the login request
         private void LoginFeature(DataPacket packetData)
         {
-            _log.Debug($"Responce: {packetData.ToJson()}");
             if (((int)packetData.GetData<LoginPacketResponse>().statusCode).Equals(200))
             {
                 _userId = packetData.GetData<LoginPacketResponse>().userId;
                 _log.Information($"Succesfully logged in to the user: {username}; {password}; {_userId}.");
                 loggedIn = true;
-                testChattingVR();
             }
             else
             {
                 _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
                            packetData.GetData<LoginPacketResponse>().message);
             }
-        }
-
-        private void testChattingVR()
-        {
-            var req = new DataPacket<ChatPacketRequest>
-            {
-                OpperationCode = OperationCodes.CHAT,
-                data = new ChatPacketRequest()
-                {
-                    senderId = _userId,
-                    receiverId = "06111",
-                    message = "testbericht"
-                }
-            };
-
-            _log.Debug($"sending {req.ToJson()} now.");
-            _client.SendAsync(req);
         }
     }
 }

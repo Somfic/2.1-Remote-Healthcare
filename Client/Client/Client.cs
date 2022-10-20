@@ -22,7 +22,7 @@ namespace RemoteHealthcare.Client.Client
         private Dictionary<string, Action<DataPacket>> _functions;
         private VrConnection _vrConnection;
 
-        public Client(VrConnection vrConnection)
+        public Client(VrConnection? vrConnection = null)
         {
             _vrConnection = vrConnection;
         }
@@ -76,7 +76,13 @@ namespace RemoteHealthcare.Client.Client
                         };
 
                         await _client.SendAsync(req);
-                        await _vrConnection.engine.SendTextToChatPannel($"U: {ChatMessage}");
+                        try
+                        {
+                            await _vrConnection.engine.SendTextToChatPannel($"U: {ChatMessage}");
+                        }
+                        catch (Exception e)
+                        {
+                        }
                     }
                     else if (command.ToLower().Equals("noodstop"))
                     {
@@ -160,7 +166,13 @@ namespace RemoteHealthcare.Client.Client
             string messageReceived =
                 $"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}";
             _log.Information(messageReceived);
-            await _vrConnection.engine.SendTextToChatPannel(messageReceived);
+            try
+            {
+                await _vrConnection.engine.SendTextToChatPannel(messageReceived);
+            }
+            catch (Exception e)
+            {
+            }
         }
 
         //the methode for the login request
