@@ -5,31 +5,27 @@ namespace RemoteHealthcare.Tests.ServerTests;
 
 public class SocketTests
 {
-    [SetUp]
-    public void Setup()
-    {
-    }
-    
     [Test]
-    public void NoEncryption()
+    public void Encoding()
     {
         var text = GenerateRandomString(100);
 
-        var encrypted = SocketHelper.Encode(text, false);
-        var decrypted = SocketHelper.Decode(encrypted, false);
+        var encoded = SocketHelper.Encode(text, false);
+        var decoded = SocketHelper.Decode(encoded, false);
 
-        Assert.That(decrypted, Is.EqualTo(text));
+        Assert.That(decoded, Is.EqualTo(text));
     }
-    
+
     [Test]
     public void Encryption()
     {
-        var text = GenerateRandomString(1000);
+        var bytes = GenerateRandomBytes(1000);
+        
+        var encrypted = SocketHelper.Encrypt(bytes);
+        var decrypted = SocketHelper.Decrypt(encrypted);
 
-        var encrypted = SocketHelper.Encode(text, true);
-        var decrypted = SocketHelper.Decode(encrypted, true);
-
-        Assert.That(decrypted, Is.EqualTo(text));
+        Assert.That(bytes, Is.Not.EqualTo(encrypted));
+        Assert.That(decrypted, Is.EqualTo(bytes));
     }
 
     private string GenerateRandomString(int size)
@@ -37,11 +33,21 @@ public class SocketTests
         var builder = new StringBuilder();
         var random = new Random();
 
-        for (int i = 0; i < size; i++)
+        for (var i = 0; i < size; i++)
         {
             builder.Append((char)random.Next(0, 255));
         }
 
         return builder.ToString();
+    }
+
+    private byte[] GenerateRandomBytes(int size)
+    {
+        var bytes = new byte[size];
+        var random = new Random();
+
+        random.NextBytes(bytes);
+
+        return bytes;
     }
 }

@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
@@ -13,20 +14,27 @@ namespace RemoteHealthcare.Server.Client
     public class ServerClient
     {
         private readonly Log _log = new(typeof(ServerClient));
-
-        private SocketClient _client;
+        
+        public SocketClient Client { get; private set; }
+        private PatientData _patientData;
+        private DoctorData _doctorData;
         private string _userId;
         private bool _isDoctor;
 
+        private string _patientDataLocation = Path.Combine(Environment.CurrentDirectory, "PatientData");
 
+        private Patient patient;
+        
         public string UserName { get; set; }
         private Dictionary<string, Action<DataPacket>> _functions;
+
+
 
         //Set-ups the client constructor
         public ServerClient(SocketClient client)
         {
-            _client = client;
-            _client.OnMessage += (sender, data) =>
+            Client = client;
+            Client.OnMessage += (sender, data) =>
             {
                 var dataPacket = JsonConvert.DeserializeObject<DataPacket>(data);
 
@@ -34,6 +42,10 @@ namespace RemoteHealthcare.Server.Client
                 HandleData(dataPacket);
             };
 
+            Client.OnDisconnect += (sender, data) =>
+            {
+                patient.SaveSessionData(_patientDataLocation);
+            };
             _functions = new Dictionary<string, Action<DataPacket>>();
             _functions.Add("login", LoginFeature);
             _functions.Add("users", RequestConnectionsFeature);
@@ -42,6 +54,8 @@ namespace RemoteHealthcare.Server.Client
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("disconnect", DisconnectHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
+            _functions.Add("bikedata", GetBikeData);
+
         }
 
         //determines which methode exactly will be executed 
@@ -67,13 +81,9 @@ namespace RemoteHealthcare.Server.Client
             _log.Critical($"sending (single target): {packet.ToJson()} \\nTarget: {targetId}");
 
             if (packet.ToJson().Contains("chat"))
-            {
                 calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
-            }
             else
-            {
                 _client.SendAsync(packet).GetAwaiter().GetResult();
-            }
         }
 
         //This methode used to send an request from the Server to the Client
@@ -84,8 +94,26 @@ namespace RemoteHealthcare.Server.Client
             if (packet.ToJson().Contains("chat"))
             {
                 foreach (string targetId in targetIds)
-                    calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
+                    calculateTarget(targetId).Client.SendAsync(packet).GetAwaiter().GetResult();
             }
+        }
+
+        private void GetBikeData(DataPacket obj)
+        {
+            BikeDataPacket data = obj.GetData<BikeDataPacket>();
+            
+            foreach(SessionData session in patient.Sessions)
+            {
+                if (session.SessionId.Equals(data.SessionId))
+                {
+                    session.addData(data.SessionId,(int)data.speed, (int)data.distance, data.heartRate, data.elapsed.Seconds, data.deviceType, data.id);
+                    return;
+                }
+            }
+            patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
+            _log.Debug(Environment.CurrentDirectory);
+            patient.SaveSessionData(_patientDataLocation);
+            GetBikeData(obj);
         }
 
         //If userid == null, then search for doctor otherwise search for patient
@@ -242,6 +270,7 @@ namespace RemoteHealthcare.Server.Client
             {
                 _userId = patient.UserId;
                 _isDoctor = false;
+                this.patient = patient;
 
                 SendData(new DataPacket<LoginPacketResponse>
                 {
@@ -338,9 +367,9 @@ namespace RemoteHealthcare.Server.Client
 
         private void DisconnectHandler(DataPacket obj)
         {
-            _log.Debug("disconnectHandler");
+            _log.Debug("ServerClient: disconnectHandler");
             Server.Disconnect(this);
-            _client.DisconnectAsync();
+            Client.DisconnectAsync();
 
             Server.printUsers();
 
@@ -359,8 +388,8 @@ namespace RemoteHealthcare.Server.Client
         public override string ToString()
         {
             return $"UserId: {_userId}, Is Doctor: {_isDoctor}, " +
-                   $"IP Adress: {((IPEndPoint)_client.Socket.Client.RemoteEndPoint).Address}, " +
-                   $"Port: {((IPEndPoint)_client.Socket.Client.RemoteEndPoint).Port}";
+                   $"IP Adress: {((IPEndPoint)Client.Socket.Client.RemoteEndPoint).Address}, " +
+                   $"Port: {((IPEndPoint)Client.Socket.Client.RemoteEndPoint).Port}";
         }
     }
 }

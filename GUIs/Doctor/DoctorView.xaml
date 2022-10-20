@@ -37,7 +37,7 @@
         <Slider Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Margin="10,10,10,10"></Slider>
         
         <Rectangle Grid.Column="0" Grid.Row="4"></Rectangle>
-        <Label Grid.Column="0" Grid.Row="5" Content="{Binding CurrentUser.Speed}"></Label>
+        <Label Grid.Column="0" Grid.Row="5" Content="{Binding CurrentUser.Session.Speed}"></Label>
         <Rectangle Grid.Column="0" Grid.Row="6"></Rectangle>
         <Label Grid.Column="0" Grid.Row="7" Content="{Binding CurrentUser.TotalElapsed}"></Label>
         <Rectangle Grid.Column="1" Grid.Row="4"></Rectangle>
