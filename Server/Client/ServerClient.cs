@@ -31,8 +31,8 @@ namespace RemoteHealthcare.Server.Client
         //Set-ups the client constructor
         public ServerClient(SocketClient client)
         {
-            _client = client;
-            _client.OnMessage += (sender, data) =>
+            Client = client;
+            Client.OnMessage += (sender, data) =>
             {
                 var dataPacket = JsonConvert.DeserializeObject<DataPacket>(data);
 
@@ -40,7 +40,7 @@ namespace RemoteHealthcare.Server.Client
                 HandleData(dataPacket);
             };
 
-            _client.OnDisconnect += (sender, data) =>
+            Client.OnDisconnect += (sender, data) =>
             {
                 patient.SaveSessionData(_patientDataLocation);
             };
@@ -84,9 +84,9 @@ namespace RemoteHealthcare.Server.Client
             _log.Critical($"sending (single target): {packet.ToJson()} \\nTarget: {targetId}");
 
             if (packet.ToJson().Contains("chat"))
-                calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
+                calculateTarget(targetId).Client.SendAsync(packet).GetAwaiter().GetResult();
             else
-                _client.SendAsync(packet).GetAwaiter().GetResult();
+                Client.SendAsync(packet).GetAwaiter().GetResult();
         }
 
         //This methode used to send an request from the Server to the Client
@@ -97,7 +97,7 @@ namespace RemoteHealthcare.Server.Client
             if (packet.ToJson().Contains("chat"))
             {
                 foreach (string targetId in targetIds)
-                    calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
+                    calculateTarget(targetId).Client.SendAsync(packet).GetAwaiter().GetResult();
             }
         }
 
@@ -377,7 +377,7 @@ namespace RemoteHealthcare.Server.Client
         {
             _log.Debug("ServerClient: disconnectHandler");
             Server.Disconnect(this);
-            _client.DisconnectAsync();
+            Client.DisconnectAsync();
 
             Server.printUsers();
 
