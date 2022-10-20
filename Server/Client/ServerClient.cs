@@ -18,14 +18,11 @@ namespace RemoteHealthcare.Server.Client
         public SocketClient Client { get; private set; }
         private PatientData _patientData;
         private DoctorData _doctorData;
-        private string _userId;
-        private bool _isDoctor;
-
-        private string _patientDataLocation = Path.Combine(Environment.CurrentDirectory, "PatientData");
-
-        private Patient patient;
-        
+        public string UserId;
         public string UserName { get; set; }
+        private Patient patient;
+        private string _patientDataLocation = Path.Combine(Environment.CurrentDirectory, "PatientData");
+        private bool _isDoctor;
         private Dictionary<string, Action<DataPacket>> _functions;
 
 
@@ -81,9 +78,9 @@ namespace RemoteHealthcare.Server.Client
             _log.Critical($"sending (single target): {packet.ToJson()} \\nTarget: {targetId}");
 
             if (packet.ToJson().Contains("chat"))
-                calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
+                calculateTarget(targetId).Client.SendAsync(packet).GetAwaiter().GetResult();
             else
-                _client.SendAsync(packet).GetAwaiter().GetResult();
+                Client.SendAsync(packet).GetAwaiter().GetResult();
         }
 
         //This methode used to send an request from the Server to the Client
@@ -127,7 +124,7 @@ namespace RemoteHealthcare.Server.Client
                     return client;
                 }
 
-                if (userId != null && client._userId.Equals(userId))
+                if (userId != null && client.UserId.Equals(userId))
                 {
                     _log.Debug($"returning {client.ToString()}");
                     return client;
@@ -161,16 +158,16 @@ namespace RemoteHealthcare.Server.Client
             int clientCount = 0;
             foreach (ServerClient client in connections)
             {
-                if (!client._isDoctor && client._userId != null)
+                if (!client._isDoctor && client.UserId != null)
                 {
                     //connections.count - 2 because we subtract the doctor and count is 1 up on the index.
                     if ((connections.Count - 1) <= clientCount)
                     {
-                        clients += client._userId;
+                        clients += client.UserId;
                     }
                     else
                     {
-                        clients += client._userId + ";";
+                        clients += client.UserId + ";";
                     }
 
                     clientCount++;
@@ -268,7 +265,7 @@ namespace RemoteHealthcare.Server.Client
 
             if (patient != null && Server._patientData.MatchLoginData(patient))
             {
-                _userId = patient.UserId;
+                UserId = patient.UserId;
                 _isDoctor = false;
                 this.patient = patient;
 
@@ -286,7 +283,7 @@ namespace RemoteHealthcare.Server.Client
             }
             else if (doctor != null && Server._doctorData.MatchLoginData(doctor))
             {
-                _userId = doctor.UserId;
+                UserId = doctor.UserId;
                 _isDoctor = true;
 
                 SendData(new DataPacket<LoginPacketResponse>
@@ -387,7 +384,7 @@ namespace RemoteHealthcare.Server.Client
 
         public override string ToString()
         {
-            return $"UserId: {_userId}, Is Doctor: {_isDoctor}, " +
+            return $"UserId: {UserId}, Is Doctor: {_isDoctor}, " +
                    $"IP Adress: {((IPEndPoint)Client.Socket.Client.RemoteEndPoint).Address}, " +
                    $"Port: {((IPEndPoint)Client.Socket.Client.RemoteEndPoint).Port}";
         }

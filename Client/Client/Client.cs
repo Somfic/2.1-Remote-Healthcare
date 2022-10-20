@@ -23,20 +23,13 @@ namespace RemoteHealthcare.Client.Client
         private string doctorId;
         private string _sessionId;
 
-        private VrConnection _vrConnection;
-
-        public Client(VrConnection connection)
-        {
-            _vrConnection = connection;
-            _sessionId = DateTime.Now.ToString();
-        }
-        
         private Dictionary<string, Action<DataPacket>> _functions;
         private VrConnection _vrConnection;
 
-        public Client(VrConnection? vrConnection = null)
+        public Client(VrConnection? connection = null)
         {
-            _vrConnection = vrConnection;
+            _vrConnection = connection;
+            _sessionId = DateTime.Now.ToString();
         }
 
         public async Task RunAsync()
@@ -141,7 +134,6 @@ namespace RemoteHealthcare.Client.Client
 
                     }
                 };
-                _log.Information("sending bike data to server");
                 await _client.SendAsync(req);
                 await Task.Delay(1000);
             }

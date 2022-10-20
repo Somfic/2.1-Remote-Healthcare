@@ -29,7 +29,7 @@ public class DoctorViewModel : ObservableObject
         {
             foreach (var patient in patients)
             {
-                if (client._userId.Equals(patient.UserId))
+                if (client.UserId.Equals(patient.UserId))
                 {
                     _users.Add(patient);
                 }

@@ -9,13 +9,15 @@ using MvvmHelpers;
 using MvvmHelpers.Commands;
 using Newtonsoft.Json;
 using RemoteHealthcare.Common;
+using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class LoginWindowViewModel : ObservableObject
 {
     private Client.Client _client;
-
+    private Log _log = new(typeof(LoginWindowViewModel));
+    
     public LoginWindowViewModel()
     {
         _client = new Client.Client();
@@ -61,7 +63,7 @@ public class LoginWindowViewModel : ObservableObject
             }
             catch (Exception exception)
             {
-                _log.Debug(exception);
+                _log.Error($"{exception.Message}\\n{exception.Source}");
                 throw;
             }
 
