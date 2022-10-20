@@ -137,3 +137,15 @@ public class BikeDataPacket : DAbstract
     public string deviceType;
     public string id;
 }
+
+public class GetAllPatientsDataRequest : DAbstract
+{
+    //TODO voorlopig leeg laten
+}
+
+public class GetAllPatientsDataResponse : DAbstract
+{
+    public StatusCodes statusCode;
+    public string message;
+    public JObject[] JObjects;
+}

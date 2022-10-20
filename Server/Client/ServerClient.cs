@@ -8,6 +8,7 @@ using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
 using RemoteHealthcare.Server.Models;
+using Xceed.Wpf.AvalonDock.Layout;
 
 namespace RemoteHealthcare.Server.Client
 {
@@ -30,8 +31,8 @@ namespace RemoteHealthcare.Server.Client
         //Set-ups the client constructor
         public ServerClient(SocketClient client)
         {
-            Client = client;
-            Client.OnMessage += (sender, data) =>
+            _client = client;
+            _client.OnMessage += (sender, data) =>
             {
                 var dataPacket = JsonConvert.DeserializeObject<DataPacket>(data);
 
@@ -39,7 +40,7 @@ namespace RemoteHealthcare.Server.Client
                 HandleData(dataPacket);
             };
 
-            Client.OnDisconnect += (sender, data) =>
+            _client.OnDisconnect += (sender, data) =>
             {
                 patient.SaveSessionData(_patientDataLocation);
             };
@@ -51,11 +52,14 @@ namespace RemoteHealthcare.Server.Client
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("disconnect", DisconnectHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
+            _functions.Add("get patient data", GetPatientDataHandler);
             _functions.Add("bikedata", GetBikeData);
 
         }
 
+
         //determines which methode exactly will be executed 
+
         private void HandleData(DataPacket packetData)
         {
             _log.Debug($"Got a packet server: {packetData.OpperationCode}");
@@ -72,15 +76,17 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //This methode used to send an request from the Server to the Client
+
         //The parameter is an JsonFile object
+
         private void SendData(DAbstract packet, string? targetId = null)
         {
             _log.Critical($"sending (single target): {packet.ToJson()} \\nTarget: {targetId}");
 
             if (packet.ToJson().Contains("chat"))
-                calculateTarget(targetId).Client.SendAsync(packet).GetAwaiter().GetResult();
+                calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
             else
-                Client.SendAsync(packet).GetAwaiter().GetResult();
+                _client.SendAsync(packet).GetAwaiter().GetResult();
         }
 
         //This methode used to send an request from the Server to the Client
@@ -91,7 +97,7 @@ namespace RemoteHealthcare.Server.Client
             if (packet.ToJson().Contains("chat"))
             {
                 foreach (string targetId in targetIds)
-                    calculateTarget(targetId).Client.SendAsync(packet).GetAwaiter().GetResult();
+                    calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
             }
         }
 
@@ -114,6 +120,7 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //If userid == null, then search for doctor otherwise search for patient
+
         private ServerClient calculateTarget(string? userId = null)
         {
             foreach (ServerClient client in Server._connectedClients)
@@ -202,6 +209,7 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the chat request
+
         private void ChatHandler(DataPacket packetData)
         {
             ChatPacketRequest data = packetData.GetData<ChatPacketRequest>();
@@ -241,7 +249,8 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the login request
-        private void LoginFeature(DataPacket packetData) //TODO: spam on incorrect login
+
+        private void LoginFeature(DataPacket packetData)
         {
             _log.Debug($"loginfeature: {packetData.ToJson()}");
             Patient? patient = null;
@@ -249,8 +258,8 @@ namespace RemoteHealthcare.Server.Client
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
-                    packetData.GetData<LoginPacketRequest>().password);
-
+                    packetData.GetData<LoginPacketRequest>().password, "06111");
+                    
                 _log.Debug($"Patient name: {patient.UserId} Password: {patient.Password}");
             }
             else if (packetData.GetData<LoginPacketRequest>().isDoctor)
@@ -314,6 +323,7 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the session start request
+
         private void SessionStartHandler(DataPacket obj)
         {
             _log.Debug("sessionstarthandler");
@@ -332,6 +342,7 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the session stop request
+
         private void SessionStopHandler(DataPacket obj)
         {
             SendData(new DataPacket<SessionStopPacketResponse>
@@ -366,7 +377,7 @@ namespace RemoteHealthcare.Server.Client
         {
             _log.Debug("ServerClient: disconnectHandler");
             Server.Disconnect(this);
-            Client.DisconnectAsync();
+            _client.DisconnectAsync();
 
             Server.printUsers();
 
@@ -387,6 +398,29 @@ namespace RemoteHealthcare.Server.Client
             return $"UserId: {UserId}, Is Doctor: {_isDoctor}, " +
                    $"IP Adress: {((IPEndPoint)Client.Socket.Client.RemoteEndPoint).Address}, " +
                    $"Port: {((IPEndPoint)Client.Socket.Client.RemoteEndPoint).Port}";
+        }
+
+        /// <summary>
+        /// This function is called when the client sends a request to the server to get all the patient data. The server
+        /// then sends back all the patient data to the client
+        /// </summary>
+        /// <param name="DataPacket">This is the data packet that is sent from the client to the server.</param>
+        private void GetPatientDataHandler(DataPacket packetData)
+        {
+            _log.Debug($"Got request all patientdata from doctor client: {packetData.OpperationCode}");
+
+            JObject[] jObjects = Server._patientData.GetPatientDataAsJObjects();
+            SendData(new DataPacket<GetAllPatientsDataResponse>
+            {
+                OpperationCode = OperationCodes.GET_PATIENT_DATA,
+                
+                data = new GetAllPatientsDataResponse()
+                {
+                    statusCode = StatusCodes.OK,
+                    JObjects = jObjects,
+                    message = "Got patient data from server successfully"
+                }
+            });
         }
     }
 }

@@ -21,20 +21,19 @@ public class Server
 
     public async Task StartAsync()
     {
-        _patientData = new PatientData();
-        _doctorData = new DoctorData();
-        
         _server.OnClientConnected += async (sender, e) => await OnClientConnectedAsync(e);
         _server.OnClientDisconnected += async (sender, e) => await OnClientDisconnectedAsync(e);
 
         await _server.ConnectAsync("127.0.0.1", Port);
-
+        
+        _patientData = new PatientData();
+        _doctorData = new DoctorData();
         _log.Information($"Server running on port {Port}");
     }
 
     private async Task OnClientDisconnectedAsync(SocketClient socketClient)
     {
-        _connectedClients.Remove(_connectedClients.Find(x => x.Client.Id == socketClient.Id));
+        _connectedClients.Remove(_connectedClients.Find(x => x._client.Id == socketClient.Id));
     }
 
     private async Task OnClientConnectedAsync(SocketClient client)
