@@ -332,9 +332,9 @@ namespace RemoteHealthcare.Server.Client
             Console.WriteLine(obj.GetData<SessionStartPacketRequest>().userId);
             */
 
-            ServerClient tt = Server._connectedClients.Find(c => c._userId == "06111");
+            ServerClient tt = Server._connectedClients.Find(c => c.UserId == "06111");
         
-            Console.WriteLine("gevonden id: " + tt._userId);
+            Console.WriteLine("gevonden id: " + tt.UserId);
             Console.WriteLine("gevonden name: " + tt.UserName);
             
             tt.SendData(new DataPacket<SessionStartPacketResponse>
