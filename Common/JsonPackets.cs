@@ -81,7 +81,7 @@ public class ChatPacketResponse : DAbstract
 
 public class SessionStartPacketRequest : DAbstract
 {
-    public int userId;
+    public string selectedPatient;
 }
 
 public class SessionStartPacketResponse : DAbstract
@@ -92,7 +92,7 @@ public class SessionStartPacketResponse : DAbstract
 
 public class SessionStopPacketRequest : DAbstract
 {
-    //TODO: voorlopig leeg laten
+    public string selectedPatient;
 }
 
 public class SessionStopPacketResponse : DAbstract

@@ -10,19 +10,23 @@ public class StartSessieCommand : BaseCommand
     private Client _client;
     private DoctorViewModel _viewModel;
     
-    public StartSessieCommand(Client client)
+    public StartSessieCommand(Client client, DoctorViewModel viewModel)
     {
         _client = client;
+        _viewModel = viewModel;
     }
 
     public override void Execute(object? parameter)
     {
         Console.WriteLine("Execte van uit de Doctor");
-        //Console.WriteLine(_viewModel.CurrentUser.UserId);
-        
+
         _client._client.SendAsync(new DataPacket<SessionStartPacketRequest>
         {
             OpperationCode = OperationCodes.SESSION_START,
+            data = new SessionStartPacketRequest()
+            {
+                selectedPatient = _viewModel.CurrentUser.UserId
+            }
             
         });
     }

@@ -42,8 +42,8 @@ public class DoctorViewModel : ObservableObject
         chatMessages = new ObservableCollection<string>();
         EmergencyStop = new EmergencyStopCommand();
         SendChatMessage = new SendChatMessageCommand(_client, this);
-        StartSessieCommand = new StartSessieCommand(_client);
-        StopSessieCommand = new StopSessieCommand(_client);
+        StartSessieCommand = new StartSessieCommand(_client, this);
+        StopSessieCommand = new StopSessieCommand(_client, this);
     }
 
     public Patient CurrentUser
@@ -76,6 +76,4 @@ public class DoctorViewModel : ObservableObject
     
 
     public ChartValues<float> SpeedData { get; set; }
-
-    
 }

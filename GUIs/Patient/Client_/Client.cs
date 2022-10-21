@@ -232,9 +232,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             }
         }
         
-        
-
-    //the methode for the send chat request
+        //the methode for the send chat request
         private void ChatHandler(DataPacket packetData)
         {
             _log.Information($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");

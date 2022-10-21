@@ -10,17 +10,22 @@ public class StopSessieCommand : BaseCommand
     private Client _client;
     private DoctorViewModel _viewModel;
     
-    public StopSessieCommand(Client client)
+    public StopSessieCommand(Client client, DoctorViewModel viewModel)
     {
         _client = client;
+        _viewModel = viewModel;
     }
 
     public override void Execute(object? parameter)
     {
         Console.WriteLine("Stop van uit de doctor");   
-        _client._client.SendAsync(new DataPacket<SessionStartPacketRequest>
+        _client._client.SendAsync(new DataPacket<SessionStopPacketRequest>
         {
             OpperationCode = OperationCodes.SESSION_STOP,
+            data = new SessionStopPacketRequest()
+            {
+                selectedPatient = _viewModel.CurrentUser.UserId
+            }
         });
     }
 

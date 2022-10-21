@@ -6,24 +6,23 @@ using RemoteHealthcare.Common.Logger;
 namespace RemoteHealthcare.Server.Models;
 
 [Serializable]
-public class Patient
+public class Patient : ObservableObject
 {
     private Log _log = new Log(typeof(Patient));
     public List<SessionData> Sessions { get; set; }
     
+    public string Username { get; set; }
     public string UserId { get; set; }
     public string? Nickname { get; set; }
     public string Password { get; set; }
 
-    public Patient(string user_id, string password)
+    public Patient(string user, string password)
     {
-        UserId = user_id;
         Password = password;
-        Nickname = "test";
+        UserId = user;
         Sessions = new List<SessionData>();
     }
-
-
+    
     /// <summary>
     /// It takes a folder name as a parameter, creates a directory with the user's username, and then creates a file for
     /// each session in the user's session list
@@ -31,7 +30,7 @@ public class Patient
     /// <param name="folderName">The name of the folder you want to save the data to.</param>
     public void SaveSessionData(string folderName)
     {
-        var pathString = Path.Combine(folderName, Nickname);
+        /*var pathString = Path.Combine(folderName, Nickname);
         Directory.CreateDirectory(pathString);
         
         foreach (var session in Sessions)
@@ -48,7 +47,7 @@ public class Patient
             {
                 File.WriteAllText(pathString, JObject.Parse(json).ToString());
             }
-        }
+        }*/
     }
 
     public override string ToString()

@@ -228,8 +228,7 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the login request
-
-         private void LoginFeature(DataPacket packetData) //TODO: spam on incorrect login
+        private void LoginFeature(DataPacket packetData) //TODO: spam on incorrect login
         {
             Patient? patient = null;
             Doctor? doctor = null;
@@ -302,8 +301,12 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            ServerClient patient = Server._connectedClients.Find(patient => patient._userId == "06111");
+         
+            SessionStartPacketRequest data = obj.GetData<SessionStartPacketRequest>();
 
+            ServerClient patient = Server._connectedClients.Find(patient => patient._userId == data.selectedPatient);
+
+            Console.WriteLine("selected is: " + patient._userId);
             if (patient == null) return;
 
             patient.SendData(new DataPacket<SessionStartPacketResponse>
@@ -321,7 +324,10 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
-            ServerClient tt = Server._connectedClients.Find(c => c._userId == "06111");
+            
+            SessionStopPacketRequest data = obj.GetData<SessionStopPacketRequest>();
+
+            ServerClient tt = Server._connectedClients.Find(c => c._userId == data.selectedPatient);
         
             Console.WriteLine("gevonden id: " + tt._userId);
             Console.WriteLine("gevonden name: " + tt.UserName);
