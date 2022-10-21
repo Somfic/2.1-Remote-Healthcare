@@ -229,15 +229,14 @@ namespace RemoteHealthcare.Server.Client
 
         //the methode for the login request
 
-        private void LoginFeature(DataPacket packetData)
+         private void LoginFeature(DataPacket packetData) //TODO: spam on incorrect login
         {
-            _log.Debug($"loginfeature: {packetData.ToJson()}");
             Patient? patient = null;
             Doctor? doctor = null;
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
-                    packetData.GetData<LoginPacketRequest>().password, "06111");
+                    packetData.GetData<LoginPacketRequest>().password);
                     
                 _log.Debug($"Patient name: {patient.UserId} Password: {patient.Password}");
             }
@@ -255,7 +254,6 @@ namespace RemoteHealthcare.Server.Client
             {
                 _userId = patient.UserId;
                 _isDoctor = false;
-                this.patient = patient;
 
                 SendData(new DataPacket<LoginPacketResponse>
                 {
@@ -302,33 +300,13 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the session start request
-
         private void SessionStartHandler(DataPacket obj)
         {
+            ServerClient patient = Server._connectedClients.Find(patient => patient._userId == "06111");
 
-            /*
-            _log.Debug("User-ID: ");
-            Console.WriteLine(obj.GetData<SessionStartPacketRequest>().userId);
-            */
+            if (patient == null) return;
 
-            ServerClient tt = Server._connectedClients.Find(c => c._userId == "06111");
-        
-            Console.WriteLine("gevonden id: " + tt._userId);
-            Console.WriteLine("gevonden name: " + tt.UserName);
-            
-            tt.SendData(new DataPacket<SessionStartPacketResponse>
-            {
-                OpperationCode = OperationCodes.SESSION_START,
-
-                data = new SessionStartPacketResponse()
-                {
-                    statusCode = StatusCodes.OK,
-                    message = "Sessie wordt nu gestartdsfdfsdsfdfs."
-                }
-            });
-            
-            
-            /*SendData(new DataPacket<SessionStartPacketResponse>
+            patient.SendData(new DataPacket<SessionStartPacketResponse>
             {
                 OpperationCode = OperationCodes.SESSION_START,
 
@@ -337,23 +315,13 @@ namespace RemoteHealthcare.Server.Client
                     statusCode = StatusCodes.OK,
                     message = "Sessie wordt nu gestart."
                 }
-            });*/
+            });
         }
 
         //the methode for the session stop request
-
         private void SessionStopHandler(DataPacket obj)
         {
-            SendData(new DataPacket<SessionStopPacketResponse>
-            {
-                OpperationCode = OperationCodes.SESSION_STOP,
-
-                data = new SessionStopPacketResponse()
-                {
-                    statusCode = StatusCodes.OK,
-                    message = "Sessie wordt nu gestopt."
-                }
-            });
+            
         }
 
         //the methode for the emergency stop request

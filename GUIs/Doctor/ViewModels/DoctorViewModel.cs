@@ -27,6 +27,7 @@ public class DoctorViewModel : ObservableObject
     public ICommand EmergencyStop { get; }
     public ICommand SendChatMessage { get; }
     public ICommand StartSessieCommand { get; }
+    public ICommand StopSessieCommand { get; }
     
     private Patient _currentUser;
     private string _chatMessage;
@@ -42,6 +43,7 @@ public class DoctorViewModel : ObservableObject
         EmergencyStop = new EmergencyStopCommand();
         SendChatMessage = new SendChatMessageCommand(_client, this);
         StartSessieCommand = new StartSessieCommand(_client);
+        StopSessieCommand = new StopSessieCommand(_client);
     }
 
     public Patient CurrentUser

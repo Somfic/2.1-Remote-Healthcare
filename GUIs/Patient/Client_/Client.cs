@@ -206,19 +206,32 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             Console.WriteLine(obj.GetData<DisconnectPacketResponse>().message);
         }
 
+        private Boolean sessienRunning = false;
+        
         //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
-            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
+            
         }
 
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            _log.Information(obj.GetData<SessionStartPacketResponse>().message);
-        }
+            sessienRunning = true;
+            
+            while(sessienRunning)
+            {
+                Console.WriteLine("sessie start");
+                Thread.Sleep(500);
+            }
 
-        //the methode for the send chat request
+         }
+
+       
+        
+        
+
+    //the methode for the send chat request
         private void ChatHandler(DataPacket packetData)
         {
             _log.Information($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
