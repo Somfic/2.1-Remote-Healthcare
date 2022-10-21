@@ -321,7 +321,22 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
-            
+            ServerClient tt = Server._connectedClients.Find(c => c._userId == "06111");
+        
+            Console.WriteLine("gevonden id: " + tt._userId);
+            Console.WriteLine("gevonden name: " + tt.UserName);
+                
+                
+            tt.SendData(new DataPacket<SessionStopPacketResponse>
+            {
+                OpperationCode = OperationCodes.SESSION_STOP,
+    
+                data = new SessionStopPacketResponse()
+                {
+                    statusCode = StatusCodes.OK,
+                    message = "Sessie wordt nu gestopt."
+                }
+            });
         }
 
         //the methode for the emergency stop request

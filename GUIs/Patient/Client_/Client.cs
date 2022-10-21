@@ -208,7 +208,12 @@ namespace RemoteHealthcare.GUIs.Patient.Client
 
         private Boolean sessienRunning = false;
         
-     
+        //the methode for the session stop request
+        private void SessionStopHandler(DataPacket obj)
+        {
+            Console.WriteLine("Sessie gestopt");
+            sessienRunning = false;
+        }
 
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
