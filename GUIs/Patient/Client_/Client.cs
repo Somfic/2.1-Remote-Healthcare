@@ -208,26 +208,24 @@ namespace RemoteHealthcare.GUIs.Patient.Client
 
         private Boolean sessienRunning = false;
         
-        //the methode for the session stop request
-        private void SessionStopHandler(DataPacket obj)
-        {
-            
-        }
+     
 
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
             sessienRunning = true;
             
+            new Thread(temporaryBikeData).Start();
+        }
+
+        private void temporaryBikeData()
+        {
             while(sessienRunning)
             {
                 Console.WriteLine("sessie start");
                 Thread.Sleep(500);
             }
-
-         }
-
-       
+        }
         
         
 
