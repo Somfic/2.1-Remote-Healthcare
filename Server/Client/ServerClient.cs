@@ -25,9 +25,9 @@ namespace RemoteHealthcare.Server.Client
         private Patient patient;
         
         public string UserName { get; set; }
+        
         private Dictionary<string, Action<DataPacket>> _functions;
-
-
+        
 
         //Set-ups the client constructor
         public ServerClient(SocketClient client)
@@ -228,16 +228,14 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the login request
-
-        private void LoginFeature(DataPacket packetData)
+        private void LoginFeature(DataPacket packetData) //TODO: spam on incorrect login
         {
-            _log.Debug($"loginfeature: {packetData.ToJson()}");
             Patient? patient = null;
             Doctor? doctor = null;
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
-                    packetData.GetData<LoginPacketRequest>().password, "06111");
+                    packetData.GetData<LoginPacketRequest>().password);
                     
                 _log.Debug($"Patient name: {patient.UserId} Password: {patient.Password}");
             }
@@ -255,7 +253,6 @@ namespace RemoteHealthcare.Server.Client
             {
                 _userId = patient.UserId;
                 _isDoctor = false;
-                this.patient = patient;
 
                 SendData(new DataPacket<LoginPacketResponse>
                 {
@@ -302,14 +299,17 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the session start request
-
         private void SessionStartHandler(DataPacket obj)
         {
+         
+            SessionStartPacketRequest data = obj.GetData<SessionStartPacketRequest>();
 
-            _log.Debug("Alle verbonden users zijn: "); 
-            
-            
-            SendData(new DataPacket<SessionStartPacketResponse>
+            ServerClient patient = Server._connectedClients.Find(patient => patient._userId == data.selectedPatient);
+
+            Console.WriteLine("selected is: " + patient._userId);
+            if (patient == null) return;
+
+            patient.SendData(new DataPacket<SessionStartPacketResponse>
             {
                 OpperationCode = OperationCodes.SESSION_START,
 
@@ -322,13 +322,21 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the session stop request
-
         private void SessionStopHandler(DataPacket obj)
         {
-            SendData(new DataPacket<SessionStopPacketResponse>
+            
+            SessionStopPacketRequest data = obj.GetData<SessionStopPacketRequest>();
+
+            ServerClient tt = Server._connectedClients.Find(c => c._userId == data.selectedPatient);
+        
+            Console.WriteLine("gevonden id: " + tt._userId);
+            Console.WriteLine("gevonden name: " + tt.UserName);
+                
+                
+            tt.SendData(new DataPacket<SessionStopPacketResponse>
             {
                 OpperationCode = OperationCodes.SESSION_STOP,
-
+    
                 data = new SessionStopPacketResponse()
                 {
                     statusCode = StatusCodes.OK,

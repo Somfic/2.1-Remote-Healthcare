@@ -13,17 +13,16 @@ public class Patient : ObservableObject
     
     public string Username { get; set; }
     public string UserId { get; set; }
-    //public string? Nickname { get; set; }
+    public string? Nickname { get; set; }
     public string Password { get; set; }
 
-    public Patient(string user, string pass, string userId)
+    public Patient(string user, string password)
     {
-        Username = user;
-        Password = pass;
-        UserId = userId;
+        Password = password;
+        UserId = user;
         Sessions = new List<SessionData>();
     }
-
+    
     /// <summary>
     /// It takes a folder name as a parameter, creates a directory with the user's username, and then creates a file for
     /// each session in the user's session list
@@ -31,7 +30,7 @@ public class Patient : ObservableObject
     /// <param name="folderName">The name of the folder you want to save the data to.</param>
     public void SaveSessionData(string folderName)
     {
-        var pathString = Path.Combine(folderName, Username);
+        /*var pathString = Path.Combine(folderName, Nickname);
         Directory.CreateDirectory(pathString);
         
         foreach (var session in Sessions)
@@ -48,12 +47,12 @@ public class Patient : ObservableObject
             {
                 File.WriteAllText(pathString, JObject.Parse(json).ToString());
             }
-        }
+        }*/
     }
 
     public override string ToString()
     {
-        return $" Patient: {Username} + UserId {UserId}";
+        return $" Patient: {Nickname} + UserId {UserId}";
     }
 
     public JObject GetPatientAsJObject()

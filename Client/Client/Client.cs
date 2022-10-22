@@ -216,5 +216,11 @@ namespace RemoteHealthcare.Client.Client
                 AskForLoginAsync();
             }
         }
+        public bool GetLoggedIn()
+        {
+            return _loggedIn;
+        }
     }
+    
+   
 }

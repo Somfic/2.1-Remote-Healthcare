@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <TargetFramework>net6.0-windows</TargetFramework>
+        <OutputType>Exe</OutputType>
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
         <RootNamespace>RemoteHealthcare.GUIs.Patient</RootNamespace>
+        <LangVersion>10</LangVersion>
+        <TargetFramework>net6.0-windows</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,6 +14,31 @@
       <PackageReference Include="Extended.Wpf.Toolkit" Version="4.4.0" />
       <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
       <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Resource Include="images\fiets.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Common\Common.csproj" />
+      <ProjectReference Include="..\..\NetworkEngine\NetworkEngine.csproj" />
+      <ProjectReference Include="..\Doctor\Doctor.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="BLELibrary.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Images\logos.JPG">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="BLELibrary">
+        <HintPath>..\..\Client\BLELibrary.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
