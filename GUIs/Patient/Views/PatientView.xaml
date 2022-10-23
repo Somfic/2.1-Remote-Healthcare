@@ -10,7 +10,7 @@
     <Grid>
         <Label Content="Label" HorizontalAlignment="Left" Margin="595,172,0,0" VerticalAlignment="Top" Height="45" Width="183" Background="Red"/>
         <ListView ItemsSource="{Binding Path = Messages}" Margin="595,217,22,68" />
-        <Image HorizontalAlignment="Left" Height="82" Margin="122,72,0,0" VerticalAlignment="Top" Width="379" Source="../Images/logos.JPG" Stretch="Fill"/> 
+        <Image Name="Image" HorizontalAlignment="Left" Height="82" Margin="122,72,0,0" VerticalAlignment="Top" Width="379" Source="../Images/logos.JPG" Stretch="Fill"/> 
 
         <TextBox HorizontalAlignment="Left" Margin="595,371,0,0" TextWrapping="Wrap" Text="{Binding Message}" VerticalAlignment="Top" Width="183"/>
         <Button Content="Button" Command="{Binding Send}" HorizontalAlignment="Left" Margin="738,404,0,0" VerticalAlignment="Top"/>
@@ -21,7 +21,7 @@
 
         <Rectangle Height="82" Margin="-175,72,0,0" VerticalAlignment="Top" Width="379" >
             <Rectangle.Fill>
-                <ImageBrush ImageSource="C:\Users\HP\Desktop\rhc2.0\2.1-Remote-Healthcare\GUIs\Patient\images\logos.JPG"></ImageBrush>
+                <ImageBrush ImageSource="Image"></ImageBrush>
             </Rectangle.Fill>
         </Rectangle>
         

@@ -74,6 +74,11 @@ public class DoctorViewModel : ObservableObject
         set => _chatMessage = value;
     }
     
+    public int BPM
+    {
+        get => _client.BPM;
+    }
+    
 
     public ChartValues<float> SpeedData { get; set; }
 }

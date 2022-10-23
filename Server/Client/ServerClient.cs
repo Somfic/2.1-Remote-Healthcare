@@ -104,7 +104,7 @@ namespace RemoteHealthcare.Server.Client
         private void GetBikeData(DataPacket obj)
         {
             BikeDataPacket data = obj.GetData<BikeDataPacket>();
-            
+            _log.Debug(patient.ToString());
             foreach(SessionData session in patient.Sessions)
             {
                 if (session.SessionId.Equals(data.SessionId))
@@ -116,7 +116,7 @@ namespace RemoteHealthcare.Server.Client
             patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
             _log.Debug(Environment.CurrentDirectory);
             patient.SaveSessionData(_patientDataLocation);
-            GetBikeData(obj);
+            calculateTarget()._client.SendAsync(obj);
         }
 
         //If userid == null, then search for doctor otherwise search for patient

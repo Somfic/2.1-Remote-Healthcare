@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Navigation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -27,6 +28,11 @@ namespace RemoteHealthcare.GUIs.Doctor
         public bool loggedIn { get; set; }
         private string _userId;
 
+        public int BPM = 0;
+        public float speed = 0;
+        public float distance = 0;
+        public TimeSpan elapsed = new TimeSpan(0);
+
         private Dictionary<string, Action<DataPacket>> _functions = new();
 
         public Client()
@@ -43,6 +49,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
             _functions.Add("get patient data", GetPatientDataHandler);
+            _functions.Add("bikedata", GetPatientDataHandler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -279,6 +286,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             {
                 _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
                            packetData.GetData<LoginPacketResponse>().message);
+                MessageBox.Show(packetData.GetData<LoginPacketResponse>().message);
             }
         }
         
@@ -299,6 +307,16 @@ namespace RemoteHealthcare.GUIs.Doctor
                 Patient patient = jObject.ToObject<Patient>();
                 _patientList.Add(patient);
             }
+        }
+        
+        private void GetBikeData(DataPacket obj)
+        {
+            BikeDataPacket data = obj.GetData<BikeDataPacket>();
+
+            BPM = data.heartRate;
+            speed = data.speed;
+            elapsed = data.elapsed;
+            distance = data.distance;
         }
     }
 }
