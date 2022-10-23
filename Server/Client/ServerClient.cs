@@ -45,6 +45,7 @@ namespace RemoteHealthcare.Server.Client
                 patient.SaveSessionData(_patientDataLocation);
             };
             
+            //Fill the dictionary _callbacks with the right values
             _callbacks = new Dictionary<string, Action<DataPacket>>();
             _callbacks.Add(OperationCodes.LOGIN, LoginFeature);
             _callbacks.Add(OperationCodes.USERS, RequestConnectionsFeature);
@@ -294,17 +295,21 @@ namespace RemoteHealthcare.Server.Client
         //The methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
+            //Retrieves the DataPacket and covert it to a SessionStartPacketRequest. 
             SessionStartPacketRequest data = obj.GetData<SessionStartPacketRequest>();
 
+            //retieves the selected Patient from the GUI
             ServerClient patient = Server._connectedClients.Find(patient => patient._userId == data.selectedPatient);
             
             StatusCodes _statusCode;
             
+            //Checks if the Patient exist or not, on the result of that will be de _statusCode filled with a value.
             if (patient == null) {
                 _statusCode = StatusCodes.NOT_FOUND;   
             } else {
                 _statusCode = StatusCodes.OK;
                 
+                //Sends request to the Patient
                 patient.SendData(new DataPacket<SessionStartPacketResponse>
                 {
                     OpperationCode = OperationCodes.SESSION_START,
@@ -317,6 +322,7 @@ namespace RemoteHealthcare.Server.Client
                 });
             }
             
+            //Sends request to the Doctor
             SendData(new DataPacket<SessionStartPacketResponse>
             {
                 OpperationCode = OperationCodes.SESSION_START,
@@ -329,12 +335,13 @@ namespace RemoteHealthcare.Server.Client
             });
         }
 
-        //the methode for the session stop request
+        //The methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
-            
+            //Retrieves the DataPacket and covert it to a SessionStartPacketRequest. 
             SessionStopPacketRequest data = obj.GetData<SessionStopPacketRequest>();
 
+            //Trys to Find the Patient in the _connectedCLients.
             ServerClient _selectedPatient = Server._connectedClients.Find(c => c._userId == data.selectedPatient);
 
             if (_selectedPatient == null) return;
@@ -367,10 +374,13 @@ namespace RemoteHealthcare.Server.Client
             });
         }
 
+        //The methode when the Doctor disconnects a Patient.
         private void DisconnectHandler(DataPacket obj)
         {
             _log.Debug("in de server-client methode disconnectHandler");
+            //Disconnects Server-side
             Server.Disconnect(this);
+            //Disconnects TCP-side
             _client.DisconnectAsync();
 
             Server.printUsers();

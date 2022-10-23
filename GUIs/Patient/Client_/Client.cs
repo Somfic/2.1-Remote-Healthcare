@@ -197,6 +197,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             _vrConnection.setResistance(obj.GetData<SetResistancePacket>().resistance);
         }
 
+        //the methode for the disconnect request
         private void DisconnectHandler(DataPacket obj)
         {
             Console.WriteLine(obj.GetData<DisconnectPacketResponse>().message);
@@ -216,7 +217,8 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             
             new Thread(temporaryBikeData).Start();
         }
-
+        
+        //This methode is temporary just to check if each patient gets in the while-loop and recieve the data.
         private void temporaryBikeData()
         {
             while(_sessienRunning)
