@@ -12,12 +12,16 @@ public class SocketClient : ISocket
     public TcpClient Socket { get; private set; } = new();
     
     public Guid Id { get; } = Guid.NewGuid();
+    public Dictionary<string, Action<DataPacket>> callbacks;
+
     
     private readonly Log _log = new(typeof(SocketClient));
 
     public SocketClient(bool useEncryption)
     {
         _useEncryption = useEncryption;
+        callbacks = new Dictionary<string, Action<DataPacket>>();
+
     }
 
     public static SocketClient CreateFromSocket(TcpClient socket, bool useEncryption)
@@ -36,6 +40,7 @@ public class SocketClient : ISocket
 
         try
         {
+
             await Socket.ConnectAsync(IPAddress.Parse(ip), port);
             _log.Debug($"Connected to {ip}:{port}");
             Read();
@@ -51,11 +56,27 @@ public class SocketClient : ISocket
         string json = JsonConvert.SerializeObject(data);
         return SendAsync(json);
     }
+
+    public Task SendAsync<T>(DataPacket<T> packet, Action<DataPacket> callback) where T : DAbstract
+    {
+        this.callbacks.Add(packet.OpperationCode, callback);
+
+        string json = JsonConvert.SerializeObject(packet);
+        return SendAsync(json);
+    }
     
     public Task SendAsync(string text)
     {
         try
         {
+            DataPacket dataPacket = JsonConvert.DeserializeObject<DataPacket>(text);
+
+            if (callbacks.ContainsKey(dataPacket.OpperationCode))
+            {
+                callbacks[dataPacket.OpperationCode](dataPacket);
+                callbacks.Remove(dataPacket.OpperationCode);
+            }
+            
             return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);
         }
         catch (Exception ex)

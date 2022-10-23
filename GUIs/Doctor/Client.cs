@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Navigation;
+using MvvmHelpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
+using RemoteHealthcare.GUIs.Doctor.ViewModels;
 using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.GUIs.Doctor
@@ -26,6 +28,8 @@ namespace RemoteHealthcare.GUIs.Doctor
         public string username { get; set; }
         public bool loggedIn { get; set; }
         private string _userId;
+
+        public ObservableObject currentViewModel; 
 
         private Dictionary<string, Action<DataPacket>> _functions = new();
 
@@ -242,7 +246,9 @@ namespace RemoteHealthcare.GUIs.Doctor
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            _log.Information(obj.GetData<SessionStartPacketResponse>().message);
+            var sessie = obj.GetData<SessionStartPacketResponse>();
+            Console.WriteLine(obj.ToJson());
+            ((DoctorViewModel) currentViewModel).CurrentUserName = (sessie.statusCode.Equals(StatusCodes.OK)) ? ((DoctorViewModel) currentViewModel).CurrentUser.Username : "Gekozen Patient is niet online";
         }
 
         //the methode for the send chat request

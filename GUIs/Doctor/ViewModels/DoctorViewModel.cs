@@ -44,15 +44,35 @@ public class DoctorViewModel : ObservableObject
         SendChatMessage = new SendChatMessageCommand(_client, this);
         StartSessieCommand = new StartSessieCommand(_client, this);
         StopSessieCommand = new StopSessieCommand(_client, this);
+        client.currentViewModel = this;
     }
+    public string CurrentUserName
+    {
+        get => username;
+        set
+        {
+            
+            username = value;
+            OnPropertyChanged(nameof(CurrentUserName));
+        }
+    }
+
+    private string username;
+    
 
     public Patient CurrentUser
     {
         get => _currentUser;
         set
         {
+            
             _currentUser = value;
-            OnPropertyChanged();
+            if (CurrentUser != null)
+            {
+                CurrentUserName = CurrentUser.Username;
+            }
+            
+            OnPropertyChanged(nameof(CurrentUser));
         }
     }
 

@@ -79,7 +79,6 @@ namespace RemoteHealthcare.Server.Client
         //This methode used to send an request from the Server to the Client
 
         //The parameter is an JsonFile object
-
         private void SendData(DAbstract packet, string? targetId = null)
         {
             _log.Debug($"sending: {packet.ToJson()}");
@@ -297,17 +296,35 @@ namespace RemoteHealthcare.Server.Client
                 });
             }
         }
-
+        
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-         
             SessionStartPacketRequest data = obj.GetData<SessionStartPacketRequest>();
 
             ServerClient patient = Server._connectedClients.Find(patient => patient._userId == data.selectedPatient);
+            
+            StatusCodes cc;
+            if (patient == null)
+            {
+                cc = StatusCodes.NOT_FOUND;   
+            }
+            else
+            {
+                cc = StatusCodes.OK;
+            }
+            
+            SendData(new DataPacket<SessionStartPacketResponse>
+            {
+                OpperationCode = OperationCodes.SESSION_START,
 
-            Console.WriteLine("selected is: " + patient._userId);
-            if (patient == null) return;
+                data = new SessionStartPacketResponse()
+                {
+                    statusCode = cc,
+                    message = "Sessie wordt nu gestart."
+                }
+            });
+            
 
             patient.SendData(new DataPacket<SessionStartPacketResponse>
             {
