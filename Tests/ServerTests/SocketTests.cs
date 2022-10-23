@@ -15,15 +15,16 @@ public class SocketTests
 
         Assert.That(decoded, Is.EqualTo(text));
     }
-    
+
     [Test]
     public void Encryption()
     {
         var bytes = GenerateRandomBytes(1000);
-
+        
         var encrypted = SocketHelper.Encrypt(bytes);
         var decrypted = SocketHelper.Decrypt(encrypted);
 
+        Assert.That(bytes, Is.Not.EqualTo(encrypted));
         Assert.That(decrypted, Is.EqualTo(bytes));
     }
 
