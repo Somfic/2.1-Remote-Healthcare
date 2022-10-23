@@ -31,22 +31,22 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         public ObservableObject currentViewModel; 
 
-        private Dictionary<string, Action<DataPacket>> _functions = new();
+        private Dictionary<string, Action<DataPacket>> _callbacks = new();
 
         public Client()
         {
             loggedIn = false;
             _patientList = new List<Patient>();
-            _functions = new Dictionary<string, Action<DataPacket>>();
+            _callbacks = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
-            _functions.Add(OperationCodes.LOGIN, LoginFeature);
-            _functions.Add(OperationCodes.USERS, RequestConnectionsFeature);
-            _functions.Add(OperationCodes.CHAT, ChatHandler);
-            _functions.Add(OperationCodes.SESSION_START, SessionStartHandler);
-            _functions.Add(OperationCodes.SESSION_STOP, SessionStopHandler);
-            _functions.Add(OperationCodes.EMERGENCY_STOP, EmergencyStopHandler);
-            _functions.Add(OperationCodes.GET_PATIENT_DATA, GetPatientDataHandler);
+            _callbacks.Add(OperationCodes.LOGIN, LoginFeature);
+            _callbacks.Add(OperationCodes.USERS, RequestConnectionsFeature);
+            _callbacks.Add(OperationCodes.CHAT, ChatHandler);
+            _callbacks.Add(OperationCodes.SESSION_START, SessionStartHandler);
+            _callbacks.Add(OperationCodes.SESSION_STOP, SessionStopHandler);
+            _callbacks.Add(OperationCodes.EMERGENCY_STOP, EmergencyStopHandler);
+            _callbacks.Add(OperationCodes.GET_PATIENT_DATA, GetPatientDataHandler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -221,7 +221,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         public void HandleData(DataPacket packet)
         {
             //Checks if the OppCode (OperationCode) does exist.
-            if (_functions.TryGetValue(packet.OpperationCode, out var action))
+            if (_callbacks.TryGetValue(packet.OpperationCode, out var action))
             {
                 action.Invoke(packet);
             }
@@ -230,13 +230,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                 throw new Exception("Function not implemented");
             }
         }
-
-        //the methode for the session stop request
-        private void SessionStopHandler(DataPacket obj)
-        {
-            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
-        }
-
+        
         //the methode for the emergency stop request
         private void EmergencyStopHandler(DataPacket obj)
         {
@@ -247,17 +241,23 @@ namespace RemoteHealthcare.GUIs.Doctor
         private void SessionStartHandler(DataPacket obj)
         {
             var sessie = obj.GetData<SessionStartPacketResponse>();
-            Console.WriteLine(obj.ToJson());
+
             ((DoctorViewModel) currentViewModel).CurrentUserName = (sessie.statusCode.Equals(StatusCodes.OK)) ? ((DoctorViewModel) currentViewModel).CurrentUser.Username : "Gekozen Patient is niet online";
         }
-
+        
+        //the methode for the session stop request
+        private void SessionStopHandler(DataPacket obj)
+        {
+            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
+        }
+        
         //the methode for the send chat request
         private void ChatHandler(DataPacket packetData)
         {
             _log.Information(
                 $"Incomming message: {packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
         }
-
+        
         private void RequestConnectionsFeature(DataPacket packetData)
         {
             _log.Debug(packetData.ToJson());

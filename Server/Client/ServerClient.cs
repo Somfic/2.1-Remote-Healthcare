@@ -26,8 +26,7 @@ namespace RemoteHealthcare.Server.Client
         
         public string UserName { get; set; }
         
-        private Dictionary<string, Action<DataPacket>> _functions;
-        
+        private Dictionary<string, Action<DataPacket>> _callbacks;
 
         //Set-ups the client constructor
         public ServerClient(SocketClient client)
@@ -45,39 +44,35 @@ namespace RemoteHealthcare.Server.Client
             {
                 patient.SaveSessionData(_patientDataLocation);
             };
-            _functions = new Dictionary<string, Action<DataPacket>>();
-            _functions.Add("login", LoginFeature);
-            _functions.Add("users", RequestConnectionsFeature);
-            _functions.Add("chat", ChatHandler);
-            _functions.Add("session start", SessionStartHandler);
-            _functions.Add("session stop", SessionStopHandler);
-            _functions.Add("disconnect", DisconnectHandler);
-            _functions.Add("emergency stop", EmergencyStopHandler);
-            _functions.Add("get patient data", GetPatientDataHandler);
-            _functions.Add("bikedata", GetBikeData);
-
+            
+            _callbacks = new Dictionary<string, Action<DataPacket>>();
+            _callbacks.Add(OperationCodes.LOGIN, LoginFeature);
+            _callbacks.Add(OperationCodes.USERS, RequestConnectionsFeature);
+            _callbacks.Add(OperationCodes.CHAT, ChatHandler);
+            _callbacks.Add(OperationCodes.SESSION_START, SessionStartHandler);
+            _callbacks.Add(OperationCodes.SESSION_STOP, SessionStopHandler);
+            _callbacks.Add(OperationCodes.DISCONNECT, DisconnectHandler);
+            _callbacks.Add(OperationCodes.EMERGENCY_STOP, EmergencyStopHandler);
+            _callbacks.Add(OperationCodes.GET_PATIENT_DATA, GetPatientDataHandler);
+            _callbacks.Add(OperationCodes.BIKEDATA, GetBikeData);
         }
 
 
         //determines which methode exactly will be executed 
-
         private void HandleData(DataPacket packetData)
         {
             _log.Debug($"Got a packet server: {packetData.OpperationCode}");
 
             //Checks if the OppCode (OperationCode) does exist.
-            if (_functions.TryGetValue(packetData.OpperationCode, out var action))
+            if (_callbacks.TryGetValue(packetData.OpperationCode, out var action)) 
             {
                 action.Invoke(packetData);
-            }
-            else
-            {
+            } else {
                 throw new Exception("Function not implemented");
             }
         }
 
         //This methode used to send an request from the Server to the Client
-
         //The parameter is an JsonFile object
         private void SendData(DAbstract packet, string? targetId = null)
         {
@@ -119,7 +114,6 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //If userid == null, then search for doctor otherwise search for patient
-
         private ServerClient calculateTarget(string? userId = null)
         {
             foreach (ServerClient client in Server._connectedClients)
@@ -297,21 +291,30 @@ namespace RemoteHealthcare.Server.Client
             }
         }
         
-        //the methode for the session start request
+        //The methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
             SessionStartPacketRequest data = obj.GetData<SessionStartPacketRequest>();
 
             ServerClient patient = Server._connectedClients.Find(patient => patient._userId == data.selectedPatient);
             
-            StatusCodes cc;
-            if (patient == null)
-            {
-                cc = StatusCodes.NOT_FOUND;   
-            }
-            else
-            {
-                cc = StatusCodes.OK;
+            StatusCodes _statusCode;
+            
+            if (patient == null) {
+                _statusCode = StatusCodes.NOT_FOUND;   
+            } else {
+                _statusCode = StatusCodes.OK;
+                
+                patient.SendData(new DataPacket<SessionStartPacketResponse>
+                {
+                    OpperationCode = OperationCodes.SESSION_START,
+
+                    data = new SessionStartPacketResponse()
+                    {
+                        statusCode = _statusCode,
+                        message = "Sessie wordt nu gestart."
+                    }
+                });
             }
             
             SendData(new DataPacket<SessionStartPacketResponse>
@@ -320,19 +323,7 @@ namespace RemoteHealthcare.Server.Client
 
                 data = new SessionStartPacketResponse()
                 {
-                    statusCode = cc,
-                    message = "Sessie wordt nu gestart."
-                }
-            });
-            
-
-            patient.SendData(new DataPacket<SessionStartPacketResponse>
-            {
-                OpperationCode = OperationCodes.SESSION_START,
-
-                data = new SessionStartPacketResponse()
-                {
-                    statusCode = StatusCodes.OK,
+                    statusCode = _statusCode,
                     message = "Sessie wordt nu gestart."
                 }
             });
@@ -344,13 +335,11 @@ namespace RemoteHealthcare.Server.Client
             
             SessionStopPacketRequest data = obj.GetData<SessionStopPacketRequest>();
 
-            ServerClient tt = Server._connectedClients.Find(c => c._userId == data.selectedPatient);
-        
-            Console.WriteLine("gevonden id: " + tt._userId);
-            Console.WriteLine("gevonden name: " + tt.UserName);
-                
-                
-            tt.SendData(new DataPacket<SessionStopPacketResponse>
+            ServerClient _selectedPatient = Server._connectedClients.Find(c => c._userId == data.selectedPatient);
+
+            if (_selectedPatient == null) return;
+            
+            _selectedPatient.SendData(new DataPacket<SessionStopPacketResponse>
             {
                 OpperationCode = OperationCodes.SESSION_STOP,
     

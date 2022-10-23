@@ -46,6 +46,7 @@ public class DoctorViewModel : ObservableObject
         StopSessieCommand = new StopSessieCommand(_client, this);
         client.currentViewModel = this;
     }
+    
     public string CurrentUserName
     {
         get => username;

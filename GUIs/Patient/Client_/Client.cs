@@ -21,27 +21,26 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         public string _password { get; set; }
         public string _username { get; set; }
         public bool _loggedIn;
+        private Boolean _sessienRunning = false;
 
-        private static Dictionary<string, Action<DataPacket>> _functions;
+        private static Dictionary<string, Action<DataPacket>> _callbacks;
 
         public  Client(VrConnection v)
         {
            
-            _functions = new Dictionary<string, Action<DataPacket>>();
+            _callbacks = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
-            _functions.Add(OperationCodes.LOGIN, LoginFeature);
-            _functions.Add(OperationCodes.CHAT, ChatHandler);
-            _functions.Add(OperationCodes.SESSION_START, SessionStartHandler);
-            _functions.Add(OperationCodes.SESSION_STOP, SessionStopHandler);
+            _callbacks.Add(OperationCodes.LOGIN, LoginFeature);
+            _callbacks.Add(OperationCodes.CHAT, ChatHandler);
+            _callbacks.Add(OperationCodes.SESSION_START, SessionStartHandler);
+            _callbacks.Add(OperationCodes.SESSION_STOP, SessionStopHandler);
 
             _client.OnMessage += (sender, data) =>
             {
                 var packet = JsonConvert.DeserializeObject<DataPacket>(data);
                 HandleData(packet);
             };
-
-            
         }
 
         public async Task PatientLogin()
@@ -63,14 +62,14 @@ namespace RemoteHealthcare.GUIs.Patient.Client
          public async Task RunAsync()
         {
             _loggedIn = false;
-            _functions = new Dictionary<string, Action<DataPacket>>();
+            _callbacks = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
-            _functions.Add("login", LoginFeature);
-            _functions.Add("chat", ChatHandler);
-            _functions.Add("session start", SessionStartHandler);
-            _functions.Add("session stop", SessionStopHandler);
-            _functions.Add("disconnect", DisconnectHandler);
+            _callbacks.Add("login", LoginFeature);
+            _callbacks.Add("chat", ChatHandler);
+            _callbacks.Add("session start", SessionStartHandler);
+            _callbacks.Add("session stop", SessionStopHandler);
+            _callbacks.Add("disconnect", DisconnectHandler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -151,7 +150,6 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                         elapsed =  bikedata.Elapsed,
                         deviceType = bikedata.DeviceType.ToString(),
                         id = bikedata.Id
-
                     }
                 };
                 _log.Information("sending bike data to server");
@@ -186,12 +184,10 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         public void HandleData(DataPacket packet)
         {
             //Checks if the OppCode (OperationCode) does exist.
-            if (_functions.TryGetValue(packet.OpperationCode, out var action))
+            if (_callbacks.TryGetValue(packet.OpperationCode, out var action))
             {
                 action.Invoke(packet);
-            }
-            else
-            {
+            } else {
                 throw new Exception("Function not implemented");
             }
         }
@@ -205,27 +201,25 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         {
             Console.WriteLine(obj.GetData<DisconnectPacketResponse>().message);
         }
-
-        private Boolean sessienRunning = false;
         
         //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
             Console.WriteLine("Sessie gestopt");
-            sessienRunning = false;
+            _sessienRunning = false;
         }
 
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            sessienRunning = true;
+            _sessienRunning = true;
             
             new Thread(temporaryBikeData).Start();
         }
 
         private void temporaryBikeData()
         {
-            while(sessienRunning)
+            while(_sessienRunning)
             {
                 Console.WriteLine("sessie start");
                 Thread.Sleep(500);
@@ -262,6 +256,4 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             return _loggedIn;
         }
     }
-    
-   
 }

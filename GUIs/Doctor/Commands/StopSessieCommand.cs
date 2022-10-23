@@ -19,6 +19,7 @@ public class StopSessieCommand : BaseCommand
     public override void Execute(object? parameter)
     {
         Console.WriteLine("Stop van uit de doctor");   
+        
         _client._client.SendAsync(new DataPacket<SessionStopPacketRequest>
         {
             OpperationCode = OperationCodes.SESSION_STOP,
