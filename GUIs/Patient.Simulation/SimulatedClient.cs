@@ -1,4 +1,5 @@
-﻿using RemoteHealthcare.Common.Logger;
+﻿using RemoteHealthcare.Common;
+using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 
 namespace RemoteHealthcare.GUIs.Patient.Simulation;
@@ -26,6 +27,17 @@ public class SimulatedClient
 
     public async Task LoginAsync()
     {
-        
+       var loginReq = new DataPacket<LoginPacketRequest>
+        {
+            OpperationCode = OperationCodes.LOGIN,
+            data = new LoginPacketRequest()
+            {
+                username = "123",
+                password = "123",
+                isDoctor = false
+            }
+        };
+
+        await _socket.SendAsync(loginReq);
     }
 }
