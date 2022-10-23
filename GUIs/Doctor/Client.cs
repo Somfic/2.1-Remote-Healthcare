@@ -4,22 +4,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
+using MvvmHelpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
+using RemoteHealthcare.GUIs.Doctor.ViewModels;
 using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.GUIs.Doctor
 {
-    public class Client
+    public class Client : ObservableObject
     {
         public SocketClient _client { get; set; } = new(true);
         
         private List<string> _connected;
         
         public List<Patient> _patientList;
+
+        public DoctorViewModel viewModel;
         
         private Log _log = new(typeof(Client));
 
@@ -308,17 +312,24 @@ namespace RemoteHealthcare.GUIs.Doctor
                 _patientList.Add(patient);
             }
         }
+
+        public void AddViewmodel(DoctorViewModel viewModel)
+        {
+            this.viewModel = viewModel;
+        }
         
         private void GetBikeData(DataPacket obj)
         {
             BikeDataPacket data = obj.GetData<BikeDataPacket>();
 
-            BPM = data.heartRate;
-            speed = data.speed;
-            elapsed = data.elapsed;
-            distance = data.distance;
+            viewModel.BPM = data.heartRate;
+            viewModel.Speed = data.speed;
+            viewModel.ElapsedTime = data.elapsed;
+            viewModel.Distance = data.distance;
             
-            _log.Information($"BPM: {BPM}, Speed {speed}, elapsed time {elapsed}, distance {distance}");
+            viewModel.UpdateAllProperties();
+
+            _log.Information($"BPM: {data.heartRate}, Speed {data.speed}, elapsed time {data.elapsed}, distance {data.distance}");
         }
     }
 }

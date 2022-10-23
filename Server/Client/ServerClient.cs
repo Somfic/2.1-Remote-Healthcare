@@ -114,9 +114,10 @@ namespace RemoteHealthcare.Server.Client
                 }
             }
             patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
-            _log.Debug(Environment.CurrentDirectory);
+            _log.Critical(data.distance.ToString(CultureInfo.InvariantCulture));
             patient.SaveSessionData(_patientDataLocation);
             calculateTarget()._client.SendAsync(obj);
+            GetBikeData(obj);
         }
 
         //If userid == null, then search for doctor otherwise search for patient

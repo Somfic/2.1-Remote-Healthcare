@@ -29,6 +29,11 @@ public class DoctorViewModel : ObservableObject
     public ICommand StartSessieCommand { get; }
     public ICommand StopSessieCommand { get; }
     
+    private int _BPM = 0;
+    private float _speed = 0;
+    private float _distance = 0;
+    private TimeSpan _elapsed = new TimeSpan(0);
+    
     private Patient _currentUser;
     private string _chatMessage;
     private ObservableCollection<Patient> _patients;
@@ -38,6 +43,7 @@ public class DoctorViewModel : ObservableObject
     public DoctorViewModel(Client client, NavigationStore navigationStore)
     {
         _client = client;
+        _client.AddViewmodel(this);
         _patients = new ObservableCollection<Patient>(_client._patientList);
         chatMessages = new ObservableCollection<string>();
         EmergencyStop = new EmergencyStopCommand();
@@ -76,7 +82,31 @@ public class DoctorViewModel : ObservableObject
     
     public int BPM
     {
-        get => _client.BPM;
+        get => _BPM;
+        set => _BPM = value;
+    }
+
+    public float Speed
+    {
+        get => _speed;
+        set => _speed = value;
+    }
+
+    public float Distance
+    {
+        get => _distance;
+        set => _distance = value;
+    }
+
+    public TimeSpan ElapsedTime
+    {
+        get => _elapsed;
+        set => _elapsed = value;
+    }
+
+    public void UpdateAllProperties()
+    {
+        OnPropertyChanged();
     }
     
 
