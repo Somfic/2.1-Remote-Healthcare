@@ -40,13 +40,13 @@ namespace RemoteHealthcare.GUIs.Doctor
             _functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
-            _functions.Add("login", LoginFeature);
-            _functions.Add("users", RequestConnectionsFeature);
-            _functions.Add("chat", ChatHandler);
-            _functions.Add("session start", SessionStartHandler);
-            _functions.Add("session stop", SessionStopHandler);
-            _functions.Add("emergency stop", EmergencyStopHandler);
-            _functions.Add("get patient data", GetPatientDataHandler);
+            _functions.Add(OperationCodes.LOGIN, LoginFeature);
+            _functions.Add(OperationCodes.USERS, RequestConnectionsFeature);
+            _functions.Add(OperationCodes.CHAT, ChatHandler);
+            _functions.Add(OperationCodes.SESSION_START, SessionStartHandler);
+            _functions.Add(OperationCodes.SESSION_STOP, SessionStopHandler);
+            _functions.Add(OperationCodes.EMERGENCY_STOP, EmergencyStopHandler);
+            _functions.Add(OperationCodes.GET_PATIENT_DATA, GetPatientDataHandler);
 
             _client.OnMessage += (sender, data) =>
             {

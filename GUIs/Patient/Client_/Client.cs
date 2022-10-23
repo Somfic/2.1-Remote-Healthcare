@@ -30,10 +30,10 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             _functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
-            _functions.Add("login", LoginFeature);
-            _functions.Add("chat", ChatHandler);
-            _functions.Add("session start", SessionStartHandler);
-            _functions.Add("session stop", SessionStopHandler);
+            _functions.Add(OperationCodes.LOGIN, LoginFeature);
+            _functions.Add(OperationCodes.CHAT, ChatHandler);
+            _functions.Add(OperationCodes.SESSION_START, SessionStartHandler);
+            _functions.Add(OperationCodes.SESSION_STOP, SessionStopHandler);
 
             _client.OnMessage += (sender, data) =>
             {
