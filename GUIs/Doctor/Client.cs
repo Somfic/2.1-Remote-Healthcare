@@ -49,7 +49,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
             _functions.Add("get patient data", GetPatientDataHandler);
-            _functions.Add("bikedata", GetPatientDataHandler);
+            _functions.Add("bikedata", GetBikeData);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -317,6 +317,8 @@ namespace RemoteHealthcare.GUIs.Doctor
             speed = data.speed;
             elapsed = data.elapsed;
             distance = data.distance;
+            
+            _log.Information($"BPM: {BPM}, Speed {speed}, elapsed time {elapsed}, distance {distance}");
         }
     }
 }

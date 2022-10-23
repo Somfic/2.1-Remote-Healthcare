@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
@@ -104,7 +105,6 @@ namespace RemoteHealthcare.Server.Client
         private void GetBikeData(DataPacket obj)
         {
             BikeDataPacket data = obj.GetData<BikeDataPacket>();
-            _log.Debug(patient.ToString());
             foreach(SessionData session in patient.Sessions)
             {
                 if (session.SessionId.Equals(data.SessionId))
@@ -252,6 +252,7 @@ namespace RemoteHealthcare.Server.Client
             if (patient != null && Server._patientData.MatchLoginData(patient))
             {
                 _userId = patient.UserId;
+                this.patient = patient;
                 _isDoctor = false;
 
                 SendData(new DataPacket<LoginPacketResponse>
