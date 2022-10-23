@@ -7,7 +7,7 @@ var log = new Log(typeof(Program));
 
 // Read the configration file
 var configContent = File.ReadAllText("config.json");
-var config = JsonConvert.DeserializeObject<Configration>(configContent);
+var config = JsonConvert.DeserializeObject<Configuration>(configContent);
 
 // Find out how many clients to simulate
 var amountOfClients = 0;
@@ -49,7 +49,10 @@ log.Information("Logging in clients");
 try
 {
     foreach (var client in clients)
+    {
         await client.LoginAsync();
+        await Task.Delay(500);
+    }
 }
 catch (Exception ex)
 {

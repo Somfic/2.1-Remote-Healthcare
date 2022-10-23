@@ -2,7 +2,7 @@
 
 namespace RemoteHealthcare.GUIs.Patient.Simulation.Models;
 
-public class Configration
+public class Configuration
 {
     [JsonProperty("host")]
     public string Host { get; init; }
