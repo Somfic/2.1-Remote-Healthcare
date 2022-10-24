@@ -34,7 +34,7 @@ public class Patient : ObservableObject
     {
         pathString = Path.Combine(pathString.Substring(0, pathString.LastIndexOf("bin")));
 
-        pathString = Path.Combine(pathString, Username);
+        pathString = Path.Combine(pathString, "allSessions");
 
 
         if (!Directory.Exists(pathString))

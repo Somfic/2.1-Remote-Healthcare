@@ -103,7 +103,7 @@ public class SessionStopPacketResponse : DAbstract
 
 public class EmergencyStopPacketRequest : DAbstract
 {
-    //TODO: voorlopig leeg laten
+    //TODO
 }
 
 public class EmergencyStopPacketResponse : DAbstract
@@ -148,4 +148,17 @@ public class GetAllPatientsDataResponse : DAbstract
     public StatusCodes statusCode;
     public string message;
     public JObject[] JObjects;
+}
+
+public class RequestAllSessionsFromPatientRequest : DAbstract
+{
+    public StatusCodes statusCode;
+    public string userId;
+}
+
+public class RequestAllSessionsFromPatientResponce : DAbstract
+{
+    public StatusCodes statusCode;
+    public JObject[] JObjects;
+    public string message;
 }

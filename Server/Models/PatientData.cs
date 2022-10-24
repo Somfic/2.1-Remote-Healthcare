@@ -82,4 +82,14 @@ public class PatientData
 
         return jObjects;
     }
+
+    public JObject[] GetPatientSessionsAsJObjects(string userId, string pathString)
+    {
+        pathString = Path.Combine(pathString.Substring(0, pathString.LastIndexOf("bin")));
+        pathString = Path.Combine(pathString, userId);
+        _log.Debug($"There are {Directory.GetFiles(pathString).Length} sessionfiles of the user {userId}");
+        JObject[] jObjects = new JObject[Directory.GetFiles(pathString).Length];
+
+        return null;
+    }
 }

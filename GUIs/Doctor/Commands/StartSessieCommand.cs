@@ -18,7 +18,7 @@ public class StartSessieCommand : BaseCommand
 
     public override void Execute(object? parameter)
     {
-        Console.WriteLine("Execte van uit de Doctor");
+        Console.WriteLine("Execute van uit de Doctor");
 
         _client._client.SendAsync(new DataPacket<SessionStartPacketRequest>
         {

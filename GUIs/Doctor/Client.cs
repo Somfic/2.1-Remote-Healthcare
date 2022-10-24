@@ -53,6 +53,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
             _functions.Add("get patient data", GetPatientDataHandler);
+            _functions.Add("get patient sessions", GetPatientSessionsHandler);
             _functions.Add("bikedata", GetBikeData);
 
             _client.OnMessage += (sender, data) =>
@@ -311,6 +312,11 @@ namespace RemoteHealthcare.GUIs.Doctor
                 Patient patient = jObject.ToObject<Patient>();
                 _patientList.Add(patient);
             }
+        }
+
+        private void GetPatientSessionsHandler(DataPacket packetData)
+        {
+            //todo
         }
 
         public void AddViewmodel(DoctorViewModel viewModel)
