@@ -9,13 +9,13 @@
         Height="450"
         Width="800">
         
-    <Window.Resources>
-        <Style x:Key="ListViewStyle" TargetType="{x:Type GridViewColumnHeader}">
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <EventSetter Event="MouseDoubleClick" Handler="{Binding CurrentSession}"></EventSetter>
-        </Style>
-    </Window.Resources>
-        
+    <!-- <Window.Resources> -->
+    <!--     <Style x:Key="ListViewStyle" TargetType="{x:Type GridViewColumnHeader}"> -->
+    <!--         <Setter Property="HorizontalContentAlignment" Value="Left" /> -->
+    <!--         <EventSetter Event="MouseDoubleClick" Handler="{Binding CurrentSession}"></EventSetter> -->
+    <!--     </Style> -->
+    <!-- </Window.Resources> -->
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
@@ -36,25 +36,25 @@
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-
+    
         <ListView Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="7" ItemsSource="{Binding Sessions}"
-                  ItemContainerStyle="{StaticResource ListViewStyle}" SelectedValue="{Binding CurrentSession}"
-                  Margin="10">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn HeaderContainerStyle="{StaticResource ListViewStyle}" Header="Sessie"
-                                    DisplayMemberBinding="{Binding Name}"/>
-                </GridView>
-            </ListView.View>
+                  Margin="10" SelectedValue="{Binding CurrentSession}">
+                  <!-- ItemContainerStyle="{StaticResource ListViewStyle}"> -->
+            <!-- <ListView.View> -->
+                <!-- <GridView> -->
+                    <!-- <GridViewColumn HeaderContainerStyle="{StaticResource ListViewStyle}" Header="Sessie" -->
+                                    <!-- DisplayMemberBinding="{Binding Name}"/> -->
+                <!-- </GridView> -->
+            <!-- </ListView.View> -->
         </ListView>
         <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="10"
                Name="PastSessionsNameLabel" Content="{Binding Username}">
         </Label>
-
+    
         <!-- <ComboBox Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" Height="25" Margin="10" -->
         <!--           ItemsSource="{Binding Patients}" DisplayMemberPath="Username" SelectedValue="{Binding CurrentUser}"> -->
         <!-- </ComboBox> -->
-
+    
         <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" Margin="10"
                VerticalContentAlignment="Bottom">
             Totale tijd
@@ -69,11 +69,11 @@
         <Label Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="2" Margin="10"
                VerticalContentAlignment="Bottom" Content="{Binding Distance}">
         </Label>
-
+    
         <Label Grid.Column="4" Grid.Row="0" VerticalAlignment="Bottom" Content="Speed" Margin="10"/>
         <wpf:CartesianChart Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="3" Margin="10"></wpf:CartesianChart>
         <Label Grid.Column="2" Grid.Row="4" VerticalAlignment="Bottom" Content="BPM" Margin="10"></Label>
         <wpf:CartesianChart Grid.Column="2" Grid.Row="5" Grid.ColumnSpan="5" Grid.RowSpan="3" Margin="10"></wpf:CartesianChart>
-
+    
     </Grid>
 </Window>
