@@ -55,6 +55,7 @@ namespace RemoteHealthcare.Server.Client
             _functions.Add("disconnect", DisconnectHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
             _functions.Add("get patient data", GetPatientDataHandler);
+            _functions.Add("set resitance", SetResiatance);
             _functions.Add("bikedata", GetBikeData);
 
         }
@@ -190,6 +191,27 @@ namespace RemoteHealthcare.Server.Client
 
         //the methode for the chat request
 
+        private void SetResiatance(DataPacket packetData)
+        {
+            SetResistancePacket data = packetData.GetData<SetResistancePacket>();
+
+            ServerClient patient = Server._connectedClients.Find(patient => patient._userId == data.receiverId);
+
+            Console.WriteLine("selected is: " + patient._userId);
+            if (patient == null) return;
+
+            patient.SendData(new DataPacket<SetResistancePacket>
+            {
+                OpperationCode = OperationCodes.SESSION_START,
+
+                data = new SetResistancePacket()
+                {
+                   receiverId = data.receiverId,
+                   resistance = data.resistance
+                }
+            });
+        }
+
         private void ChatHandler(DataPacket packetData)
         {
             ChatPacketRequest data = packetData.GetData<ChatPacketRequest>();
@@ -203,11 +225,11 @@ namespace RemoteHealthcare.Server.Client
 
                     data = new ChatPacketResponse()
                     {
-                        senderId = data.senderId,
                         statusCode = StatusCodes.OK,
+                        senderId = data.senderId,
                         message = data.message
                     }
-                });
+                }) ;
             }
             else
             {
@@ -220,11 +242,11 @@ namespace RemoteHealthcare.Server.Client
 
                     data = new ChatPacketResponse()
                     {
-                        senderId = data.senderId,
                         statusCode = StatusCodes.OK,
+                        senderId = data.senderId,
                         message = data.message
                     }
-                }, targetIds);
+                });
             }
         }
 

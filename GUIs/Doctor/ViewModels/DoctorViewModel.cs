@@ -28,10 +28,13 @@ public class DoctorViewModel : ObservableObject
     public ICommand SendChatMessage { get; }
     public ICommand StartSessieCommand { get; }
     public ICommand StopSessieCommand { get; }
+    public ICommand SetResistanceCommand { get; }
+
     
     private int _BPM = 0;
     private float _speed = 0;
     private float _distance = 0;
+    private int _resistance = 0;
     private TimeSpan _elapsed = new TimeSpan(0);
     
     private Patient _currentUser;
@@ -50,6 +53,8 @@ public class DoctorViewModel : ObservableObject
         SendChatMessage = new SendChatMessageCommand(_client, this);
         StartSessieCommand = new StartSessieCommand(_client, this);
         StopSessieCommand = new StopSessieCommand(_client, this);
+        SetResistanceCommand = new SetResistanceCommand(_client, this);
+        
     }
 
     public Patient CurrentUser
@@ -79,7 +84,14 @@ public class DoctorViewModel : ObservableObject
         get => _chatMessage;
         set => _chatMessage = value;
     }
-    
+
+    public int Resistance
+    {
+        get => _resistance;
+        set => _resistance = value;
+           
+    }
+
     public int BPM
     {
         get => _BPM;

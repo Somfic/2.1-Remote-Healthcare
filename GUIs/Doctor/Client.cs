@@ -162,6 +162,23 @@ namespace RemoteHealthcare.GUIs.Doctor
             await _client.SendAsync(req);
         }
 
+        public async void SetResistance(string target, int res)
+        {
+            await requestClients();
+
+            var req = new DataPacket<SetResistancePacket>
+            {
+                OpperationCode = OperationCodes.SET_RESISTANCE,
+                data = new SetResistancePacket()
+                {
+                    receiverId = target,
+                    resistance = res
+                }
+            };
+
+            await _client.SendAsync(req);
+        }
+
         /// <summary>
         /// It checks if all the targets are in the connections list
         /// </summary>
@@ -321,7 +338,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         private void GetBikeData(DataPacket obj)
         {
             BikeDataPacket data = obj.GetData<BikeDataPacket>();
-
+            
             viewModel.BPM = data.heartRate;
             viewModel.Speed = data.speed;
             viewModel.ElapsedTime = data.elapsed;

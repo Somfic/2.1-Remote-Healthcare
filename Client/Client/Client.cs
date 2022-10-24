@@ -43,6 +43,7 @@ namespace RemoteHealthcare.Client.Client
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("disconnect", DisconnectHandler);
+            _functions.Add("set resitance", SetResistanceHandeler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -171,6 +172,7 @@ namespace RemoteHealthcare.Client.Client
 
         private void SetResistanceHandeler(DataPacket obj)
         {
+            Console.WriteLine((int)obj.GetData<SetResistancePacket>().resistance + " :))");
             _vrConnection.setResistance(obj.GetData<SetResistancePacket>().resistance);
         }
 
