@@ -123,7 +123,6 @@ public class SetResistancePacket : DAbstract
 }
 public class SetResistanceResponse : DAbstract
 {
-    public string userId;
     public StatusCodes statusCode;
     public int resistance;
 }

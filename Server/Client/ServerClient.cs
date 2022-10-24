@@ -199,14 +199,13 @@ namespace RemoteHealthcare.Server.Client
 
             Console.WriteLine("selected is: " + patient._userId);
             if (patient == null) return;
-
-            patient.SendData(new DataPacket<SetResistancePacket>
+            patient.SendData(new DataPacket<SetResistanceResponse>
             {
-                OpperationCode = OperationCodes.SESSION_START,
+                OpperationCode = OperationCodes.SET_RESISTANCE,
 
-                data = new SetResistancePacket()
+                data = new SetResistanceResponse()
                 {
-                   receiverId = data.receiverId,
+                   statusCode = StatusCodes.OK,
                    resistance = data.resistance
                 }
             });

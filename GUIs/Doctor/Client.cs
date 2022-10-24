@@ -164,7 +164,7 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         public async void SetResistance(string target, int res)
         {
-            await requestClients();
+            
 
             var req = new DataPacket<SetResistancePacket>
             {

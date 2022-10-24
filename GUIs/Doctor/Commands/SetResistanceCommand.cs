@@ -22,7 +22,6 @@ public class SetResistanceCommand : BaseCommand
 
     public override async Task ExecuteAsync()
     {
-        Console.WriteLine(_viewModel.Resistance + ":)");
         _client.SetResistance(_viewModel.CurrentUser.UserId, _viewModel.Resistance);
     }
 }

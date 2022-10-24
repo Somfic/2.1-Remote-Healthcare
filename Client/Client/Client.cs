@@ -172,8 +172,7 @@ namespace RemoteHealthcare.Client.Client
 
         private void SetResistanceHandeler(DataPacket obj)
         {
-            Console.WriteLine((int)obj.GetData<SetResistancePacket>().resistance + " :))");
-            _vrConnection.setResistance(obj.GetData<SetResistancePacket>().resistance);
+            _vrConnection.setResistance(obj.GetData<SetResistanceResponse>().resistance);
         }
 
         private void DisconnectHandler(DataPacket obj)
