@@ -82,40 +82,40 @@ public class DoctorViewModel : ObservableObject
     
     public int BPM
     {
-        get => _BPM;
+        get => _currentUser.currentBPM;
         set
         {
-            _BPM = value;
+            _currentUser.currentBPM = value;
             OnPropertyChanged();
         }
     }
 
     public float Speed
     {
-        get => _speed;
+        get => _currentUser.currentSpeed;
         set
         {
-            _speed = value;
+            _currentUser.currentSpeed = value;
             OnPropertyChanged();
         }
     }
 
     public float Distance
     {
-        get => _distance;
+        get => _currentUser.currentDistance;
         set
         {
-            _distance = value;
+            _currentUser.currentDistance = value;
             OnPropertyChanged();
         }
     }
 
     public TimeSpan ElapsedTime
     {
-        get => _elapsed;
+        get => _currentUser.currentElapsedTime;
         set
         {
-            _elapsed = value;
+            _currentUser.currentElapsedTime = value;
             OnPropertyChanged();
         }
     }

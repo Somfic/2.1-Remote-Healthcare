@@ -138,6 +138,15 @@ public class BikeDataPacket : DAbstract
     public string id;
 }
 
+public class BikeDataPacketDoctor : DAbstract
+{
+    public float distance;
+    public float speed;
+    public int heartRate;
+    public TimeSpan elapsed;
+    public string id;
+}
+
 public class GetAllPatientsDataRequest : DAbstract
 {
     //TODO voorlopig leeg laten

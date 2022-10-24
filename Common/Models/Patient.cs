@@ -15,6 +15,11 @@ public class Patient : ObservableObject
     public string UserId { get; set; }
     public string? Nickname { get; set; }
     public string Password { get; set; }
+    
+    public float currentSpeed { get; set; }
+    public float currentDistance { get; set; }
+    public TimeSpan currentElapsedTime { get; set; }
+    public int currentBPM { get; set; }
 
     public Patient(string user, string password)
     {

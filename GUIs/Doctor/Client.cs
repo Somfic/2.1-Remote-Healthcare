@@ -320,14 +320,28 @@ namespace RemoteHealthcare.GUIs.Doctor
         
         private void GetBikeData(DataPacket obj)
         {
-            BikeDataPacket data = obj.GetData<BikeDataPacket>();
+            BikeDataPacketDoctor data = obj.GetData<BikeDataPacketDoctor>();
 
-            viewModel.BPM = data.heartRate;
-            viewModel.Speed = data.speed;
-            viewModel.ElapsedTime = data.elapsed;
-            viewModel.Distance = data.distance;
-
-            _log.Information($"BPM: {data.heartRate}, Speed {data.speed}, elapsed time {data.elapsed}, distance {data.distance}");
+            if (viewModel.CurrentUser.UserId.Equals(data.id))
+            {
+                viewModel.BPM = data.heartRate;
+                viewModel.Speed = data.speed;
+                viewModel.ElapsedTime = data.elapsed;
+                viewModel.Distance = data.distance;
+            }
+            else
+            {
+                foreach (Patient patient in _patientList)
+                {
+                    if (patient.UserId.Equals(data.id))
+                    {
+                        patient.currentDistance = data.distance;
+                        patient.currentSpeed = data.speed;
+                        patient.currentElapsedTime = data.elapsed;
+                        patient.currentBPM = data.heartRate;
+                    }
+                }
+            }
         }
     }
 }

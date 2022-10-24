@@ -110,14 +110,42 @@ namespace RemoteHealthcare.Server.Client
                 {
                     session.addData(data.SessionId,(int)data.speed, (int)data.distance, data.heartRate, data.elapsed.Seconds, data.deviceType, data.id);
                     _log.Critical(data.distance.ToString(CultureInfo.InvariantCulture));
-                    calculateTarget().Client.SendAsync(obj).GetAwaiter().GetResult();
+                    
+                    DataPacket<BikeDataPacketDoctor> dataPacketDoctor = new DataPacket<BikeDataPacketDoctor>
+                    {
+                        OpperationCode = OperationCodes.BIKEDATA,
+                        data = new BikeDataPacketDoctor()
+                        {
+                            distance = data.distance,
+                            elapsed = data.elapsed,
+                            heartRate = data.heartRate,
+                            id = UserId,
+                            speed = data.speed
+                        }
+                    };
+                    
+                    calculateTarget().Client.SendAsync(dataPacketDoctor).GetAwaiter().GetResult();
                     return;
                 }
             }
             patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
             patient.SaveSessionData(_patientDataLocation);
             _log.Critical(data.distance.ToString(CultureInfo.InvariantCulture));
-            calculateTarget().Client.SendAsync(obj).GetAwaiter().GetResult();
+
+            DataPacket<BikeDataPacketDoctor> firstDataPacketDoctor = new DataPacket<BikeDataPacketDoctor>
+            {
+                OpperationCode = OperationCodes.BIKEDATA,
+                data = new BikeDataPacketDoctor()
+                {
+                    distance = data.distance,
+                    elapsed = data.elapsed,
+                    heartRate = data.heartRate,
+                    id = UserId,
+                    speed = data.speed
+                }
+            };
+            calculateTarget().Client.SendAsync(firstDataPacketDoctor).GetAwaiter().GetResult();
+            
             GetBikeData(obj);
         }
 
@@ -326,34 +354,41 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            _log.Debug("sessionstarthandler");
+            //Retrieves the DataPacket and covert it to a SessionStartPacketRequest. 
+            SessionStartPacketRequest data = obj.GetData<SessionStartPacketRequest>();
 
+            //retieves the selected Patient from the GUI
             ServerClient patient = Server._connectedClients.Find(patient => patient.UserId == data.selectedPatient);
-
-            ServerClient tt = Server._connectedClients.Find(c => c.UserId == "06111");
-        
-            Console.WriteLine("gevonden id: " + tt.UserId);
-            Console.WriteLine("gevonden name: " + tt.UserName);
             
-            tt.SendData(new DataPacket<SessionStartPacketResponse>
-            {
-                OpperationCode = OperationCodes.SESSION_START,
-
-                data = new SessionStartPacketResponse()
+            StatusCodes _statusCode;
+            
+            //Checks if the Patient exist or not, on the result of that will be de _statusCode filled with a value.
+            if (patient == null) {
+                _statusCode = StatusCodes.NOT_FOUND;   
+            } else {
+                _statusCode = StatusCodes.OK;
+                
+                //Sends request to the Patient
+                patient.SendData(new DataPacket<SessionStartPacketResponse>
                 {
-                    statusCode = StatusCodes.OK,
-                    message = "Sessie wordt nu gestart."
-                }
-            });
+                    OpperationCode = OperationCodes.SESSION_START,
+
+                    data = new SessionStartPacketResponse()
+                    {
+                        statusCode = _statusCode,
+                        message = "Sessie wordt nu gestart."
+                    }
+                });
+            }
             
-            
+            //Sends request to the Doctor
             SendData(new DataPacket<SessionStartPacketResponse>
             {
                 OpperationCode = OperationCodes.SESSION_START,
 
                 data = new SessionStartPacketResponse()
                 {
-                    statusCode = StatusCodes.OK,
+                    statusCode = _statusCode,
                     message = "Sessie wordt nu gestart."
                 }
             });
