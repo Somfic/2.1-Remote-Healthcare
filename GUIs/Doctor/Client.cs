@@ -18,13 +18,14 @@ namespace RemoteHealthcare.GUIs.Doctor
     public class Client : ObservableObject
     {
         public SocketClient _client { get; set; } = new(true);
-        
+
         private List<string> _connected;
-        
+
         public List<Patient> _patientList;
+        public List<SessionData> _sessions;
 
         public DoctorViewModel viewModel;
-        
+
         private Log _log = new(typeof(Client));
 
         public string password { get; set; }
@@ -43,6 +44,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             loggedIn = false;
             _patientList = new List<Patient>();
+            _sessions = new List<SessionData>();
             _functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
@@ -116,7 +118,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         public async void SendChatAsync(string target, string chatInput)
         {
             await requestClients();
-            
+
             /*/* This is a while loop that will do nothing until connected is filled #1#
             while (_connected.Count == 0)
             {
@@ -211,7 +213,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             };
 
             _log.Debug(loginReq.ToJson());
-            
+
             await _client.SendAsync(loginReq);
         }
 
@@ -294,7 +296,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                 MessageBox.Show(packetData.GetData<LoginPacketResponse>().message);
             }
         }
-        
+
         /// <summary>
         /// It gets all the patient data from the server and adds it to a list
         /// </summary>
@@ -316,14 +318,21 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         private void GetPatientSessionsHandler(DataPacket packetData)
         {
-            //todo
+            JObject[] jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
+
+            _sessions.Clear();
+            foreach (JObject jObject in jObjects)
+            {
+                SessionData session = jObject.ToObject<SessionData>();
+                _sessions.Add(session);
+            }
         }
 
         public void AddViewmodel(DoctorViewModel viewModel)
         {
             this.viewModel = viewModel;
         }
-        
+
         private void GetBikeData(DataPacket obj)
         {
             BikeDataPacket data = obj.GetData<BikeDataPacket>();
@@ -332,10 +341,11 @@ namespace RemoteHealthcare.GUIs.Doctor
             viewModel.Speed = data.speed;
             viewModel.ElapsedTime = data.elapsed;
             viewModel.Distance = data.distance;
-            
+
             viewModel.UpdateAllProperties();
 
-            _log.Information($"BPM: {data.heartRate}, Speed {data.speed}, elapsed time {data.elapsed}, distance {data.distance}");
+            _log.Information(
+                $"BPM: {data.heartRate}, Speed {data.speed}, elapsed time {data.elapsed}, distance {data.distance}");
         }
     }
 }

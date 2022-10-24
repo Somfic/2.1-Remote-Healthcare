@@ -424,12 +424,12 @@ namespace RemoteHealthcare.Server.Client
 
             JObject[] jObjects =
                 Server._patientData.GetPatientSessionsAsJObjects(packetData
-                    .GetData<RequestAllSessionsFromPatientRequest>().userId, _patientDataLocation);
-            SendData(new DataPacket<RequestAllSessionsFromPatientResponce>
+                    .GetData<AllSessionsFromPatientRequest>().userId, _patientDataLocation);
+            SendData(new DataPacket<AllSessionsFromPatientResponce>
             {
                 OpperationCode = OperationCodes.GET_PATIENT_SESSSIONS,
 
-                data = new RequestAllSessionsFromPatientResponce()
+                data = new AllSessionsFromPatientResponce()
                 {
                     statusCode = StatusCodes.OK,
                     JObjects = jObjects,

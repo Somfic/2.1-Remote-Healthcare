@@ -28,6 +28,7 @@ public class DoctorViewModel : ObservableObject
     public ICommand SendChatMessage { get; }
     public ICommand StartSessieCommand { get; }
     public ICommand StopSessieCommand { get; }
+    public ICommand RequestPastSessions { get; }
     
     private int _BPM = 0;
     private float _speed = 0;
@@ -50,6 +51,7 @@ public class DoctorViewModel : ObservableObject
         SendChatMessage = new SendChatMessageCommand(_client, this);
         StartSessieCommand = new StartSessieCommand(_client, this);
         StopSessieCommand = new StopSessieCommand(_client, this);
+        RequestPastSessions = new RequestPastSessions(_client, this);
     }
 
     public Patient CurrentUser

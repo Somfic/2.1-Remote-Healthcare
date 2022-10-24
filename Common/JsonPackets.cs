@@ -150,13 +150,13 @@ public class GetAllPatientsDataResponse : DAbstract
     public JObject[] JObjects;
 }
 
-public class RequestAllSessionsFromPatientRequest : DAbstract
+public class AllSessionsFromPatientRequest : DAbstract
 {
     public StatusCodes statusCode;
     public string userId;
 }
 
-public class RequestAllSessionsFromPatientResponce : DAbstract
+public class AllSessionsFromPatientResponce : DAbstract
 {
     public StatusCodes statusCode;
     public JObject[] JObjects;
