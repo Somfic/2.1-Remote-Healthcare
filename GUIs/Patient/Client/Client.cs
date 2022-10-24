@@ -128,7 +128,7 @@ namespace RemoteHealthcare.Client.Client
 
                     }
                 };
-                _log.Information("sending bike data to server");
+                //_log.Information("sending bike data to server");
                 await _client.SendAsync(req);
                 await Task.Delay(1000);
             }

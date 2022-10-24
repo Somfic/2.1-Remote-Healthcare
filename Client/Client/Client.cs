@@ -124,10 +124,10 @@ namespace RemoteHealthcare.Client.Client
                         elapsed = bikedata.TotalElapsed,
                         deviceType = bikedata.DeviceType.ToString(),
                         id = bikedata.Id
-
                     }
                 };
-                _log.Information("sending bike data to server");
+                
+                // _log.Information("sending bike data to server");
                 await _client.SendAsync(req);
                 await Task.Delay(1000);
             }

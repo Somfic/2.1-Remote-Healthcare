@@ -104,6 +104,8 @@ namespace RemoteHealthcare.Server.Client
 
         private void GetBikeData(DataPacket obj)
         {
+            _log.Debug($"GetBikeData(): {obj.ToJson()}");
+            
             BikeDataPacket data = obj.GetData<BikeDataPacket>();
             foreach(SessionData session in patient.Sessions)
             {
@@ -114,14 +116,21 @@ namespace RemoteHealthcare.Server.Client
                 }
             }
             patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
-            _log.Critical(data.distance.ToString(CultureInfo.InvariantCulture));
+            // _log.Debug($"Distance: {data.distance.ToString(CultureInfo.InvariantCulture)}");
             patient.SaveSessionData(_patientDataLocation);
             calculateTarget()._client.SendAsync(obj);
             GetBikeData(obj);
         }
 
-        //If userid == null, then search for doctor otherwise search for patient
-
+        /// <summary>
+        /// It loops through all the connected clients and returns the first one that matches the userId
+        ///If userid == null, then search for doctor otherwise search for patient
+        /// </summary>
+        /// <param name="userId">The userId of the client you want to send the message to. If you want to send the message
+        /// to the doctor, leave this parameter null.</param>
+        /// <returns>
+        /// A ServerClient object.
+        /// </returns>
         private ServerClient calculateTarget(string? userId = null)
         {
             foreach (ServerClient client in Server._connectedClients)
@@ -133,7 +142,7 @@ namespace RemoteHealthcare.Server.Client
 
                 if (userId != null && client._userId.Equals(userId))
                 {
-                    _log.Warning($"Client: {client._userId}; Is Doctor: {Server._doctorData}");
+                    _log.Debug($"Found client: {client._userId}");
                     return client;
                 }
             }
@@ -229,14 +238,14 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the login request
-        private void LoginFeature(DataPacket packetData) //TODO: spam on incorrect login
+        private void LoginFeature(DataPacket packetData)
         {
             Patient? patient = null;
             Doctor? doctor = null;
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
-                    packetData.GetData<LoginPacketRequest>().password);
+                    packetData.GetData<LoginPacketRequest>().password, "testUserName");
                     
                 _log.Debug($"Patient name: {patient.UserId} Password: {patient.Password}");
             }

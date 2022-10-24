@@ -433,7 +433,6 @@ public class EngineConnection
             }
         }
 
-        _log.Debug(jObject.ToString());
         _hightForHouse = heights;
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
