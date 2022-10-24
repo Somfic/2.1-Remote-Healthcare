@@ -110,13 +110,15 @@ namespace RemoteHealthcare.Server.Client
                 if (session.SessionId.Equals(data.SessionId))
                 {
                     session.addData(data.SessionId,(int)data.speed, (int)data.distance, data.heartRate, data.elapsed.Seconds, data.deviceType, data.id);
+                    _log.Critical(data.distance.ToString(CultureInfo.InvariantCulture));
+                    calculateTarget()._client.SendAsync(obj).GetAwaiter().GetResult();
                     return;
                 }
             }
             patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
-            _log.Critical(data.distance.ToString(CultureInfo.InvariantCulture));
             patient.SaveSessionData(_patientDataLocation);
-            calculateTarget()._client.SendAsync(obj);
+            _log.Critical(data.distance.ToString(CultureInfo.InvariantCulture));
+            calculateTarget()._client.SendAsync(obj).GetAwaiter().GetResult();
             GetBikeData(obj);
         }
 
