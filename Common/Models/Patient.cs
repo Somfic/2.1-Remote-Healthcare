@@ -49,7 +49,7 @@ public class Patient : ObservableObject
 
             var filename = session.SessionId.Replace(':', '-') + "-" + session.Id;
             var json = JsonConvert.SerializeObject(session);
-            var pathStringFileName = Path.Combine(pathStringUserId, filename);
+            var pathStringFileName = Path.Combine(pathStringUserId, filename + ".json");
 
             File.WriteAllText(pathStringFileName, JObject.Parse(json).ToString());
         _log.Debug($"Saved to path: \r\n{pathStringFileName}");
