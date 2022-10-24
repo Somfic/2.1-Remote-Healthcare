@@ -98,6 +98,7 @@ namespace RemoteHealthcare.Server.Client
 
         private void GetBikeData(DataPacket obj)
         {
+            Console.WriteLine("Server-Print-BIKEDATAAAAA");
             BikeDataPacket data = obj.GetData<BikeDataPacket>();
             
             foreach(SessionData session in patient.Sessions)
@@ -108,6 +109,7 @@ namespace RemoteHealthcare.Server.Client
                     return;
                 }
             }
+            
             patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
             _log.Debug(Environment.CurrentDirectory);
             patient.SaveSessionData(_patientDataLocation);

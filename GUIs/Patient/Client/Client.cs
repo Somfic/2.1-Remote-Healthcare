@@ -12,39 +12,31 @@ using RemoteHealthcare.Common.Socket.Server;
 using RemoteHealthcare.Client;
 using NetworkEngine.Socket;
 
-namespace RemoteHealthcare.Client.Client
+namespace RemoteHealthcare.GUIs.Patient.Client
 {
-    public class Client
+   public class Client
     {
-        private SocketClient _client = new(true);
+        public SocketClient _client = new(true);
         private Log _log = new(typeof(Client));
-
-        private bool _loggedIn;
-        private string _password;
-        private string _username;
         private string userId;
-        private string doctorId;
-
         private VrConnection _vrConnection;
 
-        public Client(VrConnection connection)
-        {
-            _vrConnection = connection;
-        }
-        
-        private Dictionary<string, Action<DataPacket>> _functions;
+        public string _password { get; set; }
+        public string _username { get; set; }
+        public bool _loggedIn;
+        private Boolean _sessienRunning = false;
 
-        public async Task RunAsync()
+        private static Dictionary<string, Action<DataPacket>> _callbacks;
+
+        public  Client(VrConnection v)
         {
-            _loggedIn = false;
-            _functions = new Dictionary<string, Action<DataPacket>>();
+            _callbacks = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
-            _functions.Add("login", LoginFeature);
-            _functions.Add("chat", ChatHandler);
-            _functions.Add("session start", SessionStartHandler);
-            _functions.Add("session stop", SessionStopHandler);
-            _functions.Add("disconnect", DisconnectHandler);
+            _callbacks.Add(OperationCodes.LOGIN, LoginFeature);
+            _callbacks.Add(OperationCodes.CHAT, ChatHandler);
+            _callbacks.Add(OperationCodes.SESSION_START, SessionStartHandler);
+            _callbacks.Add(OperationCodes.SESSION_STOP, SessionStopHandler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -52,65 +44,31 @@ namespace RemoteHealthcare.Client.Client
                 HandleData(packet);
             };
 
-            await _client.ConnectAsync("127.0.0.1", 15243);
-
-            await AskForLoginAsync();
-            new Thread(e => SendBikeDataAsync()).Start();
-            while (true)
-            {
-                //if the user isn't logged in, the user cant send any command to the server
-                if (_loggedIn)
-                {
-                    _log.Information("Voer een commando in om naar de server te sturen: \r\n" +
-                                     "[BERICHT] [NOODSTOP] [VERBREEK VERBINDING]");
-                    string command = Console.ReadLine();
-                    
-                    if (command.ToLower().Equals("bericht"))
-                    {
-                        _log.Information("Voer uw bericht in: ");
-                        string ChatMessage = Console.ReadLine();
-
-                        var req = new DataPacket<ChatPacketRequest>
-                        {
-                            OpperationCode = OperationCodes.CHAT,
-                            
-                            data = new ChatPacketRequest()
-                            {
-                                senderId = userId,
-                                receiverId = null,
-                                message = ChatMessage
-                            }
-                        };
-
-                        await _client.SendAsync(req);
-                    }
-                    else if (command.ToLower().Equals("noodstop"))
-                    {
-                        var req = new DataPacket<EmergencyStopPacketRequest>
-                        {
-                            OpperationCode = OperationCodes.EMERGENCY_STOP,
-                        };
-
-                    }else if (command.ToLower().Contains("verbreek") && command.ToLower().Contains("verbinding")) {
-
-                        var req = new DataPacket<DisconnectPacketRequest> {
-                            OpperationCode = OperationCodes.DISCONNECT
-                        };
-
-                        await _client.SendAsync(req);
-                    }
-                    else
-                    {
-                        _log.Warning("Het commando dat u heeft ingevoerd is incorrect.");
-                    }
-                }
-            }
+            _vrConnection = v;
         }
 
+        public async Task PatientLogin()
+        {
+            DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
+            {
+                OpperationCode = OperationCodes.LOGIN,
+                data = new LoginPacketRequest()
+                {
+                    username = _username,
+                    password = _password,
+                    isDoctor = false
+                }
+            };
+            _log.Debug(loginReq.ToJson());
+            
+            await _client.SendAsync(loginReq);
+        }
+        
         private async void SendBikeDataAsync()
         {
-            while (true)
+            while (_sessienRunning)
             {
+                
                 BikeData bikedata = _vrConnection.getBikeData();
                 HeartData hearthdata = _vrConnection.getHearthData();
                 var req = new DataPacket<BikeDataPacket>
@@ -122,15 +80,15 @@ namespace RemoteHealthcare.Client.Client
                         speed = bikedata.Speed,
                         distance = bikedata.Distance,
                         heartRate = hearthdata.HeartRate,
-                        elapsed = bikedata.Elapsed,
+                        elapsed =  bikedata.Elapsed,
                         deviceType = bikedata.DeviceType.ToString(),
                         id = bikedata.Id
-
                     }
                 };
-                _log.Information("sending bike data to server");
-                await _client.SendAsync(req);
-                await Task.Delay(1000);
+                
+                 _log.Information("sending bike data to server");
+                   await _client.SendAsync(req);
+                Task.Delay(1000);
             }
         }
 
@@ -160,12 +118,10 @@ namespace RemoteHealthcare.Client.Client
         public void HandleData(DataPacket packet)
         {
             //Checks if the OppCode (OperationCode) does exist.
-            if (_functions.TryGetValue(packet.OpperationCode, out var action))
+            if (_callbacks.TryGetValue(packet.OpperationCode, out var action))
             {
                 action.Invoke(packet);
-            }
-            else
-            {
+            } else {
                 throw new Exception("Function not implemented");
             }
         }
@@ -175,29 +131,27 @@ namespace RemoteHealthcare.Client.Client
             _vrConnection.setResistance(obj.GetData<SetResistancePacket>().resistance);
         }
 
+        //the methode for the disconnect request
         private void DisconnectHandler(DataPacket obj)
         {
             Console.WriteLine(obj.GetData<DisconnectPacketResponse>().message);
         }
-
+        
         //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
-            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
+            Console.WriteLine("Sessie gestopt");
+            _sessienRunning = false;
         }
 
         //the methode for the session start request
-        private void SessionStartHandler(DataPacket obj)
+        public void SessionStartHandler(DataPacket obj)
         {
-            Console.WriteLine("maskjfugas sjakdfgsjhdafk jlhsdgfjhsdf jshdfgjhsdfg sdjfgsdjhf");
-            while (true)
-            {
-                Console.WriteLine("sessie gestart");
-                Thread.Sleep(500);
-            }
-            _log.Information(obj.GetData<SessionStartPacketResponse>().message);
+            _sessienRunning = true;
+            
+            new Thread(SendBikeDataAsync).Start();
         }
-
+        
         //the methode for the send chat request
         private void ChatHandler(DataPacket packetData)
         {
@@ -228,6 +182,5 @@ namespace RemoteHealthcare.Client.Client
             return _loggedIn;
         }
     }
-    
    
 }

@@ -97,12 +97,12 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                         var engine = new EngineConnection();
                         await engine.ConnectAsync();
                         // Console.WriteLine("Enter Bike ID:");
-                        // var bike = await DataProvider.GetBike(_bikeID);
-                        // var heart = await DataProvider.GetHeart();
-                        // vrConnection = new VrConnection(bike, heart);
-                        // vrConnection.Start();
+                         var bike = await DataProvider.GetBike(_bikeID);
+                         var heart = await DataProvider.GetHeart();
+                         vrConnection = new VrConnection(bike, heart, engine);
 
-                        // _client = new Client.Client(vrConnection);
+                         _client = new Client.Client(vrConnection);
+                         vrConnection.Start();
 
                         await Task.Delay(-1);
                     }
@@ -113,9 +113,6 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                     }
                 }
             }
-
-
-            
         }
       
         public string SecureStringToString(SecureString value)
