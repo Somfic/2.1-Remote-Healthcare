@@ -44,14 +44,14 @@ public class DoctorViewModel : ObservableObject
     public DoctorViewModel(Client client, NavigationStore navigationStore)
     {
         _client = client;
-        _client.AddViewmodel(this);
+        _client.AddDoctorViewmodel(this);
         _patients = new ObservableCollection<Patient>(_client._patientList);
         chatMessages = new ObservableCollection<string>();
         EmergencyStop = new EmergencyStopCommand();
         SendChatMessage = new SendChatMessageCommand(_client, this);
         StartSessieCommand = new StartSessieCommand(_client, this);
         StopSessieCommand = new StopSessieCommand(_client, this);
-        RequestPastSessions = new RequestPastSessions(_client, this);
+        RequestPastSessions = new RequestPastSessions(_client, _currentUser.Username, this);
     }
 
     public Patient CurrentUser

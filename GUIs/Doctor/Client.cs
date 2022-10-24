@@ -22,9 +22,10 @@ namespace RemoteHealthcare.GUIs.Doctor
         private List<string> _connected;
 
         public List<Patient> _patientList;
-        public List<SessionData> _sessions;
+        public List<SessionData> Sessions;
 
-        public DoctorViewModel viewModel;
+        public DoctorViewModel DoctorViewModel;
+        public PastSessionsViewModel PastSessionsViewModel;
 
         private Log _log = new(typeof(Client));
 
@@ -44,7 +45,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             loggedIn = false;
             _patientList = new List<Patient>();
-            _sessions = new List<SessionData>();
+            Sessions = new List<SessionData>();
             _functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
@@ -320,29 +321,34 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             JObject[] jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
 
-            _sessions.Clear();
+            Sessions.Clear();
             foreach (JObject jObject in jObjects)
             {
                 SessionData session = jObject.ToObject<SessionData>();
-                _sessions.Add(session);
+                Sessions.Add(session);
             }
         }
 
-        public void AddViewmodel(DoctorViewModel viewModel)
+        public void AddDoctorViewmodel(DoctorViewModel viewModel)
         {
-            this.viewModel = viewModel;
+            this.DoctorViewModel = viewModel;
+        }
+
+        public void AddPastSessionsViewmodel(PastSessionsViewModel viewModel)
+        {
+            this.PastSessionsViewModel = viewModel;
         }
 
         private void GetBikeData(DataPacket obj)
         {
             BikeDataPacket data = obj.GetData<BikeDataPacket>();
 
-            viewModel.BPM = data.heartRate;
-            viewModel.Speed = data.speed;
-            viewModel.ElapsedTime = data.elapsed;
-            viewModel.Distance = data.distance;
+            DoctorViewModel.BPM = data.heartRate;
+            DoctorViewModel.Speed = data.speed;
+            DoctorViewModel.ElapsedTime = data.elapsed;
+            DoctorViewModel.Distance = data.distance;
 
-            viewModel.UpdateAllProperties();
+            DoctorViewModel.UpdateAllProperties();
 
             _log.Information(
                 $"BPM: {data.heartRate}, Speed {data.speed}, elapsed time {data.elapsed}, distance {data.distance}");

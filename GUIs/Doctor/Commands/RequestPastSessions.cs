@@ -10,11 +10,13 @@ public class RequestPastSessions : BaseCommand
     private Log _log = new(typeof(RequestPastSessions));
     private Client _client;
     private DoctorViewModel _viewModel;
+    private string _userName;
 
-    public RequestPastSessions(Client client, DoctorViewModel doctorViewModel)
+    public RequestPastSessions(Client client, string currentUserUsername, DoctorViewModel doctorViewModel)
     {
         _client = client;
         _viewModel = doctorViewModel;
+        _userName = currentUserUsername;
     }
 
     public override void Execute(object? parameter)
@@ -37,6 +39,8 @@ public class RequestPastSessions : BaseCommand
                     userId = userId
                 }
             });
+
+            new PastSessionsViewModel(_client, _userName);
         }
     }
 }

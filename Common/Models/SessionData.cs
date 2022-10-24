@@ -43,4 +43,9 @@ public class SessionData
         MiniDatas.Add(new SessionMiniData(speed, distance, heartrate, elapsed));
         return true;
     }
+
+    public override string ToString()
+    {
+        return SessionId;
+    }
 }
