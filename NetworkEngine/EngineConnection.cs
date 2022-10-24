@@ -78,7 +78,7 @@ public class EngineConnection
 
         if (user == null)
         {
-            user = "richa";
+            user = Environment.UserName;
             _log.Debug($"Connecting as {user}");
         }
 
