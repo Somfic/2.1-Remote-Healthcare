@@ -34,13 +34,13 @@
         <Slider Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Margin="10,10,10,10"></Slider>
         
         <Rectangle Grid.Column="0" Grid.Row="4"></Rectangle>
-        <Label Grid.Column="0" Grid.Row="5" Content="{Binding BPM}"></Label>
+        <Label Grid.Column="0" Grid.Row="5" Content="{Binding BPM}" HorizontalAlignment="Center"></Label>
         <Rectangle Grid.Column="0" Grid.Row="6"></Rectangle>
-        <Label Grid.Column="0" Grid.Row="7" Content="{Binding Speed}"></Label>
+        <Label Grid.Column="0" Grid.Row="7" Content="{Binding Speed}" HorizontalAlignment="Center"></Label>
         <Rectangle Grid.Column="1" Grid.Row="4"></Rectangle>
-        <Label Grid.Column="1" Grid.Row="5" Content="{Binding ElapsedTime}"></Label>
+        <Label Grid.Column="1" Grid.Row="5" Content="{Binding ElapsedTime}" HorizontalAlignment="Center"></Label>
         <Rectangle Grid.Column="1" Grid.Row="6"></Rectangle>
-        <Label Grid.Column="1" Grid.Row="7" Content="{Binding Distance}"></Label>
+        <Label Grid.Column="1" Grid.Row="7" Content="{Binding Distance}" HorizontalAlignment="Center"></Label>
         
         <Label Grid.Row="0" Grid.Column="2" VerticalAlignment="Bottom" Content="Speed"/>
         <wpf:CartesianChart Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" Grid.RowSpan="2"></wpf:CartesianChart>
