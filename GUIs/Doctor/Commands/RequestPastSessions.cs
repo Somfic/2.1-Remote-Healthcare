@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Windows.Media;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.GUIs.Doctor.ViewModels;
@@ -10,7 +11,6 @@ public class RequestPastSessions : BaseCommand
     private Log _log = new(typeof(RequestPastSessions));
     private Client _client;
     private DoctorViewModel _viewModel;
-    private string _userName { get; set; }
 
     public RequestPastSessions(Client client, DoctorViewModel doctorViewModel)
     {
@@ -38,8 +38,16 @@ public class RequestPastSessions : BaseCommand
                     userId = userId
                 }
             });
-
-            new PastSessionsViewModel(_client, _userName);
+            
+            _log.Critical("after sendasync()");
+            
+            PastSessionsWindow pastSessionsWindow = new()
+            {
+                DataContext = new PastSessionsViewModel(_client, _viewModel.CurrentUser.Username)
+            };
+            _log.Critical("after new()");
+            pastSessionsWindow.Show();
+            _log.Critical("after show()");
         }
     }
 }

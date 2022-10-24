@@ -24,6 +24,7 @@ public class PastSessionsViewModel : ObservableObject
 
     public PastSessionsViewModel(Client client, string userName)
     {
+        _log.Critical("constructor");
         _client = client;
         _client.AddPastSessionsViewmodel(this);
         _sessions = new ObservableCollection<SessionData>(_client.Sessions);

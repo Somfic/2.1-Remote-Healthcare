@@ -336,6 +336,7 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         public void AddPastSessionsViewmodel(PastSessionsViewModel viewModel)
         {
+            _log.Critical("AddPastSessionsViewmodel()");
             this.PastSessionsViewModel = viewModel;
         }
 
