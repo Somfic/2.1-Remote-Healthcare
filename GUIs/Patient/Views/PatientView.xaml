@@ -21,7 +21,7 @@
 
         <Rectangle Height="82" Margin="-175,72,0,0" VerticalAlignment="Top" Width="379" >
             <Rectangle.Fill>
-                <ImageBrush ImageSource="C:\Users\midas\Documents\school\jaar 2\proftaak\gitrepo\2.1-Remote-Healthcare\GUIs\Patient\images\logos.JPG"></ImageBrush>
+                <ImageBrush ImageSource="C:\Users\HP\Desktop\rhc2.0\2.1-Remote-Healthcare\GUIs\Patient\images\logos.JPG"></ImageBrush>
             </Rectangle.Fill>
         </Rectangle>
         
