@@ -56,7 +56,7 @@ public class LoginPacketResponse : DAbstract
 
 public class ConnectedClientsPacketRequest : DAbstract
 {
-    public string operationCode;
+    public string requester;
 }
 
 public class ConnectedClientsPacketResponse : DAbstract
