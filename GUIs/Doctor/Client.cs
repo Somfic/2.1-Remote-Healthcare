@@ -26,8 +26,6 @@ namespace RemoteHealthcare.GUIs.Doctor
         public DoctorViewModel viewModel;
         
         private Log _log = new(typeof(Client));
-
-        public List<Patient> _patientList;
         public string password { get; set; }
         public string username { get; set; }
         public bool loggedIn { get; set; }

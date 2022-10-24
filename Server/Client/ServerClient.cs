@@ -110,14 +110,14 @@ namespace RemoteHealthcare.Server.Client
                 {
                     session.addData(data.SessionId,(int)data.speed, (int)data.distance, data.heartRate, data.elapsed.Seconds, data.deviceType, data.id);
                     _log.Critical(data.distance.ToString(CultureInfo.InvariantCulture));
-                    calculateTarget()._client.SendAsync(obj).GetAwaiter().GetResult();
+                    calculateTarget().Client.SendAsync(obj).GetAwaiter().GetResult();
                     return;
                 }
             }
             patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
             patient.SaveSessionData(_patientDataLocation);
             _log.Critical(data.distance.ToString(CultureInfo.InvariantCulture));
-            calculateTarget()._client.SendAsync(obj).GetAwaiter().GetResult();
+            calculateTarget().Client.SendAsync(obj).GetAwaiter().GetResult();
             GetBikeData(obj);
         }
 
@@ -328,7 +328,7 @@ namespace RemoteHealthcare.Server.Client
         {
             _log.Debug("sessionstarthandler");
 
-            ServerClient patient = Server._connectedClients.Find(patient => patient._userId == data.selectedPatient);
+            ServerClient patient = Server._connectedClients.Find(patient => patient.UserId == data.selectedPatient);
 
             ServerClient tt = Server._connectedClients.Find(c => c.UserId == "06111");
         
@@ -347,7 +347,7 @@ namespace RemoteHealthcare.Server.Client
             });
             
             
-            /*SendData(new DataPacket<SessionStartPacketResponse>
+            SendData(new DataPacket<SessionStartPacketResponse>
             {
                 OpperationCode = OperationCodes.SESSION_START,
 
@@ -365,9 +365,9 @@ namespace RemoteHealthcare.Server.Client
             
             SessionStopPacketRequest data = obj.GetData<SessionStopPacketRequest>();
 
-            ServerClient tt = Server._connectedClients.Find(c => c._userId == data.selectedPatient);
+            ServerClient tt = Server._connectedClients.Find(c => c.UserId == data.selectedPatient);
         
-            Console.WriteLine("gevonden id: " + tt._userId);
+            Console.WriteLine("gevonden id: " + tt.UserId);
             Console.WriteLine("gevonden name: " + tt.UserName);
                 
                 
