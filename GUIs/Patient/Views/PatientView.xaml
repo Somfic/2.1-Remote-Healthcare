@@ -19,11 +19,11 @@
         <Label Content="Afstand" HorizontalAlignment="Left" Margin="334,46,0,0" VerticalAlignment="Top"/>
         <Label Content="Tijd" HorizontalAlignment="Left" Margin="440,46,0,0" VerticalAlignment="Top"/>
 
-        <Rectangle Height="82" Margin="-175,72,0,0" VerticalAlignment="Top" Width="379" >
+        <!--<Rectangle Height="82" Margin="-175,72,0,0" VerticalAlignment="Top" Width="379" >
             <Rectangle.Fill>
                 <ImageBrush ImageSource="Image"></ImageBrush>
             </Rectangle.Fill>
-        </Rectangle>
+        </Rectangle>-->
         
         <Label Content="{Binding Speed}" HorizontalAlignment="Left" Margin="148,154,0,0" VerticalAlignment="Top"/>
         <Label Content="{Binding Heartrate}" HorizontalAlignment="Left" Margin="243,154,0,0" VerticalAlignment="Top"/>

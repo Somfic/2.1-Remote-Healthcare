@@ -326,8 +326,6 @@ namespace RemoteHealthcare.GUIs.Doctor
             viewModel.Speed = data.speed;
             viewModel.ElapsedTime = data.elapsed;
             viewModel.Distance = data.distance;
-            
-            viewModel.UpdateAllProperties();
 
             _log.Information($"BPM: {data.heartRate}, Speed {data.speed}, elapsed time {data.elapsed}, distance {data.distance}");
         }

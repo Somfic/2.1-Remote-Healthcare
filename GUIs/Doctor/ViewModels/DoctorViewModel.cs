@@ -119,12 +119,6 @@ public class DoctorViewModel : ObservableObject
             OnPropertyChanged();
         }
     }
-
-    public void UpdateAllProperties()
-    {
-        OnPropertyChanged();
-    }
     
-
     public ChartValues<float> SpeedData { get; set; }
 }

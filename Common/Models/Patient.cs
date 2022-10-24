@@ -30,7 +30,7 @@ public class Patient : ObservableObject
     /// <param name="folderName">The name of the folder you want to save the data to.</param>
     public void SaveSessionData(string folderName)
     {
-        /*var pathString = Path.Combine(folderName, Nickname);
+        var pathString = Path.Combine(folderName, Nickname);
         Directory.CreateDirectory(pathString);
         
         foreach (var session in Sessions)
@@ -47,7 +47,7 @@ public class Patient : ObservableObject
             {
                 File.WriteAllText(pathString, JObject.Parse(json).ToString());
             }
-        }*/
+        }
     }
 
     public override string ToString()
