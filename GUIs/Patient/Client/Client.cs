@@ -19,12 +19,13 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         public SocketClient _client = new(true);
         private Log _log = new(typeof(Client));
         private string userId;
-        private VrConnection _vrConnection;
+        public VrConnection _vrConnection;
 
         public string _password { get; set; }
         public string _username { get; set; }
         public bool _loggedIn;
         private Boolean _sessienRunning = false;
+        private string _sessionId;
 
         private static Dictionary<string, Action<DataPacket>> _callbacks;
 
@@ -43,8 +44,9 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                 var packet = JsonConvert.DeserializeObject<DataPacket>(data);
                 HandleData(packet);
             };
+            
+            _sessionId = DateTime.Now.ToString();
 
-            _vrConnection = v;
         }
 
         public async Task PatientLogin()
@@ -64,34 +66,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             await _client.SendAsync(loginReq);
         }
         
-        private async void SendBikeDataAsync()
-        {
-            while (_sessienRunning)
-            {
-                
-                BikeData bikedata = _vrConnection.getBikeData();
-                HeartData hearthdata = _vrConnection.getHearthData();
-                var req = new DataPacket<BikeDataPacket>
-                {
-                    OpperationCode = OperationCodes.BIKEDATA,
-
-                    data = new BikeDataPacket()
-                    {
-                        speed = bikedata.Speed,
-                        distance = bikedata.Distance,
-                        heartRate = hearthdata.HeartRate,
-                        elapsed =  bikedata.Elapsed,
-                        deviceType = bikedata.DeviceType.ToString(),
-                        id = bikedata.Id
-                    }
-                };
-                
-                 _log.Information("sending bike data to server");
-                   await _client.SendAsync(req);
-                Task.Delay(1000);
-            }
-        }
-
+       
         private async Task AskForLoginAsync()
         {
             _log.Information("Hello Client!");
@@ -145,12 +120,41 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         }
 
         //the methode for the session start request
-        public void SessionStartHandler(DataPacket obj)
+        public async void SessionStartHandler(DataPacket obj)
         {
             _sessienRunning = true;
             
-            new Thread(SendBikeDataAsync).Start();
+            new Thread(SendBikeDataAsync ).Start();
         }
+        
+        private void SendBikeDataAsync()
+        {
+            while (_sessienRunning)
+            {
+                BikeData bikedata = _vrConnection.getBikeData();
+                HeartData hearthdata = _vrConnection.getHearthData();
+                var req = new DataPacket<BikeDataPacket>
+                {
+                    OpperationCode = OperationCodes.BIKEDATA,
+
+                    data = new BikeDataPacket() 
+                    {
+                        SessionId = _sessionId,
+                        speed = bikedata.Speed,
+                        distance = bikedata.Distance,
+                        heartRate = hearthdata.HeartRate,
+                        elapsed = bikedata.TotalElapsed,
+                        deviceType = bikedata.DeviceType.ToString(),
+                        id = bikedata.Id
+                    }
+                };
+                
+                _log.Information("sending bike data to server");
+                 _client.SendAsync(req);
+                Task.Delay(1000);
+            }
+        }
+
         
         //the methode for the send chat request
         private void ChatHandler(DataPacket packetData)

@@ -101,7 +101,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                          var heart = await DataProvider.GetHeart();
                          vrConnection = new VrConnection(bike, heart, engine);
 
-                         _client = new Client.Client(vrConnection);
+                         _client._vrConnection = vrConnection;
                          vrConnection.Start();
 
                         await Task.Delay(-1);
