@@ -36,7 +36,6 @@ public class Patient : ObservableObject
 
         pathString = Path.Combine(pathString, Username);
 
-        _log.Warning($"Saving to path: \r\n\r\n{pathString}\r\n");
 
         if (!Directory.Exists(pathString))
             Directory.CreateDirectory(pathString);
@@ -52,12 +51,8 @@ public class Patient : ObservableObject
             var json = JsonConvert.SerializeObject(session);
             var pathStringFileName = Path.Combine(pathStringUserId, filename);
 
-            if (!Directory.Exists(pathStringFileName))
-                Directory.CreateDirectory(pathStringFileName);
-
-            _log.Warning($"Attempting to write to \r\n{pathStringFileName} \r\n The file: \r\n{json}");
-            File.WriteAllText(pathStringUserId, JObject.Parse(json).ToString());
-            _log.Warning($"Made it past file.writealltext() to the path: \r\n{pathStringUserId}");
+            File.WriteAllText(pathStringFileName, JObject.Parse(json).ToString());
+        _log.Debug($"Saved to path: \r\n{pathStringFileName}");
         }
     }
 
