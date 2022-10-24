@@ -51,7 +51,7 @@ public class DoctorViewModel : ObservableObject
         SendChatMessage = new SendChatMessageCommand(_client, this);
         StartSessieCommand = new StartSessieCommand(_client, this);
         StopSessieCommand = new StopSessieCommand(_client, this);
-        RequestPastSessions = new RequestPastSessions(_client, _currentUser.Username, this);
+        RequestPastSessions = new RequestPastSessions(_client, this);
     }
 
     public Patient CurrentUser
