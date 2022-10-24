@@ -67,23 +67,7 @@ public class SocketClient : ISocket
     
     public Task SendAsync(string text)
     {
-        try
-        {
-            DataPacket dataPacket = JsonConvert.DeserializeObject<DataPacket>(text);
-
-            if (callbacks.ContainsKey(dataPacket.OpperationCode))
-            {
-                callbacks[dataPacket.OpperationCode](dataPacket);
-                callbacks.Remove(dataPacket.OpperationCode);
-            }
-            
-            return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, $"Could not send message: '{text}'");
-            return Task.CompletedTask;
-        }
+        return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);
     }
 
   

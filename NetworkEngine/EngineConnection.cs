@@ -78,7 +78,7 @@ public class EngineConnection
 
         if (user == null)
         {
-            user = Environment.UserName;
+            user = "richa";
             _log.Debug($"Connecting as {user}");
         }
 
@@ -131,8 +131,7 @@ public class EngineConnection
         await Task.Delay(1000);
         await PlaceBikeOnRoute(_tunnelId);
 
-        // await Task.Delay(1000);
-        // await ChangeBikeSpeed(0);
+        
 
         await Task.Delay(1000);
         await AddPanelNode(_tunnelId);
@@ -144,17 +143,16 @@ public class EngineConnection
         await MoveCameraPosition();
         await Task.Delay(1000);
         await MoveHeadPosition();
-
-
+        await Task.Delay(1000);
+        await ChangeBikeSpeed(50);
         await Task.Delay(1000);
         await RoadLoad();
+        
+        
+        await Task.Delay(1000);
+        await Addhouses(_tunnelId, 100);
+
        
-
-        await Task.Delay(1000);
-        await Addhouses(_tunnelId, 1000);
-
-        await Task.Delay(1000);
-        await ChangeBikeSpeed(1000);
     }
 
     
@@ -543,7 +541,7 @@ public class EngineConnection
         int z1 = (int)Convert.ToDecimal(z);
         _roadcount++;
 
-        // _log.Information($"x = {x1} and z ={z1}");
+         _log.Information($"x = {x1} and z ={z1}");
 
         if (!(_firstx == x1 && _firstz == z1))
 
