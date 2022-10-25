@@ -59,9 +59,11 @@ public class Patient : ObservableObject
             if (!Directory.Exists(pathStringUserId))
                 Directory.CreateDirectory(pathStringUserId);
 
-            var filename = session.SessionId.Replace(':', '-') + "-" + session.Id;
+            var fileName = session.SessionId.Replace(':', '-');
+            fileName = session.SessionId.Replace('/', '-');
+            fileName += "-" + session.Id;
             var json = JsonConvert.SerializeObject(session);
-            var pathStringFileName = Path.Combine(pathStringUserId, filename + ".json");
+            var pathStringFileName = Path.Combine(pathStringUserId, fileName + ".json");
 
             File.WriteAllText(pathStringFileName, JObject.Parse(json).ToString());
         _log.Debug($"Saved to path: \r\n{pathStringFileName}");
