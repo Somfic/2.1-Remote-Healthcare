@@ -324,6 +324,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                 viewModel.ElapsedTime = data.elapsed;
                 viewModel.Distance = data.distance;
                 viewModel.CurrentUser.speedData.Add(data.speed);
+                viewModel.CurrentUser.bpmData.Add(data.heartRate);
             }
             else
             {
@@ -336,6 +337,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                         patient.currentElapsedTime = data.elapsed;
                         patient.currentBPM = data.heartRate;
                         patient.speedData.Add(data.speed);
+                        patient.bpmData.Add(data.heartRate);
                     }
                 }
             }

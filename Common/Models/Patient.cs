@@ -23,6 +23,9 @@ public class Patient : ObservableObject
     public int currentBPM { get; set; }
 
     public ChartValues<float> speedData = new();
+    
+    
+    public ChartValues<int> bpmData = new();
 
     public Patient(string user, string password)
     {

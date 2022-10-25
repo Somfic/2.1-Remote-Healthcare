@@ -34,7 +34,12 @@ public class DoctorViewModel : ObservableObject
     private string _chatMessage;
     private ObservableCollection<Patient> _patients;
     private ObservableCollection<string> chatMessages;
+    
+    
     private SeriesCollection _chartDataSpeed;
+    
+    
+    private SeriesCollection _chartDataBPM;
 
     public DoctorViewModel(Client client, NavigationStore navigationStore)
     {
@@ -54,9 +59,15 @@ public class DoctorViewModel : ObservableObject
         set
         {
             _currentUser = value;
+            
             ChartDataSpeed = new SeriesCollection()
             {
                 new LineSeries() { Values = _currentUser.speedData }
+            };
+            
+            ChartDataBPM = new SeriesCollection()
+            {
+                new LineSeries() { Values = _currentUser.bpmData }
             };
             OnPropertyChanged();
         }
@@ -130,4 +141,13 @@ public class DoctorViewModel : ObservableObject
         }
     }
     
+    public SeriesCollection ChartDataBPM
+    {
+        get => _chartDataBPM;
+        set
+        {
+            _chartDataBPM = value;
+            OnPropertyChanged();
+        }
+    }
 }
