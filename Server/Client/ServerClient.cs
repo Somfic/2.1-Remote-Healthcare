@@ -19,7 +19,7 @@ namespace RemoteHealthcare.Server.Client
         public SocketClient Client { get; private set; }
         public string UserId { get; set; }
         private bool _isDoctor;
-        private Patient patient;
+        private Patient _patient;
         private string _patientDataLocation = Environment.CurrentDirectory;
         public string UserName { get; set; }
         
@@ -38,7 +38,7 @@ namespace RemoteHealthcare.Server.Client
                 HandleData(dataPacket);
             };
 
-            Client.OnDisconnect += (sender, data) => { patient.SaveSessionData(_patientDataLocation); };
+            Client.OnDisconnect += (sender, data) => { _patient.SaveSessionData(_patientDataLocation); };
             _functions = new Dictionary<string, Action<DataPacket>>();
             _functions.Add("login", LoginFeature);
             _functions.Add("users", RequestConnectionsFeature);
@@ -94,7 +94,7 @@ namespace RemoteHealthcare.Server.Client
         private void GetBikeData(DataPacket obj)
         {
             BikeDataPacket data = obj.GetData<BikeDataPacket>();
-            foreach (SessionData session in patient.Sessions)
+            foreach (SessionData session in _patient.Sessions)
             {
                 if (session.SessionId.Equals(data.SessionId))
                 {
@@ -118,8 +118,8 @@ namespace RemoteHealthcare.Server.Client
                     return;
                 }
             }
-            patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
-            patient.SaveSessionData(_patientDataLocation);
+            _patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
+            _patient.SaveSessionData(_patientDataLocation);
             _log.Critical(data.distance.ToString(CultureInfo.InvariantCulture));
 
             DataPacket<BikeDataPacketDoctor> firstDataPacketDoctor = new DataPacket<BikeDataPacketDoctor>
@@ -314,7 +314,7 @@ namespace RemoteHealthcare.Server.Client
                 UserId = patient.UserId;
                 _isDoctor = false;
                 
-                Console.WriteLine("GUID GUID"+_userId);
+                Console.WriteLine("GUID GUID"+UserId);
                 _patient = new Patient(patient.UserId, patient.UserId);
 
                 SendData(new DataPacket<LoginPacketResponse>
