@@ -1,20 +1,26 @@
-﻿using Newtonsoft.Json;
+﻿using MvvmHelpers;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RemoteHealthcare.Common.Logger;
+
 namespace RemoteHealthcare.Server.Models;
 
 [Serializable]
-public class Patient
+public class Patient : ObservableObject
 {
+    private Log _log = new Log(typeof(Patient));
     public List<SessionData> Sessions { get; set; }
+    
+    public string Username { get; set; }
     public string UserId { get; set; }
-    public string? Nickname { get; set; }
+    //public string? Nickname { get; set; }
     public string Password { get; set; }
 
-    public Patient(string user_id, string password)
+    public Patient(string user, string pass, string userId)
     {
-        UserId = user_id;
-        Password = password;
-        Nickname = "test";
+        Username = user;
+        Password = pass;
+        UserId = userId;
         Sessions = new List<SessionData>();
     }
 
@@ -25,8 +31,7 @@ public class Patient
     /// <param name="folderName">The name of the folder you want to save the data to.</param>
     public void SaveSessionData(string folderName)
     {
-        //TODO kijken hoe dit precies opgeslagen wordt.
-        var pathString = Path.Combine(folderName, UserId);
+        var pathString = Path.Combine(folderName, Username);
         Directory.CreateDirectory(pathString);
         
         foreach (var session in Sessions)
@@ -44,5 +49,15 @@ public class Patient
                 File.WriteAllText(pathString, JObject.Parse(json).ToString());
             }
         }
+    }
+
+    public override string ToString()
+    {
+        return $" Patient: {Username} + UserId {UserId}";
+    }
+
+    public JObject GetPatientAsJObject()
+    {
+        return JObject.Parse(JsonConvert.SerializeObject(this));
     }
 }

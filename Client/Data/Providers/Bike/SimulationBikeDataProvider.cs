@@ -40,8 +40,9 @@ public class SimulationBikeDataProvider : BikeDataProvider
         SetSpeed((float)Math.Max(5, Math.Min(234, newSpeed)));
 
         // Distance
-        var newDistance = (float)(GetData().Distance + GetData().Speed * _timerSinceLastProcess.Elapsed.TotalSeconds) %
-                          256f;
+        var newDistance = (float)(GetData().Distance + GetData().Speed * _timerSinceLastProcess.Elapsed.TotalSeconds); 
+                          //%
+                          //256f;
         SetDistance(newDistance);
 
         // Heart rate

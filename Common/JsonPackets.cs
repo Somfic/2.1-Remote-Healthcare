@@ -56,7 +56,7 @@ public class LoginPacketResponse : DAbstract
 
 public class ConnectedClientsPacketRequest : DAbstract
 {
-    public string operationCode;
+    public string requester;
 }
 
 public class ConnectedClientsPacketResponse : DAbstract
@@ -136,4 +136,16 @@ public class BikeDataPacket : DAbstract
     public TimeSpan elapsed;
     public string deviceType;
     public string id;
+}
+
+public class GetAllPatientsDataRequest : DAbstract
+{
+    //TODO voorlopig leeg laten
+}
+
+public class GetAllPatientsDataResponse : DAbstract
+{
+    public StatusCodes statusCode;
+    public string message;
+    public JObject[] JObjects;
 }
