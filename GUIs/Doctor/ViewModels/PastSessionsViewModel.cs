@@ -16,7 +16,7 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
     private string _distance;
     private TimeSpan _totalTime;
 
-    private ObservableObject _currentSession;
+    private SessionData _currentSession;
     private string _chatMessage;
     private ObservableCollection<SessionData> _sessions;
     private ObservableCollection<float> _bpm;
@@ -36,7 +36,7 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
         _userName = userName;
     }
 
-    public ObservableObject CurrentSession
+    public SessionData CurrentSession
     {
         get
         {
@@ -50,7 +50,7 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
             _sessionName = value.ToString();
             _speed = fillCollection("speed");
             _bpm = fillCollection("bpm");
-            // _totalTime = TimeSpan.FromSeconds(_currentSession.MiniDatas.Count);
+            _totalTime = TimeSpan.FromSeconds(_currentSession.MiniDatas.Count);
             /*_log.Debug(
                 $"Current session is now {value}; SessionName = {_sessionName}; Speed has a count of {_speed.Count}; " +
                 $"Bpm has a count of {_bpm.Count}; TotalTime = {_totalTime}");*/
@@ -149,13 +149,13 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
     private ObservableCollection<float> fillCollection(string returnType)
     {
         ObservableCollection<float> collection = new();
-        /*foreach (var session in _currentSession.MiniDatas)
+        foreach (var session in _currentSession.MiniDatas)
         {
             if (returnType.ToLower().Equals("speed"))
                 collection.Add(session.Speed);
             else if (returnType.ToLower().Equals("bpm"))
                 collection.Add(session.Heartrate);
-        }*/
+        }
 
         return collection;
     }
