@@ -43,7 +43,6 @@ public class Patient : ObservableObject
     /// <param name="pathString">The name of the folder you want to save the data to.</param>
     public void SaveSessionData(string pathString)
     {
-        _log.Error("Entered SaveSessionData()");
         pathString = Path.Combine(pathString.Substring(0, pathString.LastIndexOf("bin")));
 
         pathString = Path.Combine(pathString, "allSessions");
@@ -66,7 +65,6 @@ public class Patient : ObservableObject
             var pathStringFileName = Path.Combine(pathStringUserId, fileName + ".json");
 
             File.WriteAllText(pathStringFileName, JObject.Parse(json).ToString());
-        _log.Debug($"Saved to path: \r\n{pathStringFileName}");
         }
     }
 
