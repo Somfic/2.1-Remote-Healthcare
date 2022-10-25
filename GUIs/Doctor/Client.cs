@@ -36,6 +36,8 @@ namespace RemoteHealthcare.GUIs.Doctor
         private Dictionary<string, Action<DataPacket>> _functions = new();
         public bool hasSessionResponce;
 
+        private Dictionary<string, Action<DataPacket>> _callbacks = new();
+
         public Client()
         {
             loggedIn = false;
@@ -220,7 +222,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             _log.Warning($"Received: {packet.ToJson()}");
             //Checks if the OppCode (OperationCode) does exist.
-            if (_functions.TryGetValue(packet.OpperationCode, out var action))
+            if (_callbacks.TryGetValue(packet.OpperationCode, out var action))
             {
                 action.Invoke(packet);
             }
@@ -229,13 +231,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                 throw new Exception("Function not implemented");
             }
         }
-
-        //the methode for the session stop request
-        private void SessionStopHandler(DataPacket obj)
-        {
-            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
-        }
-
+        
         //the methode for the emergency stop request
         private void EmergencyStopHandler(DataPacket obj)
         {
@@ -245,16 +241,25 @@ namespace RemoteHealthcare.GUIs.Doctor
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            _log.Information(obj.GetData<SessionStartPacketResponse>().message);
+            var sessie = obj.GetData<SessionStartPacketResponse>();
+            
+            //Change the GUI with an Alert depends on the outcome of the IF-Statement
+            ((DoctorViewModel) currentViewModel).CurrentUserName = (sessie.statusCode.Equals(StatusCodes.OK)) ? ((DoctorViewModel) currentViewModel).CurrentUser.Username : "Gekozen Patient is niet online";
         }
-
+        
+        //the methode for the session stop request
+        private void SessionStopHandler(DataPacket obj)
+        {
+            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
+        }
+        
         //the methode for printing out the received message
         private void ChatHandler(DataPacket packetData)
         {
             _log.Information(
                 $"Incomming message: {packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
         }
-
+        
         private void RequestConnectionsFeature(DataPacket packetData)
         {
             if (((int)packetData.GetData<ConnectedClientsPacketResponse>().statusCode).Equals(200))

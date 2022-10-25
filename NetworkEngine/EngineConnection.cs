@@ -136,8 +136,7 @@ public class EngineConnection
         await Task.Delay(1000);
         await PlaceBikeOnRoute(_tunnelId);
 
-        // await Task.Delay(1000);
-        // await ChangeBikeSpeed(0);
+        
 
         await Task.Delay(1000);
         await AddInformationPannelNode(_tunnelId);
@@ -151,13 +150,14 @@ public class EngineConnection
         await MoveHeadPosition();
         
         await Task.Delay(1000);
+        await ChangeBikeSpeed(50);
+        await Task.Delay(1000);
         await RoadLoad();
         
         await Task.Delay(1000);
-        await Addhouses(_tunnelId, 1000);
+        await Addhouses(_tunnelId, 100);
 
-        await Task.Delay(1000);
-        await ChangeBikeSpeed(1000);
+       
     }
 
 
@@ -556,7 +556,7 @@ public class EngineConnection
         int x1 = (int)Convert.ToDecimal(x);
         int z1 = (int)Convert.ToDecimal(z);
         _roadcount++;
-
+        
         if (!(_firstx == x1 && _firstz == z1))
 
         {

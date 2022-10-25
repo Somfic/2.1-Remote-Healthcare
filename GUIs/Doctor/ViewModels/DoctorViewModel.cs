@@ -53,13 +53,29 @@ public class DoctorViewModel : ObservableObject
         StopSessieCommand = new StopSessieCommand(_client, this);
         RequestPastSessions = new RequestPastSessions(_client, this);
         SetResistanceCommand = new SetResistanceCommand(_client, this);
+        client.currentViewModel = this;
     }
+    
+    public string CurrentUserName
+    {
+        get => username;
+        set
+        {
+            
+            username = value;
+            OnPropertyChanged(nameof(CurrentUserName));
+        }
+    }
+
+    private string username;
+    
 
     public Patient CurrentUser
     {
         get => _currentUser;
         set
         {
+            
             _currentUser = value;
             
             ChartDataSpeed = new SeriesCollection()
@@ -86,7 +102,6 @@ public class DoctorViewModel : ObservableObject
                 }
             };
             OnPropertyChanged();
-            _log.Debug("OnPropertyChanged() has been called.");
         }
     }
 

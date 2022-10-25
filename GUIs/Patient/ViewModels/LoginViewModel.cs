@@ -92,29 +92,28 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 if (_client._loggedIn)
                 {
                     _navigationStore.CurrentViewModel = new PatientHomepageViewModel(_navigationStore, _client);
+                    // ((Window) window).Close();
+                    try
+                    {
+                        var engine = new EngineConnection();
+                        await engine.ConnectAsync();
+                        // // Console.WriteLine("Enter Bike ID:");
+                        var bike = await DataProvider.GetBike(_bikeID);
+                        var heart = await DataProvider.GetHeart();
+                        vrConnection = new VrConnection(bike, heart, engine);
+                        //
+                        _client._vrConnection = vrConnection;
+                        vrConnection.Start();
+
+                        await Task.Delay(-1);
+                    }
+                    catch (Exception ex)
+                    {
+                        var log = new Log(typeof(LoginViewModel));
+                        log.Critical(ex, "Program stopped because of exception");
+                    }
                 }
             }
-
-
-            /*try
-            {
-                var engine = new EngineConnection();
-                await engine.ConnectAsync();
-                    Console.WriteLine("Enter Bike ID:");
-                    var bike = await DataProvider.GetBike(_bikeID);
-                    var heart = await DataProvider.GetHeart();
-                    vrConnection = new VrConnection(bike, heart);
-                    // vrConnection.Start();
-
-                    // _client = new Client.Client(vrConnection);
-
-                    await Task.Delay(-1);
-                }
-                catch (Exception ex)
-                {
-                    var log = new Log(typeof(LoginViewModel));
-                    log.Critical(ex, "Program stopped because of exception");
-                }*/
         }
       
         public string SecureStringToString(SecureString value)

@@ -1,6 +1,6 @@
 ﻿namespace RemoteHealthcare.Common
 {
-    public static class OperationCodes
+    public class OperationCodes
     {
         public readonly static String CHAT = "chat";
         public readonly static String BIKEDATA = "bikedata";
