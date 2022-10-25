@@ -1,40 +1,80 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using MvvmHelpers;
+using RemoteHealthcare.Common.Logger;
+using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
-using RemoteHealthcare.GUIs.Doctor.Models;
+using RemoteHealthcare.GUIs.Doctor.Commands;
 using RemoteHealthcare.Server.Client;
 using RemoteHealthcare.Server.Models;
+using RemoteHealthcare.Server;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class DoctorViewModel : ObservableObject
 {
-    private string _doctorName;
-    private UserModel _currentUser;
-    private ObservableCollection<Patient> _users;
+    private Client _client;
+    private Log _log = new Log(typeof(DoctorViewModel));
+    public ICommand EmergencyStop { get; }
+    public ICommand SendChatMessage { get; }
+    public ICommand StartSessieCommand { get; }
+    public ICommand StopSessieCommand { get; }
+    
+    private Patient _currentUser;
+    private string _chatMessage;
+    private ObservableCollection<Patient> _patients;
     private ObservableCollection<string> chatMessages;
     private ChartValues<float> _speedData;
 
-    public DoctorViewModel()
+    public DoctorViewModel(Client client, NavigationStore navigationStore)
     {
-        this._currentUser = new UserModel();
+        _client = client;
+        _patients = new ObservableCollection<Patient>(_client._patientList);
+        chatMessages = new ObservableCollection<string>();
+        EmergencyStop = new EmergencyStopCommand();
+        SendChatMessage = new SendChatMessageCommand(_client, this);
+        StartSessieCommand = new StartSessieCommand(_client, this);
+        StopSessieCommand = new StopSessieCommand(_client, this);
+        client.currentViewModel = this;
     }
     
-    public string DoctorName
+    public string CurrentUserName
     {
-        get => _doctorName;
-        set => _doctorName = value;
+        get => username;
+        set
+        {
+            
+            username = value;
+            OnPropertyChanged(nameof(CurrentUserName));
+        }
     }
 
-    public UserModel CurrentUser
+    private string username;
+    
+
+    public Patient CurrentUser
     {
         get => _currentUser;
-        set => _currentUser = value;
+        set
+        {
+            
+            _currentUser = value;
+            if (CurrentUser != null)
+            {
+                CurrentUserName = CurrentUser.Username;
+            }
+            
+            OnPropertyChanged(nameof(CurrentUser));
+        }
     }
 
     public ObservableCollection<string> ChatMessages
@@ -43,11 +83,18 @@ public class DoctorViewModel : ObservableObject
         set => chatMessages = value;
     }
 
-    public ObservableCollection<Patient> Users
+    public ObservableCollection<Patient> Patients
     {
-        get => _users;
-        set => _users = value;
+        get => _patients;
+        set => _patients = value;
     }
+
+    public string TextBoxChatMessage
+    {
+        get => _chatMessage;
+        set => _chatMessage = value;
+    }
+    
 
     public ChartValues<float> SpeedData { get; set; }
 }

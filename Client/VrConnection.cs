@@ -3,12 +3,15 @@
 using RemoteHealthcare.Client.Data;
 using RemoteHealthcare.Client.Data.Providers.Bike;
 using RemoteHealthcare.Client.Data.Providers.Heart;
+using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.NetworkEngine;
 
 namespace NetworkEngine.Socket
 {
     public class VrConnection
     {
+        private readonly Log _log = new Log(typeof(VrConnection));
+        
         BikeDataProvider bike;
         HeartDataProvider heart;
         EngineConnection engine;
@@ -37,6 +40,7 @@ namespace NetworkEngine.Socket
         {
             while (true)
             {
+                await heart.ProcessRawData();
                 await bike.ProcessRawData();
                 await engine.ChangeBikeSpeed(bike.GetData().Speed);
                 Thread.Sleep(300);
@@ -53,7 +57,7 @@ namespace NetworkEngine.Socket
             }
             data[12] = (byte)checksum;
 
-            Console.WriteLine(BitConverter.ToString(data));
+            _log.Debug(BitConverter.ToString(data));
             bike.SendMessage(data);
         }
         public BikeData getBikeData()

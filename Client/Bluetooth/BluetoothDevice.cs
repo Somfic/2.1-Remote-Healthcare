@@ -37,7 +37,6 @@ public class BluetoothDevice
                 checksum ^= bytes[i];
             }
             bytes[12] = (byte)checksum;
-            _log.Information("Sending: " + BitConverter.ToString(bytes));
             await _bluetoothConnection.WriteCharacteristic(_sendCharacteristic, bytes);
         } else throw new Exception("Not in format");
     }
@@ -76,13 +75,8 @@ public class BluetoothDevice
 
             _bluetoothConnection.SubscriptionValueChanged += (sender, e) =>
             {
-                Console.WriteLine(BitConverter.ToString(e.Data) );
-
-                
                 if (e.Data[_idByte] == _id)
                 {
-                  
-                    
                     ServiceName = e.ServiceName;
                     ReceivedData = e.Data;
                 }

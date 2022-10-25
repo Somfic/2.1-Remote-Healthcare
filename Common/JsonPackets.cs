@@ -81,7 +81,7 @@ public class ChatPacketResponse : DAbstract
 
 public class SessionStartPacketRequest : DAbstract
 {
-    //TODO: voorlopig leeg laten
+    public string selectedPatient;
 }
 
 public class SessionStartPacketResponse : DAbstract
@@ -92,7 +92,7 @@ public class SessionStartPacketResponse : DAbstract
 
 public class SessionStopPacketRequest : DAbstract
 {
-    //TODO: voorlopig leeg laten
+    public string selectedPatient;
 }
 
 public class SessionStopPacketResponse : DAbstract
@@ -129,11 +129,23 @@ public class DisconnectPacketResponse : DAbstract
 
 public class BikeDataPacket : DAbstract
 {
-    public float Distance;
-    public float Speed;
-    public int HeartRate;
-    public TimeSpan Elapsed;
-    public TimeSpan TotalElapsed;
-    public string DeviceType;
-    public string Id;
+    public string SessionId;
+    public float distance;
+    public float speed;
+    public int heartRate;
+    public TimeSpan elapsed;
+    public string deviceType;
+    public string id;
+}
+
+public class GetAllPatientsDataRequest : DAbstract
+{
+    //TODO voorlopig leeg laten
+}
+
+public class GetAllPatientsDataResponse : DAbstract
+{
+    public StatusCodes statusCode;
+    public string message;
+    public JObject[] JObjects;
 }

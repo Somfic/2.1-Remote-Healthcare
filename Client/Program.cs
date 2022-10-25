@@ -5,12 +5,14 @@ using RemoteHealthcare.Client.Data.Providers;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.NetworkEngine;
 
+var log = new Log(typeof(Program));
+
 try
 {
     var engine = new EngineConnection();
     await engine.ConnectAsync();
 
-    Console.WriteLine("Enter Bike ID:");
+    log.Debug("Enter Bike ID:");
     var bike = await DataProvider.GetBike(Console.ReadLine());
     var heart = await DataProvider.GetHeart();
     var vrConnection = new VrConnection(bike, heart, engine);
@@ -23,6 +25,5 @@ try
 }
 catch (Exception ex)
 {
-    var log = new Log(typeof(Program));
     log.Critical(ex, "Program stopped because of exception");
 }

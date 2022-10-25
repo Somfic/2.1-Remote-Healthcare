@@ -6,16 +6,22 @@ using RemoteHealthcare.Common.Socket.Server;
 
 namespace RemoteHealthcare.Common.Socket.Client;
 
-
 public class SocketClient : ISocket
 {
     private readonly bool _useEncryption;
     public TcpClient Socket { get; private set; } = new();
+    
+    public Guid Id { get; } = Guid.NewGuid();
+    public Dictionary<string, Action<DataPacket>> callbacks;
+
+    
     private readonly Log _log = new(typeof(SocketClient));
 
     public SocketClient(bool useEncryption)
     {
         _useEncryption = useEncryption;
+        callbacks = new Dictionary<string, Action<DataPacket>>();
+
     }
 
     public static SocketClient CreateFromSocket(TcpClient socket, bool useEncryption)
@@ -34,6 +40,7 @@ public class SocketClient : ISocket
 
         try
         {
+
             await Socket.ConnectAsync(IPAddress.Parse(ip), port);
             _log.Debug($"Connected to {ip}:{port}");
             Read();
@@ -49,6 +56,14 @@ public class SocketClient : ISocket
         string json = JsonConvert.SerializeObject(data);
         return SendAsync(json);
     }
+
+    public Task SendAsync<T>(DataPacket<T> packet, Action<DataPacket> callback) where T : DAbstract
+    {
+        this.callbacks.Add(packet.OpperationCode, callback);
+
+        string json = JsonConvert.SerializeObject(packet);
+        return SendAsync(json);
+    }
     
     public Task SendAsync(string text)
     {
@@ -62,27 +77,41 @@ public class SocketClient : ISocket
         {
             while (Socket.Connected)
             {
+                var text = string.Empty;
+                
                 try
                 {
-                    var text = await SocketHelper.ReadMessage(Socket.GetStream(), _useEncryption);
-                    OnMessage?.Invoke(this, text);
+                    text = await SocketHelper.ReadMessage(Socket.GetStream(), _useEncryption);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
-                    _log.Information("Client disconnected");
+                    _log.Error(ex, "Client disconnected");
                     await DisconnectAsync();
+                }
+                
+                try
+                {
+                    if(!string.IsNullOrWhiteSpace(text))
+                        OnMessage?.Invoke(this, text);
+                }
+                catch (Exception ex)
+                {
+                    _log.Error(ex, $"Error while handling message: '{text}'");
                 }
             }
 
-            _log.Debug($"Stopped a client at {ToString()}");
+            _log.Debug($"Client disconnected");
+            OnDisconnect?.Invoke(this, EventArgs.Empty);
         });
     }
     
     public event EventHandler<string>? OnMessage;
     
+    public event EventHandler? OnDisconnect;
+    
     public Task DisconnectAsync()
     {
+        OnDisconnect?.Invoke(this,new EventArgs());
         SocketServer._clients.Remove(SocketServer.Localclient); 
         Socket.Dispose();
         

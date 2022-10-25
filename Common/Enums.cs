@@ -1,6 +1,6 @@
 ﻿namespace RemoteHealthcare.Common
 {
-    public static class OperationCodes
+    public class OperationCodes
     {
         public readonly static String CHAT = "chat";
         public readonly static String BIKEDATA = "bikedata";
@@ -11,6 +11,8 @@
         public readonly static String SESSION_START = "session start";
         public readonly static String SESSION_STOP = "session stop";
         public readonly static String EMERGENCY_STOP = "emergency stop";
+        public readonly static String GET_PATIENT_DATA = "get patient data";
+        
     }
 
     public enum StatusCodes
