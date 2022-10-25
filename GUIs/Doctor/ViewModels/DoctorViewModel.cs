@@ -64,12 +64,26 @@ public class DoctorViewModel : ObservableObject
             
             ChartDataSpeed = new SeriesCollection()
             {
-                new LineSeries() { Values = _currentUser.speedData }
+                new LineSeries()
+                {
+                    Fill = Brushes.Transparent,
+                    Stroke = Brushes.DarkSeaGreen,
+                    PointGeometrySize = 0,
+                    LineSmoothness = 1.00,
+                    Values = _currentUser.speedData
+                }
             };
             
             ChartDataBPM = new SeriesCollection()
             {
-                new LineSeries() { Values = _currentUser.bpmData }
+                new LineSeries()
+                {
+                    Fill = Brushes.Transparent,
+                    Stroke = Brushes.LightCoral,
+                    PointGeometrySize = 0,
+                    LineSmoothness = 1.00,
+                    Values = _currentUser.bpmData
+                }
             };
             OnPropertyChanged();
             _log.Debug("OnPropertyChanged() has been called.");
