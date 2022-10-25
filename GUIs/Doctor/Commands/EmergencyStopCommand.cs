@@ -3,12 +3,16 @@ using System.Threading.Tasks;
 using System.Windows;
 using MvvmHelpers;
 using MvvmHelpers.Interfaces;
+using RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class EmergencyStopCommand : BaseCommand
 {
-    public EmergencyStopCommand()
+    private readonly NavigationStore _navigationStore;
+    private readonly LoginWindowViewModel _loginWindowViewModel;
+    
+    public EmergencyStopCommand(Client client, DoctorViewModel doctorViewModel)
     {
     }
 

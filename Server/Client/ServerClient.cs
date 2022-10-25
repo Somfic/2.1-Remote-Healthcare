@@ -242,9 +242,9 @@ namespace RemoteHealthcare.Server.Client
         {
             SetResistancePacket data = packetData.GetData<SetResistancePacket>();
 
-            ServerClient patient = Server._connectedClients.Find(patient => patient._userId == data.receiverId);
+            ServerClient patient = Server._connectedClients.Find(patient => patient.UserId == data.receiverId);
 
-            Console.WriteLine("selected is: " + patient._userId);
+            Console.WriteLine("selected is: " + patient.UserId);
             if (patient == null) return;
             patient.SendData(new DataPacket<SetResistanceResponse>
             {

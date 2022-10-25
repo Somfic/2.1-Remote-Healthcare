@@ -103,7 +103,9 @@ public class SessionStopPacketResponse : DAbstract
 
 public class EmergencyStopPacketRequest : DAbstract
 {
-    //TODO
+    public StatusCodes statusCode;
+    public string clientId;
+    public string message = "Er is op de noodstop gedrukt, de dokter komt zo spoedig mogelijk bij u";
 }
 
 public class EmergencyStopPacketResponse : DAbstract

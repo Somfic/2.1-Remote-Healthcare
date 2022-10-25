@@ -31,15 +31,14 @@ public class DoctorViewModel : ObservableObject
     public ICommand StopSessieCommand { get; }
     public ICommand SetResistanceCommand { get; }
     public ICommand RequestPastSessions { get; }
+    
     private Patient _currentUser;
     private string _chatMessage;
+    private int _resistance = 0;
+    
     private ObservableCollection<Patient> _patients;
     private ObservableCollection<string> chatMessages;
-    
-    
     private SeriesCollection _chartDataSpeed;
-    
-    
     private SeriesCollection _chartDataBPM;
 
     public DoctorViewModel(Client client, NavigationStore navigationStore)
