@@ -29,6 +29,7 @@ public class DoctorViewModel : ObservableObject
     public ICommand SendChatMessage { get; }
     public ICommand StartSessieCommand { get; }
     public ICommand StopSessieCommand { get; }
+    public ICommand RequestPastSessions { get; }
 
     private Patient _currentUser;
     private string _chatMessage;

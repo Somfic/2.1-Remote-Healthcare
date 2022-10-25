@@ -17,7 +17,7 @@ namespace RemoteHealthcare.Server.Client
     {
         private readonly Log _log = new(typeof(ServerClient));
         public SocketClient Client { get; private set; }
-        public string _userId { get; set; }
+        public string UserId { get; set; }
         private bool _isDoctor;
         private Patient patient;
         private string _patientDataLocation = Environment.CurrentDirectory;

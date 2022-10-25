@@ -348,14 +348,14 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             BikeDataPacketDoctor data = obj.GetData<BikeDataPacketDoctor>();
 
-            if (viewModel.CurrentUser.UserId.Equals(data.id))
+            if (DoctorViewModel.CurrentUser.UserId.Equals(data.id))
             {
-                viewModel.BPM = data.heartRate;
-                viewModel.Speed = data.speed;
-                viewModel.ElapsedTime = data.elapsed;
-                viewModel.Distance = data.distance;
-                viewModel.CurrentUser.speedData.Add(data.speed);
-                viewModel.CurrentUser.bpmData.Add(data.heartRate);
+                DoctorViewModel.BPM = data.heartRate;
+                DoctorViewModel.Speed = data.speed;
+                DoctorViewModel.ElapsedTime = data.elapsed;
+                DoctorViewModel.Distance = data.distance;
+                DoctorViewModel.CurrentUser.speedData.Add(data.speed);
+                DoctorViewModel.CurrentUser.bpmData.Add(data.heartRate);
             }
             else
             {
