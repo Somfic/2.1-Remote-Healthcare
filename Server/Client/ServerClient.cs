@@ -20,7 +20,7 @@ namespace RemoteHealthcare.Server.Client
         public string _userId { get; set; }
         private bool _isDoctor;
 
-        private string _patientDataLocation = Path.Combine(Environment.CurrentDirectory, "PatientData");
+        private string _patientDataLocation = Environment.CurrentDirectory;
 
         private Patient patient;
         
@@ -105,6 +105,7 @@ namespace RemoteHealthcare.Server.Client
             {
                 if (session.SessionId.Equals(data.SessionId))
                 {
+                    Console.WriteLine("print grint sint: " + data.ToString());
                     session.addData(data.SessionId,(int)data.speed, (int)data.distance, data.heartRate, data.elapsed.Seconds, data.deviceType, data.id);
                     return;
                 }
@@ -112,6 +113,7 @@ namespace RemoteHealthcare.Server.Client
             
             patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
             _log.Debug(Environment.CurrentDirectory);
+            _log.Debug("logmogdog");
             patient.SaveSessionData(_patientDataLocation);
             GetBikeData(obj);
         }
