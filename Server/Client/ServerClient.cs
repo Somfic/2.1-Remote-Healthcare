@@ -21,8 +21,9 @@ namespace RemoteHealthcare.Server.Client
         private bool _isDoctor;
 
         private string _patientDataLocation = Environment.CurrentDirectory;
+            //Environment.CurrentDirectory;
 
-        private Patient patient;
+        private Patient patient = new Patient("06111", "welkom01");
         
         public string UserName { get; set; }
         
@@ -32,6 +33,7 @@ namespace RemoteHealthcare.Server.Client
         public ServerClient(SocketClient client)
         {
             _client = client;
+            
             _client.OnMessage += (sender, data) =>
             {
                 var dataPacket = JsonConvert.DeserializeObject<DataPacket>(data);
@@ -95,12 +97,15 @@ namespace RemoteHealthcare.Server.Client
                     calculateTarget(targetId)._client.SendAsync(packet).GetAwaiter().GetResult();
             }
         }
-
+        
         private void GetBikeData(DataPacket obj)
         {
             Console.WriteLine("Server-Print-BIKEDATAAAAA");
             BikeDataPacket data = obj.GetData<BikeDataPacket>();
+
             
+            
+            //Console.WriteLine(patient.UserId);
             foreach(SessionData session in patient.Sessions)
             {
                 if (session.SessionId.Equals(data.SessionId))
@@ -112,9 +117,9 @@ namespace RemoteHealthcare.Server.Client
             }
             
             patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
-            _log.Debug(Environment.CurrentDirectory);
-            _log.Debug("logmogdog");
+            // _log.Debug($"Distance: {data.distance.ToString(CultureInfo.InvariantCulture)}");
             patient.SaveSessionData(_patientDataLocation);
+            calculateTarget()._client.SendAsync(obj);
             GetBikeData(obj);
         }
 

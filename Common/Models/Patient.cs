@@ -5,21 +5,23 @@ using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.Server.Models;
 
+
 [Serializable]
 public class Patient : ObservableObject
 {
     private Log _log = new Log(typeof(Patient));
     public List<SessionData> Sessions { get; set; }
-    
+
     public string Username { get; set; }
     public string UserId { get; set; }
-    public string? Nickname { get; set; }
     public string Password { get; set; }
 
-    public Patient(string user, string password)
+    public Patient(string user, string password, string? username = null)
     {
         Password = password;
         UserId = user;
+        if (username != null)
+            Username = username;
         Sessions = new List<SessionData>();
     }
 
@@ -27,7 +29,7 @@ public class Patient : ObservableObject
     /// It takes a folder name as a parameter, creates a directory with the user's username, and then creates a file for
     /// each session in the user's session list
     /// </summary>
-    /// <param name="folderName">The name of the folder you want to save the data to.</param>
+    /// <param name="pathString">The name of the folder you want to save the data to.</param>
     public void SaveSessionData(string pathString)
     {
         pathString = Path.Combine(pathString.Substring(0, pathString.LastIndexOf("bin")));
@@ -50,14 +52,13 @@ public class Patient : ObservableObject
             var pathStringFileName = Path.Combine(pathStringUserId, filename + ".json");
 
             File.WriteAllText(pathStringFileName, JObject.Parse(json).ToString());
-            _log.Debug($"Saved to path: \r\n{pathStringFileName}");
-            _log.Debug($"Saved to path: asddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+        _log.Debug($"Saved to path: \r\n{pathStringFileName}");
         }
     }
 
     public override string ToString()
     {
-        return $" Patient: {Nickname} + UserId {UserId}";
+        return $" Patient username: {Username}; UserId {UserId}";
     }
 
     public JObject GetPatientAsJObject()
