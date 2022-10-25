@@ -53,7 +53,6 @@ public class DoctorViewModel : ObservableObject
         StopSessieCommand = new StopSessieCommand(_client, this);
         RequestPastSessions = new RequestPastSessions(_client, this);
         SetResistanceCommand = new SetResistanceCommand(_client, this);
-        client.currentViewModel = this;
     }
     
     public string CurrentUserName

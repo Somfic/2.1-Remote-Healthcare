@@ -19,9 +19,6 @@ namespace RemoteHealthcare.Server.Client
         public SocketClient Client { get; private set; }
         public string UserId { get; set; }
         private bool _isDoctor;
-
-        private string _patientDataLocation = Path.Combine(Environment.CurrentDirectory, "PatientData");
-
         private Patient patient;
         private string _patientDataLocation = Environment.CurrentDirectory;
         public string UserName { get; set; }
@@ -63,7 +60,7 @@ namespace RemoteHealthcare.Server.Client
             _log.Debug($"Got a packet server: {packetData.OpperationCode}");
 
             //Checks if the OppCode (OperationCode) does exist.
-            if (_callbacks.TryGetValue(packetData.OpperationCode, out var action)) 
+            if (_functions.TryGetValue(packetData.OpperationCode, out var action)) 
             {
                 action.Invoke(packetData);
             } else {
@@ -415,7 +412,7 @@ namespace RemoteHealthcare.Server.Client
             SessionStopPacketRequest data = obj.GetData<SessionStopPacketRequest>();
 
             //Trys to Find the Patient in the _connectedCLients.
-            ServerClient _selectedPatient = Server._connectedClients.Find(c => c._userId == data.selectedPatient);
+            ServerClient _selectedPatient = Server._connectedClients.Find(c => c.UserId == data.selectedPatient);
 
             if (_selectedPatient == null) return;
             

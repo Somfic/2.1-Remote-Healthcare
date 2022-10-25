@@ -36,8 +36,6 @@ namespace RemoteHealthcare.GUIs.Doctor
         private Dictionary<string, Action<DataPacket>> _functions = new();
         public bool hasSessionResponce;
 
-        private Dictionary<string, Action<DataPacket>> _callbacks = new();
-
         public Client()
         {
             loggedIn = false;
@@ -222,7 +220,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             _log.Warning($"Received: {packet.ToJson()}");
             //Checks if the OppCode (OperationCode) does exist.
-            if (_callbacks.TryGetValue(packet.OpperationCode, out var action))
+            if (_functions.TryGetValue(packet.OpperationCode, out var action))
             {
                 action.Invoke(packet);
             }
@@ -244,7 +242,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             var sessie = obj.GetData<SessionStartPacketResponse>();
             
             //Change the GUI with an Alert depends on the outcome of the IF-Statement
-            ((DoctorViewModel) currentViewModel).CurrentUserName = (sessie.statusCode.Equals(StatusCodes.OK)) ? ((DoctorViewModel) currentViewModel).CurrentUser.Username : "Gekozen Patient is niet online";
+            DoctorViewModel.CurrentUserName = (sessie.statusCode.Equals(StatusCodes.OK)) ? DoctorViewModel.CurrentUser.Username : "Gekozen Patient is niet online";
         }
         
         //the methode for the session stop request
