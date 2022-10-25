@@ -18,13 +18,15 @@ namespace RemoteHealthcare.GUIs.Doctor
     public class Client : ObservableObject
     {
         public SocketClient _client { get; set; } = new(true);
-        
-        private List<string> _connected;
-        
-        public List<Patient> _patientList;
 
-        public DoctorViewModel viewModel;
-        
+        private List<string> _connected;
+
+        public List<Patient> _patientList;
+        public List<SessionData> Sessions;
+
+        public DoctorViewModel DoctorViewModel;
+        public PastSessionsViewModel PastSessionsViewModel;
+
         private Log _log = new(typeof(Client));
         public string password { get; set; }
         public string username { get; set; }
@@ -32,12 +34,15 @@ namespace RemoteHealthcare.GUIs.Doctor
         private string _userId;
 
         private Dictionary<string, Action<DataPacket>> _functions = new();
+        public bool hasSessionResponce;
 
         public Client()
         {
             loggedIn = false;
-            _functions = new Dictionary<string, Action<DataPacket>>();
+            hasSessionResponce = false;
             _patientList = new List<Patient>();
+            Sessions = new List<SessionData>();
+            _functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
             _functions.Add("login", LoginFeature);
@@ -47,6 +52,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
             _functions.Add("get patient data", GetPatientDataHandler);
+            _functions.Add("get patient sessions", GetPatientSessionsHandler);
             _functions.Add("bikedata", GetBikeData);
 
             _client.OnMessage += (sender, data) =>
@@ -113,7 +119,13 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             _log.Debug("SendChatAsync(): entered");
 
-            /*string savedConnections = " ";
+            /*/* This is a while loop that will do nothing until connected is filled #1#
+            while (_connected.Count == 0)
+            {
+                _log.Debug("Loading...");
+            }
+            _log.Information("escaped loading");
+            string savedConnections = " ";
             foreach (string id in _connected)
             {
                 savedConnections += id + "; ";
@@ -308,23 +320,42 @@ namespace RemoteHealthcare.GUIs.Doctor
             }
         }
 
-        public void AddViewmodel(DoctorViewModel viewModel)
+        private void GetPatientSessionsHandler(DataPacket packetData)
         {
-            this.viewModel = viewModel;
+            JObject[] jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
+
+            
+            Sessions.Clear();
+            foreach (JObject jObject in jObjects)
+            {
+                SessionData session = jObject.ToObject<SessionData>();
+                Sessions.Add(session);
+            }
+            hasSessionResponce = true;
         }
-        
+
+        public void AddDoctorViewmodel(DoctorViewModel viewModel)
+        {
+            this.DoctorViewModel = viewModel;
+        }
+
+        public void AddPastSessionsViewmodel(PastSessionsViewModel viewModel)
+        {
+            this.PastSessionsViewModel = viewModel;
+        }
+
         private void GetBikeData(DataPacket obj)
         {
             BikeDataPacketDoctor data = obj.GetData<BikeDataPacketDoctor>();
 
-            if (viewModel.CurrentUser.UserId.Equals(data.id))
+            if (DoctorViewModel.CurrentUser.UserId.Equals(data.id))
             {
-                viewModel.BPM = data.heartRate;
-                viewModel.Speed = data.speed;
-                viewModel.ElapsedTime = data.elapsed;
-                viewModel.Distance = data.distance;
-                viewModel.CurrentUser.speedData.Add(data.speed);
-                viewModel.CurrentUser.bpmData.Add(data.heartRate);
+                DoctorViewModel.BPM = data.heartRate;
+                DoctorViewModel.Speed = data.speed;
+                DoctorViewModel.ElapsedTime = data.elapsed;
+                DoctorViewModel.Distance = data.distance;
+                DoctorViewModel.CurrentUser.speedData.Add(data.speed);
+                DoctorViewModel.CurrentUser.bpmData.Add(data.heartRate);
             }
             else
             {

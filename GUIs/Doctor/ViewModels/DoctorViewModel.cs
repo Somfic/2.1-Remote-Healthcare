@@ -29,6 +29,7 @@ public class DoctorViewModel : ObservableObject
     public ICommand SendChatMessage { get; }
     public ICommand StartSessieCommand { get; }
     public ICommand StopSessieCommand { get; }
+    public ICommand RequestPastSessions { get; }
 
     private Patient _currentUser;
     private string _chatMessage;
@@ -44,13 +45,14 @@ public class DoctorViewModel : ObservableObject
     public DoctorViewModel(Client client, NavigationStore navigationStore)
     {
         _client = client;
-        _client.AddViewmodel(this);
+        _client.AddDoctorViewmodel(this);
         _patients = new ObservableCollection<Patient>(_client._patientList);
         chatMessages = new ObservableCollection<string>();
         EmergencyStop = new EmergencyStopCommand();
         SendChatMessage = new SendChatMessageCommand(_client, this);
         StartSessieCommand = new StartSessieCommand(_client, this);
         StopSessieCommand = new StopSessieCommand(_client, this);
+        RequestPastSessions = new RequestPastSessions(_client, this);
     }
 
     public Patient CurrentUser
@@ -70,6 +72,7 @@ public class DoctorViewModel : ObservableObject
                 new LineSeries() { Values = _currentUser.bpmData }
             };
             OnPropertyChanged();
+            _log.Debug("OnPropertyChanged() has been called.");
         }
     }
 
@@ -90,7 +93,7 @@ public class DoctorViewModel : ObservableObject
         get => _chatMessage;
         set => _chatMessage = value;
     }
-    
+
     public int BPM
     {
         get => _currentUser.currentBPM;

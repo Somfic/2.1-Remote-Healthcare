@@ -16,17 +16,15 @@ namespace RemoteHealthcare.Server.Client
     public class ServerClient
     {
         private readonly Log _log = new(typeof(ServerClient));
-        
         public SocketClient Client { get; private set; }
-        private PatientData _patientData;
-        private DoctorData _doctorData;
-        public string UserId;
-        public string UserName { get; set; }
-        private Patient patient;
-        private string _patientDataLocation = Path.Combine(Environment.CurrentDirectory, "PatientData");
+        public string UserId { get; set; }
         private bool _isDoctor;
-        private Dictionary<string, Action<DataPacket>> _functions;
+        private Patient patient;
+        private string _patientDataLocation = Environment.CurrentDirectory;
+        public string UserName { get; set; }
         
+        private Dictionary<string, Action<DataPacket>> _functions;
+
 
         //Set-ups the client constructor
         public ServerClient(SocketClient client)
@@ -40,10 +38,7 @@ namespace RemoteHealthcare.Server.Client
                 HandleData(dataPacket);
             };
 
-            Client.OnDisconnect += (sender, data) =>
-            {
-                patient.SaveSessionData(_patientDataLocation);
-            };
+            Client.OnDisconnect += (sender, data) => { patient.SaveSessionData(_patientDataLocation); };
             _functions = new Dictionary<string, Action<DataPacket>>();
             _functions.Add("login", LoginFeature);
             _functions.Add("users", RequestConnectionsFeature);
@@ -53,8 +48,8 @@ namespace RemoteHealthcare.Server.Client
             _functions.Add("disconnect", DisconnectHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
             _functions.Add("get patient data", GetPatientDataHandler);
+            _functions.Add("get patient sessions", GetPatientSessionHandler);
             _functions.Add("bikedata", GetBikeData);
-
         }
 
 
@@ -103,8 +98,9 @@ namespace RemoteHealthcare.Server.Client
 
         private void GetBikeData(DataPacket obj)
         {
+
             BikeDataPacket data = obj.GetData<BikeDataPacket>();
-            foreach(SessionData session in patient.Sessions)
+            foreach (SessionData session in patient.Sessions)
             {
                 if (session.SessionId.Equals(data.SessionId))
                 {
@@ -128,6 +124,7 @@ namespace RemoteHealthcare.Server.Client
                     return;
                 }
             }
+
             patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
             patient.SaveSessionData(_patientDataLocation);
             _log.Critical(data.distance.ToString(CultureInfo.InvariantCulture));
@@ -149,23 +146,24 @@ namespace RemoteHealthcare.Server.Client
             GetBikeData(obj);
         }
 
-        //If userid == null, then search for doctor otherwise search for patient
-
+        /// <summary>
+        /// It loops through all the connected clients and returns the first one that matches the userId
+        ///If userid == null, then search for doctor otherwise search for patient
+        /// </summary>
+        /// <param name="userId">The userId of the client you want to send the message to. If you want to send the message
+        /// to the doctor, leave this parameter null.</param>
+        /// <returns>
+        /// A ServerClient object.
+        /// </returns>
         private ServerClient calculateTarget(string? userId = null)
         {
             foreach (ServerClient client in Server._connectedClients)
             {
                 if (userId == null && client._isDoctor)
-                {
-                    _log.Debug($"returning {client.ToString()}");
                     return client;
-                }
 
                 if (userId != null && client.UserId.Equals(userId))
-                {
-                    _log.Debug($"returning {client.ToString()}");
                     return client;
-                }
             }
 
             _log.Error($"No client found for the id: {userId}");
@@ -239,7 +237,6 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the chat request
-
         private void ChatHandler(DataPacket packetData)
         {
             ChatPacketRequest data = packetData.GetData<ChatPacketRequest>();
@@ -279,15 +276,15 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the login request
-        private void LoginFeature(DataPacket packetData) //TODO: spam on incorrect login
+        private void LoginFeature(DataPacket packetData)
         {
             Patient? patient = null;
             Doctor? doctor = null;
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
                 patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
-                    packetData.GetData<LoginPacketRequest>().password);
-                    
+                    packetData.GetData<LoginPacketRequest>().password, "testUserName");
+
                 _log.Debug($"Patient name: {patient.UserId} Password: {patient.Password}");
             }
             else if (packetData.GetData<LoginPacketRequest>().isDoctor)
@@ -397,19 +394,18 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
-            
             SessionStopPacketRequest data = obj.GetData<SessionStopPacketRequest>();
 
             ServerClient tt = Server._connectedClients.Find(c => c.UserId == data.selectedPatient);
         
             Console.WriteLine("gevonden id: " + tt.UserId);
             Console.WriteLine("gevonden name: " + tt.UserName);
-                
-                
+
+
             tt.SendData(new DataPacket<SessionStopPacketResponse>
             {
                 OpperationCode = OperationCodes.SESSION_STOP,
-    
+
                 data = new SessionStopPacketResponse()
                 {
                     statusCode = StatusCodes.OK,
@@ -474,8 +470,28 @@ namespace RemoteHealthcare.Server.Client
             SendData(new DataPacket<GetAllPatientsDataResponse>
             {
                 OpperationCode = OperationCodes.GET_PATIENT_DATA,
-                
+
                 data = new GetAllPatientsDataResponse()
+                {
+                    statusCode = StatusCodes.OK,
+                    JObjects = jObjects,
+                    message = "Got patient data from server successfully"
+                }
+            });
+        }
+
+        private void GetPatientSessionHandler(DataPacket packetData)
+        {
+            _log.Debug($"Got request all patientdata from doctor client: {packetData.OpperationCode}");
+
+            JObject[] jObjects =
+                Server._patientData.GetPatientSessionsAsJObjects(packetData
+                    .GetData<AllSessionsFromPatientRequest>().userId, _patientDataLocation);
+            SendData(new DataPacket<AllSessionsFromPatientResponce>
+            {
+                OpperationCode = OperationCodes.GET_PATIENT_SESSSIONS,
+
+                data = new AllSessionsFromPatientResponce()
                 {
                     statusCode = StatusCodes.OK,
                     JObjects = jObjects,

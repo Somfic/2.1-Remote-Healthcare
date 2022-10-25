@@ -1,5 +1,6 @@
 ﻿using LiveCharts;
 using MvvmHelpers;
+using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common.Logger;
@@ -11,10 +12,9 @@ public class Patient : ObservableObject
 {
     private Log _log = new Log(typeof(Patient));
     public List<SessionData> Sessions { get; set; }
-    
+
     public string Username { get; set; }
     public string UserId { get; set; }
-    public string? Nickname { get; set; }
     public string Password { get; set; }
     
     public float currentSpeed { get; set; }
@@ -27,43 +27,49 @@ public class Patient : ObservableObject
     
     public ChartValues<int> bpmData = new();
 
-    public Patient(string user, string password)
+    public Patient(string user, string password, string? username = null)
     {
         Password = password;
         UserId = user;
+        if (username != null)
+            Username = username;
         Sessions = new List<SessionData>();
     }
-    
+
     /// <summary>
     /// It takes a folder name as a parameter, creates a directory with the user's username, and then creates a file for
     /// each session in the user's session list
     /// </summary>
-    /// <param name="folderName">The name of the folder you want to save the data to.</param>
-    public void SaveSessionData(string folderName)
+    /// <param name="pathString">The name of the folder you want to save the data to.</param>
+    public void SaveSessionData(string pathString)
     {
-        var pathString = Path.Combine(folderName, Nickname);
-        Directory.CreateDirectory(pathString);
-        
+        pathString = Path.Combine(pathString.Substring(0, pathString.LastIndexOf("bin")));
+
+        pathString = Path.Combine(pathString, "allSessions");
+
+
+        if (!Directory.Exists(pathString))
+            Directory.CreateDirectory(pathString);
+
         foreach (var session in Sessions)
         {
-            pathString = Path.Combine(folderName, UserId);
-            var filename = session.SessionId.Replace(':','-') + "-" + session.Id;
-            var json = JsonConvert.SerializeObject(session);
-            pathString = Path.Combine(pathString, filename);
+            var pathStringUserId = Path.Combine(pathString, UserId);
 
-            if (!File.Exists(pathString))
-            {
-                File.WriteAllText(pathString, JObject.Parse(json).ToString());
-            } else
-            {
-                File.WriteAllText(pathString, JObject.Parse(json).ToString());
-            }
+            if (!Directory.Exists(pathStringUserId))
+                Directory.CreateDirectory(pathStringUserId);
+
+            var filename = session.SessionId.Replace(':', '-') + "-" + session.Id;
+            var json = JsonConvert.SerializeObject(session);
+            var pathStringFileName = Path.Combine(pathStringUserId, filename + ".json");
+
+            File.WriteAllText(pathStringFileName, JObject.Parse(json).ToString());
+        _log.Debug($"Saved to path: \r\n{pathStringFileName}");
         }
     }
 
     public override string ToString()
     {
-        return $" Patient: {Nickname} + UserId {UserId}";
+        return $" Patient username: {Username}; UserId {UserId}";
     }
 
     public JObject GetPatientAsJObject()
