@@ -3,6 +3,7 @@ using MvvmHelpers.Commands;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -23,7 +24,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private string _distance= "22km";
         private string _time= "33 min";
         private string _heartrate= "126 bpm";
-        private VrConnection vr;
+        private VrConnection _vr;
         private EngineConnection e;
         
         private readonly NavigationStore _navigationStore;
@@ -33,7 +34,9 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
         public PatientHomepageViewModel(NavigationStore navigationStore, Client.Client client)
         {
+            
             _client = client;
+            _vr = client._vrConnection;
             _messages = new ObservableCollection<string>();
             test = new Command(testmethode);
             Send = new Command(SendMessage);
@@ -65,7 +68,11 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         }public string Heartrate
         {
             get => _heartrate;
-            set => _heartrate = value;
+            set
+            {
+                _heartrate = value = _vr.getHearthData().HeartRate.ToString();
+                OnPropertyChanged("Heartrate");
+            } 
         }
 
 
@@ -79,7 +86,14 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         public string Message
         {
             get => _message;
-            set => _message = value;
+            set
+            {
+                _message = value; 
+                OnPropertyChanged("Message");
+            }
+            
+
+
         }
 
         public ICommand Send { get; }
@@ -87,6 +101,9 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         void SendMessage()
         {
             _messages.Add("You: "+_message);
+            //clear textbox
+            Message = "";
+            
         }
         
         void testmethode()

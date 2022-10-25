@@ -40,7 +40,7 @@ namespace NetworkEngine.Socket
             while (true)
             {
                 await bike.ProcessRawData();
-                await engine.ChangeBikeSpeed(bike.GetData().Speed);
+                // await engine.ChangeBikeSpeed(bike.GetData().Speed);
                 Thread.Sleep(300);
             }
         }
