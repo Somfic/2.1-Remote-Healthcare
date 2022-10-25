@@ -10,7 +10,6 @@ public class EmergencyStopCommand : BaseCommand
 {
     public EmergencyStopCommand()
     {
-        
     }
 
     public override void Execute(object? parameter)

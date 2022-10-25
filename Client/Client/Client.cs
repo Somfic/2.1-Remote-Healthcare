@@ -131,7 +131,6 @@ namespace RemoteHealthcare.Client.Client
                         elapsed = bikedata.TotalElapsed,
                         deviceType = bikedata.DeviceType.ToString(),
                         id = bikedata.Id
-
                     }
                 };
                 await _client.SendAsync(req);
@@ -231,5 +230,11 @@ namespace RemoteHealthcare.Client.Client
                 AskForLoginAsync();
             }
         }
+        public bool GetLoggedIn()
+        {
+            return _loggedIn;
+        }
     }
+    
+   
 }

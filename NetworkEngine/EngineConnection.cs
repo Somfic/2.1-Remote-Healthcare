@@ -149,12 +149,10 @@ public class EngineConnection
         await MoveCameraPosition();
         await Task.Delay(1000);
         await MoveHeadPosition();
-
-
+        
         await Task.Delay(1000);
         await RoadLoad();
-
-
+        
         await Task.Delay(1000);
         await Addhouses(_tunnelId, 1000);
 
@@ -438,7 +436,6 @@ public class EngineConnection
             }
         }
 
-        // _log.Debug(jObject.ToString());
         _hightForHouse = heights;
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);

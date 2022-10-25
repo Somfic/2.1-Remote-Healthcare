@@ -21,7 +21,7 @@ public class SendChatMessageCommand : BaseCommand
 
     public override async Task ExecuteAsync()
     {
-        _viewModel.ChatMessages.Add(_viewModel.TextBoxChatMessage);
+        _viewModel.ChatMessages.Add("You:" + _viewModel.TextBoxChatMessage);
         _client.SendChatAsync(_viewModel.CurrentUser.UserId, _viewModel.TextBoxChatMessage);
     }
 }

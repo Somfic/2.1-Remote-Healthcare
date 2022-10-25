@@ -82,4 +82,19 @@ public class PatientData
 
         return jObjects;
     }
+
+    public JObject[] GetPatientSessionsAsJObjects(string userId, string pathString)
+    {
+        pathString = Path.Combine(pathString.Substring(0, pathString.LastIndexOf("bin")), "allSessions", userId);
+
+        _log.Debug($"There are {Directory.GetFiles(pathString).Length} session files of user {userId}");
+        JObject[] jObjects = new JObject[Directory.GetFiles(pathString).Length];
+
+        for (int i = 0; i < Directory.GetFiles(pathString).Length; i++)
+        {
+            using (JsonTextReader reader = new JsonTextReader(File.OpenText(Directory.GetFiles(pathString)[i])))
+                jObjects[i] = (JObject)JToken.ReadFrom(reader);
+        }
+        return jObjects;
+    }
 }

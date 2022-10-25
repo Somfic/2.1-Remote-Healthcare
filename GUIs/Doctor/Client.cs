@@ -2,34 +2,47 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Navigation;
+using MvvmHelpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
+using RemoteHealthcare.GUIs.Doctor.ViewModels;
 using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.GUIs.Doctor
 {
-    public class Client
+    public class Client : ObservableObject
     {
         public SocketClient _client { get; set; } = new(true);
-        private List<string> _connected = new();
-        private Log _log = new(typeof(Client));
+
+        private List<string> _connected;
 
         public List<Patient> _patientList;
+        public List<SessionData> Sessions;
+
+        public DoctorViewModel DoctorViewModel;
+        public PastSessionsViewModel PastSessionsViewModel;
+
+        private Log _log = new(typeof(Client));
         public string password { get; set; }
         public string username { get; set; }
         public bool loggedIn { get; set; }
         private string _userId;
 
         private Dictionary<string, Action<DataPacket>> _functions = new();
+        public bool hasSessionResponce;
 
         public Client()
         {
             loggedIn = false;
-            _functions = new Dictionary<string, Action<DataPacket>>();
+            hasSessionResponce = false;
             _patientList = new List<Patient>();
+            Sessions = new List<SessionData>();
+            _functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
             _functions.Add("login", LoginFeature);
@@ -39,6 +52,8 @@ namespace RemoteHealthcare.GUIs.Doctor
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("emergency stop", EmergencyStopHandler);
             _functions.Add("get patient data", GetPatientDataHandler);
+            _functions.Add("get patient sessions", GetPatientSessionsHandler);
+            _functions.Add("bikedata", GetBikeData);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -104,7 +119,13 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             _log.Debug("SendChatAsync(): entered");
 
-            /*string savedConnections = " ";
+            /*/* This is a while loop that will do nothing until connected is filled #1#
+            while (_connected.Count == 0)
+            {
+                _log.Debug("Loading...");
+            }
+            _log.Information("escaped loading");
+            string savedConnections = " ";
             foreach (string id in _connected)
             {
                 savedConnections += id + "; ";
@@ -276,6 +297,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             {
                 _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
                            packetData.GetData<LoginPacketResponse>().message);
+                MessageBox.Show(packetData.GetData<LoginPacketResponse>().message);
             }
         }
 
@@ -295,6 +317,60 @@ namespace RemoteHealthcare.GUIs.Doctor
             {
                 Patient patient = jObject.ToObject<Patient>();
                 _patientList.Add(patient);
+            }
+        }
+
+        private void GetPatientSessionsHandler(DataPacket packetData)
+        {
+            JObject[] jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
+
+            
+            Sessions.Clear();
+            foreach (JObject jObject in jObjects)
+            {
+                SessionData session = jObject.ToObject<SessionData>();
+                Sessions.Add(session);
+            }
+            hasSessionResponce = true;
+        }
+
+        public void AddDoctorViewmodel(DoctorViewModel viewModel)
+        {
+            this.DoctorViewModel = viewModel;
+        }
+
+        public void AddPastSessionsViewmodel(PastSessionsViewModel viewModel)
+        {
+            this.PastSessionsViewModel = viewModel;
+        }
+
+        private void GetBikeData(DataPacket obj)
+        {
+            BikeDataPacketDoctor data = obj.GetData<BikeDataPacketDoctor>();
+
+            if (DoctorViewModel.CurrentUser.UserId.Equals(data.id))
+            {
+                DoctorViewModel.BPM = data.heartRate;
+                DoctorViewModel.Speed = data.speed;
+                DoctorViewModel.ElapsedTime = data.elapsed;
+                DoctorViewModel.Distance = data.distance;
+                DoctorViewModel.CurrentUser.speedData.Add(data.speed);
+                DoctorViewModel.CurrentUser.bpmData.Add(data.heartRate);
+            }
+            else
+            {
+                foreach (Patient patient in _patientList)
+                {
+                    if (patient.UserId.Equals(data.id))
+                    {
+                        patient.currentDistance = data.distance;
+                        patient.currentSpeed = data.speed;
+                        patient.currentElapsedTime = data.elapsed;
+                        patient.currentBPM = data.heartRate;
+                        patient.speedData.Add(data.speed);
+                        patient.bpmData.Add(data.heartRate);
+                    }
+                }
             }
         }
     }
