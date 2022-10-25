@@ -59,3 +59,12 @@ catch (Exception ex)
     log.Critical(ex, "Not all clients could not login to the server");
     return;
 }
+
+while (true)
+{
+    await Task.Delay(1000);
+    foreach (var client in clients)
+    {
+        await client.SendBikeData();
+    }
+}
