@@ -56,7 +56,7 @@ public class LoginPacketResponse : DAbstract
 
 public class ConnectedClientsPacketRequest : DAbstract
 {
-    public string operationCode;
+    public string requester;
 }
 
 public class ConnectedClientsPacketResponse : DAbstract
@@ -135,6 +135,15 @@ public class BikeDataPacket : DAbstract
     public int heartRate;
     public TimeSpan elapsed;
     public string deviceType;
+    public string id;
+}
+
+public class BikeDataPacketDoctor : DAbstract
+{
+    public float distance;
+    public float speed;
+    public int heartRate;
+    public TimeSpan elapsed;
     public string id;
 }
 

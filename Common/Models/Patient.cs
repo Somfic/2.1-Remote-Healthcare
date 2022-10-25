@@ -1,5 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using LiveCharts;
 using MvvmHelpers;
+using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common.Logger;
@@ -15,6 +16,16 @@ public class Patient : ObservableObject
     public string Username { get; set; }
     public string UserId { get; set; }
     public string Password { get; set; }
+    
+    public float currentSpeed { get; set; }
+    public float currentDistance { get; set; }
+    public TimeSpan currentElapsedTime { get; set; }
+    public int currentBPM { get; set; }
+
+    public ChartValues<float> speedData = new();
+    
+    
+    public ChartValues<int> bpmData = new();
 
     public Patient(string user, string password, string? username = null)
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
@@ -28,18 +29,17 @@ public class DoctorViewModel : ObservableObject
     public ICommand SendChatMessage { get; }
     public ICommand StartSessieCommand { get; }
     public ICommand StopSessieCommand { get; }
-    public ICommand RequestPastSessions { get; }
-
-    private int _BPM = 0;
-    private float _speed = 0;
-    private float _distance = 0;
-    private TimeSpan _elapsed = new TimeSpan(0);
 
     private Patient _currentUser;
     private string _chatMessage;
     private ObservableCollection<Patient> _patients;
     private ObservableCollection<string> chatMessages;
-    private ChartValues<float> _speedData;
+    
+    
+    private SeriesCollection _chartDataSpeed;
+    
+    
+    private SeriesCollection _chartDataBPM;
 
     public DoctorViewModel(Client client, NavigationStore navigationStore)
     {
@@ -60,6 +60,16 @@ public class DoctorViewModel : ObservableObject
         set
         {
             _currentUser = value;
+            
+            ChartDataSpeed = new SeriesCollection()
+            {
+                new LineSeries() { Values = _currentUser.speedData }
+            };
+            
+            ChartDataBPM = new SeriesCollection()
+            {
+                new LineSeries() { Values = _currentUser.bpmData }
+            };
             OnPropertyChanged();
             _log.Debug("OnPropertyChanged() has been called.");
         }
@@ -85,33 +95,61 @@ public class DoctorViewModel : ObservableObject
 
     public int BPM
     {
-        get => _BPM;
-        set => _BPM = value;
+        get => _currentUser.currentBPM;
+        set
+        {
+            _currentUser.currentBPM = value;
+            OnPropertyChanged();
+        }
     }
 
     public float Speed
     {
-        get => _speed;
-        set => _speed = value;
+        get => _currentUser.currentSpeed;
+        set
+        {
+            _currentUser.currentSpeed = value;
+            OnPropertyChanged();
+        }
     }
 
     public float Distance
     {
-        get => _distance;
-        set => _distance = value;
+        get => _currentUser.currentDistance;
+        set
+        {
+            _currentUser.currentDistance = value;
+            OnPropertyChanged();
+        }
     }
 
     public TimeSpan ElapsedTime
     {
-        get => _elapsed;
-        set => _elapsed = value;
+        get => _currentUser.currentElapsedTime;
+        set
+        {
+            _currentUser.currentElapsedTime = value;
+            OnPropertyChanged();
+        }
     }
 
-    public void UpdateAllProperties()
+    public SeriesCollection ChartDataSpeed
     {
-        OnPropertyChanged();
+        get => _chartDataSpeed;
+        set
+        {
+            _chartDataSpeed = value;
+            OnPropertyChanged();
+        }
     }
-
-
-    public ChartValues<float> SpeedData { get; set; }
+    
+    public SeriesCollection ChartDataBPM
+    {
+        get => _chartDataBPM;
+        set
+        {
+            _chartDataBPM = value;
+            OnPropertyChanged();
+        }
+    }
 }
