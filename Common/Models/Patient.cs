@@ -60,7 +60,7 @@ public class Patient : ObservableObject
                 Directory.CreateDirectory(pathStringUserId);
 
             var fileName = session.SessionId.Replace(':', '-');
-            fileName = session.SessionId.Replace('/', '-');
+            fileName = fileName.Replace('/', '-');
             fileName += "-" + session.Id;
             var json = JsonConvert.SerializeObject(session);
             var pathStringFileName = Path.Combine(pathStringUserId, fileName + ".json");
