@@ -99,7 +99,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                     }
                     else if (userCommand.ToLower().Equals("noodstop"))
                     {
-                        var req = new DataPacket<EmergencyStopPacketRequest>
+                        var req = new DataPacket<EmergencyStopPacket>
                         {
                             OpperationCode = OperationCodes.EMERGENCY_STOP,
                         };
@@ -118,39 +118,6 @@ namespace RemoteHealthcare.GUIs.Doctor
         public async Task SendChatAsync(string? target = null, string? chatInput = null)
         {
             _log.Debug("SendChatAsync(): entered");
-
-            /*/* This is a while loop that will do nothing until connected is filled #1#
-            while (_connected.Count == 0)
-            {
-                _log.Debug("Loading...");
-            }
-            _log.Information("escaped loading");
-            string savedConnections = " ";
-            foreach (string id in _connected)
-            {
-                savedConnections += id + "; ";
-                _log.Debug($"{id} has been added, saved connections is now: [{savedConnections}]");
-            }
-
-            string? target = 0000 + "";
-
-            /* This is a while loop that will keep asking for a target until the target is in the list of connected
-            clients. */
-            /*while (!_connected.Contains(target) && !target.Contains(";"))
-            {
-                _log.Information($"Voor welk accountnummer is dit bedoeld? Voor meerdere accountnummers tegelijk, " +
-                                 $"gebruik een ; tussen de nummers. Kies uit de volgende beschikbare " +
-                                 $"accountnummers: \t[{savedConnections}]");
-                target = Console.ReadLine();
-
-                //breaks the while-loop if all targets are correct.
-                if (CheckTargets(target.Split(";").ToList(), _connected))
-                    break;
-            }
-            
-            _log.Information("Voer uw bericht in: ");
-            String chatInput = Console.ReadLine();*/
-
             var req = new DataPacket<ChatPacketRequest>
             {
                 OpperationCode = OperationCodes.CHAT,
@@ -169,8 +136,6 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         public async void SetResistance(string target, int res)
         {
-            
-
             var req = new DataPacket<SetResistancePacket>
             {
                 OpperationCode = OperationCodes.SET_RESISTANCE,

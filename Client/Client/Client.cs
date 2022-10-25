@@ -44,6 +44,7 @@ namespace RemoteHealthcare.Client.Client
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("disconnect", DisconnectHandler);
             _functions.Add("set resitance", SetResistanceHandeler);
+            _functions.Add("emergency stop", EmergencyStopHandler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -92,7 +93,7 @@ namespace RemoteHealthcare.Client.Client
                     }
                     else if (command.ToLower().Equals("noodstop"))
                     {
-                        var req = new DataPacket<EmergencyStopPacketRequest>
+                        var req = new DataPacket<EmergencyStopPacket>
                         {
                             OpperationCode = OperationCodes.EMERGENCY_STOP,
                         };
@@ -111,6 +112,12 @@ namespace RemoteHealthcare.Client.Client
                     }
                 }
             }
+        }
+
+        private void EmergencyStopHandler(DataPacket obj)
+        {
+            EmergencyStopPacket data = obj.GetData<EmergencyStopPacket>();
+            _log.Critical(data.message);
         }
 
         private async void SendBikeDataAsync()

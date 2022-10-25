@@ -101,17 +101,11 @@ public class SessionStopPacketResponse : DAbstract
     public string message;
 }
 
-public class EmergencyStopPacketRequest : DAbstract
+public class EmergencyStopPacket : DAbstract
 {
     public StatusCodes statusCode;
     public string clientId;
     public string message = "Er is op de noodstop gedrukt, de dokter komt zo spoedig mogelijk bij u";
-}
-
-public class EmergencyStopPacketResponse : DAbstract
-{
-    public StatusCodes statusCode;
-    public string message;
 }
 public class DisconnectPacketRequest : DAbstract
 {

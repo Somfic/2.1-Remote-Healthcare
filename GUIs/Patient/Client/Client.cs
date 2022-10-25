@@ -86,7 +86,7 @@ namespace RemoteHealthcare.Client.Client
                     }
                     else if (command.ToLower().Equals("noodstop"))
                     {
-                        var req = new DataPacket<EmergencyStopPacketRequest>
+                        var req = new DataPacket<EmergencyStopPacket>
                         {
                             OpperationCode = OperationCodes.EMERGENCY_STOP,
                         };

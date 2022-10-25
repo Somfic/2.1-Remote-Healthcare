@@ -437,17 +437,7 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the emergency stop request
         private void EmergencyStopHandler(DataPacket obj)
         {
-            _log.Debug("emergencystophandler");
-            SendData(new DataPacket<EmergencyStopPacketResponse>
-            {
-                OpperationCode = OperationCodes.EMERGENCY_STOP,
-
-                data = new EmergencyStopPacketResponse()
-                {
-                    statusCode = StatusCodes.OK,
-                    message = "Sessie wordt nu gestopt doormiddel van een noodstop"
-                }
-            });
+            calculateTarget(obj.GetData<EmergencyStopPacket>().clientId).SendData(obj);
         }
 
         private void DisconnectHandler(DataPacket obj)
