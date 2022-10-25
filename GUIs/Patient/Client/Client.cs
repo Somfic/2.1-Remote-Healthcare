@@ -151,7 +151,8 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                 
                 _log.Information("sending bike data to server");
                  _client.SendAsync(req);
-                Task.Delay(1000);
+                //Task.Delay(1000);
+                Thread.Sleep(1000);
             }
         }
 
