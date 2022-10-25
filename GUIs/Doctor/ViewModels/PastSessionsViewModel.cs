@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using MvvmHelpers;
 using LiveCharts;
+using LiveCharts.Wpf;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Server.Models;
 
@@ -19,10 +20,10 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
     private SessionData _currentSession;
     private string _chatMessage;
     private ObservableCollection<SessionData> _sessions;
-    private ObservableCollection<float> _bpm;
-    private ObservableCollection<float> _speed;
-    private ObservableCollection<string> chatMessages;
-    private ChartValues<float> _speedData;
+    private ChartValues<float> _bpm;
+    private ChartValues<float> _speed;
+    private SeriesCollection _speedData;
+    private SeriesCollection _bpmData;
     private string _userName;
     private string _sessionName;
 
@@ -33,43 +34,41 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
         _sessions = new ObservableCollection<SessionData>(_client.Sessions);
         _distance = "0";
         _totalTime = new(0);
+        _bpm = new();
+        _speed = new();
         _userName = userName;
     }
 
     public SessionData CurrentSession
     {
-        get
-        {
-            _log.Information($"CurrentSession:get {_currentSession}");
-            return _currentSession;
-        }
+        get => _currentSession;
         set
         {
-            _log.Information($"CurrentSession:set {value}");
             _currentSession = value;
             SessionName = value.ToString();
-            SpeedCollection = fillCollection("speed");
-            BpmCollection = fillCollection("bpm");
+            SpeedCollection = FillValues("speed");
+            BpmCollection = FillValues("bpm");
             TotalTime = TimeSpan.FromSeconds(_currentSession.MiniDatas.Count);
-            _log.Debug(
-                $"Current session is now {value}; SessionName = {_sessionName}; Speed has a count of {_speed.Count}; " +
-                $"Bpm has a count of {_bpm.Count}; TotalTime = {_totalTime}");
+            TotalDistance = CalculateTotalDistance();
+
+            SpeedData = new SeriesCollection()
+            {
+                new LineSeries() { Values = _speed }
+            };
+            BpmData = new SeriesCollection()
+            {
+                new LineSeries() { Values = _bpm }
+            };
 
             OnPropertyChanged();
-            _log.Debug("OnPropertyChanged() has been called.");
         }
     }
 
     public ObservableCollection<SessionData> Sessions
     {
-        get
-        {
-            _log.Information($"Session:get {_sessions}");
-            return _sessions;
-        }
+        get => _sessions;
         set
         {
-            _log.Information($"Session:set {value}");
             _sessions = value;
             OnPropertyChanged();
         }
@@ -77,14 +76,9 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
 
     public string UserName
     {
-        get
-        {
-            _log.Information($"UserName:get {_userName}");
-            return _userName;
-        }
+        get => _userName;
         set
         {
-            _log.Information($"UserName:set {value}");
             _userName = value;
             OnPropertyChanged();
         }
@@ -92,55 +86,58 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
 
     public string SessionName
     {
-        get
-        {
-            _log.Information($"SessionName:get {_sessionName}");
-            return _sessionName;
-        }
+        get => _sessionName;
         set
         {
-            _log.Information($"SessionName:set {value}");
             _sessionName = value;
             OnPropertyChanged();
         }
     }
 
-    public ObservableCollection<float> BpmCollection
+    public ChartValues<float> BpmCollection
     {
-        get
-        {
-            _log.Information($"BpmCollection:get {_bpm.Count}");
-            return _bpm;
-        }
+        get => _bpm;
         set
         {
-            _log.Information($"BpmCollection:set {value.Count}");
             _bpm = value;
             OnPropertyChanged();
         }
     }
 
-    public ObservableCollection<float> SpeedCollection
+    public ChartValues<float> SpeedCollection
     {
-        get
-        {
-            _log.Information($"SpeedCollection:get {_speed.Count}");
-            return _speed;
-        }
+        get => _speed;
         set
         {
             _speed = value;
             OnPropertyChanged();
-        } 
+        }
+    }
+
+    public SeriesCollection SpeedData
+    {
+        get => _speedData;
+        set
+        {
+            _speedData = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public SeriesCollection BpmData
+    {
+        get => _bpmData;
+        set
+        {
+            _bpmData = value;
+            OnPropertyChanged();
+        }
     }
 
     public string TotalDistance
     {
-        get
-        {
-            _log.Information($"TotalDistance:get {_distance}");
-            return $"{_distance} m";
-        }
+        get => $"{_distance} m";
+
         set
         {
             _distance = value;
@@ -150,11 +147,7 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
 
     public TimeSpan TotalTime
     {
-        get
-        {
-            _log.Information($"TotalTime:get {_totalTime}");
-            return _totalTime;
-        }
+        get => _totalTime;
         set
         {
             _totalTime = value;
@@ -162,17 +155,44 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
         }
     }
 
-    private ObservableCollection<float> fillCollection(string returnType)
+    private ChartValues<float> FillValues(string returnType)
     {
-        ObservableCollection<float> collection = new();
-        foreach (var session in _currentSession.MiniDatas)
+        ChartValues<float> values = new();
+        foreach (var data in _currentSession.MiniDatas)
         {
             if (returnType.ToLower().Equals("speed"))
-                collection.Add(session.Speed);
+                values.Add(data.Speed);
             else if (returnType.ToLower().Equals("bpm"))
-                collection.Add(session.Heartrate);
+                values.Add(data.Heartrate);
         }
 
-        return collection;
+        return values;
+    }
+
+    private string CalculateTotalDistance()
+    {
+        int dist = 0;
+        int? prefValue = null;
+
+        foreach (var data in _currentSession.MiniDatas)
+        {
+            int currentValue = data.Distance;
+
+
+            if (prefValue == null)
+            {
+                prefValue = 0;
+                dist -= data.Distance;
+                continue;
+            }
+            else if (prefValue >= 200 && currentValue <= 100)
+                dist += (255 - prefValue.Value) + currentValue;
+            else if (currentValue <= 255)
+                dist += currentValue - prefValue.Value;
+
+            prefValue = currentValue;
+        }
+
+        return $"{dist}";
     }
 }
