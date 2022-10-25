@@ -40,10 +40,12 @@ namespace RemoteHealthcare.GUIs.Doctor
         public TimeSpan elapsed = new TimeSpan(0);
 
         private Dictionary<string, Action<DataPacket>> _functions = new();
+        public bool hasSessionResponce;
 
         public Client()
         {
             loggedIn = false;
+            hasSessionResponce = false;
             _patientList = new List<Patient>();
             Sessions = new List<SessionData>();
             _functions = new Dictionary<string, Action<DataPacket>>();
@@ -276,7 +278,6 @@ namespace RemoteHealthcare.GUIs.Doctor
                 // _connected.RemoveRange(0, _connected.Count - 1);
                 // _log.Debug(_connected.Count.ToString());
                 _connected = packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Split(";").ToList();
-                _log.Critical(_connected.Count.ToString());
             }
         }
 
@@ -321,12 +322,14 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             JObject[] jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
 
+            
             Sessions.Clear();
             foreach (JObject jObject in jObjects)
             {
                 SessionData session = jObject.ToObject<SessionData>();
                 Sessions.Add(session);
             }
+            hasSessionResponce = true;
         }
 
         public void AddDoctorViewmodel(DoctorViewModel viewModel)
@@ -336,7 +339,6 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         public void AddPastSessionsViewmodel(PastSessionsViewModel viewModel)
         {
-            _log.Critical("AddPastSessionsViewmodel()");
             this.PastSessionsViewModel = viewModel;
         }
 

@@ -29,12 +29,12 @@ public class DoctorViewModel : ObservableObject
     public ICommand StartSessieCommand { get; }
     public ICommand StopSessieCommand { get; }
     public ICommand RequestPastSessions { get; }
-    
+
     private int _BPM = 0;
     private float _speed = 0;
     private float _distance = 0;
     private TimeSpan _elapsed = new TimeSpan(0);
-    
+
     private Patient _currentUser;
     private string _chatMessage;
     private ObservableCollection<Patient> _patients;
@@ -61,6 +61,7 @@ public class DoctorViewModel : ObservableObject
         {
             _currentUser = value;
             OnPropertyChanged();
+            _log.Debug("OnPropertyChanged() has been called.");
         }
     }
 
@@ -81,7 +82,7 @@ public class DoctorViewModel : ObservableObject
         get => _chatMessage;
         set => _chatMessage = value;
     }
-    
+
     public int BPM
     {
         get => _BPM;
@@ -110,7 +111,7 @@ public class DoctorViewModel : ObservableObject
     {
         OnPropertyChanged();
     }
-    
+
 
     public ChartValues<float> SpeedData { get; set; }
 }

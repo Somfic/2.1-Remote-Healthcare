@@ -28,7 +28,7 @@ public class RequestPastSessions : BaseCommand
         string userId = _viewModel.CurrentUser.UserId;
         if (userId != null)
         {
-            _log.Debug($"Execute has been entered for id: {userId}");
+            _client.hasSessionResponce = false;
 
             _client._client.SendAsync(new DataPacket<AllSessionsFromPatientRequest>
             {
@@ -38,16 +38,16 @@ public class RequestPastSessions : BaseCommand
                     userId = userId
                 }
             });
-            
-            _log.Critical("after sendasync()");
-            
+
+            while (!_client.hasSessionResponce)
+            {
+            }
+
             PastSessionsWindow pastSessionsWindow = new()
             {
                 DataContext = new PastSessionsViewModel(_client, _viewModel.CurrentUser.Username)
             };
-            _log.Critical("after new()");
             pastSessionsWindow.Show();
-            _log.Critical("after show()");
         }
     }
 }

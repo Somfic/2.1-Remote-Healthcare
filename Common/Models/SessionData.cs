@@ -46,6 +46,6 @@ public class SessionData
 
     public override string ToString()
     {
-        return SessionId;
+        return $"{SessionId}-{Id}";
     }
 }

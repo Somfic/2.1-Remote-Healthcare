@@ -196,7 +196,6 @@ namespace RemoteHealthcare.Server.Client
         }
 
         //the methode for the chat request
-
         private void ChatHandler(DataPacket packetData)
         {
             ChatPacketRequest data = packetData.GetData<ChatPacketRequest>();
