@@ -47,13 +47,13 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
         {
             _log.Information($"CurrentSession:set {value}");
             _currentSession = value;
-            _sessionName = value.ToString();
-            _speed = fillCollection("speed");
-            _bpm = fillCollection("bpm");
-            _totalTime = TimeSpan.FromSeconds(_currentSession.MiniDatas.Count);
-            /*_log.Debug(
+            SessionName = value.ToString();
+            SpeedCollection = fillCollection("speed");
+            BpmCollection = fillCollection("bpm");
+            TotalTime = TimeSpan.FromSeconds(_currentSession.MiniDatas.Count);
+            _log.Debug(
                 $"Current session is now {value}; SessionName = {_sessionName}; Speed has a count of {_speed.Count}; " +
-                $"Bpm has a count of {_bpm.Count}; TotalTime = {_totalTime}");*/
+                $"Bpm has a count of {_bpm.Count}; TotalTime = {_totalTime}");
 
             OnPropertyChanged();
             _log.Debug("OnPropertyChanged() has been called.");
@@ -71,6 +71,7 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
         {
             _log.Information($"Session:set {value}");
             _sessions = value;
+            OnPropertyChanged();
         }
     }
 
@@ -85,6 +86,7 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
         {
             _log.Information($"UserName:set {value}");
             _userName = value;
+            OnPropertyChanged();
         }
     }
 
@@ -99,6 +101,7 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
         {
             _log.Information($"SessionName:set {value}");
             _sessionName = value;
+            OnPropertyChanged();
         }
     }
 
@@ -113,6 +116,7 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
         {
             _log.Information($"BpmCollection:set {value.Count}");
             _bpm = value;
+            OnPropertyChanged();
         }
     }
 
@@ -123,7 +127,11 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
             _log.Information($"SpeedCollection:get {_speed.Count}");
             return _speed;
         }
-        set => _speed = value;
+        set
+        {
+            _speed = value;
+            OnPropertyChanged();
+        } 
     }
 
     public string TotalDistance
@@ -133,7 +141,11 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
             _log.Information($"TotalDistance:get {_distance}");
             return $"{_distance} m";
         }
-        set => _distance = value;
+        set
+        {
+            _distance = value;
+            OnPropertyChanged();
+        }
     }
 
     public TimeSpan TotalTime
@@ -143,7 +155,11 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
             _log.Information($"TotalTime:get {_totalTime}");
             return _totalTime;
         }
-        set => _totalTime = value;
+        set
+        {
+            _totalTime = value;
+            OnPropertyChanged();
+        }
     }
 
     private ObservableCollection<float> fillCollection(string returnType)
