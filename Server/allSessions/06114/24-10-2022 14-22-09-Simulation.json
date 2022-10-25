@@ -1,0 +1,277 @@
+{
+  "SessionId": "24-10-2022 14:22:09",
+  "DeviceType": "Bike",
+  "Id": "Simulation",
+  "MiniDatas": [
+    {
+      "Distance": 92,
+      "Speed": 5,
+      "Heartrate": 89,
+      "Elapsed": 14
+    },
+    {
+      "Distance": 97,
+      "Speed": 5,
+      "Heartrate": 76,
+      "Elapsed": 15
+    },
+    {
+      "Distance": 102,
+      "Speed": 5,
+      "Heartrate": 77,
+      "Elapsed": 15
+    },
+    {
+      "Distance": 109,
+      "Speed": 5,
+      "Heartrate": 64,
+      "Elapsed": 17
+    },
+    {
+      "Distance": 114,
+      "Speed": 5,
+      "Heartrate": 85,
+      "Elapsed": 18
+    },
+    {
+      "Distance": 121,
+      "Speed": 7,
+      "Heartrate": 86,
+      "Elapsed": 19
+    },
+    {
+      "Distance": 127,
+      "Speed": 6,
+      "Heartrate": 66,
+      "Elapsed": 19
+    },
+    {
+      "Distance": 133,
+      "Speed": 6,
+      "Heartrate": 94,
+      "Elapsed": 20
+    },
+    {
+      "Distance": 140,
+      "Speed": 5,
+      "Heartrate": 95,
+      "Elapsed": 22
+    },
+    {
+      "Distance": 146,
+      "Speed": 5,
+      "Heartrate": 82,
+      "Elapsed": 23
+    },
+    {
+      "Distance": 151,
+      "Speed": 5,
+      "Heartrate": 83,
+      "Elapsed": 24
+    },
+    {
+      "Distance": 157,
+      "Speed": 5,
+      "Heartrate": 84,
+      "Elapsed": 25
+    },
+    {
+      "Distance": 162,
+      "Speed": 5,
+      "Heartrate": 72,
+      "Elapsed": 26
+    },
+    {
+      "Distance": 167,
+      "Speed": 5,
+      "Heartrate": 92,
+      "Elapsed": 27
+    },
+    {
+      "Distance": 172,
+      "Speed": 5,
+      "Heartrate": 79,
+      "Elapsed": 28
+    },
+    {
+      "Distance": 179,
+      "Speed": 6,
+      "Heartrate": 66,
+      "Elapsed": 29
+    },
+    {
+      "Distance": 185,
+      "Speed": 6,
+      "Heartrate": 67,
+      "Elapsed": 30
+    },
+    {
+      "Distance": 192,
+      "Speed": 7,
+      "Heartrate": 94,
+      "Elapsed": 31
+    },
+    {
+      "Distance": 200,
+      "Speed": 8,
+      "Heartrate": 75,
+      "Elapsed": 32
+    },
+    {
+      "Distance": 210,
+      "Speed": 7,
+      "Heartrate": 83,
+      "Elapsed": 33
+    },
+    {
+      "Distance": 217,
+      "Speed": 8,
+      "Heartrate": 63,
+      "Elapsed": 34
+    },
+    {
+      "Distance": 226,
+      "Speed": 10,
+      "Heartrate": 90,
+      "Elapsed": 35
+    },
+    {
+      "Distance": 235,
+      "Speed": 9,
+      "Heartrate": 71,
+      "Elapsed": 36
+    },
+    {
+      "Distance": 247,
+      "Speed": 9,
+      "Heartrate": 72,
+      "Elapsed": 37
+    },
+    {
+      "Distance": 0,
+      "Speed": 9,
+      "Heartrate": 99,
+      "Elapsed": 38
+    },
+    {
+      "Distance": 9,
+      "Speed": 10,
+      "Heartrate": 60,
+      "Elapsed": 39
+    },
+    {
+      "Distance": 18,
+      "Speed": 10,
+      "Heartrate": 88,
+      "Elapsed": 40
+    },
+    {
+      "Distance": 30,
+      "Speed": 9,
+      "Heartrate": 89,
+      "Elapsed": 41
+    },
+    {
+      "Distance": 41,
+      "Speed": 12,
+      "Heartrate": 69,
+      "Elapsed": 42
+    },
+    {
+      "Distance": 53,
+      "Speed": 12,
+      "Heartrate": 96,
+      "Elapsed": 43
+    },
+    {
+      "Distance": 66,
+      "Speed": 13,
+      "Heartrate": 98,
+      "Elapsed": 44
+    },
+    {
+      "Distance": 83,
+      "Speed": 14,
+      "Heartrate": 85,
+      "Elapsed": 45
+    },
+    {
+      "Distance": 96,
+      "Speed": 13,
+      "Heartrate": 65,
+      "Elapsed": 46
+    },
+    {
+      "Distance": 110,
+      "Speed": 14,
+      "Heartrate": 92,
+      "Elapsed": 47
+    },
+    {
+      "Distance": 122,
+      "Speed": 13,
+      "Heartrate": 94,
+      "Elapsed": 48
+    },
+    {
+      "Distance": 140,
+      "Speed": 14,
+      "Heartrate": 81,
+      "Elapsed": 49
+    },
+    {
+      "Distance": 153,
+      "Speed": 13,
+      "Heartrate": 82,
+      "Elapsed": 50
+    },
+    {
+      "Distance": 166,
+      "Speed": 13,
+      "Heartrate": 69,
+      "Elapsed": 51
+    },
+    {
+      "Distance": 179,
+      "Speed": 15,
+      "Heartrate": 89,
+      "Elapsed": 52
+    },
+    {
+      "Distance": 198,
+      "Speed": 15,
+      "Heartrate": 76,
+      "Elapsed": 53
+    },
+    {
+      "Distance": 212,
+      "Speed": 14,
+      "Heartrate": 63,
+      "Elapsed": 54
+    },
+    {
+      "Distance": 226,
+      "Speed": 14,
+      "Heartrate": 65,
+      "Elapsed": 55
+    },
+    {
+      "Distance": 239,
+      "Speed": 14,
+      "Heartrate": 85,
+      "Elapsed": 56
+    },
+    {
+      "Distance": 2,
+      "Speed": 14,
+      "Heartrate": 87,
+      "Elapsed": 57
+    },
+    {
+      "Distance": 15,
+      "Speed": 14,
+      "Heartrate": 74,
+      "Elapsed": 58
+    }
+  ]
+}

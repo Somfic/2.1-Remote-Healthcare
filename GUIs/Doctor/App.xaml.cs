@@ -19,7 +19,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                 DataContext = new MainViewModel(navigationStore)
             };
             MainWindow.Show();
-            
+
             base.OnStartup(e);
         }
     }

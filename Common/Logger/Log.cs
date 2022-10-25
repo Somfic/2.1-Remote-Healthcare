@@ -80,6 +80,14 @@ public class Log
                 builder.Append(": ");
                 builder.Append(GetColorCode(level));
                 builder.Append(exception.Message);
+                
+                if(exception.Data.Count > 0)
+                {
+                    builder.AppendLine();
+                    builder.Append("         ");
+                    builder.Append(Gray);
+                    builder.Append(exception.Data);
+                }
 
                 ex = ex.InnerException;
             }
