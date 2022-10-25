@@ -118,6 +118,12 @@ public class DisconnectPacketRequest : DAbstract
 
 public class SetResistancePacket : DAbstract
 {
+    public string receiverId;
+    public int resistance;
+}
+public class SetResistanceResponse : DAbstract
+{
+    public StatusCodes statusCode;
     public int resistance;
 }
 

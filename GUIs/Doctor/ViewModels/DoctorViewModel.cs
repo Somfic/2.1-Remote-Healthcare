@@ -29,8 +29,8 @@ public class DoctorViewModel : ObservableObject
     public ICommand SendChatMessage { get; }
     public ICommand StartSessieCommand { get; }
     public ICommand StopSessieCommand { get; }
+    public ICommand SetResistanceCommand { get; }
     public ICommand RequestPastSessions { get; }
-
     private Patient _currentUser;
     private string _chatMessage;
     private ObservableCollection<Patient> _patients;
@@ -53,6 +53,7 @@ public class DoctorViewModel : ObservableObject
         StartSessieCommand = new StartSessieCommand(_client, this);
         StopSessieCommand = new StopSessieCommand(_client, this);
         RequestPastSessions = new RequestPastSessions(_client, this);
+        SetResistanceCommand = new SetResistanceCommand(_client, this);
     }
 
     public Patient CurrentUser
@@ -92,6 +93,13 @@ public class DoctorViewModel : ObservableObject
     {
         get => _chatMessage;
         set => _chatMessage = value;
+    }
+
+    public int Resistance
+    {
+        get => _resistance;
+        set => _resistance = value;
+           
     }
 
     public int BPM
