@@ -31,11 +31,6 @@ namespace RemoteHealthcare.GUIs.Doctor
         public bool loggedIn { get; set; }
         private string _userId;
 
-        public int BPM = 0;
-        public float speed = 0;
-        public float distance = 0;
-        public TimeSpan elapsed = new TimeSpan(0);
-
         private Dictionary<string, Action<DataPacket>> _functions = new();
 
         public Client()
@@ -328,6 +323,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                 viewModel.Speed = data.speed;
                 viewModel.ElapsedTime = data.elapsed;
                 viewModel.Distance = data.distance;
+                viewModel.CurrentUser.speedData.Add(data.speed);
             }
             else
             {
@@ -339,6 +335,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                         patient.currentSpeed = data.speed;
                         patient.currentElapsedTime = data.elapsed;
                         patient.currentBPM = data.heartRate;
+                        patient.speedData.Add(data.speed);
                     }
                 }
             }

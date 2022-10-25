@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
@@ -28,17 +29,12 @@ public class DoctorViewModel : ObservableObject
     public ICommand SendChatMessage { get; }
     public ICommand StartSessieCommand { get; }
     public ICommand StopSessieCommand { get; }
-    
-    private int _BPM = 0;
-    private float _speed = 0;
-    private float _distance = 0;
-    private TimeSpan _elapsed = new TimeSpan(0);
-    
+
     private Patient _currentUser;
     private string _chatMessage;
     private ObservableCollection<Patient> _patients;
     private ObservableCollection<string> chatMessages;
-    private ChartValues<float> _speedData;
+    private SeriesCollection _chartDataSpeed;
 
     public DoctorViewModel(Client client, NavigationStore navigationStore)
     {
@@ -58,6 +54,10 @@ public class DoctorViewModel : ObservableObject
         set
         {
             _currentUser = value;
+            ChartDataSpeed = new SeriesCollection()
+            {
+                new LineSeries() { Values = _currentUser.speedData }
+            };
             OnPropertyChanged();
         }
     }
@@ -119,6 +119,15 @@ public class DoctorViewModel : ObservableObject
             OnPropertyChanged();
         }
     }
+
+    public SeriesCollection ChartDataSpeed
+    {
+        get => _chartDataSpeed;
+        set
+        {
+            _chartDataSpeed = value;
+            OnPropertyChanged();
+        }
+    }
     
-    public ChartValues<float> SpeedData { get; set; }
 }
