@@ -332,6 +332,7 @@ namespace RemoteHealthcare.Server.Client
             if (patient != null && Server._patientData.MatchLoginData(patient))
             {
                 UserId = patient.UserId;
+                this._patient = patient;
                 _isDoctor = false;
 
                 SendData(new DataPacket<LoginPacketResponse>
