@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Navigation;
 using MvvmHelpers;
 using Newtonsoft.Json;
@@ -29,7 +31,7 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         private Log _log = new(typeof(Client));
         public string password { get; set; }
-        public string username { get; set; }
+        public string _userName { get; set; }
         public bool loggedIn { get; set; }
         private string _userId;
 
@@ -99,7 +101,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                     }
                     else if (userCommand.ToLower().Equals("noodstop"))
                     {
-                        var req = new DataPacket<EmergencyStopPacketRequest>
+                        var req = new DataPacket<EmergencyStopPacket>
                         {
                             OpperationCode = OperationCodes.EMERGENCY_STOP,
                         };
@@ -118,51 +120,34 @@ namespace RemoteHealthcare.GUIs.Doctor
         public async Task SendChatAsync(string? target = null, string? chatInput = null)
         {
             _log.Debug("SendChatAsync(): entered");
-
-            /*/* This is a while loop that will do nothing until connected is filled #1#
-            while (_connected.Count == 0)
-            {
-                _log.Debug("Loading...");
-            }
-            _log.Information("escaped loading");
-            string savedConnections = " ";
-            foreach (string id in _connected)
-            {
-                savedConnections += id + "; ";
-                _log.Debug($"{id} has been added, saved connections is now: [{savedConnections}]");
-            }
-
-            string? target = 0000 + "";
-
-            /* This is a while loop that will keep asking for a target until the target is in the list of connected
-            clients. */
-            /*while (!_connected.Contains(target) && !target.Contains(";"))
-            {
-                _log.Information($"Voor welk accountnummer is dit bedoeld? Voor meerdere accountnummers tegelijk, " +
-                                 $"gebruik een ; tussen de nummers. Kies uit de volgende beschikbare " +
-                                 $"accountnummers: \t[{savedConnections}]");
-                target = Console.ReadLine();
-
-                //breaks the while-loop if all targets are correct.
-                if (CheckTargets(target.Split(";").ToList(), _connected))
-                    break;
-            }
-            
-            _log.Information("Voer uw bericht in: ");
-            String chatInput = Console.ReadLine();*/
-
             var req = new DataPacket<ChatPacketRequest>
             {
                 OpperationCode = OperationCodes.CHAT,
                 data = new ChatPacketRequest()
                 {
                     senderId = _userId,
+                    senderName = _userName,
                     receiverId = target,
                     message = chatInput
                 }
             };
 
             _log.Warning($"sending {req.ToJson()}");
+
+            await _client.SendAsync(req);
+        }
+
+        public async void SetResistance(string target, int res)
+        {
+            var req = new DataPacket<SetResistancePacket>
+            {
+                OpperationCode = OperationCodes.SET_RESISTANCE,
+                data = new SetResistancePacket()
+                {
+                    receiverId = target,
+                    resistance = res
+                }
+            };
 
             await _client.SendAsync(req);
         }
@@ -212,7 +197,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                 OpperationCode = OperationCodes.LOGIN,
                 data = new LoginPacketRequest()
                 {
-                    username = username,
+                    userName = _userName,
                     password = password,
                     isDoctor = true
                 }
@@ -236,7 +221,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         //this methode will get the right methode that will be used for the response from the server
         public void HandleData(DataPacket packet)
         {
-            _log.Warning($"Received: {packet.ToJson()}");
+            _log.Debug($"Received: {packet.ToJson()}");
             //Checks if the OppCode (OperationCode) does exist.
             if (_functions.TryGetValue(packet.OpperationCode, out var action))
             {
@@ -248,12 +233,6 @@ namespace RemoteHealthcare.GUIs.Doctor
             }
         }
 
-        //the methode for the session stop request
-        private void SessionStopHandler(DataPacket obj)
-        {
-            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
-        }
-
         //the methode for the emergency stop request
         private void EmergencyStopHandler(DataPacket obj)
         {
@@ -263,14 +242,34 @@ namespace RemoteHealthcare.GUIs.Doctor
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            _log.Information(obj.GetData<SessionStartPacketResponse>().message);
+            var sessie = obj.GetData<SessionStartPacketResponse>();
+
+            //Change the GUI with an Alert depends on the outcome of the IF-Statement
+            DoctorViewModel.CurrentUserName = (sessie.statusCode.Equals(StatusCodes.OK))
+                ? DoctorViewModel.CurrentUser.Username
+                : "Gekozen Patient is niet online";
+        }
+
+        //the methode for the session stop request
+        private void SessionStopHandler(DataPacket obj)
+        {
+            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
         }
 
         //the methode for printing out the received message
         private void ChatHandler(DataPacket packetData)
         {
-            _log.Information(
-                $"Incomming message: {packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+            ObservableCollection<string> chats = new();
+            foreach (var chatMessage in DoctorViewModel._chatMessages)
+                chats.Add(chatMessage);
+            
+            chats.Add($"{packetData.GetData<ChatPacketResponse>().senderName}: {packetData.GetData<ChatPacketResponse>().message}");
+            _log.Warning("setting now");
+            _log.Warning($"{DoctorViewModel.ChatMessages.Count}");
+            DoctorViewModel.ChatMessages = chats;
+            _log.Warning($"{DoctorViewModel.ChatMessages.Count}");
+            //DoctorViewModel.AddMessage($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+            //BindingOperations.EnableCollectionSynchronization(DoctorViewModel._chatMessages, $"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
         }
 
         private void RequestConnectionsFeature(DataPacket packetData)
@@ -290,7 +289,8 @@ namespace RemoteHealthcare.GUIs.Doctor
             if (((int)packetData.GetData<LoginPacketResponse>().statusCode).Equals(200))
             {
                 _userId = packetData.GetData<LoginPacketResponse>().userId;
-                _log.Information($"Succesfully logged in to the user: {username}; {password}; {_userId}.");
+                _userName = packetData.GetData<LoginPacketResponse>().userName;
+                _log.Information($"Succesfully logged in to the user: {_userName}; {password}; {_userId}.");
                 loggedIn = true;
             }
             else
@@ -324,13 +324,14 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             JObject[] jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
 
-            
+
             Sessions.Clear();
             foreach (JObject jObject in jObjects)
             {
                 SessionData session = jObject.ToObject<SessionData>();
                 Sessions.Add(session);
             }
+
             hasSessionResponce = true;
         }
 

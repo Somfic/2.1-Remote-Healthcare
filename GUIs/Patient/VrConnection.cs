@@ -13,13 +13,13 @@ namespace NetworkEngine.Socket
     {
         BikeDataProvider bike;
         HeartDataProvider heart;
-        EngineConnection engine;
+        public EngineConnection Engine;
 
-        public VrConnection(BikeDataProvider bike, HeartDataProvider heart)
+        public VrConnection(BikeDataProvider bike, HeartDataProvider heart, EngineConnection engine)
         {
             this.bike = bike;
             this.heart = heart;
-            this.engine = engine;
+            this.Engine = engine;
 
 
 
@@ -40,7 +40,7 @@ namespace NetworkEngine.Socket
             while (true)
             {
                 await bike.ProcessRawData();
-                await engine.ChangeBikeSpeed(bike.GetData().Speed);
+                // await engine.ChangeBikeSpeed(bike.GetData().Speed);
                 Thread.Sleep(300);
             }
         }
@@ -63,6 +63,10 @@ namespace NetworkEngine.Socket
             return bike.GetData();
         }
 
+        public void vrConPRINTTT()
+        {
+            Console.WriteLine("sudikfhidsfhoikdshfikdsj iufkilsdfhoksd iuhsdifuouihsdf ");
+        }
         internal HeartData getHearthData()
         {
             return heart.GetData();

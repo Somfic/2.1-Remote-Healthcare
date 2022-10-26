@@ -7,6 +7,7 @@ using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.Server.Models;
 
+
 [Serializable]
 public class Patient : ObservableObject
 {

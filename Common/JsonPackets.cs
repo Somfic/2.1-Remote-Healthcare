@@ -42,7 +42,7 @@ public class ErrorPacket : DAbstract
 
 public class LoginPacketRequest : DAbstract
 {
-    public string username;
+    public string userName;
     public string password;
     public bool isDoctor;
 }
@@ -50,6 +50,7 @@ public class LoginPacketRequest : DAbstract
 public class LoginPacketResponse : DAbstract
 {
     public string userId;
+    public string userName;
     public StatusCodes statusCode;
     public string message;
 }
@@ -68,6 +69,7 @@ public class ConnectedClientsPacketResponse : DAbstract
 public class ChatPacketRequest : DAbstract
 {
     public string senderId;
+    public string senderName;
     public string receiverId;
     public string message;
 }
@@ -75,6 +77,7 @@ public class ChatPacketRequest : DAbstract
 public class ChatPacketResponse : DAbstract
 {
     public string senderId;
+    public string senderName;
     public StatusCodes statusCode;
     public string message;
 }
@@ -101,15 +104,11 @@ public class SessionStopPacketResponse : DAbstract
     public string message;
 }
 
-public class EmergencyStopPacketRequest : DAbstract
-{
-    //TODO
-}
-
-public class EmergencyStopPacketResponse : DAbstract
+public class EmergencyStopPacket : DAbstract
 {
     public StatusCodes statusCode;
-    public string message;
+    public string clientId;
+    public string message = "Er is op de noodstop gedrukt, de dokter komt zo spoedig mogelijk bij u";
 }
 public class DisconnectPacketRequest : DAbstract
 {
@@ -118,6 +117,12 @@ public class DisconnectPacketRequest : DAbstract
 
 public class SetResistancePacket : DAbstract
 {
+    public string receiverId;
+    public int resistance;
+}
+public class SetResistanceResponse : DAbstract
+{
+    public StatusCodes statusCode;
     public int resistance;
 }
 

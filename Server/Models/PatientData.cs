@@ -7,7 +7,7 @@ namespace RemoteHealthcare.Server.Models;
 public class PatientData
 {
     private readonly Log _log = new Log(typeof(PatientData));
-    
+
     public List<Patient> Patients { get; set; }
 
     public PatientData()
@@ -21,15 +21,16 @@ public class PatientData
 
         Patients = readUsersFromJson();
     }
-    
+
     public List<Patient> readUsersFromJson()
     {
-        string path = Path.Combine(Directory.GetCurrentDirectory(), "AllUsers.json");
-        
+        string path = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName,
+            "AllUsers.json");
+
         string returnAllUsersFromText = File.ReadAllText(path);
-        
+
         _log.Debug(returnAllUsersFromText);
-        
+
         List<Patient> data = JsonConvert.DeserializeObject<List<Patient>>(returnAllUsersFromText);
 
         return data;
@@ -46,13 +47,17 @@ public class PatientData
     public bool MatchLoginData(Patient patient)
     {
         //Patients = readUsersFromJson();
-        
+
         //Checks if the Patient parameter exists in the AllUsers.json with LINQ
-        if (Patients.Exists(name => name.Password == patient.Password && name.UserId == patient.UserId))
+        foreach (Patient p in Patients)
         {
-            return true;
+            if (p.Password == patient.Password && p.UserId == patient.UserId)
+            {
+                patient.Username = p.Username;
+                return true;
+            }
         }
-        
+
         return false;
     }
 
@@ -74,7 +79,7 @@ public class PatientData
     public JObject[] GetPatientDataAsJObjects()
     {
         JObject[] jObjects = new JObject[Patients.Count];
-        
+
         for (int i = 0; i < Patients.Count; i++)
         {
             jObjects[i] = Patients[i].GetPatientAsJObject();
@@ -95,6 +100,7 @@ public class PatientData
             using (JsonTextReader reader = new JsonTextReader(File.OpenText(Directory.GetFiles(pathString)[i])))
                 jObjects[i] = (JObject)JToken.ReadFrom(reader);
         }
+
         return jObjects;
     }
 }
