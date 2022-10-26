@@ -23,6 +23,9 @@ public class RequestPastSessions : BaseCommand
         ExecuteAsync();
     }
 
+    /// <summary>
+    /// This function sends a request to the server to get all the sessions of the current user
+    /// </summary>
     public override async Task ExecuteAsync()
     {
         string userId = _viewModel.CurrentUser.UserId;

@@ -47,7 +47,6 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             
             _navigationStore = navigationStore;
             _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
-           
         }
 
         private void OnCurrentViewModelChanged()
@@ -150,6 +149,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                     message = _message
                 }
             };
+            _vr.Engine.SendTextToChatPannel($"U: {_message}");
             _client._client.SendAsync(req);
             _messages.Add("You: "+ _message);
             Message = "";

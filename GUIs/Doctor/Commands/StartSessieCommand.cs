@@ -16,6 +16,10 @@ public class StartSessieCommand : BaseCommand
         _viewModel = viewModel;
     }
 
+    /// <summary>
+    /// The function sends a packet to the server to start a session with the selected patient
+    /// </summary>
+    /// <param name="parameter">The parameter passed to the command.</param>
     public override void Execute(object? parameter)
     {
 

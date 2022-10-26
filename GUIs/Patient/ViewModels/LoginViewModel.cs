@@ -88,29 +88,21 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 }
 
                 await Task.Delay(1000);
+                var engine = new EngineConnection();
+                var bike = await DataProvider.GetBike(_bikeID);
+                var heart = await DataProvider.GetHeart();
+                vrConnection = new VrConnection(bike, heart, engine);
+                _client._vrConnection = vrConnection;
+                
                 PatientHomepageViewModel pvm = new PatientHomepageViewModel(_navigationStore, _client);
                 if (_client._loggedIn)
                 {
                     _navigationStore.CurrentViewModel = pvm;
-                    // ((Window) window).Close();
                     try
                     {
-                        var engine = new EngineConnection();
                         await engine.ConnectAsync(_vrid);
-                        // Console.WriteLine("Enter Bike ID:");
-
-                        
-                         var bike = await DataProvider.GetBike(_bikeID);
-                         var heart = await DataProvider.GetHeart();
-                         vrConnection = new VrConnection(bike, heart, engine);
-                         
-                         //The client get the vrConnection 
-                         _client._vrConnection = vrConnection;
-                         
-                         //Prevends that he GUI patient crash 
-                         new Thread(async () => { vrConnection.Start(pvm); }).Start();
-
-                         await Task.Delay(-1);
+                        new Thread(async () => { vrConnection.Start(pvm); }).Start();
+                        await Task.Delay(-1);
                     }
                     catch (Exception ex)
                     {
