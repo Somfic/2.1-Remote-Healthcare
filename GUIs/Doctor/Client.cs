@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Navigation;
 using MvvmHelpers;
 using Newtonsoft.Json;
@@ -218,7 +220,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         //this methode will get the right methode that will be used for the response from the server
         public void HandleData(DataPacket packet)
         {
-            _log.Warning($"Received: {packet.ToJson()}");
+            _log.Debug($"Received: {packet.ToJson()}");
             //Checks if the OppCode (OperationCode) does exist.
             if (_functions.TryGetValue(packet.OpperationCode, out var action))
             {
@@ -229,7 +231,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                 throw new Exception("Function not implemented");
             }
         }
-        
+
         //the methode for the emergency stop request
         private void EmergencyStopHandler(DataPacket obj)
         {
@@ -240,24 +242,35 @@ namespace RemoteHealthcare.GUIs.Doctor
         private void SessionStartHandler(DataPacket obj)
         {
             var sessie = obj.GetData<SessionStartPacketResponse>();
-            
+
             //Change the GUI with an Alert depends on the outcome of the IF-Statement
-            DoctorViewModel.CurrentUserName = (sessie.statusCode.Equals(StatusCodes.OK)) ? DoctorViewModel.CurrentUser.Username : "Gekozen Patient is niet online";
+            DoctorViewModel.CurrentUserName = (sessie.statusCode.Equals(StatusCodes.OK))
+                ? DoctorViewModel.CurrentUser.Username
+                : "Gekozen Patient is niet online";
         }
-        
+
         //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
             _log.Information(obj.GetData<SessionStopPacketResponse>().message);
         }
-        
+
         //the methode for printing out the received message
         private void ChatHandler(DataPacket packetData)
         {
-            _log.Information(
-                $"Incomming message: {packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+            ObservableCollection<string> chats = new();
+            foreach (var chatMessage in DoctorViewModel._chatMessages)
+                chats.Add(chatMessage);
+            
+            chats.Add($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+            _log.Warning("setting now");
+            _log.Warning($"{DoctorViewModel.ChatMessages.Count}");
+            DoctorViewModel.ChatMessages = chats;
+            _log.Warning($"{DoctorViewModel.ChatMessages.Count}");
+            //DoctorViewModel.AddMessage($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+            //BindingOperations.EnableCollectionSynchronization(DoctorViewModel._chatMessages, $"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
         }
-        
+
         private void RequestConnectionsFeature(DataPacket packetData)
         {
             if (((int)packetData.GetData<ConnectedClientsPacketResponse>().statusCode).Equals(200))
@@ -309,13 +322,14 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             JObject[] jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
 
-            
+
             Sessions.Clear();
             foreach (JObject jObject in jObjects)
             {
                 SessionData session = jObject.ToObject<SessionData>();
                 Sessions.Add(session);
             }
+
             hasSessionResponce = true;
         }
 

@@ -236,7 +236,7 @@ namespace RemoteHealthcare.Server.Client
 
             ServerClient patient = Server._connectedClients.Find(patient => patient.UserId == data.receiverId);
 
-            Console.WriteLine("selected is: " + patient.UserId);
+            _log.Debug("selected is: " + patient.UserId);
             if (patient == null) return;
             patient.SendData(new DataPacket<SetResistanceResponse>
             {
@@ -314,7 +314,6 @@ namespace RemoteHealthcare.Server.Client
                 UserId = patient.UserId;
                 _isDoctor = false;
                 
-                Console.WriteLine("GUID GUID"+UserId);
                 _patient = new Patient(patient.UserId, patient.UserId);
 
                 SendData(new DataPacket<LoginPacketResponse>
