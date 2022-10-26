@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
 using Avans.TI.BLE;
 using RemoteHealthcare.Common.Logger;
 
@@ -10,14 +8,15 @@ public class BluetoothDevice
 {
     private readonly string _deviceName;
     private readonly Log _log = new(typeof(BluetoothDevice));
+    private readonly string _sendCharacteristic;
     private readonly string _serviceCharacteristic;
     private readonly string _serviceName;
-    private readonly string _sendCharacteristic;
     private BLE _bluetoothConnection;
-    private int _idByte;
-    private int _id;
+    private readonly int _id;
+    private readonly int _idByte;
 
-    public BluetoothDevice(string deviceName, string serviceName, string serviceCharacteristic,string sendCharacteristic, int idByte, int id)
+    public BluetoothDevice(string deviceName, string serviceName, string serviceCharacteristic,
+        string sendCharacteristic, int idByte, int id)
     {
         _deviceName = deviceName;
         _serviceName = serviceName;
@@ -32,16 +31,18 @@ public class BluetoothDevice
 
     public async Task SendMessage(byte[] bytes)
     {
-        if (bytes.Length == 13) {
-            byte checksum = bytes[0];
-            for (int i = 1; i < 12; i++)
-            {
-                checksum ^= bytes[i];
-            }
-            bytes[12] = (byte)checksum;
+        if (bytes.Length == 13)
+        {
+            var checksum = bytes[0];
+            for (var i = 1; i < 12; i++) checksum ^= bytes[i];
+            bytes[12] = checksum;
             _log.Information("Sending: " + BitConverter.ToString(bytes));
             await _bluetoothConnection.WriteCharacteristic(_sendCharacteristic, bytes);
-        } else throw new Exception("Not in format");
+        }
+        else
+        {
+            throw new Exception("Not in format");
+        }
     }
 
     public async Task Connect()
@@ -53,7 +54,9 @@ public class BluetoothDevice
             _log.Debug($"Connecting to bluetooth device {_deviceName} ... ");
 
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
                 _log.Warning("Bluetooth is only supported on Windows");
+            }
 
             _bluetoothConnection = new BLE();
             await Task.Delay(1000);
@@ -77,13 +80,8 @@ public class BluetoothDevice
 
             _bluetoothConnection.SubscriptionValueChanged += (sender, e) =>
             {
-                Console.WriteLine(BitConverter.ToString(e.Data) );
-                
-                
                 if (e.Data[_idByte] == _id)
                 {
-                  
-                    
                     ServiceName = e.ServiceName;
                     ReceivedData = e.Data;
                 }

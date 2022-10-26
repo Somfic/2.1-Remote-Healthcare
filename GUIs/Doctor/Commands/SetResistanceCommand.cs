@@ -1,17 +1,16 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class SetResistanceCommand : BaseCommand
 {
-    private Client _client;
-    private DoctorViewModel _viewModel;
-    
-    public SetResistanceCommand(Client client, DoctorViewModel doctorViewModel)
+    private readonly DoctorClient _doctorClient;
+    private readonly DoctorViewModel _viewModel;
+
+    public SetResistanceCommand(DoctorClient doctorClient, DoctorViewModel doctorViewModel)
     {
-        _client = client;
+        _doctorClient = doctorClient;
         _viewModel = doctorViewModel;
     }
 
@@ -22,6 +21,6 @@ public class SetResistanceCommand : BaseCommand
 
     public override async Task ExecuteAsync()
     {
-        _client.SetResistance(_viewModel.CurrentUser.UserId, _viewModel.Resistance);
+        _doctorClient.SetResistance(_viewModel.CurrentUser.UserId, _viewModel.Resistance);
     }
 }

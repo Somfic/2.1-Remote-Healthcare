@@ -5,8 +5,6 @@ namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 public class MainViewModel : ObservableObject
 {
     private readonly NavigationStore _navigationStore;
-    
-    public ObservableObject CurrentViewModel => _navigationStore.CurrentViewModel;
 
     public MainViewModel(NavigationStore navigationStore)
     {
@@ -14,6 +12,8 @@ public class MainViewModel : ObservableObject
 
         _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
     }
+
+    public ObservableObject CurrentViewModel => _navigationStore.CurrentViewModel;
 
     private void OnCurrentViewModelChanged()
     {

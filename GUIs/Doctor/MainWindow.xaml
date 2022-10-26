@@ -6,11 +6,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:viewModels="clr-namespace:RemoteHealthcare.GUIs.Doctor.ViewModels"
     xmlns:doctor="clr-namespace:RemoteHealthcare.GUIs.Doctor"
-    Title="Remote Healthcare Dokter" 
-    Height="450" 
+    Title="Remote Healthcare Dokter"
+    Height="450"
     Width="800"
     mc:Ignorable="d">
-    
+
     <ContentControl Content="{Binding CurrentViewModel}">
         <ContentControl.Resources>
             <DataTemplate DataType="{x:Type viewModels:LoginWindowViewModel}">
@@ -21,5 +21,5 @@
             </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>
-    
+
 </Window>

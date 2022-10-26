@@ -11,27 +11,25 @@ var config = JsonConvert.DeserializeObject<Configuration>(configContent);
 
 // Find out how many clients to simulate
 var amountOfClients = 0;
-while(true) {
+while (true)
+{
     log.Information("Enter amount of patients to simulate");
-    if (!int.TryParse(Console.ReadLine(), out amountOfClients)) {
+    if (!int.TryParse(Console.ReadLine(), out amountOfClients))
+    {
         log.Error("Invalid input");
         continue;
     }
-    
-    if (amountOfClients < 1) {
-        log.Error("Amount of patients must be more than 0");
+
+    if (amountOfClients < 1)
+    {
+        log.Error("Amount of patients must be greater than 0");
         continue;
     }
-    
-    if (amountOfClients > 10) {
-        log.Error("Amount of patients must be less than or equal to 10");
-        continue;
-    }
-    
+
     break;
 }
 
-// Create new clients
+// Create the clients
 List<SimulatedClient> clients = new();
 for (var i = 0; i < amountOfClients; i++)
     clients.Add(new SimulatedClient(i));
@@ -41,7 +39,9 @@ log.Information($"Connecting to server on {config.Host}:{config.Port}");
 try
 {
     foreach (var client in clients)
+    {
         await client.ConnectAsync(config.Host, config.Port);
+    }
 }
 catch (Exception ex)
 {
@@ -53,20 +53,12 @@ catch (Exception ex)
 log.Information("Logging in clients");
 try
 {
-    foreach (var client in clients)
-        client.OnLogin += async (sender, e) =>
-        {
-            await client.SendChat($"Hello world from simulation #{client.Id}");
-            
-            while (client.IsConnected)
-            {
-                await client.SendBikeData();
-                await Task.Delay(1000);
-            }
-        };
-    
-    foreach (var client in clients)
-        await client.LoginAsync($"sim{client.Id + 1}", "simulation");
+    for (var index = 0; index < clients.Count; index++)
+    {
+        var client = clients[index];
+        await client.LoginAsync($"sim{index + 1}", "simulation");
+        await Task.Delay(500);
+    }
 }
 catch (Exception ex)
 {
@@ -74,10 +66,11 @@ catch (Exception ex)
     return;
 }
 
-// Send fake data, as long as there is a client connected
-while (clients.Any(x => x.IsConnected))
+while (true)
 {
-    await Task.Delay(100);
+    await Task.Delay(1000);
+    foreach (var client in clients)
+    {
+        await client.SendBikeData();
+    }
 }
-
-log.Information("All clients disconnected, terminating");

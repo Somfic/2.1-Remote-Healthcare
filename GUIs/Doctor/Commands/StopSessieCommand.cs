@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.GUIs.Doctor.ViewModels;
 
@@ -7,29 +6,28 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class StopSessieCommand : BaseCommand
 {
-    private Client _client;
-    private DoctorViewModel _viewModel;
-    
-    public StopSessieCommand(Client client, DoctorViewModel viewModel)
+    private readonly DoctorClient _doctorClient;
+    private readonly DoctorViewModel _viewModel;
+
+    public StopSessieCommand(DoctorClient doctorClient, DoctorViewModel viewModel)
     {
-        _client = client;
+        _doctorClient = doctorClient;
         _viewModel = viewModel;
     }
 
     public override void Execute(object? parameter)
     {
-        _client._client.SendAsync(new DataPacket<SessionStopPacketRequest>
+        _doctorClient.Client.SendAsync(new DataPacket<SessionStopPacketRequest>
         {
-            OpperationCode = OperationCodes.SESSION_STOP,
-            data = new SessionStopPacketRequest()
+            OpperationCode = OperationCodes.SessionStop,
+            Data = new SessionStopPacketRequest
             {
-                selectedPatient = _viewModel.CurrentUser.UserId
+                SelectedPatient = _viewModel.CurrentUser.UserId
             }
         });
     }
 
     public override async Task ExecuteAsync()
     {
-        
     }
 }

@@ -14,86 +14,82 @@ namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class DoctorViewModel : ObservableObject
 {
-    private Client _client;
-    private Log _log = new Log(typeof(DoctorViewModel));
+    private SeriesCollection _chartDataBpm;
+    private SeriesCollection _chartDataSpeed;
+    private ObservableCollection<string> _chatMessages;
+
+    private Patient _currentUser;
+    private readonly DoctorClient _doctorClient;
+    private readonly Log _log = new(typeof(DoctorViewModel));
+
+    private string _username;
+
+    public DoctorViewModel(DoctorClient doctorClient, NavigationStore navigationStore)
+    {
+        _doctorClient = doctorClient;
+        _doctorClient.AddDoctorViewmodel(this);
+        Patients = new ObservableCollection<Patient>(_doctorClient.PatientList);
+        _chatMessages = new ObservableCollection<string>();
+        EmergencyStop = new EmergencyStopCommand(_doctorClient, this);
+        SendChatMessage = new SendChatMessageCommand(_doctorClient, this);
+        StartSessieCommand = new StartSessieCommand(_doctorClient, this);
+        StopSessieCommand = new StopSessieCommand(_doctorClient, this);
+        RequestPastSessions = new RequestPastSessions(_doctorClient, this);
+        SetResistanceCommand = new SetResistanceCommand(_doctorClient, this);
+    }
+
     public ICommand EmergencyStop { get; }
     public ICommand SendChatMessage { get; }
     public ICommand StartSessieCommand { get; }
     public ICommand StopSessieCommand { get; }
     public ICommand SetResistanceCommand { get; }
     public ICommand RequestPastSessions { get; }
-    
-    private Patient _currentUser;
-    private string _chatMessage = "";
-    private int _resistance = 0;
-    
-    private ObservableCollection<Patient> _patients;
-    public ObservableCollection<string> _chatMessages;
-    private SeriesCollection _chartDataSpeed;
-    private SeriesCollection _chartDataBPM;
 
-    public DoctorViewModel(Client client, NavigationStore navigationStore)
-    {
-        _client = client;
-        _client.AddDoctorViewmodel(this);
-        _patients = new ObservableCollection<Patient>(_client._patientList);
-        _chatMessages = new ObservableCollection<string>();
-        EmergencyStop = new EmergencyStopCommand(_client, this);
-        SendChatMessage = new SendChatMessageCommand(_client, this);
-        StartSessieCommand = new StartSessieCommand(_client, this);
-        StopSessieCommand = new StopSessieCommand(_client, this);
-        RequestPastSessions = new RequestPastSessions(_client, this);
-        SetResistanceCommand = new SetResistanceCommand(_client, this);
-    }
-    
     public string CurrentUserName
     {
-        get => username;
+        get => _username;
         set
         {
-            username = value;
-            OnPropertyChanged(nameof(CurrentUserName));
+            _username = value;
+            OnPropertyChanged();
         }
     }
 
-    private string username;
-    
 
     public Patient CurrentUser
     {
         get => _currentUser;
         set
         {
-            
             _currentUser = value;
             if (CurrentUser != null)
             {
                 CurrentUserName = CurrentUser.Username;
             }
-            
+
             //OnPropertyChanged(nameof(CurrentUser));
-            
-            ChartDataSpeed = new SeriesCollection()
+
+            ChartDataSpeed = new SeriesCollection
             {
-                new LineSeries()
+                new LineSeries
                 {
                     Fill = Brushes.Transparent,
                     Stroke = Brushes.DarkSeaGreen,
                     PointGeometrySize = 0,
                     LineSmoothness = 1.00,
-                    Values = _currentUser.speedData
+                    Values = _currentUser.SpeedData
                 }
             };
-            
-            ChartDataBPM = new SeriesCollection()
+
+            ChartDataBpm = new SeriesCollection
             {
-                new LineSeries()
+                new LineSeries
                 {
                     Fill = Brushes.Transparent,
                     Stroke = Brushes.LightCoral,
                     PointGeometrySize = 0,
                     LineSmoothness = 1.00,
-                    Values = _currentUser.bpmData
+                    Values = _currentUser.BpmData
                 }
             };
             OnPropertyChanged();
@@ -108,64 +104,51 @@ public class DoctorViewModel : ObservableObject
         {
             _chatMessages = value;
             OnPropertyChanged();
-        } 
+        }
     }
 
-    public ObservableCollection<Patient> Patients
-    {
-        get => _patients;
-        set => _patients = value;
-    }
+    public ObservableCollection<Patient> Patients { get; set; }
 
-    public string TextBoxChatMessage
-    {
-        get => _chatMessage;
-        set => _chatMessage = value;
-    }
+    public string TextBoxChatMessage { get; set; } = "";
 
-    public int Resistance
-    {
-        get => _resistance;
-        set => _resistance = value;
-           
-    }
+    public int Resistance { get; set; }
 
-    public int BPM
+    public int Bpm
     {
-        get => _currentUser.currentBPM;
+        get => _currentUser.CurrentBpm;
         set
         {
-            _currentUser.currentBPM = value;
+            _currentUser.CurrentBpm = value;
             OnPropertyChanged();
         }
     }
 
     public float Speed
     {
-        get => _currentUser.currentSpeed;
+        get => _currentUser.CurrentSpeed;
         set
         {
-            _currentUser.currentSpeed = value;
+            _currentUser.CurrentSpeed = value;
             OnPropertyChanged();
         }
     }
 
     public float Distance
     {
-        get => _currentUser.currentDistance;
+        get => _currentUser.CurrentDistance;
         set
         {
-            _currentUser.currentDistance = value;
+            _currentUser.CurrentDistance = value;
             OnPropertyChanged();
         }
     }
 
     public TimeSpan ElapsedTime
     {
-        get => _currentUser.currentElapsedTime;
+        get => _currentUser.CurrentElapsedTime;
         set
         {
-            _currentUser.currentElapsedTime = value;
+            _currentUser.CurrentElapsedTime = value;
             OnPropertyChanged();
         }
     }
@@ -179,22 +162,22 @@ public class DoctorViewModel : ObservableObject
             OnPropertyChanged();
         }
     }
-    
-    public SeriesCollection ChartDataBPM
+
+    public SeriesCollection ChartDataBpm
     {
-        get => _chartDataBPM;
+        get => _chartDataBpm;
         set
         {
-            _chartDataBPM = value;
+            _chartDataBpm = value;
             OnPropertyChanged();
         }
     }
 
     public void AddMessage(string message)
     {
-        _log.Information($"addmessage, {_chatMessages.Count}; {message}");
-        BindingOperations.EnableCollectionSynchronization(_chatMessages, message);
-        _log.Information($"added message, {_chatMessages.Count}");
+        _log.Information($"addmessage, {ChatMessages.Count}; {message}");
+        BindingOperations.EnableCollectionSynchronization(ChatMessages, message);
+        _log.Information($"added message, {ChatMessages.Count}");
         // chatMessages.Add(message);
     }
 }

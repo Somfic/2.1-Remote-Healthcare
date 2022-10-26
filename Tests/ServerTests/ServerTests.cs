@@ -6,9 +6,10 @@ namespace RemoteHealthcare.Tests.ServerTests;
 
 public class ServerTests
 {
-    string message = "{\"OpperationCode\":\"login\",\"data\":{\"username\":\"06111\",\"password\":\"welkom01\",\"isDoctor\":false}}";
+    private readonly string _message =
+        "{\"OpperationCode\":\"login\",\"data\":{\"username\":\"06111\",\"password\":\"welkom01\",\"isDoctor\":false}}";
 
-    
+
     [Test]
     public async Task Connecting()
     {
@@ -18,17 +19,17 @@ public class ServerTests
         var connectedClients = 0;
 
         server.OnClientConnected += (sender, e) => connectedClients++;
-        
+
         var client = new SocketClient(false);
         await client.ConnectAsync("127.0.0.1", 12345);
 
         var stopwatch = Stopwatch.StartNew();
-        while(connectedClients == 0 && stopwatch.ElapsedMilliseconds < 10000)
+        while (connectedClients == 0 && stopwatch.ElapsedMilliseconds < 10000)
             await Task.Delay(10);
 
         Assert.That(connectedClients, Is.EqualTo(1));
     }
-    
+
     [Test]
     public async Task ClientToServerMessaging()
     {
@@ -38,16 +39,16 @@ public class ServerTests
         var receivedMessage = "";
 
         server.OnMessage += (sender, e) => receivedMessage = e.message;
-        
+
         var client = new SocketClient(true);
         await client.ConnectAsync("127.0.0.1", 12346);
-        await client.SendAsync(message);
+        await client.SendAsync(_message);
 
         var stopwatch = Stopwatch.StartNew();
-        while(receivedMessage == "" && stopwatch.ElapsedMilliseconds < 10000)
+        while (receivedMessage == "" && stopwatch.ElapsedMilliseconds < 10000)
             await Task.Delay(10);
 
-        Assert.That(receivedMessage, Is.EqualTo(message));
+        Assert.That(receivedMessage, Is.EqualTo(_message));
     }
 
     [Test]
@@ -58,16 +59,16 @@ public class ServerTests
 
         var client = new SocketClient(true);
         await client.ConnectAsync("127.0.0.1", 12347);
-        
+
         var receivedMessage = "";
         client.OnMessage += (sender, e) => receivedMessage = e;
-        
-        await server.BroadcastAsync(message);
+
+        await server.BroadcastAsync(_message);
 
         var stopwatch = Stopwatch.StartNew();
-        while(receivedMessage == "" && stopwatch.ElapsedMilliseconds < 10000)
+        while (receivedMessage == "" && stopwatch.ElapsedMilliseconds < 10000)
             await Task.Delay(10);
 
-        Assert.That(receivedMessage, Is.EqualTo(message));
+        Assert.That(receivedMessage, Is.EqualTo(_message));
     }
 }

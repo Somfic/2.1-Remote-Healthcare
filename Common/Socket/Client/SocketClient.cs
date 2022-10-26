@@ -8,41 +8,35 @@ namespace RemoteHealthcare.Common.Socket.Client;
 
 public class SocketClient : ISocket
 {
-    private readonly bool _useEncryption;
-    public TcpClient Socket { get; private set; } = new(); 
-    
-    public Guid Id { get; } = Guid.NewGuid();
-    public Dictionary<string, Action<DataPacket>> callbacks;
-
-    
     private readonly Log _log = new(typeof(SocketClient));
+    private readonly bool _useEncryption;
+    public Dictionary<string, Action<DataPacket>> Callbacks;
 
     public SocketClient(bool useEncryption)
     {
         _useEncryption = useEncryption;
-        callbacks = new Dictionary<string, Action<DataPacket>>();
-
+        Callbacks = new Dictionary<string, Action<DataPacket>>();
     }
 
-    public static SocketClient CreateFromSocket(TcpClient socket, bool useEncryption)
-    {
-        var client = new SocketClient(useEncryption) { Socket = socket };
-        client.Read();
-        return client;
-    } 
+    public TcpClient Socket { get; private set; } = new();
+
+    public Guid Id { get; } = Guid.NewGuid();
 
     public async Task ConnectAsync(string ip, int port)
     {
         if (Socket.Connected)
+        {
             return;
+        }
 
         var attempts = 0;
 
         while (attempts < 5)
         {
             attempts++;
-            
-            _log.Debug($"Connecting to {ip}:{port} ({(_useEncryption ? "encrypted" : "unencrypted")}) (attempt #{attempts})");
+
+            _log.Debug(
+                $"Connecting to {ip}:{port} ({(_useEncryption ? "encrypted" : "unencrypted")}) (attempt #{attempts})");
 
             try
             {
@@ -64,9 +58,25 @@ public class SocketClient : ISocket
 
                 _log.Warning(ex, $"Could not connect to {ip}:{port} ... retrying");
             }
-            
+
             await Task.Delay(1000);
         }
+    }
+
+    public Task DisconnectAsync()
+    {
+        OnDisconnect?.Invoke(this, EventArgs.Empty);
+        SocketServer.Clients.Remove(SocketServer.Localclient);
+        Socket.Dispose();
+
+        return Task.CompletedTask;
+    }
+
+    public static SocketClient CreateFromSocket(TcpClient socket, bool useEncryption)
+    {
+        var client = new SocketClient(useEncryption) { Socket = socket };
+        client.Read();
+        return client;
     }
 
     public Task SendAsync(dynamic data)
@@ -77,12 +87,12 @@ public class SocketClient : ISocket
 
     public Task SendAsync<T>(DataPacket<T> packet, Action<DataPacket> callback) where T : DAbstract
     {
-        this.callbacks.Add(packet.OpperationCode, callback);
+        Callbacks.Add(packet.OpperationCode, callback);
 
-        string json = JsonConvert.SerializeObject(packet);
+        var json = JsonConvert.SerializeObject(packet);
         return SendAsync(json);
     }
-    
+
     public Task SendAsync(string text)
     {
         try
@@ -96,7 +106,7 @@ public class SocketClient : ISocket
         }
     }
 
-  
+
     private void Read()
     {
         Task.Run(async () =>
@@ -104,7 +114,7 @@ public class SocketClient : ISocket
             while (Socket.Connected)
             {
                 var text = string.Empty;
-                
+
                 try
                 {
                     text = await SocketHelper.ReadMessage(Socket.GetStream(), _useEncryption);
@@ -114,11 +124,13 @@ public class SocketClient : ISocket
                     _log.Error(ex, "Client disconnected");
                     await DisconnectAsync();
                 }
-                
+
                 try
                 {
-                    if(!string.IsNullOrWhiteSpace(text))
+                    if (!string.IsNullOrWhiteSpace(text))
+                    {
                         OnMessage?.Invoke(this, text);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -126,26 +138,18 @@ public class SocketClient : ISocket
                 }
             }
 
-            _log.Debug($"Client disconnected");
+            _log.Debug("Client disconnected");
             OnDisconnect?.Invoke(this, EventArgs.Empty);
         });
     }
-    
+
     public event EventHandler<string>? OnMessage;
-    
+
     public event EventHandler? OnDisconnect;
-    
-    public Task DisconnectAsync()
-    {
-        OnDisconnect?.Invoke(this,new EventArgs());
-        SocketServer._clients.Remove(SocketServer.Localclient); 
-        Socket.Dispose();
-        
-        return Task.CompletedTask;
-    }
 
     public override string ToString()
     {
-        return $"IP Adress: {((IPEndPoint)Socket.Client.RemoteEndPoint).Address}; Port: {((IPEndPoint)Socket.Client.RemoteEndPoint).Port}";
+        return
+            $"IP Adress: {((IPEndPoint)Socket.Client.RemoteEndPoint).Address}; Port: {((IPEndPoint)Socket.Client.RemoteEndPoint).Port}";
     }
 }

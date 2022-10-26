@@ -20,7 +20,7 @@ public class SocketTests
     public void Encryption()
     {
         var bytes = GenerateRandomBytes(1000);
-        
+
         var encrypted = SocketHelper.Encrypt(bytes);
         var decrypted = SocketHelper.Decrypt(encrypted);
 
@@ -33,10 +33,7 @@ public class SocketTests
         var builder = new StringBuilder();
         var random = new Random();
 
-        for (var i = 0; i < size; i++)
-        {
-            builder.Append((char)random.Next(0, 255));
-        }
+        for (var i = 0; i < size; i++) builder.Append((char)random.Next(0, 255));
 
         return builder.ToString();
     }

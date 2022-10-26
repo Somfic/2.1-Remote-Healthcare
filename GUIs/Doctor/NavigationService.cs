@@ -6,9 +6,8 @@ namespace RemoteHealthcare.GUIs.Doctor;
 public class NavigationService<TObservableObject>
     where TObservableObject : ObservableObject
 {
-    private readonly NavigationStore _navigationStore;
-
     private readonly Func<TObservableObject> _createViewModel;
+    private readonly NavigationStore _navigationStore;
 
     public NavigationService(NavigationStore navigationStore, Func<TObservableObject> createViewModel)
     {

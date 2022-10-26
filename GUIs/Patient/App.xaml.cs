@@ -1,33 +1,31 @@
 ﻿using System.Windows;
 using RemoteHealthcare.GUIs.Patient.ViewModels;
 
-namespace RemoteHealthcare.GUIs.Patient
+namespace RemoteHealthcare.GUIs.Patient;
+
+/// <summary>
+///     Interaction logic for App.xaml
+/// </summary>
+public partial class App : Application
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+    private readonly NavigationStore _navigationStore;
+
+    public App()
     {
-        private readonly NavigationStore _navigationStore;
+        _navigationStore = new NavigationStore();
+    }
 
-        public App()
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        _navigationStore.CurrentViewModel = new LoginViewModel(_navigationStore);
+
+        MainWindow = new MainWindow
         {
-            _navigationStore = new NavigationStore();
-        }
+            DataContext = new MainViewModel(_navigationStore)
+        };
 
-        protected override void OnStartup(StartupEventArgs e)
-        {
+        MainWindow.Show();
 
-            _navigationStore.CurrentViewModel = new LoginViewModel(_navigationStore);
-            
-            MainWindow = new MainWindow()
-            {
-                DataContext = new MainViewModel(_navigationStore)
-            };
-
-            MainWindow.Show();
-
-            base.OnStartup(e);
-        }
+        base.OnStartup(e);
     }
 }

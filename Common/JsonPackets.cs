@@ -1,14 +1,12 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RemoteHealthcare.Common.Socket.Client;
-
 
 namespace RemoteHealthcare.Common;
 
-
 public abstract class DAbstract
 {
-    public string ToJson() {
+    public string ToJson()
+    {
         return JsonConvert.SerializeObject(this);
     }
 }
@@ -16,100 +14,100 @@ public abstract class DAbstract
 //it the abstract class for eyery Datapacket
 public class DataPacket<T> : DAbstract where T : DAbstract
 {
+    public T Data;
     public string OpperationCode;
-    public T data;
 }
 
 //DataPacket is the fundament for the specific packets
 public class DataPacket : DAbstract
 {
-    public string OpperationCode;
-    
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-    
-    private JObject data;
+    private JObject _data;
+
+    public string OpperationCode;
 
     public T GetData<T>() where T : DAbstract
     {
-        return this.data.ToObject<T>();
+        return _data.ToObject<T>();
     }
 }
-    
+
 public class ErrorPacket : DAbstract
 {
-    public StatusCodes statusCode;
+    public StatusCodes StatusCode;
 }
 
 public class LoginPacketRequest : DAbstract
 {
-    public string userName;
-    public string password;
-    public bool isDoctor;
+    public bool IsDoctor;
+    public string Password;
+    public string UserName;
 }
 
 public class LoginPacketResponse : DAbstract
 {
-    public string userId;
-    public string userName;
-    public StatusCodes statusCode;
-    public string message;
+    public string Message;
+    public StatusCodes StatusCode;
+    public string UserId;
+    public string UserName;
 }
 
 public class ConnectedClientsPacketRequest : DAbstract
 {
-    public string requester;
+    public string Requester;
 }
 
 public class ConnectedClientsPacketResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public string connectedIds;
+    public string ConnectedIds;
+    public StatusCodes StatusCode;
 }
 
 public class ChatPacketRequest : DAbstract
 {
-    public string senderId;
-    public string senderName;
-    public string receiverId;
-    public string message;
+    public string Message;
+    public string ReceiverId;
+    public string SenderId;
+    public string SenderName;
 }
 
 public class ChatPacketResponse : DAbstract
 {
-    public string senderId;
-    public string senderName;
-    public StatusCodes statusCode;
-    public string message;
+    public string Message;
+    public string SenderId;
+    public string SenderName;
+    public StatusCodes StatusCode;
 }
 
 public class SessionStartPacketRequest : DAbstract
 {
-    public string selectedPatient;
+    public string SelectedPatient;
 }
 
 public class SessionStartPacketResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public string message;
+    public string Message;
+    public StatusCodes StatusCode;
 }
 
 public class SessionStopPacketRequest : DAbstract
 {
-    public string selectedPatient;
+    public string SelectedPatient;
 }
 
 public class SessionStopPacketResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public string message;
+    public string Message;
+    public StatusCodes StatusCode;
 }
 
 public class EmergencyStopPacket : DAbstract
 {
-    public StatusCodes statusCode;
-    public string clientId;
-    public string message = "Er is op de noodstop gedrukt, de dokter komt zo spoedig mogelijk bij u";
+    public string ClientId;
+    public string Message = "Er is op de noodstop gedrukt, de dokter komt zo spoedig mogelijk bij u";
+    public StatusCodes StatusCode;
 }
+
 public class DisconnectPacketRequest : DAbstract
 {
     //TODO: voorlopig leeg laten
@@ -117,39 +115,40 @@ public class DisconnectPacketRequest : DAbstract
 
 public class SetResistancePacket : DAbstract
 {
-    public string receiverId;
-    public int resistance;
+    public string ReceiverId;
+    public int Resistance;
 }
+
 public class SetResistanceResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public int resistance;
+    public int Resistance;
+    public StatusCodes StatusCode;
 }
 
 public class DisconnectPacketResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public string message;
+    public string Message;
+    public StatusCodes StatusCode;
 }
 
 public class BikeDataPacket : DAbstract
 {
+    public string DeviceType;
+    public float Distance;
+    public TimeSpan Elapsed;
+    public int HeartRate;
+    public string Id;
     public string SessionId;
-    public float distance;
-    public float speed;
-    public int heartRate;
-    public TimeSpan elapsed;
-    public string deviceType;
-    public string id;
+    public float Speed;
 }
 
 public class BikeDataPacketDoctor : DAbstract
 {
-    public float distance;
-    public float speed;
-    public int heartRate;
-    public TimeSpan elapsed;
-    public string id;
+    public float Distance;
+    public TimeSpan Elapsed;
+    public int HeartRate;
+    public string Id;
+    public float Speed;
 }
 
 public class GetAllPatientsDataRequest : DAbstract
@@ -159,20 +158,20 @@ public class GetAllPatientsDataRequest : DAbstract
 
 public class GetAllPatientsDataResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public string message;
     public JObject[] JObjects;
+    public string Message;
+    public StatusCodes StatusCode;
 }
 
 public class AllSessionsFromPatientRequest : DAbstract
 {
-    public StatusCodes statusCode;
-    public string userId;
+    public StatusCodes StatusCode;
+    public string UserId;
 }
 
 public class AllSessionsFromPatientResponce : DAbstract
 {
-    public StatusCodes statusCode;
     public JObject[] JObjects;
-    public string message;
+    public string Message;
+    public StatusCodes StatusCode;
 }

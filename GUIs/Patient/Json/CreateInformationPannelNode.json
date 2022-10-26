@@ -10,14 +10,33 @@
         "parent": "guid",
         "components": {
           "transform": {
-            "position": [ -25, 115, 0 ],
+            "position": [
+              -25,
+              115,
+              0
+            ],
             "scale": 1,
-            "rotation": [ -45, 90, 0 ]
+            "rotation": [
+              -45,
+              90,
+              0
+            ]
           },
           "panel": {
-            "size": [ 20, 20 ],
-            "resolution": [ 500, 500 ],
-            "background": [ 0, 0, 0, 0.15 ],
+            "size": [
+              20,
+              20
+            ],
+            "resolution": [
+              500,
+              500
+            ],
+            "background": [
+              0,
+              0,
+              0,
+              0.15
+            ],
             "castShadow": true
           }
         }

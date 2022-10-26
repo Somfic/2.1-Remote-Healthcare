@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using System.Windows.Media;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.GUIs.Doctor.ViewModels;
@@ -8,13 +7,13 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class RequestPastSessions : BaseCommand
 {
+    private readonly DoctorClient _doctorClient;
     private Log _log = new(typeof(RequestPastSessions));
-    private Client _client;
-    private DoctorViewModel _viewModel;
+    private readonly DoctorViewModel _viewModel;
 
-    public RequestPastSessions(Client client, DoctorViewModel doctorViewModel)
+    public RequestPastSessions(DoctorClient doctorClient, DoctorViewModel doctorViewModel)
     {
-        _client = client;
+        _doctorClient = doctorClient;
         _viewModel = doctorViewModel;
     }
 
@@ -25,27 +24,27 @@ public class RequestPastSessions : BaseCommand
 
     public override async Task ExecuteAsync()
     {
-        string userId = _viewModel.CurrentUser.UserId;
+        var userId = _viewModel.CurrentUser.UserId;
         if (userId != null)
         {
-            _client.hasSessionResponce = false;
+            _doctorClient.HasSessionResponce = false;
 
-            _client._client.SendAsync(new DataPacket<AllSessionsFromPatientRequest>
+            _doctorClient.Client.SendAsync(new DataPacket<AllSessionsFromPatientRequest>
             {
-                OpperationCode = OperationCodes.GET_PATIENT_SESSSIONS,
-                data = new AllSessionsFromPatientRequest()
+                OpperationCode = OperationCodes.GetPatientSesssions,
+                Data = new AllSessionsFromPatientRequest
                 {
-                    userId = userId
+                    UserId = userId
                 }
             });
 
-            while (!_client.hasSessionResponce)
+            while (!_doctorClient.HasSessionResponce)
             {
             }
 
             PastSessionsWindow pastSessionsWindow = new()
             {
-                DataContext = new PastSessionsViewModel(_client, _viewModel.CurrentUser.Username)
+                DataContext = new PastSessionsViewModel(_doctorClient, _viewModel.CurrentUser.Username)
             };
             pastSessionsWindow.Show();
         }

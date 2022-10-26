@@ -5,7 +5,6 @@ namespace RemoteHealthcare.GUIs.Doctor;
 
 public class NavigationStore
 {
-    public event Action CurrentViewModelChanged;
     private ObservableObject _currentViewModel;
 
     public ObservableObject CurrentViewModel
@@ -17,6 +16,8 @@ public class NavigationStore
             OnCurrentViewModelChanged();
         }
     }
+
+    public event Action CurrentViewModelChanged;
 
     private void OnCurrentViewModelChanged()
     {

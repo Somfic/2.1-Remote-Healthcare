@@ -21,10 +21,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="AllUsers.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <Folder Include="allSessions" />
+        <None Update="AllUsers.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>
