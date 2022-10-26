@@ -36,7 +36,14 @@ public class Patient : ObservableObject
             Username = username;
         Sessions = new List<SessionData>();
         
-        _log.Debug("\r\n" +$"Parameters: {userId}; {password}; {username} \r\n" + $"Attributes: {UserId}; {Password}; {Username}");
+        
+        string pathString = Path.Combine(Environment.CurrentDirectory.Substring(0, 
+            Environment.CurrentDirectory.LastIndexOf("bin")), "allSessions", UserId);
+
+        if (!Directory.Exists(pathString))
+        {
+            Directory.CreateDirectory(pathString);
+        }
     }
 
     /// <summary>
