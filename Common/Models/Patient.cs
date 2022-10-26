@@ -26,6 +26,16 @@ public class Patient : ObservableObject
         }
 
         Sessions = new List<SessionData>();
+
+        string pathString = Path.Combine(Environment.CurrentDirectory.Substring(0, 
+            Environment.CurrentDirectory.LastIndexOf("bin")), "allSessions", UserId);
+
+        if (!Directory.Exists(pathString))
+        {
+            Directory.CreateDirectory(pathString);
+        }
+
+        
     }
 
     public List<SessionData> Sessions { get; set; }
@@ -48,7 +58,7 @@ public class Patient : ObservableObject
     {
         pathString = Path.Combine(pathString.Substring(0, pathString.LastIndexOf("bin")));
 
-        pathString = Path.Combine(pathString, "allSessions");
+        pathString = Path.Combine(pathString, "allSessions", UserId);
 
 
         if (!Directory.Exists(pathString))
@@ -59,6 +69,7 @@ public class Patient : ObservableObject
         foreach (var session in Sessions)
         {
             var pathStringUserId = Path.Combine(pathString, UserId);
+            pathString = Path.Combine(pathString, "allSessions", UserId);
 
             if (!Directory.Exists(pathStringUserId))
             {
