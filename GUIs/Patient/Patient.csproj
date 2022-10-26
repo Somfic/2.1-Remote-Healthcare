@@ -18,6 +18,8 @@
 
     <ItemGroup>
       <Resource Include="images\fiets.png" />
+      <None Remove="images\logos.JPG" />
+      <Resource Include="images\logos.JPG" />
     </ItemGroup>
 
     <ItemGroup>

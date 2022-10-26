@@ -20,19 +20,6 @@ namespace NetworkEngine.Socket
             this.bike = bike;
             this.heart = heart;
             this.engine = engine;
-
-
-
-            /* Unmerged change from project 'Client (net6.0)'
-            Before:
-                    }
-
-                    public async void start()
-            After:
-                    }
-
-                    public async void start()
-            */
         }
 
         public bool session;
@@ -43,14 +30,13 @@ namespace NetworkEngine.Socket
 
             while (true)
             {
+                //if the session started run these 3-lines of code
                 if (session)
                 {
                     await heart.ProcessRawData();
                     await bike.ProcessRawData();
                     await engine.ChangeBikeSpeed(bike.GetData().Speed);
-                }
-                else
-                {
+                } else {
                     engine.ChangeBikeSpeed(0);
                 }
 
@@ -76,10 +62,6 @@ namespace NetworkEngine.Socket
             return bike.GetData();
         }
 
-        public void vrConPRINTTT()
-        {
-            Console.WriteLine("sudikfhidsfhoikdshfikdsj iufkilsdfhoksd iuhsdifuouihsdf ");
-        }
         internal HeartData getHearthData()
         {
             return heart.GetData();

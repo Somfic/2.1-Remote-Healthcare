@@ -93,7 +93,6 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                     _navigationStore.CurrentViewModel = new PatientHomepageViewModel(_navigationStore, _client);
                     try
                     {
-                        
                         var engine = new EngineConnection();
                         await engine.ConnectAsync(_vrid);
                         // Console.WriteLine("Enter Bike ID:");

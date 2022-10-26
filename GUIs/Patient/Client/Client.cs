@@ -121,7 +121,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         }
 
         //the methode for the session start request
-        public async void SessionStartHandler(DataPacket obj)
+        public void SessionStartHandler(DataPacket obj)
         {
             _sessienRunning = true;
             _vrConnection.session = true;
@@ -130,6 +130,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         
         private void SendBikeDataAsync()
         {
+            //if the patient started the sessie the while-loop will be looped till it be false (stop-session)
             while (_sessienRunning)
             {
                 BikeData bikedata = _vrConnection.getBikeData();
@@ -152,7 +153,6 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                 
                 _log.Information("sending bike data to server");
                  _client.SendAsync(req);
-                //Task.Delay(1000);
                 Thread.Sleep(1000);
             }
         }
@@ -183,6 +183,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                 AskForLoginAsync();
             }
         }
+        
         public bool GetLoggedIn()
         {
             return _loggedIn;

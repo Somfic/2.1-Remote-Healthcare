@@ -264,9 +264,6 @@ namespace RemoteHealthcare.GUIs.Doctor
             _log.Debug(packetData.ToJson());
             if (((int)packetData.GetData<ConnectedClientsPacketResponse>().statusCode).Equals(200))
             {
-                // _log.Debug(_connected.Count.ToString());
-                // _connected.RemoveRange(0, _connected.Count - 1);
-                // _log.Debug(_connected.Count.ToString());
                 _connected = packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Split(";").ToList();
                 _log.Critical(_connected.Count.ToString());
             }
@@ -275,7 +272,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         //the methode for the login request
         private void LoginFeature(DataPacket packetData)
         {
-            _log.Debug($"Responce: {packetData.ToJson()}");
+            _log.Debug($"Response: {packetData.ToJson()}");
             if (((int)packetData.GetData<LoginPacketResponse>().statusCode).Equals(200))
             {
                 _userId = packetData.GetData<LoginPacketResponse>().userId;
