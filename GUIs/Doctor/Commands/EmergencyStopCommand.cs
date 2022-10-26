@@ -18,13 +18,13 @@ public class EmergencyStopCommand : BaseCommand
 
     public override void Execute(object? parameter)
     {
-        _client._client.SendAsync(new DataPacket<EmergencyStopPacket>
+        _client.Client.SendAsync(new DataPacket<EmergencyStopPacket>
         {
-            OpperationCode = OperationCodes.EMERGENCY_STOP,
-            data = new EmergencyStopPacket
+            OpperationCode = OperationCodes.EmergencyStop,
+            Data = new EmergencyStopPacket
             {
-                statusCode = StatusCodes.OK,
-                clientId = _viewModel.CurrentUser.UserId,
+                StatusCode = StatusCodes.Ok,
+                ClientId = _viewModel.CurrentUser.UserId,
             }
         });
         MessageBox.Show("Emergency stop was pressed, Please check on the patient before continuing.");

@@ -28,16 +28,16 @@ public class DoctorViewModel : ObservableObject
     private int _resistance;
     
     private ObservableCollection<Patient> _patients;
-    public ObservableCollection<string> _chatMessages;
+    public ObservableCollection<string> Messages;
     private SeriesCollection _chartDataSpeed;
-    private SeriesCollection _chartDataBPM;
+    private SeriesCollection _chartDataBpm;
 
     public DoctorViewModel(Client client, NavigationStore navigationStore)
     {
         _client = client;
         _client.AddDoctorViewmodel(this);
-        _patients = new ObservableCollection<Patient>(_client._patientList);
-        _chatMessages = new ObservableCollection<string>();
+        _patients = new ObservableCollection<Patient>(_client.PatientList);
+        Messages = new ObservableCollection<string>();
         EmergencyStop = new EmergencyStopCommand(_client, this);
         SendChatMessage = new SendChatMessageCommand(_client, this);
         StartSessieCommand = new StartSessieCommand(_client, this);
@@ -48,15 +48,15 @@ public class DoctorViewModel : ObservableObject
     
     public string CurrentUserName
     {
-        get => username;
+        get => _username;
         set
         {
-            username = value;
+            _username = value;
             OnPropertyChanged();
         }
     }
 
-    private string username;
+    private string _username;
     
 
     public Patient CurrentUser
@@ -81,11 +81,11 @@ public class DoctorViewModel : ObservableObject
                     Stroke = Brushes.DarkSeaGreen,
                     PointGeometrySize = 0,
                     LineSmoothness = 1.00,
-                    Values = _currentUser.speedData
+                    Values = _currentUser.SpeedData
                 }
             };
             
-            ChartDataBPM = new SeriesCollection
+            ChartDataBpm = new SeriesCollection
             {
                 new LineSeries
                 {
@@ -93,7 +93,7 @@ public class DoctorViewModel : ObservableObject
                     Stroke = Brushes.LightCoral,
                     PointGeometrySize = 0,
                     LineSmoothness = 1.00,
-                    Values = _currentUser.bpmData
+                    Values = _currentUser.BpmData
                 }
             };
             OnPropertyChanged();
@@ -103,10 +103,10 @@ public class DoctorViewModel : ObservableObject
 
     public ObservableCollection<string> ChatMessages
     {
-        get => _chatMessages;
+        get => Messages;
         set
         {
-            _chatMessages = value;
+            Messages = value;
             OnPropertyChanged();
         } 
     }
@@ -130,42 +130,42 @@ public class DoctorViewModel : ObservableObject
            
     }
 
-    public int BPM
+    public int Bpm
     {
-        get => _currentUser.currentBPM;
+        get => _currentUser.CurrentBpm;
         set
         {
-            _currentUser.currentBPM = value;
+            _currentUser.CurrentBpm = value;
             OnPropertyChanged();
         }
     }
 
     public float Speed
     {
-        get => _currentUser.currentSpeed;
+        get => _currentUser.CurrentSpeed;
         set
         {
-            _currentUser.currentSpeed = value;
+            _currentUser.CurrentSpeed = value;
             OnPropertyChanged();
         }
     }
 
     public float Distance
     {
-        get => _currentUser.currentDistance;
+        get => _currentUser.CurrentDistance;
         set
         {
-            _currentUser.currentDistance = value;
+            _currentUser.CurrentDistance = value;
             OnPropertyChanged();
         }
     }
 
     public TimeSpan ElapsedTime
     {
-        get => _currentUser.currentElapsedTime;
+        get => _currentUser.CurrentElapsedTime;
         set
         {
-            _currentUser.currentElapsedTime = value;
+            _currentUser.CurrentElapsedTime = value;
             OnPropertyChanged();
         }
     }
@@ -180,21 +180,21 @@ public class DoctorViewModel : ObservableObject
         }
     }
     
-    public SeriesCollection ChartDataBPM
+    public SeriesCollection ChartDataBpm
     {
-        get => _chartDataBPM;
+        get => _chartDataBpm;
         set
         {
-            _chartDataBPM = value;
+            _chartDataBpm = value;
             OnPropertyChanged();
         }
     }
 
     public void AddMessage(string message)
     {
-        _log.Information($"addmessage, {_chatMessages.Count}; {message}");
-        BindingOperations.EnableCollectionSynchronization(_chatMessages, message);
-        _log.Information($"added message, {_chatMessages.Count}");
+        _log.Information($"addmessage, {Messages.Count}; {message}");
+        BindingOperations.EnableCollectionSynchronization(Messages, message);
+        _log.Information($"added message, {Messages.Count}");
         // chatMessages.Add(message);
     }
 }

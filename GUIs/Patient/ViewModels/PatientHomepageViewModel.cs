@@ -9,7 +9,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 {
     public class PatientHomepageViewModel : BaseViewModel
     {
-        public ObservableCollection<string>_messages;
+        public ObservableCollection<string>Messages;
         
         private string _message;
         private string _messagerecieved;
@@ -18,7 +18,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private string _time= "33 min";
         private string _heartrate;
         private VrConnection _vr;
-        private EngineConnection e;
+        private EngineConnection _e;
         private string _session;
         
         private readonly NavigationStore _navigationStore;
@@ -30,10 +30,10 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         {
             
             _client = client;
-            _vr = client._vrConnection;
+            _vr = client.VrConnection;
             _messages = new ObservableCollection<string>();
            
-            test = new Command(testmethode);
+            Test = new Command(Testmethode);
             Send = new Command(SendMessage);
             _messages.Add("hello world");
             
@@ -44,7 +44,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
         private void OnCurrentViewModelChanged()
         {
-            _client.p = this;
+            _client.P = this;
             OnPropertyChanged(nameof(_navigationStore.CurrentViewModel));
         }
         
@@ -127,31 +127,31 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         
 
         public ICommand Send { get; }
-        public ICommand test { get; }
+        public ICommand Test { get; }
         void SendMessage()
         {
             var req = new DataPacket<ChatPacketRequest>
             {
-                OpperationCode = OperationCodes.CHAT,
-                data = new ChatPacketRequest
+                OpperationCode = OperationCodes.Chat,
+                Data = new ChatPacketRequest
                 {
-                    senderId = _client._username,
-                    receiverId = null,
-                    message = _message
+                    SenderId = _client.Username,
+                    ReceiverId = null,
+                    Message = _message
                 }
             };
-            _client._client.SendAsync(req);
+            _client.Client.SendAsync(req);
             _messages.Add("You: "+ _message);
             //clear textbox
             Message = "";
             
         }
         
-        void testmethode()
+        void Testmethode()
         {
-            _client._client.SendAsync(new DataPacket<SessionStartPacketRequest>
+            _client.Client.SendAsync(new DataPacket<SessionStartPacketRequest>
             {
-                OpperationCode = OperationCodes.SESSION_START,
+                OpperationCode = OperationCodes.SessionStart,
             });
         }
 

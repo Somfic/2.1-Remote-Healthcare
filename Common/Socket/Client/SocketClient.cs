@@ -12,7 +12,7 @@ public class SocketClient : ISocket
     public TcpClient Socket { get; private set; } = new(); 
     
     public Guid Id { get; } = Guid.NewGuid();
-    public Dictionary<string, Action<DataPacket>> callbacks;
+    public Dictionary<string, Action<DataPacket>> Callbacks;
 
     
     private readonly Log _log = new(typeof(SocketClient));
@@ -20,7 +20,7 @@ public class SocketClient : ISocket
     public SocketClient(bool useEncryption)
     {
         _useEncryption = useEncryption;
-        callbacks = new Dictionary<string, Action<DataPacket>>();
+        Callbacks = new Dictionary<string, Action<DataPacket>>();
 
     }
 
@@ -77,7 +77,7 @@ public class SocketClient : ISocket
 
     public Task SendAsync<T>(DataPacket<T> packet, Action<DataPacket> callback) where T : DAbstract
     {
-        callbacks.Add(packet.OpperationCode, callback);
+        Callbacks.Add(packet.OpperationCode, callback);
 
         string json = JsonConvert.SerializeObject(packet);
         return SendAsync(json);
@@ -138,7 +138,7 @@ public class SocketClient : ISocket
     public Task DisconnectAsync()
     {
         OnDisconnect?.Invoke(this,new EventArgs());
-        SocketServer._clients.Remove(SocketServer.Localclient); 
+        SocketServer.Clients.Remove(SocketServer.Localclient); 
         Socket.Dispose();
         
         return Task.CompletedTask;

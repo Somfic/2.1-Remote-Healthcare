@@ -10,8 +10,7 @@ public class SocketServer : ISocket
 {
     public TcpListener? Socket { get; private set; }
     private readonly Log _log = new(typeof(SocketServer));
-    public static readonly List<SocketClient> _clients = new();
-    public static IReadOnlyList<SocketClient> Clients => _clients.AsReadOnly();
+    public static List<SocketClient> Clients => new();
     private readonly bool _useEncryption;
     private bool _shouldRun;
 
@@ -63,7 +62,7 @@ public class SocketServer : ISocket
                  Localclient = client;
                 client.OnMessage += (sender, message) => OnMessage?.Invoke(this, (client, message));
                 client.OnDisconnect += (sender, args) => OnClientDisconnected?.Invoke(this, client);
-                _clients.Add(client);
+                Clients.Add(client);
 
                 Task.Run(() => { OnClientConnected?.Invoke(this, client); });
             }

@@ -19,10 +19,10 @@ public class PatientData
             new("Co Nelen", "1234", "3245")
         };*/
 
-        Patients = readUsersFromJson();
+        Patients = ReadUsersFromJson();
     }
 
-    public List<Patient> readUsersFromJson()
+    public List<Patient> ReadUsersFromJson()
     {
         string path = Path.Combine(Directory.GetCurrentDirectory(), "AllUsers.json");
         

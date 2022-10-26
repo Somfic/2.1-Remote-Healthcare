@@ -17,10 +17,10 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         
         private string _username;
         private SecureString _securePassword;
-        private string _bikeID;
+        private string _bikeId;
         private string _vrid;
         private Client.Client _client;
-        private VrConnection vrConnection;
+        private VrConnection _vrConnection;
 
         private readonly NavigationStore _navigationStore;
         public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
@@ -55,8 +55,8 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
         public string BikeId
         {
-            get => _bikeID;
-            set => _bikeID = value;
+            get => _bikeId;
+            set => _bikeId = value;
         }
 
         public string VrId
@@ -69,12 +69,12 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         
       async void LogInPatient(object window)
         {
-            await _client._client.ConnectAsync("127.0.0.1", 15243);
+            await _client.Client.ConnectAsync("127.0.0.1", 15243);
             Console.WriteLine("Got window, logging in patient");
-            if (!_client._loggedIn)
+            if (!_client.LoggedIn)
             {
-                _client._username = Username;
-                _client._password = SecureStringToString(SecurePassword);
+                _client.Username = Username;
+                _client.Password = SecureStringToString(SecurePassword);
                 
                 try {
                     new Thread(async () => { await _client.PatientLogin(); }).Start();
@@ -85,7 +85,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
                 await Task.Delay(1000);
                 PatientHomepageViewModel pvm = new PatientHomepageViewModel(_navigationStore, _client);
-                if (_client._loggedIn)
+                if (_client.LoggedIn)
                 {
                     _navigationStore.CurrentViewModel = pvm;
                     // ((Window) window).Close();
@@ -96,15 +96,15 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                         // Console.WriteLine("Enter Bike ID:");
 
                         
-                         var bike = await DataProvider.GetBike(_bikeID);
+                         var bike = await DataProvider.GetBike(_bikeId);
                          var heart = await DataProvider.GetHeart();
-                         vrConnection = new VrConnection(bike, heart, engine);
+                         _vrConnection = new VrConnection(bike, heart, engine);
                          
                          //The client get the vrConnection 
-                         _client._vrConnection = vrConnection;
+                         _client.VrConnection = _vrConnection;
                          
                          //Prevends that he GUI patient crash 
-                         new Thread(async () => { vrConnection.Start(pvm); }).Start();
+                         new Thread(async () => { _vrConnection.Start(pvm); }).Start();
 
                          await Task.Delay(-1);
                     }

@@ -17,15 +17,15 @@ public class Patient : ObservableObject
     public string UserId { get; set; }
     public string Password { get; set; }
     
-    public float currentSpeed { get; set; }
-    public float currentDistance { get; set; }
-    public TimeSpan currentElapsedTime { get; set; }
-    public int currentBPM { get; set; }
+    public float CurrentSpeed { get; set; }
+    public float CurrentDistance { get; set; }
+    public TimeSpan CurrentElapsedTime { get; set; }
+    public int CurrentBpm { get; set; }
 
-    public ChartValues<float> speedData = new();
+    public ChartValues<float> SpeedData = new();
     
     
-    public ChartValues<int> bpmData = new();
+    public ChartValues<int> BpmData = new();
 
     public Patient(string user, string password, string? username = null)
     {

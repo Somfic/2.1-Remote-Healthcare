@@ -17,12 +17,12 @@ public class StopSessieCommand : BaseCommand
 
     public override void Execute(object? parameter)
     {
-        _client._client.SendAsync(new DataPacket<SessionStopPacketRequest>
+        _client.Client.SendAsync(new DataPacket<SessionStopPacketRequest>
         {
-            OpperationCode = OperationCodes.SESSION_STOP,
-            data = new SessionStopPacketRequest
+            OpperationCode = OperationCodes.SessionStop,
+            Data = new SessionStopPacketRequest
             {
-                selectedPatient = _viewModel.CurrentUser.UserId
+                SelectedPatient = _viewModel.CurrentUser.UserId
             }
         });
     }

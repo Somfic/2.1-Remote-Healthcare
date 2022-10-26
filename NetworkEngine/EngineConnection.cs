@@ -664,14 +664,14 @@ public class EngineConnection
     public async Task SendTextToChatPannel(string message)
     {
         _messages.Insert(0, message);
-        string displayMessage = displayMessages();
+        string displayMessage = DisplayMessages();
         await SetBackgroundColor(1, 1, 1, 0.15f, _chatPannelId);
         await ClearPannel(_chatPannelId);
         await AddTextToPannel(displayMessage, _chatPannelId, 70);
         await SwapPannel(_chatPannelId);
     }
 
-    private string displayMessages()
+    private string DisplayMessages()
     {
         string result = "";
         

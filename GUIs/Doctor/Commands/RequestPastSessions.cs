@@ -27,18 +27,18 @@ public class RequestPastSessions : BaseCommand
         string userId = _viewModel.CurrentUser.UserId;
         if (userId != null)
         {
-            _client.hasSessionResponce = false;
+            _client.HasSessionResponce = false;
 
-            _client._client.SendAsync(new DataPacket<AllSessionsFromPatientRequest>
+            _client.Client.SendAsync(new DataPacket<AllSessionsFromPatientRequest>
             {
-                OpperationCode = OperationCodes.GET_PATIENT_SESSSIONS,
-                data = new AllSessionsFromPatientRequest
+                OpperationCode = OperationCodes.GetPatientSesssions,
+                Data = new AllSessionsFromPatientRequest
                 {
-                    userId = userId
+                    UserId = userId
                 }
             });
 
-            while (!_client.hasSessionResponce)
+            while (!_client.HasSessionResponce)
             {
             }
 

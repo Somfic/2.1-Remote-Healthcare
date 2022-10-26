@@ -15,7 +15,7 @@ public abstract class DAbstract
 public class DataPacket<T> : DAbstract where T : DAbstract
 {
     public string OpperationCode;
-    public T data;
+    public T Data;
 }
 
 //DataPacket is the fundament for the specific packets
@@ -25,88 +25,88 @@ public class DataPacket : DAbstract
     
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     
-    private JObject data;
+    private JObject _data;
 
     public T GetData<T>() where T : DAbstract
     {
-        return data.ToObject<T>();
+        return _data.ToObject<T>();
     }
 }
     
 public class ErrorPacket : DAbstract
 {
-    public StatusCodes statusCode;
+    public StatusCodes StatusCode;
 }
 
 public class LoginPacketRequest : DAbstract
 {
-    public string userName;
-    public string password;
-    public bool isDoctor;
+    public string UserName;
+    public string Password;
+    public bool IsDoctor;
 }
 
 public class LoginPacketResponse : DAbstract
 {
-    public string userId;
-    public string userName;
-    public StatusCodes statusCode;
-    public string message;
+    public string UserId;
+    public string UserName;
+    public StatusCodes StatusCode;
+    public string Message;
 }
 
 public class ConnectedClientsPacketRequest : DAbstract
 {
-    public string requester;
+    public string Requester;
 }
 
 public class ConnectedClientsPacketResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public string connectedIds;
+    public StatusCodes StatusCode;
+    public string ConnectedIds;
 }
 
 public class ChatPacketRequest : DAbstract
 {
-    public string senderId;
-    public string senderName;
-    public string receiverId;
-    public string message;
+    public string SenderId;
+    public string SenderName;
+    public string ReceiverId;
+    public string Message;
 }
 
 public class ChatPacketResponse : DAbstract
 {
-    public string senderId;
-    public string senderName;
-    public StatusCodes statusCode;
-    public string message;
+    public string SenderId;
+    public string SenderName;
+    public StatusCodes StatusCode;
+    public string Message;
 }
 
 public class SessionStartPacketRequest : DAbstract
 {
-    public string selectedPatient;
+    public string SelectedPatient;
 }
 
 public class SessionStartPacketResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public string message;
+    public StatusCodes StatusCode;
+    public string Message;
 }
 
 public class SessionStopPacketRequest : DAbstract
 {
-    public string selectedPatient;
+    public string SelectedPatient;
 }
 
 public class SessionStopPacketResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public string message;
+    public StatusCodes StatusCode;
+    public string Message;
 }
 
 public class EmergencyStopPacket : DAbstract
 {
-    public StatusCodes statusCode;
-    public string clientId;
-    public string message = "Er is op de noodstop gedrukt, de dokter komt zo spoedig mogelijk bij u";
+    public StatusCodes StatusCode;
+    public string ClientId;
+    public string Message = "Er is op de noodstop gedrukt, de dokter komt zo spoedig mogelijk bij u";
 }
 public class DisconnectPacketRequest : DAbstract
 {
@@ -115,39 +115,39 @@ public class DisconnectPacketRequest : DAbstract
 
 public class SetResistancePacket : DAbstract
 {
-    public string receiverId;
-    public int resistance;
+    public string ReceiverId;
+    public int Resistance;
 }
 public class SetResistanceResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public int resistance;
+    public StatusCodes StatusCode;
+    public int Resistance;
 }
 
 public class DisconnectPacketResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public string message;
+    public StatusCodes StatusCode;
+    public string Message;
 }
 
 public class BikeDataPacket : DAbstract
 {
     public string SessionId;
-    public float distance;
-    public float speed;
-    public int heartRate;
-    public TimeSpan elapsed;
-    public string deviceType;
-    public string id;
+    public float Distance;
+    public float Speed;
+    public int HeartRate;
+    public TimeSpan Elapsed;
+    public string DeviceType;
+    public string Id;
 }
 
 public class BikeDataPacketDoctor : DAbstract
 {
-    public float distance;
-    public float speed;
-    public int heartRate;
-    public TimeSpan elapsed;
-    public string id;
+    public float Distance;
+    public float Speed;
+    public int HeartRate;
+    public TimeSpan Elapsed;
+    public string Id;
 }
 
 public class GetAllPatientsDataRequest : DAbstract
@@ -157,20 +157,20 @@ public class GetAllPatientsDataRequest : DAbstract
 
 public class GetAllPatientsDataResponse : DAbstract
 {
-    public StatusCodes statusCode;
-    public string message;
+    public StatusCodes StatusCode;
+    public string Message;
     public JObject[] JObjects;
 }
 
 public class AllSessionsFromPatientRequest : DAbstract
 {
-    public StatusCodes statusCode;
-    public string userId;
+    public StatusCodes StatusCode;
+    public string UserId;
 }
 
 public class AllSessionsFromPatientResponce : DAbstract
 {
-    public StatusCodes statusCode;
+    public StatusCodes StatusCode;
     public JObject[] JObjects;
-    public string message;
+    public string Message;
 }

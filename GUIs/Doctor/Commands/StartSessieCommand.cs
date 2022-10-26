@@ -19,12 +19,12 @@ public class StartSessieCommand : BaseCommand
     public override void Execute(object? parameter)
     {
 
-        _client._client.SendAsync(new DataPacket<SessionStartPacketRequest>
+        _client.Client.SendAsync(new DataPacket<SessionStartPacketRequest>
         {
-            OpperationCode = OperationCodes.SESSION_START,
-            data = new SessionStartPacketRequest
+            OpperationCode = OperationCodes.SessionStart,
+            Data = new SessionStartPacketRequest
             {
-                selectedPatient = _viewModel.CurrentUser.UserId
+                SelectedPatient = _viewModel.CurrentUser.UserId
             }
         });
     }

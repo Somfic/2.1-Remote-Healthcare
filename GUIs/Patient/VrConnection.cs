@@ -12,38 +12,38 @@ namespace NetworkEngine.Socket
 {
     public class VrConnection
     {
-        BikeDataProvider bike;
-        HeartDataProvider heart;
+        BikeDataProvider _bike;
+        HeartDataProvider _heart;
         
         private PatientHomepageViewModel _pvm;
         public EngineConnection Engine;
         
         public VrConnection(BikeDataProvider bike, HeartDataProvider heart, EngineConnection engine)
         {
-            this.bike = bike;
-            this.heart = heart;
+            this._bike = bike;
+            this._heart = heart;
             Engine = engine;
         }
 
-        public bool session;
+        public bool Session;
         
         public async void Start(PatientHomepageViewModel p)
         {
-            await bike.ProcessRawData();
+            await _bike.ProcessRawData();
 
             _pvm = p;
             while (true)
             {
-                if (session)
+                if (Session)
                 {
-                    await heart.ProcessRawData();
-                    await bike.ProcessRawData();
-                    await Engine.ChangeBikeSpeed(bike.GetData().Speed);
-                _pvm.Heartrate = heart.GetData().HeartRate.ToString();
-                _pvm.Speed = bike.GetData().Speed.ToString("##.#");
-                _pvm.Distance = bike.GetData().Distance.ToString("####.#");
-                _pvm.Time = bike.GetData().TotalElapsed.ToString("hh\\:mm\\:ss");
-                Console.WriteLine("Heart: " + heart.GetData().HeartRate);
+                    await _heart.ProcessRawData();
+                    await _bike.ProcessRawData();
+                    await Engine.ChangeBikeSpeed(_bike.GetData().Speed);
+                _pvm.Heartrate = _heart.GetData().HeartRate.ToString();
+                _pvm.Speed = _bike.GetData().Speed.ToString("##.#");
+                _pvm.Distance = _bike.GetData().Distance.ToString("####.#");
+                _pvm.Time = _bike.GetData().TotalElapsed.ToString("hh\\:mm\\:ss");
+                Console.WriteLine("Heart: " + _heart.GetData().HeartRate);
                 } else {
                     Engine.ChangeBikeSpeed(0);
                 }
@@ -51,7 +51,7 @@ namespace NetworkEngine.Socket
             }
         }
 
-        public void setResistance(int resistance)
+        public void SetResistance(int resistance)
         {
             byte[] data = { 164, 9, 78, 5, 48, 255, 255, 255, 255, 255, 255, (byte)((byte)resistance * 2), 0 };
             byte checksum = data[0];
@@ -62,17 +62,17 @@ namespace NetworkEngine.Socket
             data[12] = checksum;
 
             Console.WriteLine(BitConverter.ToString(data));
-            bike.SendMessage(data);
+            _bike.SendMessage(data);
         }
-        public BikeData getBikeData()
+        public BikeData GetBikeData()
         {
-            return bike.GetData();
+            return _bike.GetData();
         }
 
-        internal HeartData getHearthData()
+        internal HeartData GetHearthData()
         {
            
-            return heart.GetData();
+            return _heart.GetData();
         }
     }
 }
