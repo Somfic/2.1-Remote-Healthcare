@@ -98,6 +98,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                         var engine = new EngineConnection();
                         await engine.ConnectAsync(_vrid);
                         // Console.WriteLine("Enter Bike ID:");
+
                         
                          var bike = await DataProvider.GetBike(_bikeID);
                          var heart = await DataProvider.GetHeart();
