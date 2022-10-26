@@ -2,9 +2,9 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Media;
-using MvvmHelpers;
 using LiveCharts;
 using LiveCharts.Wpf;
+using MvvmHelpers;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Server.Models;
 
@@ -52,9 +52,9 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
             TotalTime = TimeSpan.FromSeconds(_currentSession.MiniDatas.Count);
             TotalDistance = CalculateTotalDistance();
 
-            SpeedData = new SeriesCollection()
+            SpeedData = new SeriesCollection
             {
-                new LineSeries()
+                new LineSeries
                 {
                     Fill = Brushes.Transparent,
                     Stroke = Brushes.DarkSeaGreen,
@@ -63,9 +63,9 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
                     Values = _speed,
                 }
             };
-            BpmData = new SeriesCollection()
+            BpmData = new SeriesCollection
             {
-                new LineSeries()
+                new LineSeries
                 {
                     Fill = Brushes.Transparent,
                     Stroke = Brushes.LightCoral,
@@ -200,7 +200,8 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
                 dist -= data.Distance;
                 continue;
             }
-            else if (prefValue >= 200 && currentValue <= 100)
+
+            if (prefValue >= 200 && currentValue <= 100)
                 dist += (255 - prefValue.Value) + currentValue;
             else if (currentValue <= 255)
                 dist += currentValue - prefValue.Value;

@@ -26,7 +26,7 @@ public class EngineConnection
 
     private JArray _hightForHouse;
     private bool[,] _roadArray;
-    private bool _roadLoad = false;
+    private bool _roadLoad;
 
     private string _tunnelId;
     private string _userId;
@@ -296,12 +296,6 @@ public class EngineConnection
                         {
                             _chatPannelId = result.Data.Data.Data.Uuid;
                             _log.Information("Pannel Node ID is: " + _chatPannelId);
-                            break;
-                        }
-                        default:
-                        {
-                            //_log.Information(JObject.Parse(json).ToString()); 
-                            ///fixme
                             break;
                         }
                     }
@@ -626,7 +620,6 @@ public class EngineConnection
             }
             else
             {
-                continue;
             }
         }
     }

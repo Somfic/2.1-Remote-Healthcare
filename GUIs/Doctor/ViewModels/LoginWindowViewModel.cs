@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using MvvmHelpers;
-using MvvmHelpers.Commands;
-using Newtonsoft.Json;
-using RemoteHealthcare.Common;
 using RemoteHealthcare.GUIs.Doctor.Commands;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;

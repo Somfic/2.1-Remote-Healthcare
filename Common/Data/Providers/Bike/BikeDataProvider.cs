@@ -1,6 +1,3 @@
-using System;
-using System.Threading.Tasks;
-
 namespace RemoteHealthcare.Common.Data.Providers.Bike;
 
 public abstract class BikeDataProvider : IDataProvider<BikeData>

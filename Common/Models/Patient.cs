@@ -1,6 +1,5 @@
 ﻿using LiveCharts;
 using MvvmHelpers;
-using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common.Logger;

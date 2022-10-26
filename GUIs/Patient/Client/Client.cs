@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Net.Cache;
 using System.Threading;
 using System.Threading.Tasks;
+using NetworkEngine.Socket;
 using Newtonsoft.Json;
 using RemoteHealthcare.Common;
+using RemoteHealthcare.Common.Data;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
-using RemoteHealthcare.Common.Socket.Server;
-using NetworkEngine.Socket;
 using RemoteHealthcare.GUIs.Patient.ViewModels;
-using System.Collections;
-using RemoteHealthcare.Common.Data;
 
 namespace RemoteHealthcare.GUIs.Patient.Client
 {
@@ -28,7 +25,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         private string doctorId;
         private string _sessionId;
         public PatientHomepageViewModel p;
-        private Boolean _sessienRunning = false;
+        private Boolean _sessienRunning;
 
         private Dictionary<string, Action<DataPacket>> _callbacks;
         public VrConnection _vrConnection;
@@ -62,7 +59,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
                 OpperationCode = OperationCodes.LOGIN,
-                data = new LoginPacketRequest()
+                data = new LoginPacketRequest
                 {
                     userName = _username,
                     password = _password,
@@ -86,7 +83,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
                 OpperationCode = OperationCodes.LOGIN,
-                data = new LoginPacketRequest()
+                data = new LoginPacketRequest
                 {
                     userName = _username,
                     password = _password,
@@ -152,7 +149,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                 {
                     OpperationCode = OperationCodes.BIKEDATA,
 
-                    data = new BikeDataPacket() 
+                    data = new BikeDataPacket
                     {
                         SessionId = _sessionId,
                         speed = bikedata.Speed,

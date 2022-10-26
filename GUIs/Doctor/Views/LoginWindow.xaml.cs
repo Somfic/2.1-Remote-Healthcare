@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using RemoteHealthcare.Common.Logger;
 
@@ -25,9 +23,9 @@ namespace RemoteHealthcare.GUIs.Doctor
         /// <param name="RoutedEventArgs">This is the event arguments that are passed to the event handler.</param>
         private void PasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
         {
-            if (this.DataContext != null)
+            if (DataContext != null)
             {
-                ((dynamic)this.DataContext).SecurePassword = ((PasswordBox)sender).SecurePassword;
+                ((dynamic)DataContext).SecurePassword = ((PasswordBox)sender).SecurePassword;
             }
         }
     }

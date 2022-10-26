@@ -13,10 +13,10 @@ public class Doctor
 
     public Doctor(string user, string pass, string UserId)
     {
-        this.Username = user;
-        this.Password = pass;
+        Username = user;
+        Password = pass;
         this.UserId = UserId;
-        this._sessions = new List<SessionData>();
+        _sessions = new List<SessionData>();
     }
 
     public void SaveSessionData(string foldername)

@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
+using RemoteHealthcare.NetworkEngine.Socket.Models.Response;
 
 namespace RemoteHealthcare.NetworkEngine.Socket.Models;
 
-public class DataResponse<TData> where TData : Response.IDataResponse
+public class DataResponse<TData> where TData : IDataResponse
 {
     [JsonProperty("id")] public string Id { get; set; }
 

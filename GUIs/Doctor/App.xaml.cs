@@ -14,7 +14,7 @@ namespace RemoteHealthcare.GUIs.Doctor
 
             navigationStore.CurrentViewModel = new LoginWindowViewModel(navigationStore);
                 
-            MainWindow = new MainWindow()
+            MainWindow = new MainWindow
             {
                 DataContext = new MainViewModel(navigationStore)
             };

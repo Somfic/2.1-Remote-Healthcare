@@ -7,10 +7,6 @@ public class DoctorData
     
     public Doctor _doctor { get; set; }
 
-    public DoctorData()
-    {
-    }
-
     public bool MatchLoginData(Doctor d)
     {
         if (_doctor == null)
@@ -19,8 +15,7 @@ public class DoctorData
         if (_doctor.Username.Equals(d.Username) && _doctor.Password.Equals(d.Password) &&
             _doctor.UserId.Equals(d.UserId))
             return true;
-        else 
-            return false;
+        return false;
     }
 
     public void SaveDoctorData()

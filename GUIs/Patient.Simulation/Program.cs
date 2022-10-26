@@ -19,22 +19,17 @@ while(true) {
     }
     
     if (amountOfClients < 1) {
-        log.Error("Amount of patients must be more than 0");
-        continue;
-    }
-    
-    if (amountOfClients > 10) {
-        log.Error("Amount of patients must be less than or equal to 10");
+        log.Error("Amount of patients must be greater than 0");
         continue;
     }
     
     break;
 }
 
-// Create new clients
+// Create the clients
 List<SimulatedClient> clients = new();
 for (var i = 0; i < amountOfClients; i++)
-    clients.Add(new SimulatedClient(i));
+    clients.Add(new SimulatedClient($"#{i}"));
 
 // Connect the clients to the server
 log.Information($"Connecting to server on {config.Host}:{config.Port}");
@@ -54,19 +49,10 @@ log.Information("Logging in clients");
 try
 {
     foreach (var client in clients)
-        client.OnLogin += async (sender, e) =>
-        {
-            await client.SendChat($"Hello world from simulation #{client.Id}");
-            
-            while (client.IsConnected)
-            {
-                await client.SendBikeData();
-                await Task.Delay(1000);
-            }
-        };
-    
-    foreach (var client in clients)
-        await client.LoginAsync($"sim{client.Id + 1}", "simulation");
+    {
+        await client.LoginAsync();
+        await Task.Delay(500);
+    }
 }
 catch (Exception ex)
 {
@@ -74,10 +60,11 @@ catch (Exception ex)
     return;
 }
 
-// Send fake data, as long as there is a client connected
-while (clients.Any(x => x.IsConnected))
+while (true)
 {
-    await Task.Delay(100);
+    await Task.Delay(1000);
+    foreach (var client in clients)
+    {
+        await client.SendBikeData();
+    }
 }
-
-log.Information("All clients disconnected, terminating");

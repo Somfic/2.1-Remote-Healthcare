@@ -1,5 +1,3 @@
-using System;
-
 namespace RemoteHealthcare.Common.Data;
 
 public class BikeData : IData

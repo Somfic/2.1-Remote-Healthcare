@@ -1,9 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MvvmHelpers;
-using MvvmHelpers.Commands;
 using RemoteHealthcare.GUIs.Doctor.Commands;
-using RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 namespace RemoteHealthcare.GUIs.Doctor;
 

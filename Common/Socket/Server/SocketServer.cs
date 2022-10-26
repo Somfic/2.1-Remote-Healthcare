@@ -57,7 +57,7 @@ public class SocketServer : ISocket
 
                 var socket = await Socket.AcceptTcpClientAsync();
                 
-                _log.Debug($"Socket client connected");
+                _log.Debug("Socket client connected");
                 
                  var client = SocketClient.CreateFromSocket(socket, _useEncryption);
                  Localclient = client;

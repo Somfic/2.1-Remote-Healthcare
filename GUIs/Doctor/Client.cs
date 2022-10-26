@@ -4,8 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
-using System.Windows.Navigation;
 using MvvmHelpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -125,7 +123,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             var req = new DataPacket<ChatPacketRequest>
             {
                 OpperationCode = OperationCodes.CHAT,
-                data = new ChatPacketRequest()
+                data = new ChatPacketRequest
                 {
                     senderId = _userId,
                     senderName = _userName,
@@ -144,7 +142,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             var req = new DataPacket<SetResistancePacket>
             {
                 OpperationCode = OperationCodes.SET_RESISTANCE,
-                data = new SetResistancePacket()
+                data = new SetResistancePacket
                 {
                     receiverId = target,
                     resistance = res
@@ -182,7 +180,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             var req = new DataPacket<ConnectedClientsPacketRequest>
             {
                 OpperationCode = OperationCodes.USERS,
-                data = new ConnectedClientsPacketRequest()
+                data = new ConnectedClientsPacketRequest
                 {
                     requester = _userId
                 }
@@ -197,7 +195,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
                 OpperationCode = OperationCodes.LOGIN,
-                data = new LoginPacketRequest()
+                data = new LoginPacketRequest
                 {
                     userName = _userName,
                     password = password,
@@ -335,12 +333,12 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         public void AddDoctorViewmodel(DoctorViewModel viewModel)
         {
-            this.DoctorViewModel = viewModel;
+            DoctorViewModel = viewModel;
         }
 
         public void AddPastSessionsViewmodel(PastSessionsViewModel viewModel)
         {
-            this.PastSessionsViewModel = viewModel;
+            PastSessionsViewModel = viewModel;
         }
 
         private void GetBikeData(DataPacket obj)

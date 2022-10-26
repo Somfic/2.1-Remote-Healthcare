@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace RemoteHealthcare.Common.Models
+﻿namespace RemoteHealthcare.Common.Models
 {
     public class SessionMiniData
     {

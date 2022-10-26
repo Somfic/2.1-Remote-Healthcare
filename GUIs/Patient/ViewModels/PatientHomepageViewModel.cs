@@ -1,14 +1,6 @@
-﻿using MvvmHelpers;
-using MvvmHelpers.Commands;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
+using MvvmHelpers.Commands;
 using NetworkEngine.Socket;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.NetworkEngine;
@@ -141,7 +133,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             var req = new DataPacket<ChatPacketRequest>
             {
                 OpperationCode = OperationCodes.CHAT,
-                data = new ChatPacketRequest()
+                data = new ChatPacketRequest
                 {
                     senderId = _client._username,
                     receiverId = null,

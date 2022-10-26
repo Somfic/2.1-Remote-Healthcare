@@ -25,7 +25,7 @@ public class DoctorViewModel : ObservableObject
     
     private Patient _currentUser;
     private string _chatMessage = "";
-    private int _resistance = 0;
+    private int _resistance;
     
     private ObservableCollection<Patient> _patients;
     public ObservableCollection<string> _chatMessages;
@@ -52,7 +52,7 @@ public class DoctorViewModel : ObservableObject
         set
         {
             username = value;
-            OnPropertyChanged(nameof(CurrentUserName));
+            OnPropertyChanged();
         }
     }
 
@@ -73,9 +73,9 @@ public class DoctorViewModel : ObservableObject
             
             //OnPropertyChanged(nameof(CurrentUser));
             
-            ChartDataSpeed = new SeriesCollection()
+            ChartDataSpeed = new SeriesCollection
             {
-                new LineSeries()
+                new LineSeries
                 {
                     Fill = Brushes.Transparent,
                     Stroke = Brushes.DarkSeaGreen,
@@ -85,9 +85,9 @@ public class DoctorViewModel : ObservableObject
                 }
             };
             
-            ChartDataBPM = new SeriesCollection()
+            ChartDataBPM = new SeriesCollection
             {
-                new LineSeries()
+                new LineSeries
                 {
                     Fill = Brushes.Transparent,
                     Stroke = Brushes.LightCoral,

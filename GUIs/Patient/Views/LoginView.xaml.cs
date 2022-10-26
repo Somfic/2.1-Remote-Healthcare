@@ -14,9 +14,9 @@ namespace RemoteHealthcare.GUIs.Patient.Views
        
         private void PasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
         {
-            if (this.DataContext != null)
+            if (DataContext != null)
             {
-                ((dynamic)this.DataContext).SecurePassword = ((PasswordBox)sender).SecurePassword;
+                ((dynamic)DataContext).SecurePassword = ((PasswordBox)sender).SecurePassword;
             }
         }
 

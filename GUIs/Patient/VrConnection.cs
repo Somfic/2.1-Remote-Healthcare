@@ -1,7 +1,6 @@
 ﻿
 
 using System;
-using System.Data;
 using System.Threading;
 using RemoteHealthcare.Common.Data;
 using RemoteHealthcare.Common.Data.Providers.Bike;
@@ -23,7 +22,7 @@ namespace NetworkEngine.Socket
         {
             this.bike = bike;
             this.heart = heart;
-            this.Engine = engine;
+            Engine = engine;
         }
 
         public bool session;
@@ -54,13 +53,13 @@ namespace NetworkEngine.Socket
 
         public void setResistance(int resistance)
         {
-            byte[] data = (new byte[] { 164, 9, 78, 5, 48, 255, 255, 255, 255, 255, 255, (byte)((byte)resistance * 2), 0 });
+            byte[] data = { 164, 9, 78, 5, 48, 255, 255, 255, 255, 255, 255, (byte)((byte)resistance * 2), 0 };
             byte checksum = data[0];
             for (int i = 1; i < 12; i++)
             {
                 checksum ^= data[i];
             }
-            data[12] = (byte)checksum;
+            data[12] = checksum;
 
             Console.WriteLine(BitConverter.ToString(data));
             bike.SendMessage(data);

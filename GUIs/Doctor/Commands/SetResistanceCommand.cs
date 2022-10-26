@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 namespace RemoteHealthcare.GUIs.Doctor.Commands;

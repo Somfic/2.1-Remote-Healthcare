@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
 using Avans.TI.BLE;
 using RemoteHealthcare.Common.Logger;
 
@@ -38,7 +36,7 @@ public class BluetoothDevice
             {
                 checksum ^= bytes[i];
             }
-            bytes[12] = (byte)checksum;
+            bytes[12] = checksum;
             _log.Information("Sending: " + BitConverter.ToString(bytes));
             await _bluetoothConnection.WriteCharacteristic(_sendCharacteristic, bytes);
         } else throw new Exception("Not in format");

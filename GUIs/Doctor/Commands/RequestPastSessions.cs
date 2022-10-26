@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using System.Windows.Media;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.GUIs.Doctor.ViewModels;
@@ -33,7 +32,7 @@ public class RequestPastSessions : BaseCommand
             _client._client.SendAsync(new DataPacket<AllSessionsFromPatientRequest>
             {
                 OpperationCode = OperationCodes.GET_PATIENT_SESSSIONS,
-                data = new AllSessionsFromPatientRequest()
+                data = new AllSessionsFromPatientRequest
                 {
                     userId = userId
                 }

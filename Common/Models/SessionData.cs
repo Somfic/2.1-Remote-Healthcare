@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using MvvmHelpers;
+using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common.Models;
-using System.Timers;
-using MvvmHelpers;
 
 namespace RemoteHealthcare.Server.Models;
 
