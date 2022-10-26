@@ -22,7 +22,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         public VrConnection _vrConnection;
 
         public string _password { get; set; }
-        public string _username { get; set; }
+        public string _userName { get; set; }
         public bool _loggedIn;
         private Boolean _sessienRunning = false;
         private string _sessionId;
@@ -56,12 +56,12 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                 OpperationCode = OperationCodes.LOGIN,
                 data = new LoginPacketRequest()
                 {
-                    username = _username,
+                    userName = _userName,
                     password = _password,
                     isDoctor = false
                 }
             };
-            _log.Debug(loginReq.ToJson());
+            _log.Error(loginReq.ToJson());
             
             await _client.SendAsync(loginReq);
         }
@@ -71,7 +71,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         {
             _log.Information("Hello Client!");
             _log.Information("Wat is uw telefoonnummer? ");
-            _username = Console.ReadLine();
+            _userName = Console.ReadLine();
             _log.Information("Wat is uw wachtwoord? ");
             _password = Console.ReadLine();
 
@@ -80,7 +80,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                 OpperationCode = OperationCodes.LOGIN,
                 data = new LoginPacketRequest()
                 {
-                    username = _username,
+                    userName = _userName,
                     password = _password,
                     isDoctor = false
                 }
@@ -160,7 +160,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         //the methode for the send chat request
         private void ChatHandler(DataPacket packetData)
         {
-            _log.Information($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+            _log.Information($"{packetData.GetData<ChatPacketResponse>().senderName}: {packetData.GetData<ChatPacketResponse>().message}");
         }
 
         //the methode for the login request
@@ -172,7 +172,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             if (statusCode.Equals(200))
             {
                 userId = packetData.GetData<LoginPacketResponse>().userId;
-                _log.Information($"Succesfully logged in to the user: {_username}; {_password}; {userId}.");
+                _log.Information($"Succesfully logged in to the user: {_userName}; {_password}; {userId}.");
                 _loggedIn = true;
             }
             else

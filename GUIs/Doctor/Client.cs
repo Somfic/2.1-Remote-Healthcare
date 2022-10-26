@@ -31,7 +31,7 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         private Log _log = new(typeof(Client));
         public string password { get; set; }
-        public string username { get; set; }
+        public string _userName { get; set; }
         public bool loggedIn { get; set; }
         private string _userId;
 
@@ -126,6 +126,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                 data = new ChatPacketRequest()
                 {
                     senderId = _userId,
+                    senderName = _userName,
                     receiverId = target,
                     message = chatInput
                 }
@@ -196,7 +197,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                 OpperationCode = OperationCodes.LOGIN,
                 data = new LoginPacketRequest()
                 {
-                    username = username,
+                    userName = _userName,
                     password = password,
                     isDoctor = true
                 }
@@ -262,7 +263,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             foreach (var chatMessage in DoctorViewModel._chatMessages)
                 chats.Add(chatMessage);
             
-            chats.Add($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+            chats.Add($"{packetData.GetData<ChatPacketResponse>().senderName}: {packetData.GetData<ChatPacketResponse>().message}");
             _log.Warning("setting now");
             _log.Warning($"{DoctorViewModel.ChatMessages.Count}");
             DoctorViewModel.ChatMessages = chats;
@@ -288,7 +289,8 @@ namespace RemoteHealthcare.GUIs.Doctor
             if (((int)packetData.GetData<LoginPacketResponse>().statusCode).Equals(200))
             {
                 _userId = packetData.GetData<LoginPacketResponse>().userId;
-                _log.Information($"Succesfully logged in to the user: {username}; {password}; {_userId}.");
+                _userName = packetData.GetData<LoginPacketResponse>().userName;
+                _log.Information($"Succesfully logged in to the user: {_userName}; {password}; {_userId}.");
                 loggedIn = true;
             }
             else

@@ -77,6 +77,7 @@ namespace RemoteHealthcare.Client.Client
                             data = new ChatPacketRequest()
                             {
                                 senderId = userId,
+                                senderName = _username,
                                 receiverId = null,
                                 message = ChatMessage
                             }
@@ -159,11 +160,13 @@ namespace RemoteHealthcare.Client.Client
                 OpperationCode = OperationCodes.LOGIN,
                 data = new LoginPacketRequest()
                 {
-                    username = _username,
+                    userName = _username,
                     password = _password,
                     isDoctor = false
                 }
             };
+
+            _log.Error(loginReq.ToJson());
 
             await _client.SendAsync(loginReq);
         }
@@ -210,7 +213,7 @@ namespace RemoteHealthcare.Client.Client
         private async void ChatHandlerAsync(DataPacket packetData)
         {
             string messageReceived =
-                $"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}";
+                $"{packetData.GetData<ChatPacketResponse>().senderName}: {packetData.GetData<ChatPacketResponse>().message}";
             _log.Information(messageReceived);
             try
             {
@@ -230,6 +233,7 @@ namespace RemoteHealthcare.Client.Client
             if (statusCode.Equals(200))
             {
                 userId = packetData.GetData<LoginPacketResponse>().userId;
+                _username = packetData.GetData<LoginPacketResponse>().userName;
                 _log.Information($"Succesfully logged in to the user: {_username}; {_password}; {userId}.");
                 _loggedIn = true;
             }
