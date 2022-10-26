@@ -171,6 +171,8 @@ namespace RemoteHealthcare.Client.Client
         //this methode will get the right methode that will be used for the response from the server
         public void HandleData(DataPacket packet)
         {
+            _log.Warning($"Received: \r\n\r\n{packet.ToJson()}");
+            
             //Checks if the OppCode (OperationCode) does exist.
             if (_functions.TryGetValue(packet.OpperationCode, out var action))
             {

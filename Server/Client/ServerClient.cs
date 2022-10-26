@@ -283,7 +283,7 @@ namespace RemoteHealthcare.Server.Client
                         senderId = data.senderId,
                         message = data.message
                     }
-                });
+                }, targetIds);
             }
         }
 
