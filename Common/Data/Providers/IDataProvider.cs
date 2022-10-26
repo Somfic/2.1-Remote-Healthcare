@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace RemoteHealthcare.Client.Data.Providers;
+namespace RemoteHealthcare.Common.Data.Providers;
 
 public interface IDataProvider<out TData> where TData : IData
 {

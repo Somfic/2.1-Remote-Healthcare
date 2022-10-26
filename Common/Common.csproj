@@ -17,4 +17,10 @@
       <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="BLELibrary">
+        <HintPath>..\Client\BLELibrary.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>

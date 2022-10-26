@@ -35,27 +35,29 @@ namespace RemoteHealthcare.GUIs.Doctor
         public bool loggedIn { get; set; }
         private string _userId;
 
-        private Dictionary<string, Action<DataPacket>> _functions = new();
         public bool hasSessionResponce;
+
+        private Dictionary<string, Action<DataPacket>> _callbacks = new();
+
 
         public Client()
         {
             loggedIn = false;
             hasSessionResponce = false;
             _patientList = new List<Patient>();
+            _callbacks = new Dictionary<string, Action<DataPacket>>();
             Sessions = new List<SessionData>();
-            _functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
-            _functions.Add("login", LoginFeature);
-            _functions.Add("users", RequestConnectionsFeature);
-            _functions.Add("chat", ChatHandler);
-            _functions.Add("session start", SessionStartHandler);
-            _functions.Add("session stop", SessionStopHandler);
-            _functions.Add("emergency stop", EmergencyStopHandler);
-            _functions.Add("get patient data", GetPatientDataHandler);
-            _functions.Add("get patient sessions", GetPatientSessionsHandler);
-            _functions.Add("bikedata", GetBikeData);
+            _callbacks.Add(OperationCodes.LOGIN, LoginFeature);
+            _callbacks.Add(OperationCodes.USERS, RequestConnectionsFeature);
+            _callbacks.Add(OperationCodes.CHAT, ChatHandler);
+            _callbacks.Add(OperationCodes.SESSION_START, SessionStartHandler);
+            _callbacks.Add(OperationCodes.SESSION_STOP, SessionStopHandler);
+            _callbacks.Add(OperationCodes.EMERGENCY_STOP, EmergencyStopHandler);
+            _callbacks.Add(OperationCodes.GET_PATIENT_DATA, GetPatientDataHandler);
+            _callbacks.Add(OperationCodes.BIKEDATA, GetBikeData);
+            _callbacks.Add(OperationCodes.GET_PATIENT_SESSSIONS, GetPatientSessionsHandler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -223,7 +225,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             _log.Debug($"Received: {packet.ToJson()}");
             //Checks if the OppCode (OperationCode) does exist.
-            if (_functions.TryGetValue(packet.OpperationCode, out var action))
+            if (_callbacks.TryGetValue(packet.OpperationCode, out var action))
             {
                 action.Invoke(packet);
             }
@@ -255,7 +257,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             _log.Information(obj.GetData<SessionStopPacketResponse>().message);
         }
-
+        
         //the methode for printing out the received message
         private void ChatHandler(DataPacket packetData)
         {
@@ -264,12 +266,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                 chats.Add(chatMessage);
             
             chats.Add($"{packetData.GetData<ChatPacketResponse>().senderName}: {packetData.GetData<ChatPacketResponse>().message}");
-            _log.Warning("setting now");
-            _log.Warning($"{DoctorViewModel.ChatMessages.Count}");
             DoctorViewModel.ChatMessages = chats;
-            _log.Warning($"{DoctorViewModel.ChatMessages.Count}");
-            //DoctorViewModel.AddMessage($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
-            //BindingOperations.EnableCollectionSynchronization(DoctorViewModel._chatMessages, $"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
         }
 
         private void RequestConnectionsFeature(DataPacket packetData)
@@ -286,6 +283,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         //the methode for the login request
         private void LoginFeature(DataPacket packetData)
         {
+            _log.Debug($"Responce: {packetData.ToJson()}");
             if (((int)packetData.GetData<LoginPacketResponse>().statusCode).Equals(200))
             {
                 _userId = packetData.GetData<LoginPacketResponse>().userId;

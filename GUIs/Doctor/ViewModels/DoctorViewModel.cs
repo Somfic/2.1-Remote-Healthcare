@@ -66,6 +66,12 @@ public class DoctorViewModel : ObservableObject
         {
             
             _currentUser = value;
+            if (CurrentUser != null)
+            {
+                CurrentUserName = CurrentUser.Username;
+            }
+            
+            //OnPropertyChanged(nameof(CurrentUser));
             
             ChartDataSpeed = new SeriesCollection()
             {
@@ -91,6 +97,7 @@ public class DoctorViewModel : ObservableObject
                 }
             };
             OnPropertyChanged();
+            _log.Debug("OnPropertyChanged() has been called.");
         }
     }
 

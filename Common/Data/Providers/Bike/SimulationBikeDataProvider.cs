@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace RemoteHealthcare.Client.Data.Providers.Bike;
+namespace RemoteHealthcare.Common.Data.Providers.Bike;
 
 public class SimulationBikeDataProvider : BikeDataProvider
 {
