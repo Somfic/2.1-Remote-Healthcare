@@ -104,4 +104,21 @@ public class SimulatedClient
         
         await _socket.SendAsync(dataReq);
     }
+
+    public async Task SendChat(string message)
+    {
+        var chatReq = new DataPacket<ChatPacketRequest>
+        {
+            OpperationCode = OperationCodes.CHAT,
+                            
+            data = new ChatPacketRequest()
+            {
+                senderId = $"Simulation #{Id}",
+                receiverId = "Dhr145",
+                message = message
+            }
+        };
+        
+        await _socket.SendAsync(chatReq);
+    }
 }
