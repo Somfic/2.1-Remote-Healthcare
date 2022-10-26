@@ -10,13 +10,6 @@ public class PatientData
 
     public PatientData()
     {
-        /*Patients = new List<Patient>
-        {
-            new("Johan Talboom", "1234", "3245"),
-            new("Hans Van der linden", "1234", "3245"),
-            new("Co Nelen", "1234", "3245")
-        };*/
-
         Patients = ReadUsersFromJson();
     }
 

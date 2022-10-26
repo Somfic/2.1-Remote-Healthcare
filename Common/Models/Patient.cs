@@ -12,32 +12,6 @@ public class Patient : ObservableObject
     private Log _log = new(typeof(Patient));
 
 
-    public ChartValues<int> BpmData = new();
-
-    public ChartValues<float> SpeedData = new();
-
-    public Patient(string user, string password, string? username = null)
-    {
-        Password = password;
-        UserId = user;
-        if (username != null)
-        {
-            Username = username;
-        }
-
-        Sessions = new List<SessionData>();
-
-        string pathString = Path.Combine(Environment.CurrentDirectory.Substring(0, 
-            Environment.CurrentDirectory.LastIndexOf("bin")), "allSessions", UserId);
-
-        if (!Directory.Exists(pathString))
-        {
-            Directory.CreateDirectory(pathString);
-        }
-
-        
-    }
-
     public List<SessionData> Sessions { get; set; }
 
     public string Username { get; set; }
@@ -48,6 +22,31 @@ public class Patient : ObservableObject
     public float CurrentDistance { get; set; }
     public TimeSpan CurrentElapsedTime { get; set; }
     public int CurrentBpm { get; set; }
+
+    public ChartValues<int> BpmData = new();
+
+    public ChartValues<float> SpeedData = new();
+
+    public Patient(string userId, string password, string? username = null)
+    {
+        Password = password;
+        UserId = userId;
+        if (username != null)
+        {
+            Username = username;
+        }
+
+        Sessions = new List<SessionData>();
+        
+        string pathString = Path.Combine(Environment.CurrentDirectory.Substring(0, 
+            Environment.CurrentDirectory.LastIndexOf("bin")), "allSessions", UserId);
+
+        if (!Directory.Exists(pathString))
+        {
+            Directory.CreateDirectory(pathString);
+            _log.Debug($"CreateDirectory: {pathString}");
+        }
+    }
 
     /// <summary>
     ///     It takes a folder name as a parameter, creates a directory with the user's username, and then creates a file for
