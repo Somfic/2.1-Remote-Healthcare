@@ -1,11 +1,12 @@
 ﻿using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common.Models;
 using System.Timers;
+using MvvmHelpers;
 
 namespace RemoteHealthcare.Server.Models;
 
 [Serializable]
-public class SessionData
+public class SessionData : ObservableObject
 {
     public string SessionId { get; set; }
     public string DeviceType { get; set; }
@@ -42,5 +43,10 @@ public class SessionData
         }
         MiniDatas.Add(new SessionMiniData(speed, distance, heartrate, elapsed));
         return true;
+    }
+
+    public override string ToString()
+    {
+        return $"{SessionId} - {Id}";
     }
 }

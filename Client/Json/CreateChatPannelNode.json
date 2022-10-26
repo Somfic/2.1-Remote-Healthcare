@@ -4,20 +4,20 @@
     "dest": "",
     "data": {
       "id": "scene/node/add",
-      "serial": "10",
+      "serial": "11",
       "data": {
-        "name": "name",
+        "name": "ChatPannel",
         "parent": "guid",
         "components": {
           "transform": {
-            "position": [ -25, 115, 0 ],
+            "position": [ -80, 115, 80 ],
             "scale": 1,
-            "rotation": [ 0, 90, 0 ]
+            "rotation": [ -15, 130, 0 ]
           },
           "panel": {
-            "size": [ 15, 10 ],
-            "resolution": [ 200, 200 ],
-            "background": [ 0, 0, 0, 0.5 ],
+            "size": [ 50, 50 ],
+            "resolution": [ 750, 750 ],
+            "background": [ 0, 0, 0, 0.15 ],
             "castShadow": true
           }
         }
