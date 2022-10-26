@@ -15,7 +15,7 @@ public abstract class BaseCommand : IAsyncCommand
 
     protected void OnCanExecuteChanged()
     {
-        CanExecuteChanged?.Invoke(this, new EventArgs());
+        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public abstract Task ExecuteAsync();
