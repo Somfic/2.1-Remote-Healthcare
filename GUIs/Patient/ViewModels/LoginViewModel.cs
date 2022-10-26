@@ -77,7 +77,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             Console.WriteLine("Got window, logging in patient");
             if (!_client._loggedIn)
             {
-                _client._userName = Username;
+                _client._username = Username;
                 _client._password = SecureStringToString(SecurePassword);
                 
                 try {
