@@ -1,11 +1,9 @@
-using System;
-using System.Threading.Tasks;
-using RemoteHealthcare.Client.Data.Providers.Bike;
-using RemoteHealthcare.Client.Data.Providers.Heart;
+using RemoteHealthcare.Common.Data.Providers.Bike;
+using RemoteHealthcare.Common.Data.Providers.Heart;
 using RemoteHealthcare.Common.Logger;
-using RemoteHealthcare.GUIs.Patient.Data.Providers.Bike;
 
-namespace RemoteHealthcare.Client.Data.Providers;
+
+namespace RemoteHealthcare.Common.Data.Providers;
 
 public static class DataProvider
 {

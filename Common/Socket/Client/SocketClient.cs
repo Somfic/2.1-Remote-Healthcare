@@ -12,12 +12,16 @@ public class SocketClient : ISocket
     public TcpClient Socket { get; private set; } = new(); 
     
     public Guid Id { get; } = Guid.NewGuid();
+    public Dictionary<string, Action<DataPacket>> callbacks;
+
     
     private readonly Log _log = new(typeof(SocketClient));
 
     public SocketClient(bool useEncryption)
     {
         _useEncryption = useEncryption;
+        callbacks = new Dictionary<string, Action<DataPacket>>();
+
     }
 
     public static SocketClient CreateFromSocket(TcpClient socket, bool useEncryption)
@@ -68,6 +72,14 @@ public class SocketClient : ISocket
     public Task SendAsync(dynamic data)
     {
         string json = JsonConvert.SerializeObject(data);
+        return SendAsync(json);
+    }
+
+    public Task SendAsync<T>(DataPacket<T> packet, Action<DataPacket> callback) where T : DAbstract
+    {
+        this.callbacks.Add(packet.OpperationCode, callback);
+
+        string json = JsonConvert.SerializeObject(packet);
         return SendAsync(json);
     }
     

@@ -2,10 +2,10 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
         <RootNamespace>RemoteHealthcare.GUIs.Doctor</RootNamespace>
+        <TargetFramework>net6.0-windows</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,6 +16,14 @@
     <ItemGroup>
       <None Remove="Images\fiets.png" />
       <Resource Include="Images\fiets.png" />
+      <None Remove="Images\bpmIcon.png" />
+      <Resource Include="Images\bpmIcon.png" />
+      <None Remove="Images\roadIcon.png" />
+      <Resource Include="Images\roadIcon.png" />
+      <None Remove="Images\speedIcon.png" />
+      <Resource Include="Images\speedIcon.png" />
+      <None Remove="Images\timeIcon.png" />
+      <Resource Include="Images\timeIcon.png" />
     </ItemGroup>
 
     <ItemGroup>

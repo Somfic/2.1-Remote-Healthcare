@@ -6,7 +6,7 @@
         <UseWPF>true</UseWPF>
         <RootNamespace>RemoteHealthcare.GUIs.Patient</RootNamespace>
         <LangVersion>10</LangVersion>
-        <TargetFramework>net6.0-windows</TargetFramework>
+        <TargetFramework>net472</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
@@ -18,12 +18,14 @@
 
     <ItemGroup>
       <Resource Include="images\fiets.png" />
+      <None Remove="images\logos.JPG" />
+      <Resource Include="images\logos.JPG" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Common\Common.csproj" />
       <ProjectReference Include="..\..\NetworkEngine\NetworkEngine.csproj" />
-      <ProjectReference Include="..\Doctor\Doctor.csproj" />
+     
     </ItemGroup>
 
     <ItemGroup>
@@ -39,6 +41,10 @@
       <Reference Include="BLELibrary">
         <HintPath>..\..\Client\BLELibrary.dll</HintPath>
       </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Roadload" />
     </ItemGroup>
 
 </Project>

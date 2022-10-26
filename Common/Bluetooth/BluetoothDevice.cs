@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Avans.TI.BLE;
 using RemoteHealthcare.Common.Logger;
 
-namespace RemoteHealthcare.GUIs.Patient.Bluetooth;
+namespace RemoteHealthcare.Common.Bluetooth;
 
 public class BluetoothDevice
 {
@@ -64,7 +64,6 @@ public class BluetoothDevice
             {
                 _log.Information(device);
             }
-
 
             if (!devices.Contains(_deviceName))
             {

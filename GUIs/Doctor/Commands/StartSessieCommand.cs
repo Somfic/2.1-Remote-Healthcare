@@ -26,12 +26,11 @@ public class StartSessieCommand : BaseCommand
             {
                 selectedPatient = _viewModel.CurrentUser.UserId
             }
-            
         });
     }
 
-    public override async Task ExecuteAsync()
+    public override Task ExecuteAsync()
     {
-        
+        throw new NotImplementedException();
     }
 }

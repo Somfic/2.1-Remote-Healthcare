@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace RemoteHealthcare.Client.Data.Providers.Heart;
+namespace RemoteHealthcare.Common.Data.Providers.Heart;
 
 public class SimulationHeartDataProvider : HeartDataProvider
 {

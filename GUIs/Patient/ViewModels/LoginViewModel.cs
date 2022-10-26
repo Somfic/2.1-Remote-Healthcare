@@ -9,7 +9,8 @@ using MvvmHelpers;
 using MvvmHelpers.Commands;
 using System.Windows.Input;
 using NetworkEngine.Socket;
-using RemoteHealthcare.Client.Data.Providers;
+using RemoteHealthcare.Common;
+using RemoteHealthcare.Common.Data.Providers;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.NetworkEngine;
 
@@ -21,7 +22,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private string _username;
         private SecureString _securePassword;
         private string _bikeID;
-        private string _Vrid;
+        private string _vrid;
         private Client.Client _client;
         private VrConnection vrConnection;
 
@@ -64,15 +65,14 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
         public string VrId
         {
-            get => _Vrid;
-            set => _Vrid = value;
+            get => _vrid;
+            set => _vrid = value;
         }
         
         public ICommand LogIn { get; }
         
       async void LogInPatient(object window)
-        { 
-            
+        {
             await _client._client.ConnectAsync("127.0.0.1", 15243);
             Console.WriteLine("Got window, logging in patient");
             if (!_client._loggedIn)
@@ -88,33 +88,37 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 }
 
                 await Task.Delay(1000);
-
+                PatientHomepageViewModel pvm = new PatientHomepageViewModel(_navigationStore, _client);
                 if (_client._loggedIn)
                 {
-                    _navigationStore.CurrentViewModel = new PatientHomepageViewModel(_navigationStore, _client);
+                    _navigationStore.CurrentViewModel = pvm;
+                    // ((Window) window).Close();
+                    try
+                    {
+                        var engine = new EngineConnection();
+                        await engine.ConnectAsync(_vrid);
+                        // Console.WriteLine("Enter Bike ID:");
+
+                        
+                         var bike = await DataProvider.GetBike(_bikeID);
+                         var heart = await DataProvider.GetHeart();
+                         vrConnection = new VrConnection(bike, heart, engine);
+                         
+                         //The client get the vrConnection 
+                         _client._vrConnection = vrConnection;
+                         
+                         //Prevends that he GUI patient crash 
+                         new Thread(async () => { vrConnection.Start(pvm); }).Start();
+
+                         await Task.Delay(-1);
+                    }
+                    catch (Exception ex)
+                    {
+                        var log = new Log(typeof(LoginViewModel));
+                        log.Critical(ex, "Program stopped because of exception");
+                    }
                 }
             }
-
-
-            /*try
-            {
-                var engine = new EngineConnection();
-                await engine.ConnectAsync();
-                    Console.WriteLine("Enter Bike ID:");
-                    var bike = await DataProvider.GetBike(_bikeID);
-                    var heart = await DataProvider.GetHeart();
-                    vrConnection = new VrConnection(bike, heart);
-                    // vrConnection.Start();
-
-                    // _client = new Client.Client(vrConnection);
-
-                    await Task.Delay(-1);
-                }
-                catch (Exception ex)
-                {
-                    var log = new Log(typeof(LoginViewModel));
-                    log.Critical(ex, "Program stopped because of exception");
-                }*/
         }
       
         public string SecureStringToString(SecureString value)

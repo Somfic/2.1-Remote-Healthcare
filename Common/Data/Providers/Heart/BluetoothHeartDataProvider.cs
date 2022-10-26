@@ -1,12 +1,13 @@
-using System.Threading.Tasks;
-using RemoteHealthcare.GUIs.Patient.Bluetooth;
 
-namespace RemoteHealthcare.Client.Data.Providers.Heart;
+
+using RemoteHealthcare.Common.Bluetooth;
+
+namespace RemoteHealthcare.Common.Data.Providers.Heart;
 
 public class BluetoothHeartDataProvider : HeartDataProvider
 {
     private readonly BluetoothDevice
-        _heartSensor = new("Decathlon Dual HR", "HeartRate", "HeartRateMeasurement","", 0, 16);
+        _heartSensor = new("Decathlon Dual HR", "HeartRate", "HeartRateMeasurement","", 0, 22);
 
     public override async Task Initialise()
     {
@@ -17,5 +18,7 @@ public class BluetoothHeartDataProvider : HeartDataProvider
     {
         SetId(_heartSensor.ServiceName);
         SetHeartRate(_heartSensor.ReceivedData[1]);
+   
+        
     }
 }

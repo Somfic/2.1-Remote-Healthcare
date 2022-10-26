@@ -32,16 +32,16 @@ public class LoginCommand : BaseCommand
 
         if (!_loginWindowViewModel._client.loggedIn)
         {
-            _loginWindowViewModel._client.username = _loginWindowViewModel.Username;
+            _loginWindowViewModel._client._userName = _loginWindowViewModel.Username;
             _loginWindowViewModel._client.password = _loginWindowViewModel.SecureStringToString(_loginWindowViewModel.SecurePassword);
+            
             try
             {
                 new Thread(async () =>
                 {
                     await _loginWindowViewModel._client.AskForLoginAsync();
                 }).Start();
-            }
-            catch (Exception exception)
+            } catch (Exception exception)
             {
                 Console.WriteLine(exception);
                 throw;

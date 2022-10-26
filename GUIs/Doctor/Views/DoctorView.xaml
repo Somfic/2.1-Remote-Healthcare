@@ -26,24 +26,38 @@
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-
-        <Label Grid.Row="0" Grid.RowSpan="2" Margin="10,10,10,10" Name="NameLabel"
-               Content="{Binding CurrentUser.Username}">
-        </Label>
-        <ComboBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="25" Margin="10,10,10,10"
+        <ComboBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Height="25" Margin="10,10,10,10"
                   ItemsSource="{Binding Patients}" DisplayMemberPath="Username" SelectedValue="{Binding CurrentUser}">
         </ComboBox>
-
-        <Label Grid.Column="0" Grid.Row="2" Content="Resistance" VerticalAlignment="Bottom"></Label>
-        <Slider Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Margin="10,10,10,10"></Slider>
-
-        <Rectangle Grid.Column="0" Grid.Row="4"></Rectangle>
+        
+        <Label Grid.Column="0" Grid.Row="1" Content="Resistance" VerticalAlignment="Bottom"></Label>
+        <Slider Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="10,10,10,10" Name="ResistanceSlider" Value="{Binding Resistance}" Maximum="100" TickPlacement="BottomRight" TickFrequency="10" IsSnapToTickEnabled="True" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"></Slider>
+        <Button Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Margin="0,0,0,0" Name="ResistanceSliderButton" Command="{Binding SetResistanceCommand}" Content="SetResistance"></Button>
+        
+        <Rectangle Grid.Column="0" Grid.Row="4">
+            <Rectangle.Fill>
+                <ImageBrush ImageSource="/Images/bpmIcon.png" Stretch="Uniform"></ImageBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <!--<Image Grid.Column="0" Grid.Row="4" Source="/Images/bpmIcon.png" Stretch="UniformToFill"></Image>-->
         <Label Grid.Column="0" Grid.Row="5" Content="{Binding BPM}" HorizontalAlignment="Center"></Label>
-        <Rectangle Grid.Column="0" Grid.Row="6"></Rectangle>
+        <Rectangle Grid.Column="0" Grid.Row="6">
+            <Rectangle.Fill>
+                <ImageBrush ImageSource="/Images/speedIcon.png" Stretch="Uniform"></ImageBrush>
+            </Rectangle.Fill>
+        </Rectangle>
         <Label Grid.Column="0" Grid.Row="7" Content="{Binding Speed}" HorizontalAlignment="Center"></Label>
-        <Rectangle Grid.Column="1" Grid.Row="4"></Rectangle>
+        <Rectangle Grid.Column="1" Grid.Row="4">
+            <Rectangle.Fill>
+                <ImageBrush ImageSource="/Images/timeIcon.png" Stretch="Uniform"></ImageBrush>
+            </Rectangle.Fill>
+        </Rectangle>
         <Label Grid.Column="1" Grid.Row="5" Content="{Binding ElapsedTime}" HorizontalAlignment="Center"></Label>
-        <Rectangle Grid.Column="1" Grid.Row="6"></Rectangle>
+        <Rectangle Grid.Column="1" Grid.Row="6">
+            <Rectangle.Fill>
+                <ImageBrush ImageSource="/Images/roadIcon.png" Stretch="Uniform"></ImageBrush>
+            </Rectangle.Fill>
+        </Rectangle>
         <Label Grid.Column="1" Grid.Row="7" Content="{Binding Distance}" HorizontalAlignment="Center"></Label>
         
         <Label Grid.Row="0" Grid.Column="2" VerticalAlignment="Bottom" Content="Speed"/>
