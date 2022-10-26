@@ -42,10 +42,10 @@ public class Server
         _connectedClients.Add(new ServerClient(client));
 
         _log.Debug("ALLE HUIDIGE TCP-USER ZIJN:");
-        foreach (SocketClient user in SocketServer.Clients)
+        /*foreach (SocketClient user in SocketServer.Clients)
         {
             _log.Debug(user.ToString());
-        }
+        }*/
     }
 
     internal static void Disconnect(ServerClient client)
