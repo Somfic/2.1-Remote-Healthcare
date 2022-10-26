@@ -9,10 +9,4 @@ public class Configuration
     
     [JsonProperty("port")]
     public int Port { get; init; }
-    
-    [JsonProperty("username")]
-    public string Username { get; init; }
-    
-    [JsonProperty("password")]
-    public string Password { get; init; }
 }
