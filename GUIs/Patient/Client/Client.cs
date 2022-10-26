@@ -121,6 +121,9 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         {
             Console.WriteLine("Sessie gestopt");
             _sessienRunning = false;
+            System.Diagnostics.Process.Start("CMD.exe","/C start /max chrome.exe https://youtu.be/5JD6ejmlpa8?t=66");
+            p.Session = "Sessie gestopt";
+
         }
 
         //the methode for the session start request

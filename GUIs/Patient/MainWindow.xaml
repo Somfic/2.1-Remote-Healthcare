@@ -8,7 +8,7 @@
         xmlns:viewModels="clr-namespace:RemoteHealthcare.GUIs.Patient.ViewModels"
 
         mc:Ignorable="d"
-        Background="IndianRed"
+        Background="#222222"
         
         Title="Main Window" Height="450" Width="800">
         <Grid>

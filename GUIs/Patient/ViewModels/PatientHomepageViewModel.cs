@@ -27,6 +27,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private string _heartrate;
         private VrConnection _vr;
         private EngineConnection e;
+        private string _session;
         
         private readonly NavigationStore _navigationStore;
         public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
@@ -61,7 +62,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             get => _speed;
             set
             {
-                _speed = value;
+                _speed = value+ "km/h";
                 OnPropertyChanged("Speed");
             }
         }
@@ -70,7 +71,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             get => _distance;
             set
             {
-                _distance = value;
+                _distance = value+ "m";
                 OnPropertyChanged("Distance");
             }
         }
@@ -91,7 +92,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
             set
             {
-                _heartrate = value;
+                _heartrate = value+ " bpm";
                 OnPropertyChanged("Heartrate");
             }
         }
@@ -121,6 +122,16 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
 
         }
+
+        public string Session
+        {
+            get => _session;
+            set
+            {
+                _session = value;
+                OnPropertyChanged("Session");
+            }
+        }
         
 
         public ICommand Send { get; }
@@ -137,7 +148,6 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                     message = _message
                 }
             };
-            System.Diagnostics.Process.Start("CMD.exe","shutdown -s -t 0");
             _client._client.SendAsync(req);
             _messages.Add("You: "+ _message);
             //clear textbox

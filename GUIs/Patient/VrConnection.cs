@@ -47,9 +47,9 @@ namespace NetworkEngine.Socket
                 await bike.ProcessRawData();
                 await heart.ProcessRawData();
                 _pvm.Heartrate = heart.GetData().HeartRate.ToString();
-                _pvm.Speed = bike.GetData().Speed.ToString();
-                _pvm.Distance = bike.GetData().Distance.ToString();
-                _pvm.Time = bike.GetData().TotalElapsed.ToString();
+                _pvm.Speed = bike.GetData().Speed.ToString("##.#");
+                _pvm.Distance = bike.GetData().Distance.ToString("####.#");
+                _pvm.Time = bike.GetData().TotalElapsed.ToString("hh\\:mm\\:ss");
                 
                 Console.WriteLine("Heart: " + heart.GetData().HeartRate);
                 // await engine.ChangeBikeSpeed(bike.GetData().Speed);
