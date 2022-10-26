@@ -343,6 +343,7 @@ public class ServerClient
         if (patient != null && Server.PatientData.MatchLoginData(patient))
         {
             UserId = patient.UserId;
+                this._patient = patient;
             _isDoctor = false;
 
             SendData(new DataPacket<LoginPacketResponse>

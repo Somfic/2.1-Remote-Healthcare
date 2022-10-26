@@ -23,10 +23,6 @@ public class Patient : ObservableObject
     public TimeSpan CurrentElapsedTime { get; set; }
     public int CurrentBpm { get; set; }
 
-    public ChartValues<int> BpmData = new();
-
-    public ChartValues<float> SpeedData = new();
-
     public Patient(string userId, string password, string? username = null)
     {
         Password = password;
