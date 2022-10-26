@@ -1,15 +1,11 @@
 using System.Globalization;
 using System.Net;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
-using RemoteHealthcare.Common.Socket.Server;
 using RemoteHealthcare.Server.Models;
-using Xceed.Wpf.AvalonDock.Layout;
 
 namespace RemoteHealthcare.Server.Client
 {
@@ -117,7 +113,7 @@ namespace RemoteHealthcare.Server.Client
                     DataPacket<BikeDataPacketDoctor> dataPacketDoctor = new DataPacket<BikeDataPacketDoctor>
                     {
                         OpperationCode = OperationCodes.BIKEDATA,
-                        data = new BikeDataPacketDoctor()
+                        data = new BikeDataPacketDoctor
                         {
                             distance = data.distance,
                             elapsed = data.elapsed,
@@ -140,7 +136,7 @@ namespace RemoteHealthcare.Server.Client
             DataPacket<BikeDataPacketDoctor> firstDataPacketDoctor = new DataPacket<BikeDataPacketDoctor>
             {
                 OpperationCode = OperationCodes.BIKEDATA,
-                data = new BikeDataPacketDoctor()
+                data = new BikeDataPacketDoctor
                 {
                     distance = data.distance,
                     elapsed = data.elapsed,
@@ -223,7 +219,7 @@ namespace RemoteHealthcare.Server.Client
             {
                 OpperationCode = OperationCodes.USERS,
 
-                data = new ConnectedClientsPacketResponse()
+                data = new ConnectedClientsPacketResponse
                 {
                     statusCode = StatusCodes.OK,
                     connectedIds = clients
@@ -257,7 +253,7 @@ namespace RemoteHealthcare.Server.Client
             {
                 OpperationCode = OperationCodes.SET_RESISTANCE,
 
-                data = new SetResistanceResponse()
+                data = new SetResistanceResponse
                 {
                    statusCode = StatusCodes.OK,
                    resistance = data.resistance
@@ -275,7 +271,7 @@ namespace RemoteHealthcare.Server.Client
                 {
                     OpperationCode = OperationCodes.CHAT,
 
-                    data = new ChatPacketResponse()
+                    data = new ChatPacketResponse
                     {
                         statusCode = StatusCodes.OK,
                         senderName = data.senderName,
@@ -296,7 +292,7 @@ namespace RemoteHealthcare.Server.Client
                 {
                     OpperationCode = OperationCodes.CHAT,
 
-                    data = new ChatPacketResponse()
+                    data = new ChatPacketResponse
                     {
                         statusCode = StatusCodes.OK,
                         senderId = data.senderId,
@@ -338,7 +334,7 @@ namespace RemoteHealthcare.Server.Client
                 {
                     OpperationCode = OperationCodes.LOGIN,
 
-                    data = new LoginPacketResponse()
+                    data = new LoginPacketResponse
                     {
                         userId = patient.UserId,
                         userName = patient.Username,
@@ -356,7 +352,7 @@ namespace RemoteHealthcare.Server.Client
                 {
                     OpperationCode = OperationCodes.LOGIN,
 
-                    data = new LoginPacketResponse()
+                    data = new LoginPacketResponse
                     {
                         userId = doctor.UserId,
                         userName = doctor.Username,
@@ -371,7 +367,7 @@ namespace RemoteHealthcare.Server.Client
                 {
                     OpperationCode = OperationCodes.LOGIN,
 
-                    data = new ChatPacketResponse()
+                    data = new ChatPacketResponse
                     {
                         statusCode = StatusCodes.NOT_FOUND,
                         message = "Opgegeven wachtwoord of gebruikersnaam incorrect."
@@ -401,7 +397,7 @@ namespace RemoteHealthcare.Server.Client
                 patient.SendData(new DataPacket<SessionStartPacketResponse>
                 {
                     OpperationCode = OperationCodes.SESSION_START,
-                    data = new SessionStartPacketResponse()
+                    data = new SessionStartPacketResponse
                     {
                         statusCode = _statusCode,
                         message = "Sessie wordt nu gestart."
@@ -414,7 +410,7 @@ namespace RemoteHealthcare.Server.Client
             {
                 OpperationCode = OperationCodes.SESSION_START,
 
-                data = new SessionStartPacketResponse()
+                data = new SessionStartPacketResponse
                 {
                     statusCode = _statusCode,
                     message = "Sessie wordt nu gestart."
@@ -437,7 +433,7 @@ namespace RemoteHealthcare.Server.Client
             {
                 OpperationCode = OperationCodes.SESSION_STOP,
 
-                data = new SessionStopPacketResponse()
+                data = new SessionStopPacketResponse
                 {
                     statusCode = StatusCodes.OK,
                     message = "Sessie wordt nu gestopt."
@@ -463,7 +459,7 @@ namespace RemoteHealthcare.Server.Client
             {
                 OpperationCode = OperationCodes.DISCONNECT,
 
-                data = new DisconnectPacketResponse()
+                data = new DisconnectPacketResponse
                 {
                     statusCode = StatusCodes.OK,
                     message = "Gebruiker wordt nu gedisconnect!"
@@ -492,7 +488,7 @@ namespace RemoteHealthcare.Server.Client
             {
                 OpperationCode = OperationCodes.GET_PATIENT_DATA,
 
-                data = new GetAllPatientsDataResponse()
+                data = new GetAllPatientsDataResponse
                 {
                     statusCode = StatusCodes.OK,
                     JObjects = jObjects,
@@ -512,7 +508,7 @@ namespace RemoteHealthcare.Server.Client
             {
                 OpperationCode = OperationCodes.GET_PATIENT_SESSSIONS,
 
-                data = new AllSessionsFromPatientResponce()
+                data = new AllSessionsFromPatientResponce
                 {
                     statusCode = StatusCodes.OK,
                     JObjects = jObjects,

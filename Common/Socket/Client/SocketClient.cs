@@ -77,7 +77,7 @@ public class SocketClient : ISocket
 
     public Task SendAsync<T>(DataPacket<T> packet, Action<DataPacket> callback) where T : DAbstract
     {
-        this.callbacks.Add(packet.OpperationCode, callback);
+        callbacks.Add(packet.OpperationCode, callback);
 
         string json = JsonConvert.SerializeObject(packet);
         return SendAsync(json);
@@ -126,7 +126,7 @@ public class SocketClient : ISocket
                 }
             }
 
-            _log.Debug($"Client disconnected");
+            _log.Debug("Client disconnected");
             OnDisconnect?.Invoke(this, EventArgs.Empty);
         });
     }

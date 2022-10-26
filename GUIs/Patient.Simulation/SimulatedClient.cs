@@ -66,7 +66,7 @@ public class SimulatedClient
        var loginReq = new DataPacket<LoginPacketRequest>
         {
             OpperationCode = OperationCodes.LOGIN,
-            data = new LoginPacketRequest()
+            data = new LoginPacketRequest
             {
                 userName = username,
                 password = password,
@@ -90,7 +90,7 @@ public class SimulatedClient
         {
             OpperationCode = OperationCodes.BIKEDATA,
 
-            data = new BikeDataPacket()
+            data = new BikeDataPacket
             {
                 SessionId = $"Simulation #{Id}",
                 speed = bikeData.Speed,
@@ -111,7 +111,7 @@ public class SimulatedClient
         {
             OpperationCode = OperationCodes.CHAT,
                             
-            data = new ChatPacketRequest()
+            data = new ChatPacketRequest
             {
                 senderId = $"Simulation #{Id}",
                 receiverId = "Dhr145",

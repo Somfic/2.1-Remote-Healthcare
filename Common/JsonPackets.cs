@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RemoteHealthcare.Common.Socket.Client;
-
 
 namespace RemoteHealthcare.Common;
 
@@ -31,7 +29,7 @@ public class DataPacket : DAbstract
 
     public T GetData<T>() where T : DAbstract
     {
-        return this.data.ToObject<T>();
+        return data.ToObject<T>();
     }
 }
     
