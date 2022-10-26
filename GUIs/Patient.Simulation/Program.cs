@@ -56,6 +56,8 @@ try
     foreach (var client in clients)
         client.OnLogin += async (sender, e) =>
         {
+            await client.SendChat($"Hello world from simulation #{client.Id}");
+            
             while (client.IsConnected)
             {
                 await client.SendBikeData();
