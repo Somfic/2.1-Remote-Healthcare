@@ -66,6 +66,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 OnPropertyChanged("Speed");
             }
         }
+        
         public string Distance
         {
             get => _distance;
@@ -143,16 +144,15 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 OpperationCode = OperationCodes.CHAT,
                 data = new ChatPacketRequest()
                 {
-                    senderId = _client._username,
+                    senderId = _client.userId,
+                    senderName = _client._username,
                     receiverId = null,
                     message = _message
                 }
             };
             _client._client.SendAsync(req);
             _messages.Add("You: "+ _message);
-            //clear textbox
             Message = "";
-            
         }
         
         void testmethode()

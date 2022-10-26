@@ -24,7 +24,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         public bool _loggedIn;
         public string _password;
         public string _username;
-        private string userId;
+        public string userId;
         private string doctorId;
         private string _sessionId;
         public PatientHomepageViewModel p;
@@ -204,6 +204,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             if (statusCode.Equals(200))
             {
                 userId = packetData.GetData<LoginPacketResponse>().userId;
+                _username = packetData.GetData<LoginPacketResponse>().userName;
                 _log.Information($"Succesfully logged in to the user: {userId}; {_password}; {packetData.GetData<LoginPacketResponse>().userName}.");
                 _loggedIn = true;
             }
