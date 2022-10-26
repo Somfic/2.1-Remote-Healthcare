@@ -242,10 +242,10 @@ namespace RemoteHealthcare.GUIs.Doctor
         //the methode for the session start request
         private void SessionStartHandler(DataPacket obj)
         {
-            var sessie = obj.GetData<SessionStartPacketResponse>();
+            var session = obj.GetData<SessionStartPacketResponse>();
 
             //Change the GUI with an Alert depends on the outcome of the IF-Statement
-            DoctorViewModel.CurrentUserName = (sessie.StatusCode.Equals(StatusCodes.Ok))
+            DoctorViewModel.CurrentUserName = (session.StatusCode.Equals(StatusCodes.Ok))
                 ? DoctorViewModel.CurrentUser.Username
                 : "Gekozen Patient is niet online";
         }
