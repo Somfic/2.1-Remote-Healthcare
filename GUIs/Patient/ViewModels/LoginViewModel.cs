@@ -19,7 +19,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private SecureString _securePassword;
         private string _bikeId;
         private string _vrid;
-        private Client.Client _client;
+        private Client.PatientClient _client;
         private VrConnection _vrConnection;
 
         private readonly NavigationStore _navigationStore;
@@ -32,7 +32,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             
             LogIn = new Command(LogInPatient);
 
-            _client = new Client.Client(null);
+            _client = new Client.PatientClient(null);
 
         }
         

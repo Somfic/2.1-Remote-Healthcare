@@ -13,10 +13,10 @@ using RemoteHealthcare.GUIs.Patient.ViewModels;
 
 namespace RemoteHealthcare.GUIs.Patient.Client
 {
-   public class Client
+   public class PatientClient
     {
         public SocketClient Client = new(true);
-        private Log _log = new(typeof(Client));
+        private Log _log = new(typeof(PatientClient));
 
         public bool LoggedIn;
         public string Password;
@@ -29,7 +29,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
 
         private Dictionary<string, Action<DataPacket>> _callbacks;
         public VrConnection VrConnection;
-        public  Client(VrConnection v)
+        public  PatientClient(VrConnection v)
         {
             
             LoggedIn = false;

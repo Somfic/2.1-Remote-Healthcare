@@ -24,9 +24,9 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private readonly NavigationStore _navigationStore;
         public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
         
-        private Client.Client _client;
+        private Client.PatientClient _client;
 
-        public PatientHomepageViewModel(NavigationStore navigationStore, Client.Client client)
+        public PatientHomepageViewModel(NavigationStore navigationStore, Client.PatientClient client)
         {
             
             _client = client;
