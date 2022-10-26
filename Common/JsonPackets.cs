@@ -14,6 +14,7 @@ public abstract class DAbstract
 //it the abstract class for eyery Datapacket
 public class DataPacket<T> : DAbstract where T : DAbstract
 {
+    [JsonProperty("data")]
     public T Data;
     public string OpperationCode;
 }
