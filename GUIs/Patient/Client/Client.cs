@@ -165,7 +165,13 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         private void ChatHandler(DataPacket packetData)
         {
             _log.Information($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
-           p._messages.Add($"{packetData.GetData<ChatPacketResponse>().message}"); 
+            ObservableCollection<string> chats = new ObservableCollection<string>();
+            foreach (var message in p.Messages)
+            {
+                chats.Add(message);
+            }
+            chats.Add($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+            p.Messages = chats;
         }
 
         //the methode for the login request

