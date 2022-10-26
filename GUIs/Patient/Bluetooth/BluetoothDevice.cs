@@ -62,6 +62,7 @@ public class BluetoothDevice
 
             foreach (var device in devices)
             {
+                Console.WriteLine("lijst");
                 _log.Information(device);
             }
 

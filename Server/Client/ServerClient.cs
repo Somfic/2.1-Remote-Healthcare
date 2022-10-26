@@ -251,8 +251,8 @@ namespace RemoteHealthcare.Server.Client
             {
                 _userId = patient.UserId;
                 _isDoctor = false;
-                
-                Console.WriteLine("GUID GUID"+_userId);
+                    
+                //Fills the _patient with the right parameters for the GUI and Start and Stop session
                 _patient = new Patient(patient.UserId, patient.UserId);
 
                 SendData(new DataPacket<LoginPacketResponse>

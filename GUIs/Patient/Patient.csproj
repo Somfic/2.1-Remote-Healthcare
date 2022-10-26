@@ -6,7 +6,7 @@
         <UseWPF>true</UseWPF>
         <RootNamespace>RemoteHealthcare.GUIs.Patient</RootNamespace>
         <LangVersion>10</LangVersion>
-        <TargetFramework>net6.0-windows</TargetFramework>
+        <TargetFramework>net472</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,7 +23,6 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Common\Common.csproj" />
       <ProjectReference Include="..\..\NetworkEngine\NetworkEngine.csproj" />
-      <ProjectReference Include="..\Doctor\Doctor.csproj" />
     </ItemGroup>
 
     <ItemGroup>

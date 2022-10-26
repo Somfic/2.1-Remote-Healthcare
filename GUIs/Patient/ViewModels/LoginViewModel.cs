@@ -21,7 +21,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private string _username;
         private SecureString _securePassword;
         private string _bikeID;
-        private string _Vrid;
+        private string _vrid;
         private Client.Client _client;
         private VrConnection vrConnection;
 
@@ -64,15 +64,14 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
         public string VrId
         {
-            get => _Vrid;
-            set => _Vrid = value;
+            get => _vrid;
+            set => _vrid = value;
         }
         
         public ICommand LogIn { get; }
         
       async void LogInPatient(object window)
-        { 
-            
+        {
             await _client._client.ConnectAsync("127.0.0.1", 15243);
             Console.WriteLine("Got window, logging in patient");
             if (!_client._loggedIn)
@@ -94,18 +93,21 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                     _navigationStore.CurrentViewModel = new PatientHomepageViewModel(_navigationStore, _client);
                     try
                     {
+                        
                         var engine = new EngineConnection();
-                        await engine.ConnectAsync();
+                        await engine.ConnectAsync(_vrid);
                         // Console.WriteLine("Enter Bike ID:");
                          var bike = await DataProvider.GetBike(_bikeID);
                          var heart = await DataProvider.GetHeart();
                          vrConnection = new VrConnection(bike, heart, engine);
-
+                         
+                         //The client get the vrConnection 
                          _client._vrConnection = vrConnection;
+                         
+                         //Prevends that he GUI patient crash 
                          new Thread(async () => { vrConnection.Start(); }).Start();
 
-
-                        await Task.Delay(-1);
+                         await Task.Delay(-1);
                     }
                     catch (Exception ex)
                     {
