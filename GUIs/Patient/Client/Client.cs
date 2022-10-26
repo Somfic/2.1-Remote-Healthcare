@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Net.Cache;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
 using RemoteHealthcare.Client;
 using NetworkEngine.Socket;
+using RemoteHealthcare.GUIs.Patient.ViewModels;
 
 namespace RemoteHealthcare.GUIs.Patient.Client
 {
@@ -25,6 +27,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         private string userId;
         private string doctorId;
         private string _sessionId;
+        public PatientHomepageViewModel p;
         private Boolean _sessienRunning = false;
 
         private Dictionary<string, Action<DataPacket>> _functions;
@@ -127,6 +130,9 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         {
             Console.WriteLine("Sessie gestopt");
             _sessienRunning = false;
+            System.Diagnostics.Process.Start("CMD.exe","/C start /max chrome.exe https://youtu.be/5JD6ejmlpa8?t=66");
+            p.Session = "Sessie gestopt";
+
         }
 
         //the methode for the session start request
@@ -169,9 +175,19 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         //the methode for printing out the received message and sending it to the VR Engine
         private async void ChatHandlerAsync(DataPacket packetData)
         {
-            string messageReceived =
+             string messageReceived =
                 $"{packetData.GetData<ChatPacketResponse>().senderName}: {packetData.GetData<ChatPacketResponse>().message}";
             _log.Information(messageReceived);
+            
+            ObservableCollection<string> chats = new ObservableCollection<string>();
+            foreach (var message in p.Messages)
+            {
+                chats.Add(message);
+            }
+            chats.Add($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+            p.Messages = chats;
+
+         
             try
             {
                 await _vrConnection.Engine.SendTextToChatPannel(messageReceived);

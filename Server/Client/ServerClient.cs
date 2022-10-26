@@ -121,8 +121,10 @@ namespace RemoteHealthcare.Server.Client
                     return;
                 }
             }
+            _log.Error("Right before patient.SaveSessionData(_patientDataLocation);");
             _patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
             _patient.SaveSessionData(_patientDataLocation);
+
             _log.Critical(data.distance.ToString(CultureInfo.InvariantCulture));
 
             DataPacket<BikeDataPacketDoctor> firstDataPacketDoctor = new DataPacket<BikeDataPacketDoctor>
