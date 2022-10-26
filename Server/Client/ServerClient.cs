@@ -30,6 +30,10 @@ public class ServerClient
             var dataPacket = JsonConvert.DeserializeObject<DataPacket>(data);
 
             //gives the JObject as parameter to determine which methode will be triggerd
+            
+            _log.Warning($"data: {data}");
+            _log.Warning($"dataPacket: {dataPacket.ToJson()}");
+            
             HandleData(dataPacket);
         };
 
