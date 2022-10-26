@@ -35,12 +35,25 @@ namespace NetworkEngine.Socket
             */
         }
 
+        public bool session;
+        
         public async void Start()
         {
+            await bike.ProcessRawData();
+
             while (true)
             {
-                await bike.ProcessRawData();
-                await engine.ChangeBikeSpeed(bike.GetData().Speed);
+                if (session)
+                {
+                    await heart.ProcessRawData();
+                    await bike.ProcessRawData();
+                    await engine.ChangeBikeSpeed(bike.GetData().Speed);
+                }
+                else
+                {
+                    engine.ChangeBikeSpeed(0);
+                }
+
                 Thread.Sleep(300);
             }
         }

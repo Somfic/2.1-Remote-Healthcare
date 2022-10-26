@@ -117,13 +117,14 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         {
             Console.WriteLine("Sessie gestopt");
             _sessienRunning = false;
+            _vrConnection.session = false;
         }
 
         //the methode for the session start request
         public async void SessionStartHandler(DataPacket obj)
         {
             _sessienRunning = true;
-            
+            _vrConnection.session = true;
             new Thread(SendBikeDataAsync ).Start();
         }
         
