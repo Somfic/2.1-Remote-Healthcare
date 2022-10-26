@@ -26,7 +26,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private string _time= "33 min";
         private string _heartrate;
         private VrConnection _vr;
-        private EngineConnection e;
+        public EngineConnection e;
         private string _session;
         
         private readonly NavigationStore _navigationStore;
@@ -157,6 +157,13 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         
         void testmethode()
         {
+            if (e._isConnected)
+            {
+                e.ConnectAsync();
+            }
+            {
+                _vr.Engine.SendTextToChatPannel("test");
+            }
             _client._client.SendAsync(new DataPacket<SessionStartPacketRequest>
             {
                 OpperationCode = OperationCodes.SESSION_START,

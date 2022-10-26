@@ -100,6 +100,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 
                 PatientHomepageViewModel pvm = new PatientHomepageViewModel(_navigationStore, _client);
                     _navigationStore.CurrentViewModel = pvm;
+                    pvm.e = engine;
                     try
                     {
                         await engine.ConnectAsync(_vrid);

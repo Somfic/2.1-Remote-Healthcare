@@ -23,6 +23,7 @@ public class EngineConnection
     private string _groundPlaneId;
     private string _routeId;
     private string _roadNodeId;
+    public bool _isConnected;
 
     private JArray _hightForHouse;
     private bool[,] _roadArray;
@@ -65,7 +66,7 @@ public class EngineConnection
         {
             if (_clients != null)
                 return _clients.Select(x => x.user).ToArray();
-
+            _isConnected = true;
             await Task.Delay(50);
         }
     }
@@ -79,6 +80,7 @@ public class EngineConnection
         {
             _log.Warning("No clients are available");
             throw new Exception("No clients were found");
+            
         }
 
         if (string.IsNullOrWhiteSpace(user))
