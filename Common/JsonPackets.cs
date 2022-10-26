@@ -42,7 +42,7 @@ public class ErrorPacket : DAbstract
 
 public class LoginPacketRequest : DAbstract
 {
-    public string username;
+    public string userName;
     public string password;
     public bool isDoctor;
 }
@@ -50,6 +50,7 @@ public class LoginPacketRequest : DAbstract
 public class LoginPacketResponse : DAbstract
 {
     public string userId;
+    public string userName;
     public StatusCodes statusCode;
     public string message;
 }
@@ -68,6 +69,7 @@ public class ConnectedClientsPacketResponse : DAbstract
 public class ChatPacketRequest : DAbstract
 {
     public string senderId;
+    public string senderName;
     public string receiverId;
     public string message;
 }
@@ -75,6 +77,7 @@ public class ChatPacketRequest : DAbstract
 public class ChatPacketResponse : DAbstract
 {
     public string senderId;
+    public string senderName;
     public StatusCodes statusCode;
     public string message;
 }

@@ -69,6 +69,7 @@ public class SimulatedClient
             data = new LoginPacketRequest()
             {
                 username = username,
+               
                 password = password,
                 isDoctor = isDoctor
             }

@@ -87,7 +87,10 @@ namespace RemoteHealthcare.Server.Client
             if (packet.ToJson().Contains("chat"))
             {
                 foreach (string targetId in targetIds)
+                {
+                    _log.Warning(targetId);
                     calculateTarget(targetId).Client.SendAsync(packet).GetAwaiter().GetResult();
+                }
             }
         }
         
@@ -265,6 +268,7 @@ namespace RemoteHealthcare.Server.Client
                     data = new ChatPacketResponse()
                     {
                         statusCode = StatusCodes.OK,
+                        senderName = data.senderName,
                         senderId = data.senderId,
                         message = data.message
                     }
@@ -273,6 +277,9 @@ namespace RemoteHealthcare.Server.Client
             else
             {
                 List<string>? targetIds = data.receiverId.Split(";").ToList();
+                
+                _log.Warning($"chatHandler: {data.receiverId}");
+                
                 targetIds.ForEach(t => _log.Debug($"Target: {t}"));
 
                 SendData(new DataPacket<ChatPacketResponse>
@@ -283,6 +290,7 @@ namespace RemoteHealthcare.Server.Client
                     {
                         statusCode = StatusCodes.OK,
                         senderId = data.senderId,
+                        senderName = data.senderName,
                         message = data.message
                     }
                 }, targetIds);
@@ -296,14 +304,14 @@ namespace RemoteHealthcare.Server.Client
             Doctor? doctor = null;
             if (!packetData.GetData<LoginPacketRequest>().isDoctor)
             {
-                patient = new Patient(packetData.GetData<LoginPacketRequest>().username,
-                    packetData.GetData<LoginPacketRequest>().password, "testUserName");
+                patient = new Patient(packetData.GetData<LoginPacketRequest>().userName,
+                    packetData.GetData<LoginPacketRequest>().password);
 
                 _log.Debug($"Patient name: {patient.UserId} Password: {patient.Password}");
             }
             else if (packetData.GetData<LoginPacketRequest>().isDoctor)
             {
-                doctor = new Doctor(packetData.GetData<LoginPacketRequest>().username,
+                doctor = new Doctor(packetData.GetData<LoginPacketRequest>().userName,
                     packetData.GetData<LoginPacketRequest>().password, "Dhr145");
                 Server._doctorData._doctor = new Doctor("Piet", "dhrPiet", "Dhr145");
 
@@ -325,6 +333,7 @@ namespace RemoteHealthcare.Server.Client
                     data = new LoginPacketResponse()
                     {
                         userId = patient.UserId,
+                        userName = patient.Username,
                         statusCode = StatusCodes.OK,
                         message = "U bent succesvol ingelogd."
                     }
@@ -342,6 +351,7 @@ namespace RemoteHealthcare.Server.Client
                     data = new LoginPacketResponse()
                     {
                         userId = doctor.UserId,
+                        userName = doctor.Username,
                         statusCode = StatusCodes.OK,
                         message = "U bent succesvol ingelogd."
                     }
