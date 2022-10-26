@@ -262,7 +262,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             var sessie = obj.GetData<SessionStartPacketResponse>();
             
             //Change the GUI with an Alert depends on the outcome of the IF-Statement
-            ((DoctorViewModel) currentViewModel).CurrentUserName = (sessie.statusCode.Equals(StatusCodes.OK)) ? ((DoctorViewModel) currentViewModel).CurrentUser.Username : "Gekozen Patient is niet online";
+            ((DoctorViewModel) ).CurrentUserName = (sessie.statusCode.Equals(StatusCodes.OK)) ? ((DoctorViewModel) ).CurrentUser.Username : "Gekozen Patient is niet online";
         }
         
         //the methode for the session stop request
