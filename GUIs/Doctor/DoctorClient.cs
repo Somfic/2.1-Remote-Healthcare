@@ -260,7 +260,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         private void ChatHandler(DataPacket packetData)
         {
             ObservableCollection<string> chats = new();
-            foreach (var chatMessage in DoctorViewModel.Messages)
+            foreach (var chatMessage in DoctorViewModel.ChatMessages)
                 chats.Add(chatMessage);
             
             chats.Add($"{packetData.GetData<ChatPacketResponse>().SenderName}: {packetData.GetData<ChatPacketResponse>().Message}");

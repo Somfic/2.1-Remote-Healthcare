@@ -29,7 +29,7 @@ while(true) {
 // Create the clients
 List<SimulatedClient> clients = new();
 for (var i = 0; i < amountOfClients; i++)
-    clients.Add(new SimulatedClient($"#{i}"));
+    clients.Add(new SimulatedClient(i));
 
 // Connect the clients to the server
 log.Information($"Connecting to server on {config.Host}:{config.Port}");
@@ -48,9 +48,10 @@ catch (Exception ex)
 log.Information("Logging in clients");
 try
 {
-    foreach (var client in clients)
+    for (var index = 0; index < clients.Count; index++)
     {
-        await client.LoginAsync();
+        var client = clients[index];
+        await client.LoginAsync($"sim{index+1}", "simulation");
         await Task.Delay(500);
     }
 }

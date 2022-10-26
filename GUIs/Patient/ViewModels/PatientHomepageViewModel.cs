@@ -9,7 +9,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 {
     public class PatientHomepageViewModel : BaseViewModel
     {
-        public ObservableCollection<string>Messages;
+        private ObservableCollection<string> _messages;
         
         private string _message;
         private string _messagerecieved;

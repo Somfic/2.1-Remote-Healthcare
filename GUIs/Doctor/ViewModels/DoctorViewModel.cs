@@ -28,7 +28,7 @@ public class DoctorViewModel : ObservableObject
     private int _resistance;
     
     private ObservableCollection<Patient> _patients;
-    public ObservableCollection<string> Messages;
+    private ObservableCollection<string> _chatMessages;
     private SeriesCollection _chartDataSpeed;
     private SeriesCollection _chartDataBpm;
 
@@ -37,7 +37,7 @@ public class DoctorViewModel : ObservableObject
         _doctorClient = doctorClient;
         _doctorClient.AddDoctorViewmodel(this);
         _patients = new ObservableCollection<Patient>(_doctorClient.PatientList);
-        Messages = new ObservableCollection<string>();
+        _chatMessages = new ObservableCollection<string>();
         EmergencyStop = new EmergencyStopCommand(_doctorClient, this);
         SendChatMessage = new SendChatMessageCommand(_doctorClient, this);
         StartSessieCommand = new StartSessieCommand(_doctorClient, this);
@@ -103,10 +103,10 @@ public class DoctorViewModel : ObservableObject
 
     public ObservableCollection<string> ChatMessages
     {
-        get => Messages;
+        get => _chatMessages;
         set
         {
-            Messages = value;
+            _chatMessages = value;
             OnPropertyChanged();
         } 
     }
