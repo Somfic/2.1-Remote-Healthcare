@@ -70,29 +70,6 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             
             await Client.SendAsync(loginReq);
         }
-        
-       
-        private async Task AskForLoginAsync()
-        {
-            _log.Information("Hello Client!");
-            _log.Information("Wat is uw telefoonnummer? ");
-            Username = Console.ReadLine();
-            _log.Information("Wat is uw wachtwoord? ");
-            Password = Console.ReadLine();
-
-            DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
-            {
-                OpperationCode = OperationCodes.Login,
-                Data = new LoginPacketRequest
-                {
-                    UserName = Username,
-                    Password = Password,
-                    IsDoctor = false
-                }
-            };
-
-            await Client.SendAsync(loginReq);
-        }
 
         //this methode will get the right methode that will be used for the response from the server
         public void HandleData(DataPacket packet)
@@ -119,13 +96,12 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         //the methode for the disconnect request
         private void DisconnectHandler(DataPacket obj)
         {
-            Console.WriteLine(obj.GetData<DisconnectPacketResponse>().Message);
+          
         }
         
         //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
-            Console.WriteLine("Sessie gestopt");
             _sessienRunning = false;
             VrConnection.Session = false;
         }
@@ -208,7 +184,6 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             {
                 _log.Error(packetData.GetData<LoginPacketResponse>().StatusCode + "; " +
                            packetData.GetData<LoginPacketResponse>().Message);
-                AskForLoginAsync();
             }
         }
         

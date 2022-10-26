@@ -43,7 +43,6 @@ namespace NetworkEngine.Socket
                 _pvm.Speed = _bike.GetData().Speed.ToString("##.#");
                 _pvm.Distance = _bike.GetData().Distance.ToString("####.#");
                 _pvm.Time = _bike.GetData().TotalElapsed.ToString("hh\\:mm\\:ss");
-                Console.WriteLine("Heart: " + _heart.GetData().HeartRate);
                 } else {
                     Engine.ChangeBikeSpeed(0);
                 }
@@ -61,7 +60,6 @@ namespace NetworkEngine.Socket
             }
             data[12] = checksum;
 
-            Console.WriteLine(BitConverter.ToString(data));
             _bike.SendMessage(data);
         }
         public BikeData GetBikeData()

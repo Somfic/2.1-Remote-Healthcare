@@ -35,17 +35,11 @@ public class LoginCommand : BaseCommand
             _loginWindowViewModel.DoctorClient.UserName = _loginWindowViewModel.Username;
             _loginWindowViewModel.DoctorClient.Password = _loginWindowViewModel.SecureStringToString(_loginWindowViewModel.SecurePassword);
             
-            try
-            {
+           
                 new Thread(async () =>
                 {
                     await _loginWindowViewModel.DoctorClient.AskForLoginAsync();
                 }).Start();
-            } catch (Exception exception)
-            {
-                Console.WriteLine(exception);
-                throw;
-            }
 
             await Task.Delay(1000);
             

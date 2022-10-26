@@ -70,20 +70,15 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
       async void LogInPatient(object window)
         {
             await _client.Client.ConnectAsync("127.0.0.1", 15243);
-            Console.WriteLine("Got window, logging in patient");
+
             if (!_client.LoggedIn)
             {
                 _client.Username = Username;
                 _client.Password = SecureStringToString(SecurePassword);
                 
-                try {
                     new Thread(async () => { await _client.PatientLogin(); }).Start();
-                } catch (Exception exception) {
-                    Console.WriteLine(exception);
-                    throw;
-                }
 
-                await Task.Delay(1000);
+                    await Task.Delay(1000);
                 PatientHomepageViewModel pvm = new PatientHomepageViewModel(_navigationStore, _client);
                 if (_client.LoggedIn)
                 {
@@ -93,7 +88,6 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                     {
                         var engine = new EngineConnection();
                         await engine.ConnectAsync(_vrid);
-                        // Console.WriteLine("Enter Bike ID:");
 
                         
                          var bike = await DataProvider.GetBike(_bikeId);
@@ -104,7 +98,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                          _client.VrConnection = _vrConnection;
                          
                          //Prevends that he GUI patient crash 
-                         new Thread(async () => { _vrConnection.Start(pvm); }).Start();
+                           new Thread(async () => { _vrConnection.Start(pvm); }).Start();
 
                          await Task.Delay(-1);
                     }

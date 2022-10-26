@@ -192,9 +192,9 @@ public class DoctorViewModel : ObservableObject
 
     public void AddMessage(string message)
     {
-        _log.Information($"addmessage, {Messages.Count}; {message}");
-        BindingOperations.EnableCollectionSynchronization(Messages, message);
-        _log.Information($"added message, {Messages.Count}");
+        _log.Information($"addmessage, {ChatMessages.Count}; {message}");
+        BindingOperations.EnableCollectionSynchronization(ChatMessages, message);
+        _log.Information($"added message, {ChatMessages.Count}");
         // chatMessages.Add(message);
     }
 }
