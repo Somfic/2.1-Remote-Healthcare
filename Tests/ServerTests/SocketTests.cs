@@ -19,13 +19,27 @@ public class SocketTests
     [Test]
     public void Encryption()
     {
+        var cypher = GenerateRandomBytes(16);
         var bytes = GenerateRandomBytes(1000);
         
-        var encrypted = SocketHelper.Encrypt(bytes);
-        var decrypted = SocketHelper.Decrypt(encrypted);
+        var encrypted = Common.Cryptography.Encryption.Encrypt(bytes, cypher);
+        var decrypted = Common.Cryptography.Encryption.Decrypt(encrypted, cypher);
 
         Assert.That(bytes, Is.Not.EqualTo(encrypted));
         Assert.That(decrypted, Is.EqualTo(bytes));
+    }
+    
+    [Test]
+    public void StringEncryption()
+    {
+        var cypher = GenerateRandomString(10);
+        var text = GenerateRandomString(100);
+        
+        var encrypted = Common.Cryptography.Encryption.Encrypt(text, cypher);
+        var decrypted = Common.Cryptography.Encryption.Decrypt(encrypted, cypher);
+
+        Assert.That(text, Is.Not.EqualTo(encrypted));
+        Assert.That(decrypted, Is.EqualTo(text));
     }
 
     private string GenerateRandomString(int size)

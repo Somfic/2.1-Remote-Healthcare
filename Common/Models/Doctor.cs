@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RemoteHealthcare.Common.Cryptography;
 
 namespace RemoteHealthcare.Server.Models;
 
@@ -29,12 +31,13 @@ public class Doctor
             string json = JsonConvert.SerializeObject(session);
             pathString = Path.Combine(pathString, filename);
 
+            string content = JObject.Parse(json).ToString();
+            var encrypted = Encryption.Encrypt(content, Password);
+
             if (!File.Exists(pathString))
             {
-                File.WriteAllText(pathString, JObject.Parse(json).ToString());
+                File.WriteAllText(pathString, encrypted);
             }
         }
     }
-    
-    
 }

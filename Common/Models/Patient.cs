@@ -3,6 +3,7 @@ using MvvmHelpers;
 using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RemoteHealthcare.Common.Cryptography;
 using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.Server.Models;
@@ -64,7 +65,10 @@ public class Patient : ObservableObject
             var json = JsonConvert.SerializeObject(session);
             var pathStringFileName = Path.Combine(pathStringUserId, fileName + ".json");
 
-            File.WriteAllText(pathStringFileName, JObject.Parse(json).ToString());
+            var content = JObject.Parse(json).ToString();
+            var encrypted = Encryption.Encrypt(content, Password);
+
+            File.WriteAllText(pathStringFileName, encrypted);
         }
     }
 
