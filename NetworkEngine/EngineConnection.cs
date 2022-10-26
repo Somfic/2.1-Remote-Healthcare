@@ -81,7 +81,7 @@ public class EngineConnection
             throw new Exception("No clients were found");
         }
 
-        if (user == null)
+        if (string.IsNullOrWhiteSpace(user))
         {
             user = Environment.UserName;
             _log.Debug($"Connecting as {user}");
