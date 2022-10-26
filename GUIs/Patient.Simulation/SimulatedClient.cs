@@ -11,11 +11,12 @@ namespace RemoteHealthcare.GUIs.Patient.Simulation;
 
 public class SimulatedClient
 {
-    public readonly int Id;
-    private readonly Log _log = new(typeof(SimulatedClient));
-
     private readonly IDataProvider<BikeData> _bikeDataProvider = new SimulationBikeDataProvider();
     private readonly IDataProvider<HeartData> _heartRateDataProvider = new SimulationHeartDataProvider();
+    private readonly Log _log = new(typeof(SimulatedClient));
+
+    private readonly SocketClient _socket = new(true);
+    public readonly int Id;
 
     public SimulatedClient(int id)
     {
@@ -37,16 +38,16 @@ public class SimulatedClient
                         _log.Error($"[#{Id}] Could not login: '{loginResponse.Data.Message}'");
                         _socket.DisconnectAsync();
                     }
+
                     break;
-                
+
                 default:
                     _log.Warning($"[#{Id}] Unhandled incoming request: '{dataPacket.OpperationCode}': {json}");
                     break;
             }
         };
     }
-    
-    private readonly SocketClient _socket = new(true);
+
     public bool IsConnected => _socket.Socket.Connected;
 
     public event EventHandler OnLogin;
@@ -55,15 +56,15 @@ public class SimulatedClient
     {
         await _bikeDataProvider.Initialise();
         await _heartRateDataProvider.Initialise();
-        
-        _log.Debug($"[#{Id}] Connecting to server ... "); 
+
+        _log.Debug($"[#{Id}] Connecting to server ... ");
         await _socket.ConnectAsync(host, port);
         _log.Debug($"[#{Id}] Connected to server");
     }
 
     public async Task LoginAsync(string username, string password, bool isDoctor = false)
     {
-       var loginReq = new DataPacket<LoginPacketRequest>
+        var loginReq = new DataPacket<LoginPacketRequest>
         {
             OpperationCode = OperationCodes.Login,
             Data = new LoginPacketRequest
@@ -80,12 +81,12 @@ public class SimulatedClient
     public async Task SendBikeData()
     {
         _log.Debug($"[#{Id}] Sending fake data");
-        
+
         await _bikeDataProvider.ProcessRawData();
         await _heartRateDataProvider.ProcessRawData();
-        
+
         var bikeData = _bikeDataProvider.GetData();
-        
+
         var dataReq = new DataPacket<BikeDataPacket>
         {
             OpperationCode = OperationCodes.Bikedata,
@@ -98,10 +99,10 @@ public class SimulatedClient
                 HeartRate = bikeData.HeartRate,
                 Elapsed = bikeData.TotalElapsed,
                 DeviceType = bikeData.DeviceType.ToString(),
-                Id =  $"Simulation #{Id}",
+                Id = $"Simulation #{Id}"
             }
         };
-        
+
         await _socket.SendAsync(dataReq);
     }
 
@@ -110,7 +111,7 @@ public class SimulatedClient
         var chatReq = new DataPacket<ChatPacketRequest>
         {
             OpperationCode = OperationCodes.Chat,
-                            
+
             Data = new ChatPacketRequest
             {
                 SenderId = $"Simulation #{Id}",
@@ -118,7 +119,7 @@ public class SimulatedClient
                 Message = message
             }
         };
-        
+
         await _socket.SendAsync(chatReq);
     }
 }

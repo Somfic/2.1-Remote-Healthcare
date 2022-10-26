@@ -6,8 +6,8 @@ namespace RemoteHealthcare.GUIs.Doctor;
 
 public class NavigateCommand : BaseCommand
 {
-    private readonly ObservableObject _viewModel;
     private readonly NavigationStore _navigationStore;
+    private readonly ObservableObject _viewModel;
 
     public NavigateCommand(ObservableObject viewmodel, NavigationStore navigationStore)
     {
@@ -20,7 +20,7 @@ public class NavigateCommand : BaseCommand
         ExecuteAsync();
     }
 
-    public async override Task ExecuteAsync()
+    public override async Task ExecuteAsync()
     {
         _navigationStore.CurrentViewModel = _viewModel;
     }

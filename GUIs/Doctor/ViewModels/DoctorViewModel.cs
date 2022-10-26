@@ -14,29 +14,21 @@ namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class DoctorViewModel : ObservableObject
 {
-    private DoctorClient _doctorClient;
-    private Log _log = new Log(typeof(DoctorViewModel));
-    public ICommand EmergencyStop { get; }
-    public ICommand SendChatMessage { get; }
-    public ICommand StartSessieCommand { get; }
-    public ICommand StopSessieCommand { get; }
-    public ICommand SetResistanceCommand { get; }
-    public ICommand RequestPastSessions { get; }
-    
-    private Patient _currentUser;
-    private string _chatMessage = "";
-    private int _resistance;
-    
-    private ObservableCollection<Patient> _patients;
-    private ObservableCollection<string> _chatMessages;
-    private SeriesCollection _chartDataSpeed;
     private SeriesCollection _chartDataBpm;
+    private SeriesCollection _chartDataSpeed;
+    private ObservableCollection<string> _chatMessages;
+
+    private Patient _currentUser;
+    private readonly DoctorClient _doctorClient;
+    private readonly Log _log = new(typeof(DoctorViewModel));
+
+    private string _username;
 
     public DoctorViewModel(DoctorClient doctorClient, NavigationStore navigationStore)
     {
         _doctorClient = doctorClient;
         _doctorClient.AddDoctorViewmodel(this);
-        _patients = new ObservableCollection<Patient>(_doctorClient.PatientList);
+        Patients = new ObservableCollection<Patient>(_doctorClient.PatientList);
         _chatMessages = new ObservableCollection<string>();
         EmergencyStop = new EmergencyStopCommand(_doctorClient, this);
         SendChatMessage = new SendChatMessageCommand(_doctorClient, this);
@@ -45,7 +37,14 @@ public class DoctorViewModel : ObservableObject
         RequestPastSessions = new RequestPastSessions(_doctorClient, this);
         SetResistanceCommand = new SetResistanceCommand(_doctorClient, this);
     }
-    
+
+    public ICommand EmergencyStop { get; }
+    public ICommand SendChatMessage { get; }
+    public ICommand StartSessieCommand { get; }
+    public ICommand StopSessieCommand { get; }
+    public ICommand SetResistanceCommand { get; }
+    public ICommand RequestPastSessions { get; }
+
     public string CurrentUserName
     {
         get => _username;
@@ -56,23 +55,17 @@ public class DoctorViewModel : ObservableObject
         }
     }
 
-    private string _username;
-    
 
     public Patient CurrentUser
     {
         get => _currentUser;
         set
         {
-            
             _currentUser = value;
-            if (CurrentUser != null)
-            {
-                CurrentUserName = CurrentUser.Username;
-            }
-            
+            if (CurrentUser != null) CurrentUserName = CurrentUser.Username;
+
             //OnPropertyChanged(nameof(CurrentUser));
-            
+
             ChartDataSpeed = new SeriesCollection
             {
                 new LineSeries
@@ -84,7 +77,7 @@ public class DoctorViewModel : ObservableObject
                     Values = _currentUser.SpeedData
                 }
             };
-            
+
             ChartDataBpm = new SeriesCollection
             {
                 new LineSeries
@@ -108,27 +101,14 @@ public class DoctorViewModel : ObservableObject
         {
             _chatMessages = value;
             OnPropertyChanged();
-        } 
+        }
     }
 
-    public ObservableCollection<Patient> Patients
-    {
-        get => _patients;
-        set => _patients = value;
-    }
+    public ObservableCollection<Patient> Patients { get; set; }
 
-    public string TextBoxChatMessage
-    {
-        get => _chatMessage;
-        set => _chatMessage = value;
-    }
+    public string TextBoxChatMessage { get; set; } = "";
 
-    public int Resistance
-    {
-        get => _resistance;
-        set => _resistance = value;
-           
-    }
+    public int Resistance { get; set; }
 
     public int Bpm
     {
@@ -179,7 +159,7 @@ public class DoctorViewModel : ObservableObject
             OnPropertyChanged();
         }
     }
-    
+
     public SeriesCollection ChartDataBpm
     {
         get => _chartDataBpm;

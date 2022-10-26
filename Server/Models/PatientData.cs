@@ -6,9 +6,7 @@ namespace RemoteHealthcare.Server.Models;
 
 public class PatientData
 {
-    private readonly Log _log = new Log(typeof(PatientData));
-
-    public List<Patient> Patients { get; set; }
+    private readonly Log _log = new(typeof(PatientData));
 
     public PatientData()
     {
@@ -22,67 +20,62 @@ public class PatientData
         Patients = ReadUsersFromJson();
     }
 
+    public List<Patient> Patients { get; set; }
+
     public List<Patient> ReadUsersFromJson()
     {
-        string path = Path.Combine(Directory.GetCurrentDirectory(), "AllUsers.json");
-        
-        string returnAllUsersFromText = File.ReadAllText(path);
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "AllUsers.json");
+
+        var returnAllUsersFromText = File.ReadAllText(path);
 
         _log.Debug(returnAllUsersFromText);
 
-        List<Patient> data = JsonConvert.DeserializeObject<List<Patient>>(returnAllUsersFromText);
+        var data = JsonConvert.DeserializeObject<List<Patient>>(returnAllUsersFromText);
 
         return data;
     }
 
     /// <summary>
-    /// This function checks if the username, password and userid of the patient object passed in as a parameter matches the
-    /// username, password and userid of any of the patients in the list of patients
+    ///     This function checks if the username, password and userid of the patient object passed in as a parameter matches
+    ///     the
+    ///     username, password and userid of any of the patients in the list of patients
     /// </summary>
     /// <param name="Patient">The patient object that is being passed in.</param>
     /// <returns>
-    /// A boolean value.
+    ///     A boolean value.
     /// </returns>
     public bool MatchLoginData(Patient patient)
     {
         //Patients = readUsersFromJson();
 
         //Checks if the Patient parameter exists in the AllUsers.json with LINQ
-        foreach (Patient p in Patients)
-        {
+        foreach (var p in Patients)
             if (p.Password == patient.Password && p.UserId == patient.UserId)
             {
                 patient.Username = p.Username;
                 return true;
             }
-        }
 
         return false;
     }
 
     /// <summary>
-    /// It takes the current directory, removes the last instance of "bin" from it, and then adds "PatientDataFiles" to the
-    /// end of it
+    ///     It takes the current directory, removes the last instance of "bin" from it, and then adds "PatientDataFiles" to the
+    ///     end of it
     /// </summary>
     public void SavePatientData()
     {
         var folderName = Environment.CurrentDirectory;
         _log.Debug(folderName);
         folderName = Path.Combine(folderName.Substring(0, folderName.LastIndexOf("bin")) + "PatientDataFiles");
-        foreach (var patient in Patients)
-        {
-            patient.SaveSessionData(folderName);
-        }
+        foreach (var patient in Patients) patient.SaveSessionData(folderName);
     }
 
     public JObject[] GetPatientDataAsJObjects()
     {
-        JObject[] jObjects = new JObject[Patients.Count];
+        var jObjects = new JObject[Patients.Count];
 
-        for (int i = 0; i < Patients.Count; i++)
-        {
-            jObjects[i] = Patients[i].GetPatientAsJObject();
-        }
+        for (var i = 0; i < Patients.Count; i++) jObjects[i] = Patients[i].GetPatientAsJObject();
 
         return jObjects;
     }
@@ -92,13 +85,13 @@ public class PatientData
         pathString = Path.Combine(pathString.Substring(0, pathString.LastIndexOf("bin")), "allSessions", userId);
 
         _log.Debug($"There are {Directory.GetFiles(pathString).Length} session files of user {userId}");
-        JObject[] jObjects = new JObject[Directory.GetFiles(pathString).Length];
+        var jObjects = new JObject[Directory.GetFiles(pathString).Length];
 
-        for (int i = 0; i < Directory.GetFiles(pathString).Length; i++)
-        {
-            using (JsonTextReader reader = new JsonTextReader(File.OpenText(Directory.GetFiles(pathString)[i])))
+        for (var i = 0; i < Directory.GetFiles(pathString).Length; i++)
+            using (var reader = new JsonTextReader(File.OpenText(Directory.GetFiles(pathString)[i])))
+            {
                 jObjects[i] = (JObject)JToken.ReadFrom(reader);
-        }
+            }
 
         return jObjects;
     }

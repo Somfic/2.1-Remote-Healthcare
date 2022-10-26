@@ -5,8 +5,13 @@
     "data": {
       "id": "scene/panel/setclearcolor",
       "data": {
-        "id":  "panelid",
-        "color": [ 1, 1, 1, 1 ]
+        "id": "panelid",
+        "color": [
+          1,
+          1,
+          1,
+          1
+        ]
       }
     }
   }

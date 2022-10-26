@@ -7,9 +7,9 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class StartSessieCommand : BaseCommand
 {
-    private DoctorClient _doctorClient;
-    private DoctorViewModel _viewModel;
-    
+    private readonly DoctorClient _doctorClient;
+    private readonly DoctorViewModel _viewModel;
+
     public StartSessieCommand(DoctorClient doctorClient, DoctorViewModel viewModel)
     {
         _doctorClient = doctorClient;
@@ -18,7 +18,6 @@ public class StartSessieCommand : BaseCommand
 
     public override void Execute(object? parameter)
     {
-
         _doctorClient.Client.SendAsync(new DataPacket<SessionStartPacketRequest>
         {
             OpperationCode = OperationCodes.SessionStart,

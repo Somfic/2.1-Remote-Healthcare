@@ -7,9 +7,9 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class RequestPastSessions : BaseCommand
 {
+    private readonly DoctorClient _doctorClient;
     private Log _log = new(typeof(RequestPastSessions));
-    private DoctorClient _doctorClient;
-    private DoctorViewModel _viewModel;
+    private readonly DoctorViewModel _viewModel;
 
     public RequestPastSessions(DoctorClient doctorClient, DoctorViewModel doctorViewModel)
     {
@@ -24,7 +24,7 @@ public class RequestPastSessions : BaseCommand
 
     public override async Task ExecuteAsync()
     {
-        string userId = _viewModel.CurrentUser.UserId;
+        var userId = _viewModel.CurrentUser.UserId;
         if (userId != null)
         {
             _doctorClient.HasSessionResponce = false;

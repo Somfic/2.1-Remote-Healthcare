@@ -6,26 +6,15 @@ using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.Server.Models;
 
-
 [Serializable]
 public class Patient : ObservableObject
 {
-    private Log _log = new Log(typeof(Patient));
-    public List<SessionData> Sessions { get; set; }
+    private Log _log = new(typeof(Patient));
 
-    public string Username { get; set; }
-    public string UserId { get; set; }
-    public string Password { get; set; }
-    
-    public float CurrentSpeed { get; set; }
-    public float CurrentDistance { get; set; }
-    public TimeSpan CurrentElapsedTime { get; set; }
-    public int CurrentBpm { get; set; }
+
+    public ChartValues<int> BpmData = new();
 
     public ChartValues<float> SpeedData = new();
-    
-    
-    public ChartValues<int> BpmData = new();
 
     public Patient(string user, string password, string? username = null)
     {
@@ -36,9 +25,20 @@ public class Patient : ObservableObject
         Sessions = new List<SessionData>();
     }
 
+    public List<SessionData> Sessions { get; set; }
+
+    public string Username { get; set; }
+    public string UserId { get; set; }
+    public string Password { get; set; }
+
+    public float CurrentSpeed { get; set; }
+    public float CurrentDistance { get; set; }
+    public TimeSpan CurrentElapsedTime { get; set; }
+    public int CurrentBpm { get; set; }
+
     /// <summary>
-    /// It takes a folder name as a parameter, creates a directory with the user's username, and then creates a file for
-    /// each session in the user's session list
+    ///     It takes a folder name as a parameter, creates a directory with the user's username, and then creates a file for
+    ///     each session in the user's session list
     /// </summary>
     /// <param name="pathString">The name of the folder you want to save the data to.</param>
     public void SaveSessionData(string pathString)

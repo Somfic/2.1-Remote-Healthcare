@@ -1,4 +1,3 @@
-
 using RemoteHealthcare.Common.Bluetooth;
 
 namespace RemoteHealthcare.Common.Data.Providers.Bike;
@@ -20,12 +19,9 @@ public class BluetoothBikeDataProvider : BikeDataProvider
 
     public override async Task ProcessRawData()
     {
-        int checkSum = 0;
+        var checkSum = 0;
 
-        for (int i = 0; i < 12; i++)
-        {
-            checkSum ^= _bikeSensor.ReceivedData[i];
-        }
+        for (var i = 0; i < 12; i++) checkSum ^= _bikeSensor.ReceivedData[i];
 
         if (checkSum % 255 == _bikeSensor.ReceivedData[12])
         {

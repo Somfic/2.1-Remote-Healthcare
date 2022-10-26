@@ -1,10 +1,8 @@
-namespace RemoteHealthcare.GUIs.Patient.ViewModels {
-    
+namespace RemoteHealthcare.GUIs.Patient.ViewModels;
+
 public class MainViewModel : BaseViewModel
 {
     private readonly NavigationStore _navigationStore;
-
-    public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
 
     public MainViewModel(NavigationStore navigationStore)
     {
@@ -12,9 +10,10 @@ public class MainViewModel : BaseViewModel
         _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
     }
 
+    public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
+
     private void OnCurrentViewModelChanged()
     {
         OnPropertyChanged(nameof(CurrentViewModel));
     }
-}
 }

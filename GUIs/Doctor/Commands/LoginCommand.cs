@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using RemoteHealthcare.GUIs.Doctor.ViewModels;
 
@@ -7,9 +6,9 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class LoginCommand : BaseCommand
 {
-    private readonly NavigationStore _navigationStore;
     private readonly LoginWindowViewModel _loginWindowViewModel;
     private readonly NavigationService<DoctorViewModel> _navigationService;
+    private readonly NavigationStore _navigationStore;
 
     public LoginCommand(LoginWindowViewModel viewModel, NavigationService<DoctorViewModel> navigationService)
     {
@@ -18,13 +17,13 @@ public class LoginCommand : BaseCommand
     }
 
     public override void Execute(object? parameter)
-    { 
+    {
         ExecuteAsync();
     }
 
     /// <summary>
-    /// It connects to the server, sends the login credentials, waits for the server to respond, and then navigates to the
-    /// next window
+    ///     It connects to the server, sends the login credentials, waits for the server to respond, and then navigates to the
+    ///     next window
     /// </summary>
     public override async Task ExecuteAsync()
     {
@@ -33,16 +32,14 @@ public class LoginCommand : BaseCommand
         if (!_loginWindowViewModel.DoctorClient.LoggedIn)
         {
             _loginWindowViewModel.DoctorClient.UserName = _loginWindowViewModel.Username;
-            _loginWindowViewModel.DoctorClient.Password = _loginWindowViewModel.SecureStringToString(_loginWindowViewModel.SecurePassword);
-            
-           
-                new Thread(async () =>
-                {
-                    await _loginWindowViewModel.DoctorClient.AskForLoginAsync();
-                }).Start();
+            _loginWindowViewModel.DoctorClient.Password =
+                _loginWindowViewModel.SecureStringToString(_loginWindowViewModel.SecurePassword);
+
+
+            new Thread(async () => { await _loginWindowViewModel.DoctorClient.AskForLoginAsync(); }).Start();
 
             await Task.Delay(1000);
-            
+
             if (_loginWindowViewModel.DoctorClient.LoggedIn)
             {
                 await _loginWindowViewModel.DoctorClient.RequestPatientDataAsync();

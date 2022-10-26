@@ -7,9 +7,9 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class EmergencyStopCommand : BaseCommand
 {
-    private DoctorClient _doctorClient;
-    private DoctorViewModel _viewModel;
-    
+    private readonly DoctorClient _doctorClient;
+    private readonly DoctorViewModel _viewModel;
+
     public EmergencyStopCommand(DoctorClient doctorClient, DoctorViewModel doctorViewModel)
     {
         _doctorClient = doctorClient;
@@ -24,7 +24,7 @@ public class EmergencyStopCommand : BaseCommand
             Data = new EmergencyStopPacket
             {
                 StatusCode = StatusCodes.Ok,
-                ClientId = _viewModel.CurrentUser.UserId,
+                ClientId = _viewModel.CurrentUser.UserId
             }
         });
         MessageBox.Show("Emergency stop was pressed, Please check on the patient before continuing.");
@@ -32,6 +32,5 @@ public class EmergencyStopCommand : BaseCommand
 
     public override async Task ExecuteAsync()
     {
-        
     }
 }

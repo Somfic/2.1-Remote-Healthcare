@@ -6,9 +6,9 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class StopSessieCommand : BaseCommand
 {
-    private DoctorClient _doctorClient;
-    private DoctorViewModel _viewModel;
-    
+    private readonly DoctorClient _doctorClient;
+    private readonly DoctorViewModel _viewModel;
+
     public StopSessieCommand(DoctorClient doctorClient, DoctorViewModel viewModel)
     {
         _doctorClient = doctorClient;
@@ -29,6 +29,5 @@ public class StopSessieCommand : BaseCommand
 
     public override async Task ExecuteAsync()
     {
-        
     }
 }

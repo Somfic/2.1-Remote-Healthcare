@@ -11,18 +11,21 @@ var config = JsonConvert.DeserializeObject<Configuration>(configContent);
 
 // Find out how many clients to simulate
 var amountOfClients = 0;
-while(true) {
+while (true)
+{
     log.Information("Enter amount of patients to simulate");
-    if (!int.TryParse(Console.ReadLine(), out amountOfClients)) {
+    if (!int.TryParse(Console.ReadLine(), out amountOfClients))
+    {
         log.Error("Invalid input");
         continue;
     }
-    
-    if (amountOfClients < 1) {
+
+    if (amountOfClients < 1)
+    {
         log.Error("Amount of patients must be greater than 0");
         continue;
     }
-    
+
     break;
 }
 
@@ -51,7 +54,7 @@ try
     for (var index = 0; index < clients.Count; index++)
     {
         var client = clients[index];
-        await client.LoginAsync($"sim{index+1}", "simulation");
+        await client.LoginAsync($"sim{index + 1}", "simulation");
         await Task.Delay(500);
     }
 }
@@ -64,8 +67,5 @@ catch (Exception ex)
 while (true)
 {
     await Task.Delay(1000);
-    foreach (var client in clients)
-    {
-        await client.SendBikeData();
-    }
+    foreach (var client in clients) await client.SendBikeData();
 }

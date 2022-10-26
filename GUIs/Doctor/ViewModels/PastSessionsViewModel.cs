@@ -12,21 +12,21 @@ namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
 {
-    private DoctorClient _doctorClient;
-    private Log _log = new Log(typeof(PastSessionsWindow));
-
-    private string _distance;
-    private TimeSpan _totalTime;
+    private ChartValues<float> _bpm;
+    private SeriesCollection _bpmData;
+    private string _chatMessage;
 
     private SessionData _currentSession;
-    private string _chatMessage;
+
+    private string _distance;
+    private readonly DoctorClient _doctorClient;
+    private Log _log = new(typeof(PastSessionsWindow));
+    private string _sessionName;
     private ObservableCollection<SessionData> _sessions;
-    private ChartValues<float> _bpm;
     private ChartValues<float> _speed;
     private SeriesCollection _speedData;
-    private SeriesCollection _bpmData;
+    private TimeSpan _totalTime;
     private string _userName;
-    private string _sessionName;
 
     public PastSessionsViewModel(DoctorClient doctorClient, string userName)
     {
@@ -34,9 +34,9 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
         _doctorClient.AddPastSessionsViewmodel(this);
         _sessions = new ObservableCollection<SessionData>(_doctorClient.Sessions);
         _distance = "0";
-        _totalTime = new(0);
-        _bpm = new();
-        _speed = new();
+        _totalTime = new TimeSpan(0);
+        _bpm = new ChartValues<float>();
+        _speed = new ChartValues<float>();
         _userName = userName;
     }
 
@@ -60,7 +60,7 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
                     Stroke = Brushes.DarkSeaGreen,
                     PointGeometrySize = 0,
                     LineSmoothness = 1.00,
-                    Values = _speed,
+                    Values = _speed
                 }
             };
             BpmData = new SeriesCollection
@@ -70,7 +70,7 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
                     Fill = Brushes.Transparent,
                     Stroke = Brushes.LightCoral,
                     PointGeometrySize = 0,
-                    LineSmoothness = 1.00, 
+                    LineSmoothness = 1.00,
                     Values = _bpm
                 }
             };
@@ -174,24 +174,22 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
     {
         ChartValues<float> values = new();
         foreach (var data in _currentSession.MiniDatas)
-        {
             if (returnType.ToLower().Equals("speed"))
                 values.Add(data.Speed);
             else if (returnType.ToLower().Equals("bpm"))
                 values.Add(data.Heartrate);
-        }
 
         return values;
     }
 
     private string CalculateTotalDistance()
     {
-        int dist = 0;
+        var dist = 0;
         int? prefValue = null;
 
         foreach (var data in _currentSession.MiniDatas)
         {
-            int currentValue = data.Distance;
+            var currentValue = data.Distance;
 
 
             if (prefValue == null)
@@ -202,7 +200,7 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
             }
 
             if (prefValue >= 200 && currentValue <= 100)
-                dist += (255 - prefValue.Value) + currentValue;
+                dist += 255 - prefValue.Value + currentValue;
             else if (currentValue <= 255)
                 dist += currentValue - prefValue.Value;
 

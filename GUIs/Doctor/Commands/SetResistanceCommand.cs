@@ -5,9 +5,9 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class SetResistanceCommand : BaseCommand
 {
-    private DoctorClient _doctorClient;
-    private DoctorViewModel _viewModel;
-    
+    private readonly DoctorClient _doctorClient;
+    private readonly DoctorViewModel _viewModel;
+
     public SetResistanceCommand(DoctorClient doctorClient, DoctorViewModel doctorViewModel)
     {
         _doctorClient = doctorClient;
