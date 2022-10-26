@@ -88,15 +88,17 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 }
 
                 await Task.Delay(1000);
-                var engine = new EngineConnection();
-                var bike = await DataProvider.GetBike(_bikeID);
-                var heart = await DataProvider.GetHeart();
-                vrConnection = new VrConnection(bike, heart, engine);
-                _client._vrConnection = vrConnection;
-                
-                PatientHomepageViewModel pvm = new PatientHomepageViewModel(_navigationStore, _client);
+               
                 if (_client._loggedIn)
                 {
+                    var engine = new EngineConnection();
+                    var bike = await DataProvider.GetBike(_bikeID);
+                    var heart = await DataProvider.GetHeart();
+                    vrConnection = new VrConnection(bike, heart, engine);
+                    _client._vrConnection = vrConnection;
+                
+                
+                PatientHomepageViewModel pvm = new PatientHomepageViewModel(_navigationStore, _client);
                     _navigationStore.CurrentViewModel = pvm;
                     try
                     {
@@ -108,7 +110,15 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                     {
                         var log = new Log(typeof(LoginViewModel));
                         log.Critical(ex, "Program stopped because of exception");
+                        
+
+
+
                     }
+                }
+                else
+                {
+                    MessageBox.Show("wrong login");
                 }
             }
         }
