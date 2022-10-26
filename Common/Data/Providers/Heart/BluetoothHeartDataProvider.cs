@@ -1,8 +1,8 @@
-using System;
-using System.Threading.Tasks;
-using RemoteHealthcare.GUIs.Patient.Bluetooth;
 
-namespace RemoteHealthcare.Client.Data.Providers.Heart;
+
+using RemoteHealthcare.Common.Bluetooth;
+
+namespace RemoteHealthcare.Common.Data.Providers.Heart;
 
 public class BluetoothHeartDataProvider : HeartDataProvider
 {

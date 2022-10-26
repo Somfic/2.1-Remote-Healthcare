@@ -35,21 +35,16 @@ namespace RemoteHealthcare.GUIs.Doctor
         public bool loggedIn { get; set; }
         private string _userId;
 
-<<<<<<< HEAD
         public bool hasSessionResponce;
 
         private Dictionary<string, Action<DataPacket>> _callbacks = new();
-=======
-        private Dictionary<string, Action<DataPacket>> _functions = new();
-        public bool hasSessionResponce;
->>>>>>> dev
+
 
         public Client()
         {
             loggedIn = false;
             hasSessionResponce = false;
             _patientList = new List<Patient>();
-<<<<<<< HEAD
             _callbacks = new Dictionary<string, Action<DataPacket>>();
             Sessions = new List<SessionData>();
 
@@ -63,21 +58,6 @@ namespace RemoteHealthcare.GUIs.Doctor
             _callbacks.Add(OperationCodes.GET_PATIENT_DATA, GetPatientDataHandler);
             _callbacks.Add(OperationCodes.BIKEDATA, GetBikeData);
             _callbacks.Add(OperationCodes.GET_PATIENT_SESSSIONS, GetPatientSessionsHandler);
-=======
-            Sessions = new List<SessionData>();
-            _functions = new Dictionary<string, Action<DataPacket>>();
-
-            //Adds for each key an callback methode in the dictionary 
-            _functions.Add("login", LoginFeature);
-            _functions.Add("users", RequestConnectionsFeature);
-            _functions.Add("chat", ChatHandler);
-            _functions.Add("session start", SessionStartHandler);
-            _functions.Add("session stop", SessionStopHandler);
-            _functions.Add("emergency stop", EmergencyStopHandler);
-            _functions.Add("get patient data", GetPatientDataHandler);
-            _functions.Add("get patient sessions", GetPatientSessionsHandler);
-            _functions.Add("bikedata", GetBikeData);
->>>>>>> dev
 
             _client.OnMessage += (sender, data) =>
             {
@@ -245,7 +225,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             _log.Debug($"Received: {packet.ToJson()}");
             //Checks if the OppCode (OperationCode) does exist.
-            if (_functions.TryGetValue(packet.OpperationCode, out var action))
+            if (_callbacks.TryGetValue(packet.OpperationCode, out var action))
             {
                 action.Invoke(packet);
             }
@@ -267,13 +247,9 @@ namespace RemoteHealthcare.GUIs.Doctor
             var sessie = obj.GetData<SessionStartPacketResponse>();
 
             //Change the GUI with an Alert depends on the outcome of the IF-Statement
-<<<<<<< HEAD
-            DoctorViewModel.CurrentUserName = (sessie.statusCode.Equals(StatusCodes.OK)) ? DoctorViewModel.CurrentUser.Username : "Gekozen Patient is niet online";
-=======
             DoctorViewModel.CurrentUserName = (sessie.statusCode.Equals(StatusCodes.OK))
                 ? DoctorViewModel.CurrentUser.Username
                 : "Gekozen Patient is niet online";
->>>>>>> dev
         }
 
         //the methode for the session stop request
@@ -281,13 +257,8 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             _log.Information(obj.GetData<SessionStopPacketResponse>().message);
         }
-
-<<<<<<< HEAD
-
-        //the methode for the send chat request
-=======
+        
         //the methode for printing out the received message
->>>>>>> dev
         private void ChatHandler(DataPacket packetData)
         {
             ObservableCollection<string> chats = new();
@@ -295,12 +266,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                 chats.Add(chatMessage);
             
             chats.Add($"{packetData.GetData<ChatPacketResponse>().senderName}: {packetData.GetData<ChatPacketResponse>().message}");
-            _log.Warning("setting now");
-            _log.Warning($"{DoctorViewModel.ChatMessages.Count}");
             DoctorViewModel.ChatMessages = chats;
-            _log.Warning($"{DoctorViewModel.ChatMessages.Count}");
-            //DoctorViewModel.AddMessage($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
-            //BindingOperations.EnableCollectionSynchronization(DoctorViewModel._chatMessages, $"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
         }
 
         private void RequestConnectionsFeature(DataPacket packetData)

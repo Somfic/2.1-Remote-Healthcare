@@ -5,14 +5,14 @@ using System.Net.Cache;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using RemoteHealthcare.Client.Data;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
-using RemoteHealthcare.Client;
 using NetworkEngine.Socket;
 using RemoteHealthcare.GUIs.Patient.ViewModels;
+using System.Collections;
+using RemoteHealthcare.Common.Data;
 
 namespace RemoteHealthcare.GUIs.Patient.Client
 {
@@ -30,22 +30,22 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         public PatientHomepageViewModel p;
         private Boolean _sessienRunning = false;
 
-        private Dictionary<string, Action<DataPacket>> _functions;
+        private Dictionary<string, Action<DataPacket>> _callbacks;
         public VrConnection _vrConnection;
         public  Client(VrConnection v)
         {
             
             _loggedIn = false;
-            _functions = new Dictionary<string, Action<DataPacket>>();
+            _callbacks = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
-            _functions.Add("login", LoginFeature);
-            _functions.Add("chat", ChatHandlerAsync);
-            _functions.Add("session start", SessionStartHandler);
-            _functions.Add("session stop", SessionStopHandler);
-            _functions.Add("disconnect", DisconnectHandler);
-            _functions.Add("set resitance", SetResistanceHandeler);
-            _functions.Add("emergency stop", EmergencyStopHandler);
+            _callbacks.Add("login", LoginFeature);
+            _callbacks.Add("chat", ChatHandlerAsync);
+            _callbacks.Add("session start", SessionStartHandler);
+            _callbacks.Add("session stop", SessionStopHandler);
+            _callbacks.Add("disconnect", DisconnectHandler);
+            _callbacks.Add("set resitance", SetResistanceHandeler);
+            _callbacks.Add("emergency stop", EmergencyStopHandler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -64,7 +64,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                 OpperationCode = OperationCodes.LOGIN,
                 data = new LoginPacketRequest()
                 {
-                    username = _username,
+                    userName = _username,
                     password = _password,
                     isDoctor = false
                 }
@@ -101,7 +101,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         public void HandleData(DataPacket packet)
         {
             //Checks if the OppCode (OperationCode) does exist.
-            if (_functions.TryGetValue(packet.OpperationCode, out var action))
+            if (_callbacks.TryGetValue(packet.OpperationCode, out var action))
             {
                 action.Invoke(packet);
             } else {

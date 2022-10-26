@@ -3,9 +3,9 @@
 using System;
 using System.Data;
 using System.Threading;
-using RemoteHealthcare.Client.Data;
-using RemoteHealthcare.Client.Data.Providers.Bike;
-using RemoteHealthcare.Client.Data.Providers.Heart;
+using RemoteHealthcare.Common.Data;
+using RemoteHealthcare.Common.Data.Providers.Bike;
+using RemoteHealthcare.Common.Data.Providers.Heart;
 using RemoteHealthcare.GUIs.Patient.ViewModels;
 using RemoteHealthcare.NetworkEngine;
 
@@ -23,7 +23,7 @@ namespace NetworkEngine.Socket
         {
             this.bike = bike;
             this.heart = heart;
-            this.engine = engine;
+            this.Engine = engine;
         }
 
         public bool session;
@@ -39,14 +39,14 @@ namespace NetworkEngine.Socket
                 {
                     await heart.ProcessRawData();
                     await bike.ProcessRawData();
-                    await engine.ChangeBikeSpeed(bike.GetData().Speed);
+                    await Engine.ChangeBikeSpeed(bike.GetData().Speed);
                 _pvm.Heartrate = heart.GetData().HeartRate.ToString();
                 _pvm.Speed = bike.GetData().Speed.ToString("##.#");
                 _pvm.Distance = bike.GetData().Distance.ToString("####.#");
                 _pvm.Time = bike.GetData().TotalElapsed.ToString("hh\\:mm\\:ss");
                 Console.WriteLine("Heart: " + heart.GetData().HeartRate);
                 } else {
-                    engine.ChangeBikeSpeed(0);
+                    Engine.ChangeBikeSpeed(0);
                 }
                 Thread.Sleep(300);
             }

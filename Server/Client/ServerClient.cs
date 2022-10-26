@@ -58,8 +58,8 @@ namespace RemoteHealthcare.Server.Client
             _callbacks.Add(OperationCodes.EMERGENCY_STOP, EmergencyStopHandler);
             _callbacks.Add(OperationCodes.GET_PATIENT_DATA, GetPatientDataHandler);
             _callbacks.Add(OperationCodes.BIKEDATA, GetBikeData);
-            _functions.Add("get patient sessions", GetPatientSessionHandler);
-            _functions.Add("set resitance", SetResiatance);
+            _callbacks.Add(OperationCodes.GET_PATIENT_SESSSIONS, GetPatientSessionHandler);
+            _callbacks.Add(OperationCodes.SET_RESISTANCE, SetResiatance);
         }
         
         //determines which methode exactly will be executed 
@@ -68,7 +68,7 @@ namespace RemoteHealthcare.Server.Client
             _log.Debug($"Got a packet server: {packetData.OpperationCode}");
 
             //Checks if the OppCode (OperationCode) does exist.
-            if (_functions.TryGetValue(packetData.OpperationCode, out var action)) 
+            if (_callbacks.TryGetValue(packetData.OpperationCode, out var action)) 
             {
                 action.Invoke(packetData);
             } else {

@@ -6,7 +6,7 @@
         <UseWPF>true</UseWPF>
         <RootNamespace>RemoteHealthcare.GUIs.Patient</RootNamespace>
         <LangVersion>10</LangVersion>
-        <TargetFramework>net48</TargetFramework>
+        <TargetFramework>net472</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>

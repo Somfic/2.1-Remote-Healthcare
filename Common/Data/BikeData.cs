@@ -1,6 +1,6 @@
 using System;
 
-namespace RemoteHealthcare.Client.Data;
+namespace RemoteHealthcare.Common.Data;
 
 public class BikeData : IData
 {

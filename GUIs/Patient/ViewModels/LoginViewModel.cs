@@ -9,7 +9,8 @@ using MvvmHelpers;
 using MvvmHelpers.Commands;
 using System.Windows.Input;
 using NetworkEngine.Socket;
-using RemoteHealthcare.Client.Data.Providers;
+using RemoteHealthcare.Common;
+using RemoteHealthcare.Common.Data.Providers;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.NetworkEngine;
 
@@ -97,6 +98,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                         var engine = new EngineConnection();
                         await engine.ConnectAsync(_vrid);
                         // Console.WriteLine("Enter Bike ID:");
+                        
                          var bike = await DataProvider.GetBike(_bikeID);
                          var heart = await DataProvider.GetHeart();
                          vrConnection = new VrConnection(bike, heart, engine);
@@ -105,7 +107,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                          _client._vrConnection = vrConnection;
                          
                          //Prevends that he GUI patient crash 
-                         new Thread(async () => { vrConnection.Start(); }).Start();
+                         new Thread(async () => { vrConnection.Start(pvm); }).Start();
 
                          await Task.Delay(-1);
                     }

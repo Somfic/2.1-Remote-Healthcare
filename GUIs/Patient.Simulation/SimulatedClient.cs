@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
-using RemoteHealthcare.Client.Data;
-using RemoteHealthcare.Client.Data.Providers;
-using RemoteHealthcare.Client.Data.Providers.Bike;
-using RemoteHealthcare.Client.Data.Providers.Heart;
 using RemoteHealthcare.Common;
+using RemoteHealthcare.Common.Data;
+using RemoteHealthcare.Common.Data.Providers;
+using RemoteHealthcare.Common.Data.Providers.Bike;
+using RemoteHealthcare.Common.Data.Providers.Heart;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
 

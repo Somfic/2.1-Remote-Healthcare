@@ -1,10 +1,7 @@
-using System;
-using System.Threading.Tasks;
-using RemoteHealthcare.Client.Data;
-using RemoteHealthcare.Client.Data.Providers.Bike;
-using RemoteHealthcare.GUIs.Patient.Bluetooth;
 
-namespace RemoteHealthcare.GUIs.Patient.Data.Providers.Bike;
+using RemoteHealthcare.Common.Bluetooth;
+
+namespace RemoteHealthcare.Common.Data.Providers.Bike;
 
 public class BluetoothBikeDataProvider : BikeDataProvider
 {
