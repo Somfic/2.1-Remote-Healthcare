@@ -88,22 +88,24 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 }
 
                 await Task.Delay(1000);
-
+                PatientHomepageViewModel pvm = new PatientHomepageViewModel(_navigationStore, _client);
                 if (_client._loggedIn)
                 {
-                    _navigationStore.CurrentViewModel = new PatientHomepageViewModel(_navigationStore, _client);
+                    _navigationStore.CurrentViewModel = pvm;
                     // ((Window) window).Close();
                     try
                     {
                         var engine = new EngineConnection();
-                        await engine.ConnectAsync();
+                        // await engine.ConnectAsync();
                         // // Console.WriteLine("Enter Bike ID:");
                         var bike = await DataProvider.GetBike(_bikeID);
                         var heart = await DataProvider.GetHeart();
                         vrConnection = new VrConnection(bike, heart, engine);
-                        //
+                        
                         _client._vrConnection = vrConnection;
-                        vrConnection.Start();
+                        new Thread(async => {vrConnection.Start(pvm); }).Start();
+                      
+                      
 
                         await Task.Delay(-1);
                     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Net.Cache;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
 using RemoteHealthcare.Client;
 using NetworkEngine.Socket;
+using RemoteHealthcare.GUIs.Patient.ViewModels;
 
 namespace RemoteHealthcare.GUIs.Patient.Client
 {
@@ -20,12 +22,14 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         private Log _log = new(typeof(Client));
         private string userId;
         public VrConnection _vrConnection;
+        
 
         public string _password { get; set; }
         public string _username { get; set; }
         public bool _loggedIn;
         private Boolean _sessienRunning = false;
         private string _sessionId;
+        public PatientHomepageViewModel p;
 
         private static Dictionary<string, Action<DataPacket>> _callbacks;
 
@@ -160,6 +164,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         private void ChatHandler(DataPacket packetData)
         {
             _log.Information($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+           p._messages.Add($"{packetData.GetData<ChatPacketResponse>().message}"); 
         }
 
         //the methode for the login request

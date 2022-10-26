@@ -1,10 +1,12 @@
 ﻿
 
 using System;
+using System.Data;
 using System.Threading;
 using RemoteHealthcare.Client.Data;
 using RemoteHealthcare.Client.Data.Providers.Bike;
 using RemoteHealthcare.Client.Data.Providers.Heart;
+using RemoteHealthcare.GUIs.Patient.ViewModels;
 using RemoteHealthcare.NetworkEngine;
 
 namespace NetworkEngine.Socket
@@ -14,6 +16,7 @@ namespace NetworkEngine.Socket
         BikeDataProvider bike;
         HeartDataProvider heart;
         EngineConnection engine;
+        private PatientHomepageViewModel _pvm;
 
         public VrConnection(BikeDataProvider bike, HeartDataProvider heart, EngineConnection engine)
         {
@@ -35,11 +38,20 @@ namespace NetworkEngine.Socket
             */
         }
 
-        public async void Start()
+        public async void Start(PatientHomepageViewModel p)
         {
+            _pvm = p;
             while (true)
             {
+                
                 await bike.ProcessRawData();
+                await heart.ProcessRawData();
+                _pvm.Heartrate = heart.GetData().HeartRate.ToString();
+                _pvm.Speed = bike.GetData().Speed.ToString();
+                _pvm.Distance = bike.GetData().Distance.ToString();
+                _pvm.Time = bike.GetData().TotalElapsed.ToString();
+                
+                Console.WriteLine("Heart: " + heart.GetData().HeartRate);
                 // await engine.ChangeBikeSpeed(bike.GetData().Speed);
                 Thread.Sleep(300);
             }
@@ -69,6 +81,7 @@ namespace NetworkEngine.Socket
         }
         internal HeartData getHearthData()
         {
+           
             return heart.GetData();
         }
     }
