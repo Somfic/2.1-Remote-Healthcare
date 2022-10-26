@@ -54,17 +54,24 @@ public class BluetoothDevice
             _log.Debug($"Connecting to bluetooth device {_deviceName} ... ");
 
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
                 _log.Warning("Bluetooth is only supported on Windows");
+            }
 
             _bluetoothConnection = new BLE();
             await Task.Delay(1000);
 
             var devices = _bluetoothConnection.ListDevices();
 
-            foreach (var device in devices) _log.Information(device);
+            foreach (var device in devices)
+            {
+                _log.Information(device);
+            }
 
             if (!devices.Contains(_deviceName))
+            {
                 throw new Exception("Could not find bluetooth device in list of available connections");
+            }
 
             errorCode = await _bluetoothConnection.OpenDevice(_deviceName);
 

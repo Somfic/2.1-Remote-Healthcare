@@ -62,9 +62,13 @@ public class ServerClient
 
         //Checks if the OppCode (OperationCode) does exist.
         if (_callbacks.TryGetValue(packetData.OpperationCode, out var action))
+        {
             action.Invoke(packetData);
+        }
         else
+        {
             throw new Exception("Function not implemented");
+        }
     }
 
     //This methode used to send an request from the Server to the Client
@@ -74,9 +78,13 @@ public class ServerClient
         _log.Critical($"sending (single target): {packet.ToJson()} \\nTarget: {targetId}");
 
         if (packet.ToJson().Contains("chat"))
+        {
             CalculateTarget(targetId).Client.SendAsync(packet).GetAwaiter().GetResult();
+        }
         else
+        {
             Client.SendAsync(packet).GetAwaiter().GetResult();
+        }
     }
 
     //This methode used to send an request from the Server to the Client
@@ -85,11 +93,13 @@ public class ServerClient
     {
         _log.Critical($"sending (multiple targets): {packet.ToJson()}");
         if (packet.ToJson().Contains("chat"))
+        {
             foreach (var targetId in targetIds)
             {
                 _log.Warning(targetId);
                 CalculateTarget(targetId).Client.SendAsync(packet).GetAwaiter().GetResult();
             }
+        }
     }
 
     private void GetBikeData(DataPacket obj)
@@ -97,6 +107,7 @@ public class ServerClient
         var data = obj.GetData<BikeDataPacket>();
 
         foreach (var session in _patient.Sessions)
+        {
             if (session.SessionId.Equals(data.SessionId))
             {
                 session.AddData(data.SessionId, (int)data.Speed, (int)data.Distance, data.HeartRate,
@@ -119,6 +130,7 @@ public class ServerClient
                 CalculateTarget().Client.SendAsync(dataPacketDoctor).GetAwaiter().GetResult();
                 return;
             }
+        }
 
         _patient.Sessions.Add(new SessionData(data.SessionId, data.DeviceType, data.Id));
         _patient.SaveSessionData(_patientDataLocation);
@@ -158,10 +170,14 @@ public class ServerClient
         foreach (var client in Server.ConnectedClients)
         {
             if (userId == null && client._isDoctor)
+            {
                 return client;
+            }
 
             if (userId != null && client.UserId.Equals(userId))
+            {
                 return client;
+            }
         }
 
         _log.Error($"No client found for the id: {userId}");
@@ -190,16 +206,22 @@ public class ServerClient
 
         var clientCount = 0;
         foreach (var client in connections)
+        {
             if (!client._isDoctor && client.UserId != null)
             {
                 //connections.count - 2 because we subtract the doctor and count is 1 up on the index.
                 if (connections.Count - 1 <= clientCount)
+                {
                     clients += client.UserId;
+                }
                 else
+                {
                     clients += client.UserId + ";";
+                }
 
                 clientCount++;
             }
+        }
 
         _log.Debug($"RequestConnectionsFeature.clients: {clients}");
 
@@ -236,7 +258,11 @@ public class ServerClient
         var patient = Server.ConnectedClients.Find(patient => patient.UserId == data.ReceiverId);
 
         _log.Debug("selected is: " + patient.UserId);
-        if (patient == null) return;
+        if (patient == null)
+        {
+            return;
+        }
+
         patient.SendData(new DataPacket<SetResistanceResponse>
         {
             OpperationCode = OperationCodes.SetResistance,
@@ -419,7 +445,10 @@ public class ServerClient
         //Trys to Find the Patient in the _connectedCLients.
         var selectedPatient = Server.ConnectedClients.Find(c => c.UserId == data.SelectedPatient);
 
-        if (selectedPatient == null) return;
+        if (selectedPatient == null)
+        {
+            return;
+        }
 
         selectedPatient.SendData(new DataPacket<SessionStopPacketResponse>
         {

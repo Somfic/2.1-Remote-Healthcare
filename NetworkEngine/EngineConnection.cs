@@ -64,7 +64,9 @@ public class EngineConnection
         while (true)
         {
             if (_clients != null)
+            {
                 return _clients.Select(x => x.user).ToArray();
+            }
 
             await Task.Delay(50);
         }
@@ -552,7 +554,9 @@ public class EngineConnection
             for (var i = x1 - 10; i < x1 + 10; i++)
             for (var j = z1 - 10; j < z1 + 10; j++)
                 if (j > -128 && j < 128 && i > -128 && i < 128)
+                {
                     _roadArray[i + 128, j + 128] = true;
+                }
         }
         else
         {

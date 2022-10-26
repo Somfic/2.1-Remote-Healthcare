@@ -26,7 +26,9 @@ public class SocketServer : ISocket
         _shouldRun = true;
 
         if (Socket?.Server.Connected == true)
+        {
             return;
+        }
 
         try
         {
@@ -57,7 +59,10 @@ public class SocketServer : ISocket
         while (_shouldRun)
             try
             {
-                if (Socket == null) throw new NullReferenceException("Listener is null");
+                if (Socket == null)
+                {
+                    throw new NullReferenceException("Listener is null");
+                }
 
                 var socket = await Socket.AcceptTcpClientAsync();
 
@@ -93,6 +98,9 @@ public class SocketServer : ISocket
 
     public async Task BroadcastAsync(string text)
     {
-        foreach (var client in Clients.Where(x => x.Socket.Connected)) await client.SendAsync(text);
+        foreach (var client in Clients.Where(x => x.Socket.Connected))
+        {
+            await client.SendAsync(text);
+        }
     }
 }

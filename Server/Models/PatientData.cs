@@ -50,11 +50,13 @@ public class PatientData
 
         //Checks if the Patient parameter exists in the AllUsers.json with LINQ
         foreach (var p in Patients)
+        {
             if (p.Password == patient.Password && p.UserId == patient.UserId)
             {
                 patient.Username = p.Username;
                 return true;
             }
+        }
 
         return false;
     }
@@ -68,7 +70,10 @@ public class PatientData
         var folderName = Environment.CurrentDirectory;
         _log.Debug(folderName);
         folderName = Path.Combine(folderName.Substring(0, folderName.LastIndexOf("bin")) + "PatientDataFiles");
-        foreach (var patient in Patients) patient.SaveSessionData(folderName);
+        foreach (var patient in Patients)
+        {
+            patient.SaveSessionData(folderName);
+        }
     }
 
     public JObject[] GetPatientDataAsJObjects()

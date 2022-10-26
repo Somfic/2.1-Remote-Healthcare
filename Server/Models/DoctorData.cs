@@ -11,11 +11,16 @@ public class DoctorData
     public bool MatchLoginData(Doctor d)
     {
         if (Doctor == null)
+        {
             return false;
+        }
 
         if (Doctor.Username.Equals(d.Username) && Doctor.Password.Equals(d.Password) &&
             Doctor.UserId.Equals(d.UserId))
+        {
             return true;
+        }
+
         return false;
     }
 

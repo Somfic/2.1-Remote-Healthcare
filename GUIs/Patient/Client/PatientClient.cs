@@ -73,9 +73,13 @@ public class PatientClient
     {
         //Checks if the OppCode (OperationCode) does exist.
         if (_callbacks.TryGetValue(packet.OpperationCode, out var action))
+        {
             action.Invoke(packet);
+        }
         else
+        {
             throw new Exception("Function not implemented");
+        }
     }
 
     private void EmergencyStopHandler(DataPacket obj)
@@ -146,7 +150,11 @@ public class PatientClient
         _log.Information(messageReceived);
 
         var chats = new ObservableCollection<string>();
-        foreach (var message in P.Messages) chats.Add(message);
+        foreach (var message in P.Messages)
+        {
+            chats.Add(message);
+        }
+
         chats.Add(
             $"{packetData.GetData<ChatPacketResponse>().SenderId}: {packetData.GetData<ChatPacketResponse>().Message}");
         P.Messages = chats;

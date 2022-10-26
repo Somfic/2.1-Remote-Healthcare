@@ -39,7 +39,9 @@ log.Information($"Connecting to server on {config.Host}:{config.Port}");
 try
 {
     foreach (var client in clients)
+    {
         await client.ConnectAsync(config.Host, config.Port);
+    }
 }
 catch (Exception ex)
 {
@@ -67,5 +69,8 @@ catch (Exception ex)
 while (true)
 {
     await Task.Delay(1000);
-    foreach (var client in clients) await client.SendBikeData();
+    foreach (var client in clients)
+    {
+        await client.SendBikeData();
+    }
 }

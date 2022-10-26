@@ -12,6 +12,9 @@ public partial class LoginView : UserControl
 
     private void PasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
     {
-        if (DataContext != null) ((dynamic)DataContext).SecurePassword = ((PasswordBox)sender).SecurePassword;
+        if (DataContext != null)
+        {
+            ((dynamic)DataContext).SecurePassword = ((PasswordBox)sender).SecurePassword;
+        }
     }
 }

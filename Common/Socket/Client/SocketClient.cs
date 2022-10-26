@@ -25,7 +25,9 @@ public class SocketClient : ISocket
     public async Task ConnectAsync(string ip, int port)
     {
         if (Socket.Connected)
+        {
             return;
+        }
 
         var attempts = 0;
 
@@ -126,7 +128,9 @@ public class SocketClient : ISocket
                 try
                 {
                     if (!string.IsNullOrWhiteSpace(text))
+                    {
                         OnMessage?.Invoke(this, text);
+                    }
                 }
                 catch (Exception ex)
                 {

@@ -62,7 +62,10 @@ public class DoctorViewModel : ObservableObject
         set
         {
             _currentUser = value;
-            if (CurrentUser != null) CurrentUserName = CurrentUser.Username;
+            if (CurrentUser != null)
+            {
+                CurrentUserName = CurrentUser.Username;
+            }
 
             //OnPropertyChanged(nameof(CurrentUser));
 

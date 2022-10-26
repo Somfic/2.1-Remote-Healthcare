@@ -160,8 +160,12 @@ public class DoctorClient : ObservableObject
     private bool CheckTargets(List<string> targets, List<string> connections)
     {
         foreach (var target in targets)
+        {
             if (!connections.Contains(target))
+            {
                 return false;
+            }
+        }
 
         return true;
     }
@@ -170,7 +174,10 @@ public class DoctorClient : ObservableObject
     {
         _log.Debug(_connected.Count.ToString());
         if (_connected != null)
+        {
             _connected.Clear();
+        }
+
         _log.Debug(_connected.Count.ToString());
         var req = new DataPacket<ConnectedClientsPacketRequest>
         {
@@ -219,9 +226,13 @@ public class DoctorClient : ObservableObject
         _log.Debug($"Received: {packet.ToJson()}");
         //Checks if the OppCode (OperationCode) does exist.
         if (_callbacks.TryGetValue(packet.OpperationCode, out var action))
+        {
             action.Invoke(packet);
+        }
         else
+        {
             throw new Exception("Function not implemented");
+        }
     }
 
     //the methode for the emergency stop request
@@ -252,7 +263,9 @@ public class DoctorClient : ObservableObject
     {
         ObservableCollection<string> chats = new();
         foreach (var chatMessage in DoctorViewModel.ChatMessages)
+        {
             chats.Add(chatMessage);
+        }
 
         chats.Add(
             $"{packetData.GetData<ChatPacketResponse>().SenderName}: {packetData.GetData<ChatPacketResponse>().Message}");
@@ -351,6 +364,7 @@ public class DoctorClient : ObservableObject
         else
         {
             foreach (var patient in PatientList)
+            {
                 if (patient.UserId.Equals(data.Id))
                 {
                     patient.CurrentDistance = data.Distance;
@@ -360,6 +374,7 @@ public class DoctorClient : ObservableObject
                     patient.SpeedData.Add(data.Speed);
                     patient.BpmData.Add(data.HeartRate);
                 }
+            }
         }
     }
 }

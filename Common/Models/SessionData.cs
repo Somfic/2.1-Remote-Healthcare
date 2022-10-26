@@ -26,7 +26,11 @@ public class SessionData : ObservableObject
     {
         if (!SessionId.Equals(data["sessionId"].ToObject<string>()) ||
             !DeviceType.Equals(data["deviceType"].ToObject<string>()) ||
-            !Id.Equals(data["id"].ToObject<string>())) return false;
+            !Id.Equals(data["id"].ToObject<string>()))
+        {
+            return false;
+        }
+
         MiniDatas.Add(new SessionMiniData(data["speed"].ToObject<int>(), data["distance"].ToObject<int>(),
             data["heartRate"].ToObject<int>(), data["elapsed"].ToObject<int>()));
         return true;
@@ -35,7 +39,11 @@ public class SessionData : ObservableObject
     public bool AddData(string sessionId, int speed, int distance, int heartrate, int elapsed, string deviceType,
         string id)
     {
-        if (!SessionId.Equals(sessionId) || !DeviceType.Equals(deviceType) || !Id.Equals(id)) return false;
+        if (!SessionId.Equals(sessionId) || !DeviceType.Equals(deviceType) || !Id.Equals(id))
+        {
+            return false;
+        }
+
         MiniDatas.Add(new SessionMiniData(speed, distance, heartrate, elapsed));
         return true;
     }

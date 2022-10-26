@@ -174,10 +174,16 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
     {
         ChartValues<float> values = new();
         foreach (var data in _currentSession.MiniDatas)
+        {
             if (returnType.ToLower().Equals("speed"))
+            {
                 values.Add(data.Speed);
+            }
             else if (returnType.ToLower().Equals("bpm"))
+            {
                 values.Add(data.Heartrate);
+            }
+        }
 
         return values;
     }
@@ -200,9 +206,13 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
             }
 
             if (prefValue >= 200 && currentValue <= 100)
+            {
                 dist += 255 - prefValue.Value + currentValue;
+            }
             else if (currentValue <= 255)
+            {
                 dist += currentValue - prefValue.Value;
+            }
 
             prefValue = currentValue;
         }

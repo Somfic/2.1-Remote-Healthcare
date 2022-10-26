@@ -54,17 +54,23 @@ public static class SocketHelper
 
         // Encrypt the bytes
         if (useEncryption)
+        {
             textBytes = Encrypt(textBytes);
+        }
 
         // If the bytes were null, throw an exception
         if (textBytes == null)
+        {
             throw new NullReferenceException("Bytes is null");
+        }
 
         var length = textBytes.Length;
         var lengthBytes = BitConverter.GetBytes(length);
 
         if (lengthBytes.Length > 4)
+        {
             throw new Exception($"Length of encrypted bytes is too large (length: {length})");
+        }
 
         lengthBytes = lengthBytes.Take(4).ToArray();
 
@@ -81,11 +87,15 @@ public static class SocketHelper
 
         // Decrypt the bytes
         if (useEncryption)
+        {
             textBytes = Decrypt(textBytes);
+        }
 
         // If the bytes were null, throw an exception
         if (textBytes == null)
+        {
             throw new NullReferenceException("Bytes is null");
+        }
 
         // Convert the bytes to a string
         var text = Encoding.UTF8.GetString(textBytes);

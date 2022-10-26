@@ -21,7 +21,10 @@ public class Patient : ObservableObject
         Password = password;
         UserId = user;
         if (username != null)
+        {
             Username = username;
+        }
+
         Sessions = new List<SessionData>();
     }
 
@@ -49,14 +52,18 @@ public class Patient : ObservableObject
 
 
         if (!Directory.Exists(pathString))
+        {
             Directory.CreateDirectory(pathString);
+        }
 
         foreach (var session in Sessions)
         {
             var pathStringUserId = Path.Combine(pathString, UserId);
 
             if (!Directory.Exists(pathStringUserId))
+            {
                 Directory.CreateDirectory(pathStringUserId);
+            }
 
             var fileName = session.SessionId.Replace(':', '-');
             fileName = fileName.Replace('/', '-');

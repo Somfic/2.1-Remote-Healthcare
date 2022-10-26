@@ -45,7 +45,10 @@ public class Server
     internal static void Disconnect(ServerClient client)
     {
         if (!ConnectedClients.Contains(client))
+        {
             return;
+        }
+
         Log.Send().Debug("Disconnecting a client now");
         ConnectedClients.Remove(client);
     }
@@ -53,12 +56,18 @@ public class Server
     internal static void PrintUsers()
     {
         Log.Send().Debug("ALLE HUIDIGDE USER NA DE DISCONNECT ZIJN:");
-        foreach (var user in SocketServer.Clients) Log.Send().Debug("Socketserver Client:  " + user);
+        foreach (var user in SocketServer.Clients)
+        {
+            Log.Send().Debug("Socketserver Client:  " + user);
+        }
 
         Log.Send().Debug("");
         Log.Send().Debug("ALLE HUIDIGE ServerClients-USER NA DE DISCONNECT ZIJN:");
 
-        foreach (var user in ConnectedClients) Log.Send().Debug("_connected Clients:  " + user);
+        foreach (var user in ConnectedClients)
+        {
+            Log.Send().Debug("_connected Clients:  " + user);
+        }
     }
 
     private async Task BroadcastAsync(string message)

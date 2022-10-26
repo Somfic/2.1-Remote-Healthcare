@@ -28,7 +28,10 @@ public class Doctor
             var json = JsonConvert.SerializeObject(session);
             pathString = Path.Combine(pathString, filename);
 
-            if (!File.Exists(pathString)) File.WriteAllText(pathString, JObject.Parse(json).ToString());
+            if (!File.Exists(pathString))
+            {
+                File.WriteAllText(pathString, JObject.Parse(json).ToString());
+            }
         }
     }
 }

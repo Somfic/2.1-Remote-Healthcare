@@ -24,6 +24,9 @@ public partial class LoginWindow : UserControl
     /// <param name="RoutedEventArgs">This is the event arguments that are passed to the event handler.</param>
     private void PasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
     {
-        if (DataContext != null) ((dynamic)DataContext).SecurePassword = ((PasswordBox)sender).SecurePassword;
+        if (DataContext != null)
+        {
+            ((dynamic)DataContext).SecurePassword = ((PasswordBox)sender).SecurePassword;
+        }
     }
 }
