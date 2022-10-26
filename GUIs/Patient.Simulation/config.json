@@ -1,4 +1,7 @@
 ﻿{
     "host": "127.0.0.1",
-    "port": 15243
+    "port": 15243,
+    
+    "username": "06111",
+    "password": "welkom01"
 }

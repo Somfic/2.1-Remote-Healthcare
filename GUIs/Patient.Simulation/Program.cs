@@ -26,7 +26,7 @@ while(true) {
     break;
 }
 
-// Create the clients
+// Create new clients
 List<SimulatedClient> clients = new();
 for (var i = 0; i < amountOfClients; i++)
     clients.Add(new SimulatedClient($"#{i}"));
@@ -49,10 +49,7 @@ log.Information("Logging in clients");
 try
 {
     foreach (var client in clients)
-    {
-        await client.LoginAsync();
-        await Task.Delay(500);
-    }
+        await client.LoginAsync(config.Username, config.Password);
 }
 catch (Exception ex)
 {
@@ -60,11 +57,22 @@ catch (Exception ex)
     return;
 }
 
-while (true)
+// Send fake data, as long as there is a client connected
+while (clients.Any(x => x.IsConnected))
 {
-    await Task.Delay(1000);
-    foreach (var client in clients)
+    log.Debug("Sending fake data");
+
+    try
     {
-        await client.SendBikeData();
+        foreach (var client in clients.Where(x => x.IsConnected))
+            await client.SendBikeData();
     }
+    catch (Exception ex)
+    {
+        log.Warning(ex, "Could not send data");
+    }
+
+    await Task.Delay(1000);
 }
+
+log.Information("All clients disconnected, terminating");

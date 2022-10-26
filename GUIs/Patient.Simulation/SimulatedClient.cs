@@ -19,9 +19,11 @@ public class SimulatedClient
     public SimulatedClient(string id)
     {
         _id = id;
+        _socket.OnMessage += (sender, e) => _log.Information($"[{_id}] {e}");
     }
     
     private readonly SocketClient _socket = new(true);
+    public bool IsConnected => _socket.Socket.Connected;
 
     public async Task ConnectAsync(string host, int port)
     {
@@ -33,16 +35,16 @@ public class SimulatedClient
         _log.Debug($"[{_id}] Connected to server");
     }
 
-    public async Task LoginAsync()
+    public async Task LoginAsync(string username, string password, bool isDoctor = false)
     {
        var loginReq = new DataPacket<LoginPacketRequest>
         {
             OpperationCode = OperationCodes.LOGIN,
             data = new LoginPacketRequest()
             {
-                username = "06111",
-                password = "wekom01",
-                isDoctor = false
+                username = username,
+                password = password,
+                isDoctor = isDoctor
             }
         };
 
