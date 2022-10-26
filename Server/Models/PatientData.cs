@@ -24,7 +24,7 @@ public class PatientData
     
     public List<Patient> readUsersFromJson()
     {
-        string path = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "AllUsers.json");
+        string path = Path.Combine(Directory.GetCurrentDirectory(), "AllUsers.json");
         
         string returnAllUsersFromText = File.ReadAllText(path);
         
