@@ -28,18 +28,18 @@ public class LoginCommand : BaseCommand
     /// </summary>
     public override async Task ExecuteAsync()
     {
-        await _loginWindowViewModel.Client.Client.ConnectAsync("127.0.0.1", 15243);
+        await _loginWindowViewModel.DoctorClient.Client.ConnectAsync("127.0.0.1", 15243);
 
-        if (!_loginWindowViewModel.Client.LoggedIn)
+        if (!_loginWindowViewModel.DoctorClient.LoggedIn)
         {
-            _loginWindowViewModel.Client.UserName = _loginWindowViewModel.Username;
-            _loginWindowViewModel.Client.Password = _loginWindowViewModel.SecureStringToString(_loginWindowViewModel.SecurePassword);
+            _loginWindowViewModel.DoctorClient.UserName = _loginWindowViewModel.Username;
+            _loginWindowViewModel.DoctorClient.Password = _loginWindowViewModel.SecureStringToString(_loginWindowViewModel.SecurePassword);
             
             try
             {
                 new Thread(async () =>
                 {
-                    await _loginWindowViewModel.Client.AskForLoginAsync();
+                    await _loginWindowViewModel.DoctorClient.AskForLoginAsync();
                 }).Start();
             } catch (Exception exception)
             {
@@ -49,9 +49,9 @@ public class LoginCommand : BaseCommand
 
             await Task.Delay(1000);
             
-            if (_loginWindowViewModel.Client.LoggedIn)
+            if (_loginWindowViewModel.DoctorClient.LoggedIn)
             {
-                await _loginWindowViewModel.Client.RequestPatientDataAsync();
+                await _loginWindowViewModel.DoctorClient.RequestPatientDataAsync();
                 await Task.Delay(1000);
 
                 _navigationService.Navigate();

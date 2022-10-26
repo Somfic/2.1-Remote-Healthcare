@@ -9,7 +9,7 @@ namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class LoginWindowViewModel : ObservableObject
 {
-    public Client Client;
+    public DoctorClient DoctorClient;
     public ICommand LogIn { get; }
 
     private string _username;
@@ -17,10 +17,10 @@ public class LoginWindowViewModel : ObservableObject
 
     public LoginWindowViewModel(NavigationStore navigationStore)
     {
-        Client = new Client();
+        DoctorClient = new DoctorClient();
         LogIn = new LoginCommand(this, 
             new NavigationService<DoctorViewModel>(navigationStore, 
-            () => new DoctorViewModel(Client, navigationStore)));
+            () => new DoctorViewModel(DoctorClient, navigationStore)));
     }
 
     public string Username

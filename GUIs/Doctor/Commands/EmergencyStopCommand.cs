@@ -7,18 +7,18 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class EmergencyStopCommand : BaseCommand
 {
-    private Client _client;
+    private DoctorClient _doctorClient;
     private DoctorViewModel _viewModel;
     
-    public EmergencyStopCommand(Client client, DoctorViewModel doctorViewModel)
+    public EmergencyStopCommand(DoctorClient doctorClient, DoctorViewModel doctorViewModel)
     {
-        _client = client;
+        _doctorClient = doctorClient;
         _viewModel = doctorViewModel;
     }
 
     public override void Execute(object? parameter)
     {
-        _client.Client.SendAsync(new DataPacket<EmergencyStopPacket>
+        _doctorClient.Client.SendAsync(new DataPacket<EmergencyStopPacket>
         {
             OpperationCode = OperationCodes.EmergencyStop,
             Data = new EmergencyStopPacket

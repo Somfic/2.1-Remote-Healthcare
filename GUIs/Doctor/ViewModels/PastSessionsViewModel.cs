@@ -12,7 +12,7 @@ namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
 {
-    private Client _client;
+    private DoctorClient _doctorClient;
     private Log _log = new Log(typeof(PastSessionsWindow));
 
     private string _distance;
@@ -28,11 +28,11 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
     private string _userName;
     private string _sessionName;
 
-    public PastSessionsViewModel(Client client, string userName)
+    public PastSessionsViewModel(DoctorClient doctorClient, string userName)
     {
-        _client = client;
-        _client.AddPastSessionsViewmodel(this);
-        _sessions = new ObservableCollection<SessionData>(_client.Sessions);
+        _doctorClient = doctorClient;
+        _doctorClient.AddPastSessionsViewmodel(this);
+        _sessions = new ObservableCollection<SessionData>(_doctorClient.Sessions);
         _distance = "0";
         _totalTime = new(0);
         _bpm = new();

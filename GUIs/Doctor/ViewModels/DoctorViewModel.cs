@@ -14,7 +14,7 @@ namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class DoctorViewModel : ObservableObject
 {
-    private Client _client;
+    private DoctorClient _doctorClient;
     private Log _log = new Log(typeof(DoctorViewModel));
     public ICommand EmergencyStop { get; }
     public ICommand SendChatMessage { get; }
@@ -32,18 +32,18 @@ public class DoctorViewModel : ObservableObject
     private SeriesCollection _chartDataSpeed;
     private SeriesCollection _chartDataBpm;
 
-    public DoctorViewModel(Client client, NavigationStore navigationStore)
+    public DoctorViewModel(DoctorClient doctorClient, NavigationStore navigationStore)
     {
-        _client = client;
-        _client.AddDoctorViewmodel(this);
-        _patients = new ObservableCollection<Patient>(_client.PatientList);
+        _doctorClient = doctorClient;
+        _doctorClient.AddDoctorViewmodel(this);
+        _patients = new ObservableCollection<Patient>(_doctorClient.PatientList);
         Messages = new ObservableCollection<string>();
-        EmergencyStop = new EmergencyStopCommand(_client, this);
-        SendChatMessage = new SendChatMessageCommand(_client, this);
-        StartSessieCommand = new StartSessieCommand(_client, this);
-        StopSessieCommand = new StopSessieCommand(_client, this);
-        RequestPastSessions = new RequestPastSessions(_client, this);
-        SetResistanceCommand = new SetResistanceCommand(_client, this);
+        EmergencyStop = new EmergencyStopCommand(_doctorClient, this);
+        SendChatMessage = new SendChatMessageCommand(_doctorClient, this);
+        StartSessieCommand = new StartSessieCommand(_doctorClient, this);
+        StopSessieCommand = new StopSessieCommand(_doctorClient, this);
+        RequestPastSessions = new RequestPastSessions(_doctorClient, this);
+        SetResistanceCommand = new SetResistanceCommand(_doctorClient, this);
     }
     
     public string CurrentUserName

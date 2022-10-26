@@ -8,12 +8,12 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 public class RequestPastSessions : BaseCommand
 {
     private Log _log = new(typeof(RequestPastSessions));
-    private Client _client;
+    private DoctorClient _doctorClient;
     private DoctorViewModel _viewModel;
 
-    public RequestPastSessions(Client client, DoctorViewModel doctorViewModel)
+    public RequestPastSessions(DoctorClient doctorClient, DoctorViewModel doctorViewModel)
     {
-        _client = client;
+        _doctorClient = doctorClient;
         _viewModel = doctorViewModel;
     }
 
@@ -27,9 +27,9 @@ public class RequestPastSessions : BaseCommand
         string userId = _viewModel.CurrentUser.UserId;
         if (userId != null)
         {
-            _client.HasSessionResponce = false;
+            _doctorClient.HasSessionResponce = false;
 
-            _client.Client.SendAsync(new DataPacket<AllSessionsFromPatientRequest>
+            _doctorClient.Client.SendAsync(new DataPacket<AllSessionsFromPatientRequest>
             {
                 OpperationCode = OperationCodes.GetPatientSesssions,
                 Data = new AllSessionsFromPatientRequest
@@ -38,13 +38,13 @@ public class RequestPastSessions : BaseCommand
                 }
             });
 
-            while (!_client.HasSessionResponce)
+            while (!_doctorClient.HasSessionResponce)
             {
             }
 
             PastSessionsWindow pastSessionsWindow = new()
             {
-                DataContext = new PastSessionsViewModel(_client, _viewModel.CurrentUser.Username)
+                DataContext = new PastSessionsViewModel(_doctorClient, _viewModel.CurrentUser.Username)
             };
             pastSessionsWindow.Show();
         }

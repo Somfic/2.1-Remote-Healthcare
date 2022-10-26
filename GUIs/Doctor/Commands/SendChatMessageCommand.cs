@@ -5,12 +5,12 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class SendChatMessageCommand : BaseCommand
 {
-    private Client _client;
+    private DoctorClient _doctorClient;
     private DoctorViewModel _viewModel;
     
-    public SendChatMessageCommand(Client client, DoctorViewModel doctorViewModel)
+    public SendChatMessageCommand(DoctorClient doctorClient, DoctorViewModel doctorViewModel)
     {
-        _client = client;
+        _doctorClient = doctorClient;
         _viewModel = doctorViewModel;
     }
 
@@ -22,6 +22,6 @@ public class SendChatMessageCommand : BaseCommand
     public override async Task ExecuteAsync()
     {
         _viewModel.ChatMessages.Add("U: " + _viewModel.TextBoxChatMessage);
-        _client.SendChatAsync(_viewModel.CurrentUser.UserId, _viewModel.TextBoxChatMessage);
+        _doctorClient.SendChatAsync(_viewModel.CurrentUser.UserId, _viewModel.TextBoxChatMessage);
     }
 }

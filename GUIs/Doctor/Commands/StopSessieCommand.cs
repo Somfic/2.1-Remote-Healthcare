@@ -6,18 +6,18 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class StopSessieCommand : BaseCommand
 {
-    private Client _client;
+    private DoctorClient _doctorClient;
     private DoctorViewModel _viewModel;
     
-    public StopSessieCommand(Client client, DoctorViewModel viewModel)
+    public StopSessieCommand(DoctorClient doctorClient, DoctorViewModel viewModel)
     {
-        _client = client;
+        _doctorClient = doctorClient;
         _viewModel = viewModel;
     }
 
     public override void Execute(object? parameter)
     {
-        _client.Client.SendAsync(new DataPacket<SessionStopPacketRequest>
+        _doctorClient.Client.SendAsync(new DataPacket<SessionStopPacketRequest>
         {
             OpperationCode = OperationCodes.SessionStop,
             Data = new SessionStopPacketRequest

@@ -15,7 +15,7 @@ using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.GUIs.Doctor
 {
-    public class Client : ObservableObject
+    public class DoctorClient : ObservableObject
     {
         public SocketClient Client { get; set; } = new(true);
 
@@ -27,7 +27,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         public DoctorViewModel DoctorViewModel;
         public PastSessionsViewModel PastSessionsViewModel;
 
-        private Log _log = new(typeof(Client));
+        private Log _log = new(typeof(DoctorClient));
         public string Password { get; set; }
         public string UserName { get; set; }
         public bool LoggedIn { get; set; }
@@ -38,7 +38,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         private Dictionary<string, Action<DataPacket>> _callbacks = new();
 
 
-        public Client()
+        public DoctorClient()
         {
             LoggedIn = false;
             HasSessionResponce = false;
