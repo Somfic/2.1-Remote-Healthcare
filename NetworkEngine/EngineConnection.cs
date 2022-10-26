@@ -148,11 +148,11 @@ public class EngineConnection
         await MoveCameraPosition();
         await Task.Delay(1000);
         await MoveHeadPosition();
+        
         await Task.Delay(1000);
         await ChangeBikeSpeed(50);
         await Task.Delay(1000);
         await RoadLoad();
-        
         
         await Task.Delay(1000);
         await Addhouses(_tunnelId, 100);
@@ -556,9 +556,7 @@ public class EngineConnection
         int x1 = (int)Convert.ToDecimal(x);
         int z1 = (int)Convert.ToDecimal(z);
         _roadcount++;
-
-         _log.Information($"x = {x1} and z ={z1}");
-
+        
         if (!(_firstx == x1 && _firstz == z1))
 
         {

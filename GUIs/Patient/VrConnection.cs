@@ -1,10 +1,12 @@
 ﻿
 
 using System;
+using System.Data;
 using System.Threading;
 using RemoteHealthcare.Client.Data;
 using RemoteHealthcare.Client.Data.Providers.Bike;
 using RemoteHealthcare.Client.Data.Providers.Heart;
+using RemoteHealthcare.GUIs.Patient.ViewModels;
 using RemoteHealthcare.NetworkEngine;
 
 namespace NetworkEngine.Socket
@@ -13,8 +15,10 @@ namespace NetworkEngine.Socket
     {
         BikeDataProvider bike;
         HeartDataProvider heart;
-        EngineConnection engine;
-
+        
+        private PatientHomepageViewModel _pvm;
+        public EngineConnection Engine;
+        
         public VrConnection(BikeDataProvider bike, HeartDataProvider heart, EngineConnection engine)
         {
             this.bike = bike;
@@ -24,22 +28,26 @@ namespace NetworkEngine.Socket
 
         public bool session;
         
-        public async void Start()
+        public async void Start(PatientHomepageViewModel p)
         {
             await bike.ProcessRawData();
 
+            _pvm = p;
             while (true)
             {
-                //if the session started run these 3-lines of code
                 if (session)
                 {
                     await heart.ProcessRawData();
                     await bike.ProcessRawData();
                     await engine.ChangeBikeSpeed(bike.GetData().Speed);
+                _pvm.Heartrate = heart.GetData().HeartRate.ToString();
+                _pvm.Speed = bike.GetData().Speed.ToString("##.#");
+                _pvm.Distance = bike.GetData().Distance.ToString("####.#");
+                _pvm.Time = bike.GetData().TotalElapsed.ToString("hh\\:mm\\:ss");
+                Console.WriteLine("Heart: " + heart.GetData().HeartRate);
                 } else {
                     engine.ChangeBikeSpeed(0);
                 }
-
                 Thread.Sleep(300);
             }
         }
@@ -64,6 +72,7 @@ namespace NetworkEngine.Socket
 
         internal HeartData getHearthData()
         {
+           
             return heart.GetData();
         }
     }

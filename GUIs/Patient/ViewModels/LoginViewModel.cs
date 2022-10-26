@@ -87,10 +87,11 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 }
 
                 await Task.Delay(1000);
-
+                PatientHomepageViewModel pvm = new PatientHomepageViewModel(_navigationStore, _client);
                 if (_client._loggedIn)
                 {
-                    _navigationStore.CurrentViewModel = new PatientHomepageViewModel(_navigationStore, _client);
+                    _navigationStore.CurrentViewModel = pvm;
+                    // ((Window) window).Close();
                     try
                     {
                         var engine = new EngineConnection();

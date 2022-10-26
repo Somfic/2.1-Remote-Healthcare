@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Net.Cache;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
 using RemoteHealthcare.Client;
 using NetworkEngine.Socket;
+using RemoteHealthcare.GUIs.Patient.ViewModels;
 
 namespace RemoteHealthcare.GUIs.Patient.Client
 {
@@ -18,26 +20,32 @@ namespace RemoteHealthcare.GUIs.Patient.Client
     {
         public SocketClient _client = new(true);
         private Log _log = new(typeof(Client));
-        private string userId;
-        public VrConnection _vrConnection;
 
-        public string _password { get; set; }
-        public string _username { get; set; }
         public bool _loggedIn;
-        private Boolean _sessienRunning = false;
+        public string _password;
+        public string _username;
+        private string userId;
+        private string doctorId;
         private string _sessionId;
+        public PatientHomepageViewModel p;
+        private Boolean _sessienRunning = false;
 
-        private static Dictionary<string, Action<DataPacket>> _callbacks;
-
+        private Dictionary<string, Action<DataPacket>> _functions;
+        public VrConnection _vrConnection;
         public  Client(VrConnection v)
         {
-            _callbacks = new Dictionary<string, Action<DataPacket>>();
+            
+            _loggedIn = false;
+            _functions = new Dictionary<string, Action<DataPacket>>();
 
             //Adds for each key an callback methode in the dictionary 
-            _callbacks.Add(OperationCodes.LOGIN, LoginFeature);
-            _callbacks.Add(OperationCodes.CHAT, ChatHandler);
-            _callbacks.Add(OperationCodes.SESSION_START, SessionStartHandler);
-            _callbacks.Add(OperationCodes.SESSION_STOP, SessionStopHandler);
+            _functions.Add("login", LoginFeature);
+            _functions.Add("chat", ChatHandlerAsync);
+            _functions.Add("session start", SessionStartHandler);
+            _functions.Add("session stop", SessionStopHandler);
+            _functions.Add("disconnect", DisconnectHandler);
+            _functions.Add("set resitance", SetResistanceHandeler);
+            _functions.Add("emergency stop", EmergencyStopHandler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -61,7 +69,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                     isDoctor = false
                 }
             };
-            _log.Debug(loginReq.ToJson());
+            _log.Error(loginReq.ToJson());
             
             await _client.SendAsync(loginReq);
         }
@@ -80,7 +88,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                 OpperationCode = OperationCodes.LOGIN,
                 data = new LoginPacketRequest()
                 {
-                    username = _username,
+                    userName = _username,
                     password = _password,
                     isDoctor = false
                 }
@@ -93,12 +101,17 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         public void HandleData(DataPacket packet)
         {
             //Checks if the OppCode (OperationCode) does exist.
-            if (_callbacks.TryGetValue(packet.OpperationCode, out var action))
+            if (_functions.TryGetValue(packet.OpperationCode, out var action))
             {
                 action.Invoke(packet);
             } else {
                 throw new Exception("Function not implemented");
             }
+        }
+        private void EmergencyStopHandler(DataPacket obj)
+        {
+            EmergencyStopPacket data = obj.GetData<EmergencyStopPacket>();
+            _log.Critical(data.message);
         }
 
         private void SetResistanceHandeler(DataPacket obj)
@@ -157,11 +170,29 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             }
         }
 
-        
-        //the methode for the send chat request
-        private void ChatHandler(DataPacket packetData)
+        //the methode for printing out the received message and sending it to the VR Engine
+        private async void ChatHandlerAsync(DataPacket packetData)
         {
-            _log.Information($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+             string messageReceived =
+                $"{packetData.GetData<ChatPacketResponse>().senderName}: {packetData.GetData<ChatPacketResponse>().message}";
+            _log.Information(messageReceived);
+            
+            ObservableCollection<string> chats = new ObservableCollection<string>();
+            foreach (var message in p.Messages)
+            {
+                chats.Add(message);
+            }
+            chats.Add($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+            p.Messages = chats;
+
+         
+            try
+            {
+                await _vrConnection.Engine.SendTextToChatPannel(messageReceived);
+            }
+            catch (Exception e)
+            {
+            }
         }
 
         //the methode for the login request

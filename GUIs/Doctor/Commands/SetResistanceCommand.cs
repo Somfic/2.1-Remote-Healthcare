@@ -1,14 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
-public class SendChatMessageCommand : BaseCommand
+public class SetResistanceCommand : BaseCommand
 {
     private Client _client;
     private DoctorViewModel _viewModel;
     
-    public SendChatMessageCommand(Client client, DoctorViewModel doctorViewModel)
+    public SetResistanceCommand(Client client, DoctorViewModel doctorViewModel)
     {
         _client = client;
         _viewModel = doctorViewModel;
@@ -21,7 +22,6 @@ public class SendChatMessageCommand : BaseCommand
 
     public override async Task ExecuteAsync()
     {
-        _viewModel.ChatMessages.Add("U: " + _viewModel.TextBoxChatMessage);
-        _client.SendChatAsync(_viewModel.CurrentUser.UserId, _viewModel.TextBoxChatMessage);
+        _client.SetResistance(_viewModel.CurrentUser.UserId, _viewModel.Resistance);
     }
 }

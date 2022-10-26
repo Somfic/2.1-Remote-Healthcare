@@ -1,23 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Linq;
-using System.Windows;
-using System.Windows.Documents;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using LiveCharts;
-using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using MvvmHelpers;
 using RemoteHealthcare.Common.Logger;
-using RemoteHealthcare.Common.Socket.Client;
-using RemoteHealthcare.Common.Socket.Server;
 using RemoteHealthcare.GUIs.Doctor.Commands;
-using RemoteHealthcare.Server.Client;
 using RemoteHealthcare.Server.Models;
-using RemoteHealthcare.Server;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
@@ -29,17 +20,16 @@ public class DoctorViewModel : ObservableObject
     public ICommand SendChatMessage { get; }
     public ICommand StartSessieCommand { get; }
     public ICommand StopSessieCommand { get; }
+    public ICommand SetResistanceCommand { get; }
     public ICommand RequestPastSessions { get; }
-
+    
     private Patient _currentUser;
-    private string _chatMessage;
+    private string _chatMessage = "";
+    private int _resistance = 0;
+    
     private ObservableCollection<Patient> _patients;
-    private ObservableCollection<string> chatMessages;
-    
-    
+    public ObservableCollection<string> _chatMessages;
     private SeriesCollection _chartDataSpeed;
-    
-    
     private SeriesCollection _chartDataBPM;
 
     public DoctorViewModel(Client client, NavigationStore navigationStore)
@@ -47,12 +37,13 @@ public class DoctorViewModel : ObservableObject
         _client = client;
         _client.AddDoctorViewmodel(this);
         _patients = new ObservableCollection<Patient>(_client._patientList);
-        chatMessages = new ObservableCollection<string>();
-        EmergencyStop = new EmergencyStopCommand();
+        _chatMessages = new ObservableCollection<string>();
+        EmergencyStop = new EmergencyStopCommand(_client, this);
         SendChatMessage = new SendChatMessageCommand(_client, this);
         StartSessieCommand = new StartSessieCommand(_client, this);
         StopSessieCommand = new StopSessieCommand(_client, this);
         RequestPastSessions = new RequestPastSessions(_client, this);
+        SetResistanceCommand = new SetResistanceCommand(_client, this);
     }
     
     public string CurrentUserName
@@ -60,7 +51,6 @@ public class DoctorViewModel : ObservableObject
         get => username;
         set
         {
-            
             username = value;
             OnPropertyChanged(nameof(CurrentUserName));
         }
@@ -85,22 +75,41 @@ public class DoctorViewModel : ObservableObject
             
             ChartDataSpeed = new SeriesCollection()
             {
-                new LineSeries() { Values = _currentUser.speedData }
+                new LineSeries()
+                {
+                    Fill = Brushes.Transparent,
+                    Stroke = Brushes.DarkSeaGreen,
+                    PointGeometrySize = 0,
+                    LineSmoothness = 1.00,
+                    Values = _currentUser.speedData
+                }
             };
             
             ChartDataBPM = new SeriesCollection()
             {
-                new LineSeries() { Values = _currentUser.bpmData }
+                new LineSeries()
+                {
+                    Fill = Brushes.Transparent,
+                    Stroke = Brushes.LightCoral,
+                    PointGeometrySize = 0,
+                    LineSmoothness = 1.00,
+                    Values = _currentUser.bpmData
+                }
             };
             OnPropertyChanged();
             _log.Debug("OnPropertyChanged() has been called.");
+>>>>>>>>> Temporary merge branch 2
         }
     }
 
     public ObservableCollection<string> ChatMessages
     {
-        get => chatMessages;
-        set => chatMessages = value;
+        get => _chatMessages;
+        set
+        {
+            _chatMessages = value;
+            OnPropertyChanged();
+        } 
     }
 
     public ObservableCollection<Patient> Patients
@@ -113,6 +122,13 @@ public class DoctorViewModel : ObservableObject
     {
         get => _chatMessage;
         set => _chatMessage = value;
+    }
+
+    public int Resistance
+    {
+        get => _resistance;
+        set => _resistance = value;
+           
     }
 
     public int BPM
@@ -173,5 +189,13 @@ public class DoctorViewModel : ObservableObject
             _chartDataBPM = value;
             OnPropertyChanged();
         }
+    }
+
+    public void AddMessage(string message)
+    {
+        _log.Information($"addmessage, {_chatMessages.Count}; {message}");
+        BindingOperations.EnableCollectionSynchronization(_chatMessages, message);
+        _log.Information($"added message, {_chatMessages.Count}");
+        // chatMessages.Add(message);
     }
 }

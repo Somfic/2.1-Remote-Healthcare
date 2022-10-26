@@ -14,6 +14,8 @@
         public readonly static String GET_PATIENT_DATA = "get patient data";
         public readonly static String GET_PATIENT_SESSSIONS = "get patient sessions";
         
+        public readonly static String SET_RESISTANCE = "set resitance";
+
     }
 
     public enum StatusCodes

@@ -40,6 +40,7 @@ public class Server
     {
         _log.Information($"Client connected: {client.Socket}");
         _connectedClients.Add(new ServerClient(client));
+
     }
 
     internal static void Disconnect(ServerClient client)
