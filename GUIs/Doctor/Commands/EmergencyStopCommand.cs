@@ -35,6 +35,5 @@ public class EmergencyStopCommand : BaseCommand
 
     public override async Task ExecuteAsync()
     {
-        
     }
 }

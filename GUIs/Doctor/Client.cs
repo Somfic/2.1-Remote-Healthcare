@@ -275,8 +275,6 @@ namespace RemoteHealthcare.GUIs.Doctor
             {
                 _connected = packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Split(";").ToList();
                 _log.Warning($"RequestConnectionsFeature(): {_connected.Count.ToString()}");
-
-                SendChatAsync();
             }
         }
 
