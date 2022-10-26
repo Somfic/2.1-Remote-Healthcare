@@ -13,13 +13,13 @@ namespace NetworkEngine.Socket
     {
         BikeDataProvider bike;
         HeartDataProvider heart;
-        EngineConnection engine;
+        public EngineConnection Engine;
 
         public VrConnection(BikeDataProvider bike, HeartDataProvider heart, EngineConnection engine)
         {
             this.bike = bike;
             this.heart = heart;
-            this.engine = engine;
+            this.Engine = engine;
 
 
 
