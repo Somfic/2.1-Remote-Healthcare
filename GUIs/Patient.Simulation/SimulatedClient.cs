@@ -53,6 +53,9 @@ public class SimulatedClient
 
     public async Task SendBikeData()
     {
+        await _bikeDataProvider.ProcessRawData();
+        await _heartRateDataProvider.ProcessRawData();
+        
         var bikeData = _bikeDataProvider.GetData();
         var heartData = _heartRateDataProvider.GetData();
         
