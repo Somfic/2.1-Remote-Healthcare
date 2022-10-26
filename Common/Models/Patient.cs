@@ -1,4 +1,6 @@
-﻿using MvvmHelpers;
+﻿using LiveCharts;
+using MvvmHelpers;
+using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common.Logger;
@@ -15,6 +17,16 @@ public class Patient : ObservableObject
     public string Username { get; set; }
     public string UserId { get; set; }
     public string Password { get; set; }
+    
+    public float currentSpeed { get; set; }
+    public float currentDistance { get; set; }
+    public TimeSpan currentElapsedTime { get; set; }
+    public int currentBPM { get; set; }
+
+    public ChartValues<float> speedData = new();
+    
+    
+    public ChartValues<int> bpmData = new();
 
     public Patient(string user, string password, string? username = null)
     {
@@ -47,12 +59,13 @@ public class Patient : ObservableObject
             if (!Directory.Exists(pathStringUserId))
                 Directory.CreateDirectory(pathStringUserId);
 
-            var filename = session.SessionId.Replace(':', '-') + "-" + session.Id;
+            var fileName = session.SessionId.Replace(':', '-');
+            fileName = fileName.Replace('/', '-');
+            fileName += "-" + session.Id;
             var json = JsonConvert.SerializeObject(session);
-            var pathStringFileName = Path.Combine(pathStringUserId, filename + ".json");
+            var pathStringFileName = Path.Combine(pathStringUserId, fileName + ".json");
 
             File.WriteAllText(pathStringFileName, JObject.Parse(json).ToString());
-        _log.Debug($"Saved to path: \r\n{pathStringFileName}");
         }
     }
 

@@ -10,7 +10,6 @@ public class EmergencyStopCommand : BaseCommand
 {
     public EmergencyStopCommand()
     {
-        Console.WriteLine("Nieuw Branch");
     }
 
     public override void Execute(object? parameter)

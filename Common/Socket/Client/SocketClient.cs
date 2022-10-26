@@ -9,7 +9,7 @@ namespace RemoteHealthcare.Common.Socket.Client;
 public class SocketClient : ISocket
 {
     private readonly bool _useEncryption;
-    public TcpClient Socket { get; private set; } = new();
+    public TcpClient Socket { get; private set; } = new(); 
     
     public Guid Id { get; } = Guid.NewGuid();
     public Dictionary<string, Action<DataPacket>> callbacks;
@@ -35,19 +35,37 @@ public class SocketClient : ISocket
     {
         if (Socket.Connected)
             return;
-    
-        _log.Debug($"Connecting to {ip}:{port} ({(_useEncryption ? "encrypted" : "unencrypted")})");
 
-        try
-        {
+        var attempts = 0;
 
-            await Socket.ConnectAsync(IPAddress.Parse(ip), port);
-            _log.Debug($"Connected to {ip}:{port}");
-            Read();
-        }
-        catch (Exception ex)
+        while (attempts < 5)
         {
-            _log.Error(ex, $"Could not connect to {ip}:{port}");
+            attempts++;
+            
+            _log.Debug($"Connecting to {ip}:{port} ({(_useEncryption ? "encrypted" : "unencrypted")}) (attempt #{attempts})");
+
+            try
+            {
+                await Socket.ConnectAsync(IPAddress.Parse(ip), port);
+                _log.Debug($"Connected to {ip}:{port}");
+                Read();
+                break;
+            }
+            catch (Exception ex)
+            {
+                Socket.Close();
+                Socket = new TcpClient();
+
+                if (attempts == 5)
+                {
+                    _log.Error(ex, $"Could not connect to {ip}:{port}");
+                    throw;
+                }
+
+                _log.Warning(ex, $"Could not connect to {ip}:{port} ... retrying");
+            }
+            
+            await Task.Delay(1000);
         }
     }
 
@@ -67,7 +85,15 @@ public class SocketClient : ISocket
     
     public Task SendAsync(string text)
     {
-        return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);
+        try
+        {
+            return SocketHelper.SendMessage(Socket.GetStream(), text, _useEncryption);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Could not send message: '{text}'");
+            throw;
+        }
     }
 
   

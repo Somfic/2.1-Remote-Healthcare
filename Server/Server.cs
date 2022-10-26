@@ -14,7 +14,7 @@ public class Server
     private readonly Log _log = new(typeof(Server));
     public static PatientData _patientData { get; set; }
     public static DoctorData _doctorData { get; set; }
-    public static List<ServerClient> _connectedClients { get; private set; } = new List<ServerClient>();
+    public static List<ServerClient> _connectedClients { get; private set; } = new();
     
     public static IReadOnlyList<ServerClient> Clients => _connectedClients.AsReadOnly();
 
@@ -33,15 +33,13 @@ public class Server
 
     private async Task OnClientDisconnectedAsync(SocketClient socketClient)
     {
-        _connectedClients.Remove(_connectedClients.Find(x => x._client.Id == socketClient.Id));
+        _connectedClients.Remove(_connectedClients.Find(x => x.Client.Id == socketClient.Id));
     }
 
     private async Task OnClientConnectedAsync(SocketClient client)
     {
         _log.Information($"Client connected: {client.Socket}");
         _connectedClients.Add(new ServerClient(client));
-
-        _log.Debug("ALLE HUIDIGE TCP-USER ZIJN:");
     }
 
     internal static void Disconnect(ServerClient client)
