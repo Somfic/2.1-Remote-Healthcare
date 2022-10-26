@@ -32,9 +32,9 @@ namespace RemoteHealthcare.Server.Client
         //Set-ups the client constructor
         public ServerClient(SocketClient client)
         {
-            _client = client;
+            Client = client;
           
-            _client.OnMessage += (sender, data) =>
+            Client.OnMessage += (sender, data) =>
             {
                 var dataPacket = JsonConvert.DeserializeObject<DataPacket>(data);
 
@@ -42,7 +42,7 @@ namespace RemoteHealthcare.Server.Client
                 HandleData(dataPacket);
             };
 
-            _client.OnDisconnect += (sender, data) =>
+            Client.OnDisconnect += (sender, data) =>
             {
                 _patient.SaveSessionData(_patientDataLocation);
             };
@@ -131,7 +131,7 @@ namespace RemoteHealthcare.Server.Client
             _patient.Sessions.Add(new SessionData(data.SessionId, data.deviceType, data.id));
             // _log.Debug($"Distance: {data.distance.ToString(CultureInfo.InvariantCulture)}");
             _patient.SaveSessionData(_patientDataLocation);
-            calculateTarget()._client.SendAsync(obj);
+            calculateTarget().Client.SendAsync(obj);
             _log.Error("Right before patient.SaveSessionData(_patientDataLocation);");
             _log.Critical(data.distance.ToString(CultureInfo.InvariantCulture));
 
@@ -358,8 +358,21 @@ namespace RemoteHealthcare.Server.Client
             //Retrieves the DataPacket and covert it to a SessionStartPacketRequest. 
             SessionStartPacketRequest data = obj.GetData<SessionStartPacketRequest>();
 
-            ServerClient patient = Server._connectedClients.Find(patient => patient._userId == data.selectedPatient);
+            ServerClient patient = Server._connectedClients.Find(patient => patient.UserId == data.selectedPatient);
 
+            StatusCodes _statusCode;
+           
+            
+            //Checks if the Patient exist or not, on the result of that will be de _statusCode filled with a value.
+            if (patient == null) {
+                _statusCode = StatusCodes.NOT_FOUND;   
+            } else {
+                _statusCode = StatusCodes.OK;
+                
+                //Sends request to the Patient
+                patient.SendData(new DataPacket<SessionStartPacketResponse>
+                {
+                    OpperationCode = OperationCodes.SESSION_START,
                     data = new SessionStartPacketResponse()
                     {
                         statusCode = _statusCode,
@@ -387,11 +400,8 @@ namespace RemoteHealthcare.Server.Client
             
             SessionStopPacketRequest data = obj.GetData<SessionStopPacketRequest>();
 
-            ServerClient tt = Server._connectedClients.Find(c => c._userId == data.selectedPatient);
+            ServerClient tt = Server._connectedClients.Find(c => c.UserId == data.selectedPatient);
         
-            Console.WriteLine("gevonden id: " + tt._userId);
-            Console.WriteLine("gevonden name: " + tt.UserName);
-                
                 
             tt.SendData(new DataPacket<SessionStopPacketResponse>
             {
@@ -426,7 +436,7 @@ namespace RemoteHealthcare.Server.Client
         {
             _log.Debug("in de server-client methode disconnectHandler");
             Server.Disconnect(this);
-            _client.DisconnectAsync();
+            Client.DisconnectAsync();
 
             Server.printUsers();
 

@@ -53,8 +53,8 @@ namespace RemoteHealthcare.GUIs.Doctor
             _callbacks.Add(OperationCodes.SESSION_STOP, SessionStopHandler);
             _callbacks.Add(OperationCodes.EMERGENCY_STOP, EmergencyStopHandler);
             _callbacks.Add(OperationCodes.GET_PATIENT_DATA, GetPatientDataHandler);
-            _functions.Add("bikedata", GetBikeData);
-            _functions.Add("get patient sessions", GetPatientSessionsHandler);
+            _callbacks.Add(OperationCodes.BIKEDATA, GetBikeData);
+            _callbacks.Add(OperationCodes.GET_PATIENT_SESSSIONS, GetPatientSessionsHandler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -261,8 +261,15 @@ namespace RemoteHealthcare.GUIs.Doctor
             var sessie = obj.GetData<SessionStartPacketResponse>();
             
             //Change the GUI with an Alert depends on the outcome of the IF-Statement
-            ((DoctorViewModel) currentViewModel).CurrentUserName = (sessie.statusCode.Equals(StatusCodes.OK)) ? ((DoctorViewModel) currentViewModel).CurrentUser.Username : "Gekozen Patient is niet online";
+            DoctorViewModel.CurrentUserName = (sessie.statusCode.Equals(StatusCodes.OK)) ? DoctorViewModel.CurrentUser.Username : "Gekozen Patient is niet online";
         }
+        
+        //the methode for the session stop request
+        private void SessionStopHandler(DataPacket obj)
+        {
+            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
+        }
+
 
         //the methode for the send chat request
         private void ChatHandler(DataPacket packetData)
