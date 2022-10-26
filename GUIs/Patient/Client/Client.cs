@@ -204,14 +204,13 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             if (statusCode.Equals(200))
             {
                 userId = packetData.GetData<LoginPacketResponse>().userId;
-                _log.Information($"Succesfully logged in to the user: {_username}; {_password}; {userId}.");
+                _log.Information($"Succesfully logged in to the user: {userId}; {_password}; {packetData.GetData<LoginPacketResponse>().userName}.");
                 _loggedIn = true;
             }
             else
             {
                 _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
                            packetData.GetData<LoginPacketResponse>().message);
-                AskForLoginAsync();
             }
         }
         

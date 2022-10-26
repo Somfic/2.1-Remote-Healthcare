@@ -28,13 +28,15 @@ public class Patient : ObservableObject
     
     public ChartValues<int> bpmData = new();
 
-    public Patient(string user, string password, string? username = null)
+    public Patient(string userId, string password, string? username = null)
     {
         Password = password;
-        UserId = user;
+        UserId = userId;
         if (username != null)
             Username = username;
         Sessions = new List<SessionData>();
+        
+        _log.Debug("\r\n" +$"Parameters: {userId}; {password}; {username} \r\n" + $"Attributes: {UserId}; {Password}; {Username}");
     }
 
     /// <summary>
