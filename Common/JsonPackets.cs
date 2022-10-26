@@ -3,10 +3,10 @@ using Newtonsoft.Json.Linq;
 
 namespace RemoteHealthcare.Common;
 
+
 public abstract class DAbstract
 {
-    public string ToJson()
-    {
+    public string ToJson() {
         return JsonConvert.SerializeObject(this);
     }
 }
@@ -22,14 +22,15 @@ public class DataPacket<T> : DAbstract where T : DAbstract
 //DataPacket is the fundament for the specific packets
 public class DataPacket : DAbstract
 {
-    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-    private JObject _data;
-
     public string OpperationCode;
+    
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    
+    private JObject _data;
 
     public T GetData<T>() where T : DAbstract
     {
-        return _data.ToObject<T>();
+        return this._data.ToObject<T>();
     }
 }
 

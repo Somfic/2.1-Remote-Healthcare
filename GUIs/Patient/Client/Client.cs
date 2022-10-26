@@ -61,12 +61,12 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         {
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
-                OpperationCode = OperationCodes.LOGIN,
-                data = new LoginPacketRequest()
+                OpperationCode = OperationCodes.Login,
+                Data = new LoginPacketRequest()
                 {
-                    userName = _username,
-                    password = _password,
-                    isDoctor = false
+                    UserName = _username,
+                    Password = _password,
+                    IsDoctor = false
                 }
             };
             _log.Error(loginReq.ToJson());
@@ -85,12 +85,12 @@ namespace RemoteHealthcare.GUIs.Patient.Client
 
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
-                OpperationCode = OperationCodes.LOGIN,
-                data = new LoginPacketRequest()
+                OpperationCode = OperationCodes.Login,
+                Data = new LoginPacketRequest()
                 {
-                    userName = _username,
-                    password = _password,
-                    isDoctor = false
+                    UserName = _username,
+                    Password = _password,
+                    IsDoctor = false
                 }
             };
 
@@ -111,18 +111,18 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         private void EmergencyStopHandler(DataPacket obj)
         {
             EmergencyStopPacket data = obj.GetData<EmergencyStopPacket>();
-            _log.Critical(data.message);
+            _log.Critical(data.Message);
         }
 
         private void SetResistanceHandeler(DataPacket obj)
         {
-            _vrConnection.setResistance(obj.GetData<SetResistancePacket>().resistance);
+            _vrConnection.SetResistance(obj.GetData<SetResistancePacket>().Resistance);
         }
 
         //the methode for the disconnect request
         private void DisconnectHandler(DataPacket obj)
         {
-            Console.WriteLine(obj.GetData<DisconnectPacketResponse>().message);
+            Console.WriteLine(obj.GetData<DisconnectPacketResponse>().Message);
         }
         
         //the methode for the session stop request
@@ -130,14 +130,14 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         {
             Console.WriteLine("Sessie gestopt");
             _sessienRunning = false;
-            _vrConnection.session = false;
+            _vrConnection.Session = false;
         }
 
         //the methode for the session start request
         public void SessionStartHandler(DataPacket obj)
         {
             _sessienRunning = true;
-            _vrConnection.session = true;
+            _vrConnection.Session = true;
             new Thread(SendBikeDataAsync ).Start();
         }
         
@@ -146,21 +146,21 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             //if the patient started the sessie the while-loop will be looped till it be false (stop-session)
             while (_sessienRunning)
             {
-                BikeData bikedata = _vrConnection.getBikeData();
-                HeartData hearthdata = _vrConnection.getHearthData();
+                BikeData bikedata = _vrConnection.GetBikeData();
+                HeartData hearthdata = _vrConnection.GetHearthData();
                 var req = new DataPacket<BikeDataPacket>
                 {
-                    OpperationCode = OperationCodes.BIKEDATA,
+                    OpperationCode = OperationCodes.Bikedata,
 
-                    data = new BikeDataPacket() 
+                    Data = new BikeDataPacket() 
                     {
                         SessionId = _sessionId,
-                        speed = bikedata.Speed,
-                        distance = bikedata.Distance,
-                        heartRate = hearthdata.HeartRate,
-                        elapsed = bikedata.TotalElapsed,
-                        deviceType = bikedata.DeviceType.ToString(),
-                        id = bikedata.Id
+                        Speed = bikedata.Speed,
+                        Distance = bikedata.Distance,
+                        HeartRate = hearthdata.HeartRate,
+                        Elapsed = bikedata.TotalElapsed,
+                        DeviceType = bikedata.DeviceType.ToString(),
+                        Id = bikedata.Id
                     }
                 };
                 
@@ -174,7 +174,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         private async void ChatHandlerAsync(DataPacket packetData)
         {
              string messageReceived =
-                $"{packetData.GetData<ChatPacketResponse>().senderName}: {packetData.GetData<ChatPacketResponse>().message}";
+                $"{packetData.GetData<ChatPacketResponse>().SenderName}: {packetData.GetData<ChatPacketResponse>().Message}";
             _log.Information(messageReceived);
             
             ObservableCollection<string> chats = new ObservableCollection<string>();
@@ -182,7 +182,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             {
                 chats.Add(message);
             }
-            chats.Add($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+            chats.Add($"{packetData.GetData<ChatPacketResponse>().SenderId}: {packetData.GetData<ChatPacketResponse>().Message}");
             p.Messages = chats;
 
          
@@ -200,17 +200,17 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         {
             _log.Debug($"Responce: {packetData.ToJson()}");
          
-            int statusCode = (int)packetData.GetData<LoginPacketResponse>().statusCode;
+            int statusCode = (int)packetData.GetData<LoginPacketResponse>().StatusCode;
             if (statusCode.Equals(200))
             {
-                userId = packetData.GetData<LoginPacketResponse>().userId;
-                _log.Information($"Succesfully logged in to the user: {userId}; {_password}; {packetData.GetData<LoginPacketResponse>().userName}.");
+                userId = packetData.GetData<LoginPacketResponse>().UserId;
+                _log.Information($"Succesfully logged in to the user: {userId}; {_password}; {packetData.GetData<LoginPacketResponse>().UserName}.");
                 _loggedIn = true;
             }
             else
             {
-                _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
-                           packetData.GetData<LoginPacketResponse>().message);
+                _log.Error(packetData.GetData<LoginPacketResponse>().StatusCode + "; " +
+                           packetData.GetData<LoginPacketResponse>().Message);
             }
         }
         

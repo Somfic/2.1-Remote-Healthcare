@@ -106,7 +106,7 @@ public class SocketClient : ISocket
         }
     }
 
-
+  
     private void Read()
     {
         Task.Run(async () =>
@@ -114,7 +114,7 @@ public class SocketClient : ISocket
             while (Socket.Connected)
             {
                 var text = string.Empty;
-
+                
                 try
                 {
                     text = await SocketHelper.ReadMessage(Socket.GetStream(), _useEncryption);
@@ -124,11 +124,12 @@ public class SocketClient : ISocket
                     _log.Error(ex, "Client disconnected");
                     await DisconnectAsync();
                 }
-
+                
                 try
                 {
                     if (!string.IsNullOrWhiteSpace(text))
                     {
+                        _log.Warning($"SocketClient: {text}");
                         OnMessage?.Invoke(this, text);
                     }
                 }
