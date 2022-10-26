@@ -68,8 +68,7 @@ public class SimulatedClient
             OpperationCode = OperationCodes.LOGIN,
             data = new LoginPacketRequest()
             {
-                username = username,
-               
+                userName = username,
                 password = password,
                 isDoctor = isDoctor
             }

@@ -20,8 +20,6 @@ namespace RemoteHealthcare.GUIs.Patient.Client
     {
         public SocketClient _client = new(true);
         private Log _log = new(typeof(Client));
-        private string userId;
-        public VrConnection _vrConnection;
 
         public bool _loggedIn;
         public string _password;
