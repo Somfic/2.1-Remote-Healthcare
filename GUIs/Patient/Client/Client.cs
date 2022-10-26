@@ -60,23 +60,14 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                 OpperationCode = OperationCodes.LOGIN,
                 data = new LoginPacketRequest()
                 {
-                    OpperationCode = OperationCodes.BIKEDATA,
-
-                    data = new BikeDataPacket()
-                    {
-                        speed = bikedata.Speed,
-                        distance = bikedata.Distance,
-                        heartRate = hearthdata.HeartRate,
-                        elapsed = bikedata.Elapsed,
-                        deviceType = bikedata.DeviceType.ToString(),
-                        id = bikedata.Id
-
-                    }
-                };
-                //_log.Information("sending bike data to server");
-                await _client.SendAsync(req);
-                await Task.Delay(1000);
-            }
+                    username = _username,
+                    password = _password,
+                    isDoctor = false
+                }
+            };
+            _log.Debug(loginReq.ToJson());
+            
+            await _client.SendAsync(loginReq);
         }
         
        
@@ -164,7 +155,8 @@ namespace RemoteHealthcare.GUIs.Patient.Client
                 
                 _log.Information("sending bike data to server");
                  _client.SendAsync(req);
-                Task.Delay(1000);
+                //Task.Delay(1000);
+                Thread.Sleep(1000);
             }
         }
 

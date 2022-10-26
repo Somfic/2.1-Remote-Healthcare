@@ -101,15 +101,11 @@ public class SessionStopPacketResponse : DAbstract
     public string message;
 }
 
-public class EmergencyStopPacketRequest : DAbstract
-{
-    //TODO
-}
-
-public class EmergencyStopPacketResponse : DAbstract
+public class EmergencyStopPacket : DAbstract
 {
     public StatusCodes statusCode;
-    public string message;
+    public string clientId;
+    public string message = "Er is op de noodstop gedrukt, de dokter komt zo spoedig mogelijk bij u";
 }
 public class DisconnectPacketRequest : DAbstract
 {
@@ -118,6 +114,12 @@ public class DisconnectPacketRequest : DAbstract
 
 public class SetResistancePacket : DAbstract
 {
+    public string receiverId;
+    public int resistance;
+}
+public class SetResistanceResponse : DAbstract
+{
+    public StatusCodes statusCode;
     public int resistance;
 }
 

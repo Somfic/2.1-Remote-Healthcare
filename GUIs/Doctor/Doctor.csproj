@@ -16,13 +16,20 @@
     <ItemGroup>
       <None Remove="Images\fiets.png" />
       <Resource Include="Images\fiets.png" />
+      <None Remove="Images\bpmIcon.png" />
+      <Resource Include="Images\bpmIcon.png" />
+      <None Remove="Images\roadIcon.png" />
+      <Resource Include="Images\roadIcon.png" />
+      <None Remove="Images\speedIcon.png" />
+      <Resource Include="Images\speedIcon.png" />
+      <None Remove="Images\timeIcon.png" />
+      <Resource Include="Images\timeIcon.png" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="DotNetProjects.WpfToolkit.DataVisualization" Version="6.1.94" />
       <PackageReference Include="Extended.Wpf.Toolkit" Version="4.4.0" />
       <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
-      <PackageReference Include="MvvmLightLibs" Version="5.4.1.1" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
       <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
     </ItemGroup>

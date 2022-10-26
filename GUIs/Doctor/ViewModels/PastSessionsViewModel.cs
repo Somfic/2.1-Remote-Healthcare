@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows.Media;
 using MvvmHelpers;
 using LiveCharts;
 using LiveCharts.Wpf;
@@ -53,11 +54,25 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
 
             SpeedData = new SeriesCollection()
             {
-                new LineSeries() { Values = _speed }
+                new LineSeries()
+                {
+                    Fill = Brushes.Transparent,
+                    Stroke = Brushes.DarkSeaGreen,
+                    PointGeometrySize = 0,
+                    LineSmoothness = 1.00,
+                    Values = _speed,
+                }
             };
             BpmData = new SeriesCollection()
             {
-                new LineSeries() { Values = _bpm }
+                new LineSeries()
+                {
+                    Fill = Brushes.Transparent,
+                    Stroke = Brushes.LightCoral,
+                    PointGeometrySize = 0,
+                    LineSmoothness = 1.00, 
+                    Values = _bpm
+                }
             };
 
             OnPropertyChanged();

@@ -43,6 +43,8 @@ namespace RemoteHealthcare.Client.Client
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("disconnect", DisconnectHandler);
+            _functions.Add("set resitance", SetResistanceHandeler);
+            _functions.Add("emergency stop", EmergencyStopHandler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -91,7 +93,7 @@ namespace RemoteHealthcare.Client.Client
                     }
                     else if (command.ToLower().Equals("noodstop"))
                     {
-                        var req = new DataPacket<EmergencyStopPacketRequest>
+                        var req = new DataPacket<EmergencyStopPacket>
                         {
                             OpperationCode = OperationCodes.EMERGENCY_STOP,
                         };
@@ -110,6 +112,12 @@ namespace RemoteHealthcare.Client.Client
                     }
                 }
             }
+        }
+
+        private void EmergencyStopHandler(DataPacket obj)
+        {
+            EmergencyStopPacket data = obj.GetData<EmergencyStopPacket>();
+            _log.Critical(data.message);
         }
 
         private async void SendBikeDataAsync()
@@ -163,6 +171,8 @@ namespace RemoteHealthcare.Client.Client
         //this methode will get the right methode that will be used for the response from the server
         public void HandleData(DataPacket packet)
         {
+            _log.Warning($"Received: \r\n\r\n{packet.ToJson()}");
+            
             //Checks if the OppCode (OperationCode) does exist.
             if (_functions.TryGetValue(packet.OpperationCode, out var action))
             {
@@ -176,7 +186,7 @@ namespace RemoteHealthcare.Client.Client
 
         private void SetResistanceHandeler(DataPacket obj)
         {
-            _vrConnection.setResistance(obj.GetData<SetResistancePacket>().resistance);
+            _vrConnection.setResistance(obj.GetData<SetResistanceResponse>().resistance);
         }
 
         private void DisconnectHandler(DataPacket obj)
