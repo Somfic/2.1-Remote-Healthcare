@@ -41,11 +41,13 @@ public class Server
         _log.Information($"Client connected: {client.Socket}");
         _connectedClients.Add(new ServerClient(client));
 
-        _log.Debug("ALLE HUIDIGE TCP-USER ZIJN:");
-        foreach (SocketClient user in SocketServer.Clients)
-        {
-            _log.Debug(user.ToString());
-        }
+        // _log.Debug("\n");
+        //
+        // _log.Debug("ALLE HUIDIGE ServerClients-USER ZIJN:");
+        // foreach (ServerClient user in _connectedClients)
+        // {
+        //     _log.Debug(user.ToString());
+        // }
     }
 
     internal static void Disconnect(ServerClient client)
