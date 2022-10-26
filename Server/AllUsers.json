@@ -1,23 +1,22 @@
-
-   [
-    {
-      "User_id": "06111",
-      "Password": "welkom01",
-      "Name": "redouan"
-    },
-    {
-      "User_id": "06112",
-      "Password": "welkom02",
-      "Name": "Lucas"
-    },
-    {
-      "User_id": "06113",
-      "Password": "welkom03",
-      "Name": "Kees"
-    },
-    {
-      "User_id": "06114",
-      "Password": "welkom04",
-      "Name": "Charlotte"
-    }
-  ]
+[
+  {
+    "UserId": "06111",
+    "Password": "welkom01",
+    "Username": "Redouan"
+  },
+  {
+    "UserId": "06112",
+    "Password": "welkom02",
+    "Username": "Lucas"
+  },
+  {
+    "UserId": "06113",
+    "Password": "welkom03",
+    "Username": "Kees"
+  },
+  {
+    "UserId": "06114",
+    "Password": "welkom04",
+    "Username": "Charlotte"
+  }
+]

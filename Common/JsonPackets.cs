@@ -56,7 +56,7 @@ public class LoginPacketResponse : DAbstract
 
 public class ConnectedClientsPacketRequest : DAbstract
 {
-    public string operationCode;
+    public string requester;
 }
 
 public class ConnectedClientsPacketResponse : DAbstract
@@ -81,7 +81,7 @@ public class ChatPacketResponse : DAbstract
 
 public class SessionStartPacketRequest : DAbstract
 {
-    //TODO: voorlopig leeg laten
+    public string selectedPatient;
 }
 
 public class SessionStartPacketResponse : DAbstract
@@ -92,7 +92,7 @@ public class SessionStartPacketResponse : DAbstract
 
 public class SessionStopPacketRequest : DAbstract
 {
-    //TODO: voorlopig leeg laten
+    public string selectedPatient;
 }
 
 public class SessionStopPacketResponse : DAbstract
@@ -103,7 +103,7 @@ public class SessionStopPacketResponse : DAbstract
 
 public class EmergencyStopPacketRequest : DAbstract
 {
-    //TODO: voorlopig leeg laten
+    //TODO
 }
 
 public class EmergencyStopPacketResponse : DAbstract
@@ -136,4 +136,38 @@ public class BikeDataPacket : DAbstract
     public TimeSpan elapsed;
     public string deviceType;
     public string id;
+}
+
+public class BikeDataPacketDoctor : DAbstract
+{
+    public float distance;
+    public float speed;
+    public int heartRate;
+    public TimeSpan elapsed;
+    public string id;
+}
+
+public class GetAllPatientsDataRequest : DAbstract
+{
+    //TODO voorlopig leeg laten
+}
+
+public class GetAllPatientsDataResponse : DAbstract
+{
+    public StatusCodes statusCode;
+    public string message;
+    public JObject[] JObjects;
+}
+
+public class AllSessionsFromPatientRequest : DAbstract
+{
+    public StatusCodes statusCode;
+    public string userId;
+}
+
+public class AllSessionsFromPatientResponce : DAbstract
+{
+    public StatusCodes statusCode;
+    public JObject[] JObjects;
+    public string message;
 }

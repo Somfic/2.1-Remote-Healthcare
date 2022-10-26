@@ -11,6 +11,9 @@
         public readonly static String SESSION_START = "session start";
         public readonly static String SESSION_STOP = "session stop";
         public readonly static String EMERGENCY_STOP = "emergency stop";
+        public readonly static String GET_PATIENT_DATA = "get patient data";
+        public readonly static String GET_PATIENT_SESSSIONS = "get patient sessions";
+        
     }
 
     public enum StatusCodes

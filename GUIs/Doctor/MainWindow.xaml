@@ -1,42 +1,25 @@
-﻿<Window x:Class="RemoteHealthcare.GUIs.Doctor.MainWindow"
-        x:Name="Window"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:viewModels="clr-namespace:RemoteHealthcare.GUIs.Doctor.ViewModels"
-        mc:Ignorable="d"
-        Background="#4966CD"
-        ResizeMode="NoResize"
-        Title="MainWindow" Height="450" Width="800">
-    <Window.DataContext>
-        <viewModels:LoginWindowViewModel/>
-    </Window.DataContext>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition Height="30"></RowDefinition>
-        </Grid.RowDefinitions>
-        <Rectangle Grid.Row="1" Height="150" VerticalAlignment="Bottom">
-            <Rectangle.Fill>
-                <ImageBrush ImageSource="Images/fiets.png"></ImageBrush>
-            </Rectangle.Fill>
-        </Rectangle>
-        <Rectangle Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Fill="Black"></Rectangle>
-        <UserControl Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Height="175" Width="400" Background="White">
-            <StackPanel>
-                <TextBlock Text="Welkom Dokter!" FontSize="18" TextAlignment="Center"></TextBlock>
-                <Label Content="Login ID" HorizontalAlignment="Center"></Label>
-                <TextBox Name="LoginIdBox" Margin="10,0,10,0" Text="{Binding Username}"></TextBox>
-                <Label Content="Wachtwoord" HorizontalAlignment="Center"></Label>
-                <PasswordBox Name="PasswordBox" Margin="10,0,10,0" PasswordChanged="PasswordBox_OnPasswordChanged"></PasswordBox>
-                <Button Margin="10,20,10,30" Content="Log in!" Command="{Binding Path=LogIn}" CommandParameter="{Binding ElementName=Window}"></Button>
-            </StackPanel>
-        </UserControl>
-    </Grid>
+﻿<Window
+    x:Class="RemoteHealthcare.GUIs.Doctor.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:viewModels="clr-namespace:RemoteHealthcare.GUIs.Doctor.ViewModels"
+    xmlns:doctor="clr-namespace:RemoteHealthcare.GUIs.Doctor"
+    Title="Remote Healthcare Dokter" 
+    Height="450" 
+    Width="800"
+    mc:Ignorable="d">
+    
+    <ContentControl Content="{Binding CurrentViewModel}">
+        <ContentControl.Resources>
+            <DataTemplate DataType="{x:Type viewModels:LoginWindowViewModel}">
+                <doctor:LoginWindow />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:DoctorViewModel}">
+                <doctor:DoctorView />
+            </DataTemplate>
+        </ContentControl.Resources>
+    </ContentControl>
+    
 </Window>

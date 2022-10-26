@@ -2,9 +2,9 @@
 
 namespace RemoteHealthcare.GUIs.Doctor;
 
-public partial class DoctorView : Window
+public partial class PastSessionsWindow : Window
 {
-    public DoctorView()
+    public PastSessionsWindow()
     {
         InitializeComponent();
     }

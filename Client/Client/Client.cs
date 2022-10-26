@@ -1,4 +1,5 @@
 ﻿using System.Net.Cache;
+using NetworkEngine.Socket;
 using Newtonsoft.Json;
 using RemoteHealthcare.Client.Data;
 using RemoteHealthcare.Common;
@@ -22,15 +23,14 @@ namespace RemoteHealthcare.Client.Client
         private string doctorId;
         private string _sessionId;
 
+        private Dictionary<string, Action<DataPacket>> _functions;
         private VrConnection _vrConnection;
 
-        public Client(VrConnection connection)
+        public Client(VrConnection? connection = null)
         {
             _vrConnection = connection;
             _sessionId = DateTime.Now.ToString();
         }
-        
-        private Dictionary<string, Action<DataPacket>> _functions;
 
         public async Task RunAsync()
         {
@@ -39,7 +39,7 @@ namespace RemoteHealthcare.Client.Client
 
             //Adds for each key an callback methode in the dictionary 
             _functions.Add("login", LoginFeature);
-            _functions.Add("chat", ChatHandler);
+            _functions.Add("chat", ChatHandlerAsync);
             _functions.Add("session start", SessionStartHandler);
             _functions.Add("session stop", SessionStopHandler);
             _functions.Add("disconnect", DisconnectHandler);
@@ -81,6 +81,13 @@ namespace RemoteHealthcare.Client.Client
                         };
 
                         await _client.SendAsync(req);
+                        try
+                        {
+                            await _vrConnection.engine.SendTextToChatPannel($"U: {ChatMessage}");
+                        }
+                        catch (Exception e)
+                        {
+                        }
                     }
                     else if (command.ToLower().Equals("noodstop"))
                     {
@@ -124,10 +131,8 @@ namespace RemoteHealthcare.Client.Client
                         elapsed = bikedata.TotalElapsed,
                         deviceType = bikedata.DeviceType.ToString(),
                         id = bikedata.Id
-
                     }
                 };
-                _log.Information("sending bike data to server");
                 await _client.SendAsync(req);
                 await Task.Delay(1000);
             }
@@ -191,10 +196,19 @@ namespace RemoteHealthcare.Client.Client
             _log.Information(obj.GetData<SessionStartPacketResponse>().message);
         }
 
-        //the methode for the send chat request
-        private void ChatHandler(DataPacket packetData)
+        //the methode for printing out the received message and sending it to the VR Engine
+        private async void ChatHandlerAsync(DataPacket packetData)
         {
-            _log.Information($"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}");
+            string messageReceived =
+                $"{packetData.GetData<ChatPacketResponse>().senderId}: {packetData.GetData<ChatPacketResponse>().message}";
+            _log.Information(messageReceived);
+            try
+            {
+                await _vrConnection.engine.SendTextToChatPannel(messageReceived);
+            }
+            catch (Exception e)
+            {
+            }
         }
 
         //the methode for the login request
@@ -216,5 +230,11 @@ namespace RemoteHealthcare.Client.Client
                 AskForLoginAsync();
             }
         }
+        public bool GetLoggedIn()
+        {
+            return _loggedIn;
+        }
     }
+    
+   
 }

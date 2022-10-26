@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.Server.Models;
@@ -11,17 +12,26 @@ public class PatientData
 
     public PatientData()
     {
-        Patients = new List<Patient>();
+        /*Patients = new List<Patient>
+        {
+            new("Johan Talboom", "1234", "3245"),
+            new("Hans Van der linden", "1234", "3245"),
+            new("Co Nelen", "1234", "3245")
+        };*/
+
+        Patients = readUsersFromJson();
     }
     
-    public static List<Patient> readUsersFromJson()
+    public List<Patient> readUsersFromJson()
     {
         string path = Path.Combine(Directory.GetCurrentDirectory(), "AllUsers.json");
         
         string returnAllUsersFromText = File.ReadAllText(path);
         
-        List<Patient> data = JsonConvert.DeserializeObject<List<Patient>>(returnAllUsersFromText);
+        _log.Debug(returnAllUsersFromText);
         
+        List<Patient> data = JsonConvert.DeserializeObject<List<Patient>>(returnAllUsersFromText);
+
         return data;
     }
 
@@ -35,7 +45,7 @@ public class PatientData
     /// </returns>
     public bool MatchLoginData(Patient patient)
     {
-        Patients = readUsersFromJson();
+        //Patients = readUsersFromJson();
         
         //Checks if the Patient parameter exists in the AllUsers.json with LINQ
         if (Patients.Exists(name => name.Password == patient.Password && name.UserId == patient.UserId))
@@ -59,5 +69,32 @@ public class PatientData
         {
             patient.SaveSessionData(folderName);
         }
+    }
+
+    public JObject[] GetPatientDataAsJObjects()
+    {
+        JObject[] jObjects = new JObject[Patients.Count];
+        
+        for (int i = 0; i < Patients.Count; i++)
+        {
+            jObjects[i] = Patients[i].GetPatientAsJObject();
+        }
+
+        return jObjects;
+    }
+
+    public JObject[] GetPatientSessionsAsJObjects(string userId, string pathString)
+    {
+        pathString = Path.Combine(pathString.Substring(0, pathString.LastIndexOf("bin")), "allSessions", userId);
+
+        _log.Debug($"There are {Directory.GetFiles(pathString).Length} session files of user {userId}");
+        JObject[] jObjects = new JObject[Directory.GetFiles(pathString).Length];
+
+        for (int i = 0; i < Directory.GetFiles(pathString).Length; i++)
+        {
+            using (JsonTextReader reader = new JsonTextReader(File.OpenText(Directory.GetFiles(pathString)[i])))
+                jObjects[i] = (JObject)JToken.ReadFrom(reader);
+        }
+        return jObjects;
     }
 }

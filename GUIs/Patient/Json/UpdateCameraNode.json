@@ -1,0 +1,27 @@
+{
+  "id": "tunnel/send",
+  "data": {
+    "dest": "",
+    "data": {
+      "id": "scene/node/update",
+      "serial": "6",
+      "data": {
+        "id": "",
+        "parent": "",
+        "transform": {
+          "position": [
+            0,
+            0,
+            -30
+          ],
+          "scale": 100.0,
+          "rotation": [
+            0,
+            90,
+            0
+          ]
+        }
+      }
+    }
+  }
+}
