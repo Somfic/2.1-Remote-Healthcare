@@ -327,11 +327,11 @@ namespace RemoteHealthcare.Server.Client
 
                 _log.Debug($"Doctor name: {doctor.Username} Password: {doctor.Password}");
             }
-
-
+            
             if (patient != null && Server._patientData.MatchLoginData(patient))
             {
                 UserId = patient.UserId;
+                this._patient = patient;
                 _isDoctor = false;
 
                 SendData(new DataPacket<LoginPacketResponse>

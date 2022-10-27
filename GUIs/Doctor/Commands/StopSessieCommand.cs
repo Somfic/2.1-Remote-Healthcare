@@ -16,6 +16,10 @@ public class StopSessieCommand : BaseCommand
         _viewModel = viewModel;
     }
 
+    /// <summary>
+    /// The function sends a packet to the server to stop the session
+    /// </summary>
+    /// <param name="parameter">The parameter passed to the command.</param>
     public override void Execute(object? parameter)
     {
         _client._client.SendAsync(new DataPacket<SessionStopPacketRequest>

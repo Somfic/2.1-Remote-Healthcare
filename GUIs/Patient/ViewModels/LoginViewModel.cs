@@ -16,7 +16,7 @@ using RemoteHealthcare.NetworkEngine;
 
 namespace RemoteHealthcare.GUIs.Patient.ViewModels
 {
-    public class LoginViewModel : BaseViewModel
+    public class LoginViewModel : ObservableObject
     {
         
         private string _username;
@@ -27,7 +27,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private VrConnection vrConnection;
 
         private readonly NavigationStore _navigationStore;
-        public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
+        public ObservableObject CurrentViewModel => _navigationStore.CurrentViewModel;
         
         public LoginViewModel(NavigationStore navigationStore)
         {
@@ -88,35 +88,39 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 }
 
                 await Task.Delay(1000);
-                PatientHomepageViewModel pvm = new PatientHomepageViewModel(_navigationStore, _client);
+               
                 if (_client._loggedIn)
                 {
+                    var engine = new EngineConnection();
+                    var bike = await DataProvider.GetBike(_bikeID);
+                    var heart = await DataProvider.GetHeart();
+                    vrConnection = new VrConnection(bike, heart, engine);
+                    _client._vrConnection = vrConnection;
+
+                    PatientHomepageViewModel pvm = new PatientHomepageViewModel(_navigationStore, _client);
+                    
                     _navigationStore.CurrentViewModel = pvm;
-                    // ((Window) window).Close();
+                    pvm.e = engine;
+                    
                     try
                     {
-                        var engine = new EngineConnection();
                         await engine.ConnectAsync(_vrid);
-                        // Console.WriteLine("Enter Bike ID:");
-
-                        
-                         var bike = await DataProvider.GetBike(_bikeID);
-                         var heart = await DataProvider.GetHeart();
-                         vrConnection = new VrConnection(bike, heart, engine);
-                         
-                         //The client get the vrConnection 
-                         _client._vrConnection = vrConnection;
-                         
-                         //Prevends that he GUI patient crash 
-                         new Thread(async () => { vrConnection.Start(pvm); }).Start();
-
-                         await Task.Delay(-1);
+                        new Thread(async () => { vrConnection.Start(pvm); }).Start();
+                        await Task.Delay(-1);
                     }
                     catch (Exception ex)
                     {
                         var log = new Log(typeof(LoginViewModel));
                         log.Critical(ex, "Program stopped because of exception");
+                        
+
+
+
                     }
+                }
+                else
+                {
+                    MessageBox.Show("wrong login");
                 }
             }
         }

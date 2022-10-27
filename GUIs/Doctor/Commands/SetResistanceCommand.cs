@@ -20,6 +20,9 @@ public class SetResistanceCommand : BaseCommand
         ExecuteAsync();
     }
 
+    /// <summary>
+    /// > The function sets the resistance of the current user to the resistance value in the view model
+    /// </summary>
     public override async Task ExecuteAsync()
     {
         _client.SetResistance(_viewModel.CurrentUser.UserId, _viewModel.Resistance);

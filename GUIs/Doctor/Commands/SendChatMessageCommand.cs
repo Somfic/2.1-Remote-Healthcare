@@ -19,6 +19,10 @@ public class SendChatMessageCommand : BaseCommand
         ExecuteAsync();
     }
 
+    /// <summary>
+    /// The function is called when the user clicks the Send button. It adds the message to the chat window and sends it to
+    /// the server
+    /// </summary>
     public override async Task ExecuteAsync()
     {
         _viewModel.ChatMessages.Add("U: " + _viewModel.TextBoxChatMessage);

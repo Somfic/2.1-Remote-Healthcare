@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using NetworkEngine.Socket;
 using RemoteHealthcare.Common;
@@ -15,22 +16,22 @@ using RemoteHealthcare.NetworkEngine;
 
 namespace RemoteHealthcare.GUIs.Patient.ViewModels
 {
-    public class PatientHomepageViewModel : BaseViewModel
+    public class PatientHomepageViewModel : ObservableObject
     {
         public ObservableCollection<string>_messages;
         
         private string _message;
         private string _messagerecieved;
-        private string _speed= "45km/h";
-        private string _distance= "22km";
-        private string _time= "33 min";
-        private string _heartrate;
+        private string _speed= "0km/h";
+        private string _distance= "0km";
+        private string _time= "0 min";
+        private string _heartrate = "0";
         private VrConnection _vr;
-        private EngineConnection e;
+        public EngineConnection e;
         private string _session;
         
         private readonly NavigationStore _navigationStore;
-        public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
+        public ObservableObject CurrentViewModel => _navigationStore.CurrentViewModel;
         
         private Client.Client _client;
 
@@ -41,14 +42,13 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             _vr = client._vrConnection;
             _messages = new ObservableCollection<string>();
            
-            test = new Command(testmethode);
+            test = new Command(reconnectToEngine);
             Send = new Command(SendMessage);
-            _messages.Add("hello world");
             
             _navigationStore = navigationStore;
             _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
-           
         }
+        
 
         private void OnCurrentViewModelChanged()
         {
@@ -56,23 +56,25 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             OnPropertyChanged(nameof(_navigationStore.CurrentViewModel));
         }
         
+        
 
         public string Speed
         {
             get => _speed;
             set
             {
-                _speed = value+ "km/h";
-                OnPropertyChanged("Speed");
+                _speed = value + "km/h";
+                OnPropertyChanged();
             }
         }
+        
         public string Distance
         {
             get => _distance;
             set
             {
-                _distance = value+ "m";
-                OnPropertyChanged("Distance");
+                _distance = value + "m";
+                OnPropertyChanged();
             }
         }
 
@@ -82,7 +84,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             set
             {
                 _time = value;
-                OnPropertyChanged("Time");
+                OnPropertyChanged();
             }
         }
 
@@ -92,8 +94,8 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
             set
             {
-                _heartrate = value+ " bpm";
-                OnPropertyChanged("Heartrate");
+                _heartrate = value + " bpm";
+                OnPropertyChanged();
             }
         }
 
@@ -105,7 +107,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             set
             {
                 _messages = value;
-                OnPropertyChanged("Messages");
+                OnPropertyChanged();
             }
         }
 
@@ -116,11 +118,8 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             set
             {
                 _message = value; 
-                OnPropertyChanged("Message");
+                OnPropertyChanged();
             }
-            
-
-
         }
 
         public string Session
@@ -128,8 +127,8 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             get => _session;
             set
             {
-                _session = value;
-                OnPropertyChanged("Session");
+                _session = value = e._isConnected.ToString();
+                OnPropertyChanged();
             }
         }
         
@@ -143,26 +142,33 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 OpperationCode = OperationCodes.CHAT,
                 data = new ChatPacketRequest()
                 {
-                    senderId = _client._username,
+                    senderId = _client.userId,
+                    senderName = _client._username,
                     receiverId = null,
                     message = _message
                 }
             };
+            _vr.Engine.SendTextToChatPannel($"U: {_message}");
             _client._client.SendAsync(req);
             _messages.Add("You: "+ _message);
-            //clear textbox
             Message = "";
-            
         }
         
-        void testmethode()
+        void reconnectToEngine()
         {
-            _client._client.SendAsync(new DataPacket<SessionStartPacketRequest>
+            if (e._isConnected)
             {
-                OpperationCode = OperationCodes.SESSION_START,
-            });
+                e.ConnectAsync();
+            }
+           
+           
         }
 
+        public void emergencyStop()
+        {
+            //message box with emergency stop
+            MessageBox.Show("emergency stop!");
+        }
     }
 
 

@@ -19,6 +19,10 @@ public class EmergencyStopCommand : BaseCommand
         _viewModel = doctorViewModel;
     }
 
+    /// <summary>
+    /// This function sends a packet to the server to tell it that the emergency stop button was pressed
+    /// </summary>
+    /// <param name="parameter">This is the parameter that is passed in from the view.</param>
     public override void Execute(object? parameter)
     {
         _client._client.SendAsync(new DataPacket<EmergencyStopPacket>
@@ -35,6 +39,5 @@ public class EmergencyStopCommand : BaseCommand
 
     public override async Task ExecuteAsync()
     {
-        
     }
 }

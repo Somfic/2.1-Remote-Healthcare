@@ -24,7 +24,7 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         public bool _loggedIn;
         public string _password;
         public string _username;
-        private string userId;
+        public string userId;
         private string doctorId;
         private string _sessionId;
         public PatientHomepageViewModel p;
@@ -112,6 +112,8 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         {
             EmergencyStopPacket data = obj.GetData<EmergencyStopPacket>();
             _log.Critical(data.message);
+            SessionStopHandler(obj);
+            p.emergencyStop();
         }
 
         private void SetResistanceHandeler(DataPacket obj)
@@ -131,8 +133,13 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             Console.WriteLine("Sessie gestopt");
             _sessienRunning = false;
             _vrConnection.session = false;
+            _vrConnection.Engine.ChangeBikeSpeed(0);
+
+            
+            //_thread.Abort();
         }
 
+        private Thread _thread;
         //the methode for the session start request
         public void SessionStartHandler(DataPacket obj)
         {
@@ -204,14 +211,14 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             if (statusCode.Equals(200))
             {
                 userId = packetData.GetData<LoginPacketResponse>().userId;
-                _log.Information($"Succesfully logged in to the user: {_username}; {_password}; {userId}.");
+                _username = packetData.GetData<LoginPacketResponse>().userName;
+                _log.Information($"Succesfully logged in to the user: {userId}; {_password}; {packetData.GetData<LoginPacketResponse>().userName}.");
                 _loggedIn = true;
             }
             else
             {
                 _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
                            packetData.GetData<LoginPacketResponse>().message);
-                AskForLoginAsync();
             }
         }
         
