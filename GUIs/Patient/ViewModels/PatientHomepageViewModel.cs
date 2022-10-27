@@ -150,7 +150,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             };
             _vr.Engine.SendTextToChatPannel($"U: {_message}");
             _client._client.SendAsync(req);
-            _messages.Add("You: "+ _message);
+            _messages.Add("U: "+ _message);
             Message = "";
         }
         
