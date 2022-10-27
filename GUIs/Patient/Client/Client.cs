@@ -133,6 +133,8 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             Console.WriteLine("Sessie gestopt");
             _sessienRunning = false;
             _vrConnection.session = false;
+            _vrConnection.Engine.ChangeBikeSpeed(0);
+
             
             //_thread.Abort();
         }
