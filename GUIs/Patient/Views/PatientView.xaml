@@ -13,7 +13,7 @@
         <Image Name="Image" HorizontalAlignment="Left" Height="82" Margin="122,72,0,0" VerticalAlignment="Top" Width="379" Source="../Images/logos.JPG" Stretch="Fill"/> 
 
         <TextBox HorizontalAlignment="Left" Margin="595,371,0,0" TextWrapping="Wrap" Text="{Binding Message}" VerticalAlignment="Top" Width="183"/>
-        <Button Content="Send" Foreground="Black" Command="{Binding Send}" HorizontalAlignment="Left" Margin="750,370,0,0" VerticalAlignment="Top"/>
+        <Button Content="Verstuur" Foreground="Black" Command="{Binding Send}" HorizontalAlignment="Left" Margin="750,370,0,0" VerticalAlignment="Top"/>
         <Label Content="Snelheid" Foreground="White" HorizontalAlignment="Left" Margin="135,46,0,0" VerticalAlignment="Top" Width="63"/>
         <Label Content="Hartslag" Foreground="White" HorizontalAlignment="Left" Margin="235,46,0,0" VerticalAlignment="Top"/>
         <Label Content="Afstand" Foreground="White" HorizontalAlignment="Left" Margin="334,46,0,0" VerticalAlignment="Top"/>
