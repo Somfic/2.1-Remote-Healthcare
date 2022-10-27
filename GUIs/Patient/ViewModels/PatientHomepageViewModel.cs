@@ -165,7 +165,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         public void emergencyStop()
         {
             //message box with emergency stop
-            MessageBox.Show("emergency stop!");
+            MessageBox.Show("De noodstop is ingedrukt, een assistent zal spoedig mogelijk bij u komen.");
         }
     }
 

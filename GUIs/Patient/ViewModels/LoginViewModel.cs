@@ -115,7 +115,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 }
                 else
                 {
-                    MessageBox.Show("wrong login");
+                    MessageBox.Show("Het ingevulde wachtwoord of login id is verkeerd ingevuld.");
                 }
             }
         }
