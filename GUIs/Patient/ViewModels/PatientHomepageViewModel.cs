@@ -22,10 +22,10 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         
         private string _message;
         private string _messagerecieved;
-        private string _speed= "45km/h";
-        private string _distance= "22km";
-        private string _time= "33 min";
-        private string _heartrate = "000";
+        private string _speed= "0km/h";
+        private string _distance= "0km";
+        private string _time= "0 min";
+        private string _heartrate = "0";
         private VrConnection _vr;
         public EngineConnection e;
         private string _session;
@@ -56,17 +56,12 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             OnPropertyChanged(nameof(_navigationStore.CurrentViewModel));
         }
 
-        public void updateData(string speed)
-        {
-            Speed = speed;
-        }
-        
         public string Speed
         {
             get => _speed;
             set
             {
-                _speed = value;
+                _speed = value + "km/h";
                 OnPropertyChanged();
             }
         }
@@ -76,7 +71,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             get => _distance;
             set
             {
-                _distance = value;
+                _distance = value + "m";
                 OnPropertyChanged();
             }
         }
@@ -97,7 +92,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
             set
             {
-                _heartrate = value;
+                _heartrate = value + " bpm";
                 OnPropertyChanged();
             }
         }
