@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
+using RemoteHealthcare.Common.Models;
 using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.Common.Socket.Server;
 using RemoteHealthcare.Server.Models;
@@ -49,17 +50,17 @@ namespace RemoteHealthcare.Server.Client
             
             //Fill the dictionary _callbacks with the right values
             _callbacks = new Dictionary<string, Action<DataPacket>>();
-            _callbacks.Add(OperationCodes.LOGIN, LoginFeature);
-            _callbacks.Add(OperationCodes.USERS, RequestConnectionsFeature);
-            _callbacks.Add(OperationCodes.CHAT, ChatHandler);
-            _callbacks.Add(OperationCodes.SESSION_START, SessionStartHandler);
-            _callbacks.Add(OperationCodes.SESSION_STOP, SessionStopHandler);
-            _callbacks.Add(OperationCodes.DISCONNECT, DisconnectHandler);
-            _callbacks.Add(OperationCodes.EMERGENCY_STOP, EmergencyStopHandler);
-            _callbacks.Add(OperationCodes.GET_PATIENT_DATA, GetPatientDataHandler);
-            _callbacks.Add(OperationCodes.BIKEDATA, GetBikeData);
-            _callbacks.Add(OperationCodes.GET_PATIENT_SESSSIONS, GetPatientSessionHandler);
-            _callbacks.Add(OperationCodes.SET_RESISTANCE, SetResiatance);
+            _callbacks.Add(OperationCodes.Login, LoginFeature);
+            _callbacks.Add(OperationCodes.Users, RequestConnectionsFeature);
+            _callbacks.Add(OperationCodes.Chat, ChatHandler);
+            _callbacks.Add(OperationCodes.SessionStart, SessionStartHandler);
+            _callbacks.Add(OperationCodes.SessionStop, SessionStopHandler);
+            _callbacks.Add(OperationCodes.Disconnect, DisconnectHandler);
+            _callbacks.Add(OperationCodes.EmergencyStop, EmergencyStopHandler);
+            _callbacks.Add(OperationCodes.GetPatientData, GetPatientDataHandler);
+            _callbacks.Add(OperationCodes.Bikedata, GetBikeData);
+            _callbacks.Add(OperationCodes.GetPatientSesssions, GetPatientSessionHandler);
+            _callbacks.Add(OperationCodes.SetResistance, SetResiatance);
         }
         
         //determines which methode exactly will be executed 
@@ -111,12 +112,12 @@ namespace RemoteHealthcare.Server.Client
             {
                 if (session.SessionId.Equals(data.SessionId))
                 {
-                    session.addData(data.SessionId,(int)data.speed, (int)data.distance, data.heartRate, data.elapsed.Seconds, data.deviceType, data.id);
+                    session.addMiniData(data.SessionId,(int)data.speed, (int)data.distance, data.heartRate, data.elapsed.Seconds, data.deviceType, data.id);
                     _log.Critical(data.distance.ToString(CultureInfo.InvariantCulture));
                     
                     DataPacket<BikeDataPacketDoctor> dataPacketDoctor = new DataPacket<BikeDataPacketDoctor>
                     {
-                        OpperationCode = OperationCodes.BIKEDATA,
+                        OpperationCode = OperationCodes.Bikedata,
                         data = new BikeDataPacketDoctor()
                         {
                             distance = data.distance,
@@ -139,7 +140,7 @@ namespace RemoteHealthcare.Server.Client
 
             DataPacket<BikeDataPacketDoctor> firstDataPacketDoctor = new DataPacket<BikeDataPacketDoctor>
             {
-                OpperationCode = OperationCodes.BIKEDATA,
+                OpperationCode = OperationCodes.Bikedata,
                 data = new BikeDataPacketDoctor()
                 {
                     distance = data.distance,
@@ -221,7 +222,7 @@ namespace RemoteHealthcare.Server.Client
 
             SendData(new DataPacket<ConnectedClientsPacketResponse>
             {
-                OpperationCode = OperationCodes.USERS,
+                OpperationCode = OperationCodes.Users,
 
                 data = new ConnectedClientsPacketResponse()
                 {
@@ -255,7 +256,7 @@ namespace RemoteHealthcare.Server.Client
             if (patient == null) return;
             patient.SendData(new DataPacket<SetResistanceResponse>
             {
-                OpperationCode = OperationCodes.SET_RESISTANCE,
+                OpperationCode = OperationCodes.SetResistance,
 
                 data = new SetResistanceResponse()
                 {
@@ -273,7 +274,7 @@ namespace RemoteHealthcare.Server.Client
             {
                 SendData(new DataPacket<ChatPacketResponse>
                 {
-                    OpperationCode = OperationCodes.CHAT,
+                    OpperationCode = OperationCodes.Chat,
 
                     data = new ChatPacketResponse()
                     {
@@ -294,7 +295,7 @@ namespace RemoteHealthcare.Server.Client
 
                 SendData(new DataPacket<ChatPacketResponse>
                 {
-                    OpperationCode = OperationCodes.CHAT,
+                    OpperationCode = OperationCodes.Chat,
 
                     data = new ChatPacketResponse()
                     {
@@ -336,7 +337,7 @@ namespace RemoteHealthcare.Server.Client
 
                 SendData(new DataPacket<LoginPacketResponse>
                 {
-                    OpperationCode = OperationCodes.LOGIN,
+                    OpperationCode = OperationCodes.Login,
 
                     data = new LoginPacketResponse()
                     {
@@ -354,7 +355,7 @@ namespace RemoteHealthcare.Server.Client
 
                 SendData(new DataPacket<LoginPacketResponse>
                 {
-                    OpperationCode = OperationCodes.LOGIN,
+                    OpperationCode = OperationCodes.Login,
 
                     data = new LoginPacketResponse()
                     {
@@ -369,7 +370,7 @@ namespace RemoteHealthcare.Server.Client
             {
                 SendData(new DataPacket<ChatPacketResponse>
                 {
-                    OpperationCode = OperationCodes.LOGIN,
+                    OpperationCode = OperationCodes.Login,
 
                     data = new ChatPacketResponse()
                     {
@@ -400,7 +401,7 @@ namespace RemoteHealthcare.Server.Client
                 //Sends request to the Patient
                 patient.SendData(new DataPacket<SessionStartPacketResponse>
                 {
-                    OpperationCode = OperationCodes.SESSION_START,
+                    OpperationCode = OperationCodes.SessionStart,
                     data = new SessionStartPacketResponse()
                     {
                         statusCode = _statusCode,
@@ -412,7 +413,7 @@ namespace RemoteHealthcare.Server.Client
             //Sends request to the Doctor
             SendData(new DataPacket<SessionStartPacketResponse>
             {
-                OpperationCode = OperationCodes.SESSION_START,
+                OpperationCode = OperationCodes.SessionStart,
 
                 data = new SessionStartPacketResponse()
                 {
@@ -435,7 +436,7 @@ namespace RemoteHealthcare.Server.Client
             
             _selectedPatient.SendData(new DataPacket<SessionStopPacketResponse>
             {
-                OpperationCode = OperationCodes.SESSION_STOP,
+                OpperationCode = OperationCodes.SessionStop,
 
                 data = new SessionStopPacketResponse()
                 {
@@ -461,7 +462,7 @@ namespace RemoteHealthcare.Server.Client
 
             SendData(new DataPacket<DisconnectPacketResponse>
             {
-                OpperationCode = OperationCodes.DISCONNECT,
+                OpperationCode = OperationCodes.Disconnect,
 
                 data = new DisconnectPacketResponse()
                 {
@@ -490,7 +491,7 @@ namespace RemoteHealthcare.Server.Client
             JObject[] jObjects = Server._patientData.GetPatientDataAsJObjects();
             SendData(new DataPacket<GetAllPatientsDataResponse>
             {
-                OpperationCode = OperationCodes.GET_PATIENT_DATA,
+                OpperationCode = OperationCodes.GetPatientData,
 
                 data = new GetAllPatientsDataResponse()
                 {
@@ -510,7 +511,7 @@ namespace RemoteHealthcare.Server.Client
                     .GetData<AllSessionsFromPatientRequest>().userId, _patientDataLocation);
             SendData(new DataPacket<AllSessionsFromPatientResponce>
             {
-                OpperationCode = OperationCodes.GET_PATIENT_SESSSIONS,
+                OpperationCode = OperationCodes.GetPatientSesssions,
 
                 data = new AllSessionsFromPatientResponce()
                 {

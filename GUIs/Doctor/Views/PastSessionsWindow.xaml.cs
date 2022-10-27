@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace RemoteHealthcare.GUIs.Doctor;
+namespace RemoteHealthcare.GUIs.Doctor.Views;
 
 public partial class PastSessionsWindow : Window
 {

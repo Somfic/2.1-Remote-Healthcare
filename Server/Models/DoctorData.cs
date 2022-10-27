@@ -1,4 +1,5 @@
 ﻿using RemoteHealthcare.Common.Logger;
+using RemoteHealthcare.Common.Models;
 
 namespace RemoteHealthcare.Server.Models;
 public class DoctorData

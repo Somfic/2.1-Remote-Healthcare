@@ -3,6 +3,7 @@ using System.Windows.Media;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.GUIs.Doctor.ViewModels;
+using RemoteHealthcare.GUIs.Doctor.Views;
 
 namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
@@ -35,7 +36,7 @@ public class RequestPastSessions : BaseCommand
 
             _client._client.SendAsync(new DataPacket<AllSessionsFromPatientRequest>
             {
-                OpperationCode = OperationCodes.GET_PATIENT_SESSSIONS,
+                OpperationCode = OperationCodes.GetPatientSesssions,
                 data = new AllSessionsFromPatientRequest()
                 {
                     userId = userId

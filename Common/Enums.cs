@@ -2,20 +2,18 @@
 {
     public class OperationCodes
     {
-        public readonly static String CHAT = "chat";
-        public readonly static String BIKEDATA = "bikedata";
-        public readonly static String LOGIN = "login";
-        public readonly static String STATUS = "status";
-        public readonly static String DISCONNECT = "disconnect";
-        public readonly static String USERS = "users";
-        public readonly static String SESSION_START = "session start";
-        public readonly static String SESSION_STOP = "session stop";
-        public readonly static String EMERGENCY_STOP = "emergency stop";
-        public readonly static String GET_PATIENT_DATA = "get patient data";
-        public readonly static String GET_PATIENT_SESSSIONS = "get patient sessions";
-        
-        public readonly static String SET_RESISTANCE = "set resitance";
-
+        public static readonly string Chat = "chat";
+        public static readonly string Bikedata = "bikedata";
+        public static readonly string Login = "login";
+        public static readonly string Status = "status";
+        public static readonly string Disconnect = "disconnect";
+        public static readonly string Users = "users";
+        public static readonly string SessionStart = "session start";
+        public static readonly string SessionStop = "session stop";
+        public static readonly string EmergencyStop = "emergency stop";
+        public static readonly string GetPatientData = "get patient data";
+        public static readonly string GetPatientSesssions = "get patient sessions";
+        public static readonly string SetResistance = "set resitance";
     }
 
     public enum StatusCodes

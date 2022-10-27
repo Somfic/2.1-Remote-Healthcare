@@ -18,17 +18,11 @@
         <Label Content="Hartslag" Foreground="White" HorizontalAlignment="Left" Margin="235,46,0,0" VerticalAlignment="Top"/>
         <Label Content="Afstand" Foreground="White" HorizontalAlignment="Left" Margin="334,46,0,0" VerticalAlignment="Top"/>
         <Label Content="Tijd" Foreground="White" HorizontalAlignment="Left" Margin="440,46,0,0" VerticalAlignment="Top"/>
-
-        <!--<Rectangle Height="82" Margin="-175,72,0,0" VerticalAlignment="Top" Width="379" >
-            <Rectangle.Fill>
-                <ImageBrush ImageSource="/images/logos.JPG"></ImageBrush>
-            </Rectangle.Fill>
-        </Rectangle>-->
         
         <Label  Foreground="White" FontSize="20" Content="{Binding Speed}" HorizontalAlignment="Left" Margin="148,154,0,0" VerticalAlignment="Top" />
-        <Label  Foreground="White" FontSize="20" Content="{Binding Heartrate }" HorizontalAlignment="Left" Margin="243,154,0,0" VerticalAlignment="Top"/>
+        <Label  Foreground="White" FontSize="20" Content="{Binding HeartRate }" HorizontalAlignment="Left" Margin="243,154,0,0" VerticalAlignment="Top"/>
         <Label  Foreground="White" FontSize="20" Content="{Binding Distance}" HorizontalAlignment="Left" Margin="340,154,0,0" VerticalAlignment="Top"/>
         <Label  Foreground="White" FontSize="20" Content="{Binding Time}" HorizontalAlignment="Left" Margin="436,154,0,0" VerticalAlignment="Top"/>
-        <Button Content="Verbind met server" Command="{Binding test}" HorizontalAlignment="Left" Height="50" Margin="122,262,0,0" VerticalAlignment="Top" Width="228"/>
+        <Button Content="Verbind met server" Command="{Binding ConnectToVr}" HorizontalAlignment="Left" Height="50" Margin="122,262,0,0" VerticalAlignment="Top" Width="228"/>
     </Grid>
 </UserControl>

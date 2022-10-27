@@ -1,7 +1,4 @@
-using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
-
 namespace RemoteHealthcare.Common.Data.Providers.Bike;
 
 public class SimulationBikeDataProvider : BikeDataProvider
@@ -10,9 +7,7 @@ public class SimulationBikeDataProvider : BikeDataProvider
     private readonly Stopwatch _timer = Stopwatch.StartNew();
     private readonly Stopwatch _timerSinceLastProcess = Stopwatch.StartNew();
     private readonly Stopwatch _totalElapsed = Stopwatch.StartNew();
-
-    private int _totalReset;
-
+    
     public override Task Initialise()
     {
         return Task.CompletedTask;
@@ -30,7 +25,7 @@ public class SimulationBikeDataProvider : BikeDataProvider
         if (_timer.Elapsed.TotalSeconds >= 64)
             _timer.Restart();
 
-        SetElapsed(_timer.Elapsed); // todo: rond af op 0,25 seconden
+        SetElapsed(_timer.Elapsed);
 
         // Total elapsed
         SetTotalElapsed(_totalElapsed.Elapsed);

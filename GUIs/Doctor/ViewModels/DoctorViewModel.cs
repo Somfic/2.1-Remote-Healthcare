@@ -7,6 +7,7 @@ using LiveCharts;
 using LiveCharts.Wpf;
 using MvvmHelpers;
 using RemoteHealthcare.Common.Logger;
+using RemoteHealthcare.Common.Models;
 using RemoteHealthcare.GUIs.Doctor.Commands;
 using RemoteHealthcare.Server.Models;
 
@@ -81,7 +82,7 @@ public class DoctorViewModel : ObservableObject
                     Stroke = Brushes.DarkSeaGreen,
                     PointGeometrySize = 0,
                     LineSmoothness = 1.00,
-                    Values = _currentUser.speedData
+                    Values = _currentUser.SpeedData
                 }
             };
             
@@ -93,7 +94,7 @@ public class DoctorViewModel : ObservableObject
                     Stroke = Brushes.LightCoral,
                     PointGeometrySize = 0,
                     LineSmoothness = 1.00,
-                    Values = _currentUser.bpmData
+                    Values = _currentUser.BpmData
                 }
             };
             OnPropertyChanged();
@@ -132,40 +133,40 @@ public class DoctorViewModel : ObservableObject
 
     public int BPM
     {
-        get => _currentUser.currentBPM;
+        get => _currentUser.CurrentBpm;
         set
         {
-            _currentUser.currentBPM = value;
+            _currentUser.CurrentBpm = value;
             OnPropertyChanged();
         }
     }
 
     public float Speed
     {
-        get => _currentUser.currentSpeed;
+        get => _currentUser.CurrentSpeed;
         set
         {
-            _currentUser.currentSpeed = value;
+            _currentUser.CurrentSpeed = value;
             OnPropertyChanged();
         }
     }
 
     public float Distance
     {
-        get => _currentUser.currentDistance;
+        get => _currentUser.CurrentDistance;
         set
         {
-            _currentUser.currentDistance = value;
+            _currentUser.CurrentDistance = value;
             OnPropertyChanged();
         }
     }
 
     public TimeSpan ElapsedTime
     {
-        get => _currentUser.currentElapsedTime;
+        get => _currentUser.CurrentElapsedTime;
         set
         {
-            _currentUser.currentElapsedTime = value;
+            _currentUser.CurrentElapsedTime = value;
             OnPropertyChanged();
         }
     }

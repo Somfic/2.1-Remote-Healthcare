@@ -23,27 +23,27 @@ public class EngineConnection
     private string _groundPlaneId;
     private string _routeId;
     private string _roadNodeId;
-    public bool _isConnected;
+    public bool IsConnected;
 
-    private JArray _hightForHouse;
+    private JArray _heightForHouse;
     private bool[,] _roadArray;
-    private bool _roadLoad = false;
+    private bool _roadLoad;
 
     private string _tunnelId;
     private string _userId;
-    private string _informationPannelId;
-    private string _chatPannelId;
+    private string _informationPanelId;
+    private string _chatPanelId;
     private string _bikeId;
     private string _terrainNodeId;
-    private string _filePath;
+    private readonly string _filePath;
     private string _cameraId;
     private string _leftControllerId;
     private string _rightControllerId;
     private string _monkeyHeadId;
-    private int _roadcount;
+    private int _roadCount;
 
-    private int _firstx;
-    private int _firstz;
+    private int _firstX;
+    private int _firstZ;
     private bool _first;
 
     private List<string> _messages = new();
@@ -55,7 +55,7 @@ public class EngineConnection
         _socket.OnMessage += async (_, json) => await ProcessMessageAsync(json);
     }
 
-    public async Task<string[]> FindAvailableUsersAsync()
+    private async Task<string[]> FindAvailableUsersAsync()
     {
         _clients = null;
 
@@ -66,7 +66,7 @@ public class EngineConnection
         {
             if (_clients != null)
                 return _clients.Select(x => x.user).ToArray();
-            _isConnected = true;
+            IsConnected = true;
             await Task.Delay(50);
         }
     }
@@ -80,7 +80,6 @@ public class EngineConnection
         {
             _log.Warning("No clients are available");
             throw new Exception("No clients were found");
-            
         }
 
         if (string.IsNullOrWhiteSpace(user))
@@ -104,62 +103,40 @@ public class EngineConnection
 
         await Task.Delay(1000);
         await ResetScene(_tunnelId);
-
         await Task.Delay(1000);
         await SendSkyboxTime(_tunnelId, 10.5);
-
-        // await SendTerrain(_tunnelId);
         await Task.Delay(1000);
         await Heightmap(_tunnelId);
-
         await Task.Delay(1000);
         await CreateTerrainNode(_tunnelId);
-
         await Task.Delay(1000);
         await AddTerrainLayer(_tunnelId);
-
         await Task.Delay(1000);
         await GetScene(_tunnelId);
-
         await Task.Delay(1000);
         await RemoveNode(_groundPlaneId);
-        //await RemoveNode(_leftControllerId);
-        //await RemoveNode(_rightControllerId);
-
+        await RemoveNode(_leftControllerId);
+        await RemoveNode(_rightControllerId);
         await Task.Delay(1000);
         await AddRoute(_tunnelId);
-
         await Task.Delay(1000);
         await AddRoad(_tunnelId, _routeId);
-
         await Task.Delay(1000);
         await AddBikeModel(_tunnelId);
-
         await Task.Delay(1000);
         await PlaceBikeOnRoute(_tunnelId);
-
-        
-
         await Task.Delay(1000);
         await AddInformationPannelNode(_tunnelId);
-
         await Task.Delay(1000);
         await AddChatPannelNode(_tunnelId);
-
         await Task.Delay(1000);
         await MoveCameraPosition();
-        await Task.Delay(1000);
-        await MoveHeadPosition();
-        
         await Task.Delay(1000);
         await ChangeBikeSpeed(50);
         await Task.Delay(1000);
         await RoadLoad();
-        
         await Task.Delay(1000);
         await Addhouses(_tunnelId, 100);
-
-       
     }
 
 
@@ -172,12 +149,11 @@ public class EngineConnection
         if (!File.Exists(s))
         {
             await ChangeBikeSpeed(50);
-            while (_roadcount < 550)
+            while (_roadCount < 550)
             {
                 await Task.Delay(50);
                 await NodeInfo(_tunnelId);
             }
-
 
             Stream ss = new FileStream(s, FileMode.Create, FileAccess.Write);
             b.Serialize(ss, _roadArray);
@@ -227,8 +203,6 @@ public class EngineConnection
                 {
                     string resultSerial = "";
                     var result = new DataResponse<TunnelSendResponse>();
-                    // var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
-                    // string resultSerial = result.Data.Data.Serial;
                     try
                     {
                         result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
@@ -281,12 +255,14 @@ public class EngineConnection
                             _log.Information("Terrain Node ID is: " + _terrainNodeId);
                             break;
                         }
+
                         case "10":
                         {
-                            _informationPannelId = result.Data.Data.Data.Uuid;
-                            _log.Information("Pannel Node ID is: " + _informationPannelId);
+                            _informationPanelId = result.Data.Data.Data.Uuid;
+                            _log.Information("Pannel Node ID is: " + _informationPanelId);
                             break;
                         }
+
                         case "9":
                         {
                             // _log.Information(result.Data.Data.Data.P);
@@ -294,16 +270,11 @@ public class EngineConnection
                                 raw.data.data.data[0].components[0].position[2].ToString());
                             break;
                         }
+
                         case "11":
                         {
-                            _chatPannelId = result.Data.Data.Data.Uuid;
-                            _log.Information("Pannel Node ID is: " + _chatPannelId);
-                            break;
-                        }
-                        default:
-                        {
-                            //_log.Information(JObject.Parse(json).ToString()); 
-                            ///fixme
+                            _chatPanelId = result.Data.Data.Data.Uuid;
+                            _log.Information("Pannel Node ID is: " + _chatPanelId);
                             break;
                         }
                     }
@@ -365,7 +336,6 @@ public class EngineConnection
     }
 
     public async Task ChangeBikeSpeed(double speed)
-
     {
         string path = Path.Combine(_filePath, "Json", "ChangeBikeSpeed.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
@@ -438,7 +408,7 @@ public class EngineConnection
             }
         }
 
-        _hightForHouse = heights;
+        _heightForHouse = heights;
         var json = JsonConvert.SerializeObject(jObject);
         await _socket.SendAsync(json);
     }
@@ -558,9 +528,9 @@ public class EngineConnection
         string z = inputz;
         int x1 = (int)Convert.ToDecimal(x);
         int z1 = (int)Convert.ToDecimal(z);
-        _roadcount++;
-        
-        if (!(_firstx == x1 && _firstz == z1))
+        _roadCount++;
+
+        if (!(_firstX == x1 && _firstZ == z1))
 
         {
             for (int i = x1 - 10; i < x1 + 10; i++)
@@ -579,8 +549,8 @@ public class EngineConnection
 
         if (!_first)
         {
-            _firstx = x1;
-            _firstz = z1;
+            _firstX = x1;
+            _firstZ = z1;
             _first = true;
         }
     }
@@ -610,7 +580,7 @@ public class EngineConnection
 
             int x = r.Next(-128, 128);
             int z = r.Next(-128, 128);
-            int y = (int)_hightForHouse[(z + 128) * 256 + (x + 128)];
+            int y = (int)_heightForHouse[(z + 128) * 256 + (x + 128)];
             // int y = 0;
 
             if (!_roadArray[x + 128, z + 128])
@@ -627,14 +597,10 @@ public class EngineConnection
 
                 await _socket.SendAsync(json);
             }
-            else
-            {
-                continue;
-            }
         }
     }
 
-    public async Task MoveCameraPosition()
+    private async Task MoveCameraPosition()
     {
         string path = Path.Combine(_filePath, "Json", "UpdateCameraNode.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
@@ -647,44 +613,31 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
-    public async Task MoveHeadPosition()
-    {
-        string path = Path.Combine(_filePath, "Json", "UpdateHeadNode.json");
-        var jObject = JObject.Parse(File.ReadAllText(path));
-
-        jObject["data"]["dest"] = _tunnelId;
-        jObject["data"]["data"]["data"]["id"] = _monkeyHeadId;
-        jObject["data"]["data"]["data"]["parent"] = _bikeId;
-
-        var json = JsonConvert.SerializeObject(jObject);
-        await _socket.SendAsync(json);
-    }
-
     public async Task SendTextToInformationPannel(string speed, string distance, TimeSpan timespan, string bpm,
         string resistance)
     {
         var text =
             $"Snelheid: {speed} \\nAfstand: {distance} \\nTijd: {timespan.Minutes + ":" + timespan.Seconds} \\nHartslag: {bpm} \\nWeerstand: {resistance}";
-        await SetBackgroundColor(1, 1, 1, 0.2f, _informationPannelId);
-        await ClearPannel(_informationPannelId);
-        await AddTextToPannel(text, _informationPannelId);
-        await SwapPannel(_informationPannelId);
+        await SetBackgroundColor(1, 1, 1, 0.2f, _informationPanelId);
+        await ClearPanel(_informationPanelId);
+        await AddTextToPanel(text, _informationPanelId);
+        await SwapPanel(_informationPanelId);
     }
 
     public async Task SendTextToChatPannel(string message)
     {
         _messages.Insert(0, message);
-        string displayMessage = displayMessages();
-        await SetBackgroundColor(1, 1, 1, 0.15f, _chatPannelId);
-        await ClearPannel(_chatPannelId);
-        await AddTextToPannel(displayMessage, _chatPannelId, 70);
-        await SwapPannel(_chatPannelId);
+        string displayMessage = DisplayMessages();
+        await SetBackgroundColor(1, 1, 1, 0.15f, _chatPanelId);
+        await ClearPanel(_chatPanelId);
+        await AddTextToPanel(displayMessage, _chatPanelId, 70);
+        await SwapPanel(_chatPanelId);
     }
 
-    private string displayMessages()
+    private string DisplayMessages()
     {
         string result = "";
-        
+
         for (int i = 0; i < 5; i++)
         {
             int index = 4 - i;
@@ -693,16 +646,16 @@ public class EngineConnection
                 result += "\\n";
                 continue;
             }
-            
+
             result += $"{Regex.Replace(_messages[index], ".{30}", "$0\\n")}\\n\\n";
         }
 
         return result;
     }
 
-    public async Task ClearPannel(string id)
+    public async Task ClearPanel(string id)
     {
-        string path = Path.Combine(_filePath, "Json", "ClearPannel.json");
+        string path = Path.Combine(_filePath, "Json", "ClearPanel.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = _tunnelId;
@@ -733,7 +686,7 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
-    public async Task AddTextToPannel(string text, string id, int? size = 100)
+    public async Task AddTextToPanel(string text, string id, int? size = 100)
     {
         string path = Path.Combine(_filePath, "Json", "DrawTextOnPannel.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
@@ -747,9 +700,9 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
-    public async Task SwapPannel(string id)
+    public async Task SwapPanel(string id)
     {
-        string path = Path.Combine(_filePath, "Json", "SwapPannel.json");
+        string path = Path.Combine(_filePath, "Json", "SwapPanel.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = _tunnelId;

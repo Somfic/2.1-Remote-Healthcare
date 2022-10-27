@@ -65,7 +65,7 @@ public class SimulatedClient
     {
        var loginReq = new DataPacket<LoginPacketRequest>
         {
-            OpperationCode = OperationCodes.LOGIN,
+            OpperationCode = OperationCodes.Login,
             data = new LoginPacketRequest()
             {
                 userName = username,
@@ -88,7 +88,7 @@ public class SimulatedClient
         
         var dataReq = new DataPacket<BikeDataPacket>
         {
-            OpperationCode = OperationCodes.BIKEDATA,
+            OpperationCode = OperationCodes.Bikedata,
 
             data = new BikeDataPacket()
             {
@@ -109,7 +109,7 @@ public class SimulatedClient
     {
         var chatReq = new DataPacket<ChatPacketRequest>
         {
-            OpperationCode = OperationCodes.CHAT,
+            OpperationCode = OperationCodes.Chat,
                             
             data = new ChatPacketRequest()
             {

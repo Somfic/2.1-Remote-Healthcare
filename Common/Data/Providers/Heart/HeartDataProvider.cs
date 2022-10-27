@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace RemoteHealthcare.Common.Data.Providers.Heart;
 
 public abstract class HeartDataProvider : IDataProvider<HeartData>

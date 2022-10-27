@@ -1,91 +1,82 @@
-﻿
-
-using System;
-using System.Data;
-using System.Runtime.InteropServices.ComTypes;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using RemoteHealthcare.Common.Data;
 using RemoteHealthcare.Common.Data.Providers.Bike;
 using RemoteHealthcare.Common.Data.Providers.Heart;
 using RemoteHealthcare.GUIs.Patient.ViewModels;
 using RemoteHealthcare.NetworkEngine;
 
-namespace NetworkEngine.Socket
+namespace RemoteHealthcare.GUIs.Patient
 {
     public class VrConnection
     {
-        BikeDataProvider bike;
-        HeartDataProvider heart;
+        private readonly BikeDataProvider _bike;
+        private readonly HeartDataProvider _heart;
+        
+        public bool Session;
+        private int _resistance;
 
         private PatientHomepageViewModel _pvm;
-        public EngineConnection Engine;
+        public readonly EngineConnection Engine;
 
         public VrConnection(BikeDataProvider bike, HeartDataProvider heart, EngineConnection engine)
         {
-            this.bike = bike;
-            this.heart = heart;
-            this.Engine = engine;
+            _bike = bike;
+            _heart = heart;
+            Engine = engine;
         }
-
-        public bool session;
-        private int _resistance;
-
+        
         public async Task Start(PatientHomepageViewModel p)
         {
-            await bike.ProcessRawData();
+            await _bike.ProcessRawData();
 
             _pvm = p;
             while (true)
             {
-                if (session)
+                if (Session)
                 {
-                    await heart.ProcessRawData();
-                    await bike.ProcessRawData();
-                    await Engine.ChangeBikeSpeed(bike.GetData().Speed);
+                    await _heart.ProcessRawData();
+                    await _bike.ProcessRawData();
+                    await Engine.ChangeBikeSpeed(_bike.GetData().Speed);
 
-                    _pvm.Heartrate = heart.GetData().HeartRate.ToString();
-                    _pvm.Speed = bike.GetData().Speed.ToString("##.#");
-                    _pvm.Distance = bike.GetData().Distance.ToString("####.#");
-                    _pvm.Time = bike.GetData().TotalElapsed.ToString("hh\\:mm\\:ss");
-                    
+                    _pvm.HeartRate = _heart.GetData().HeartRate.ToString();
+                    _pvm.Speed = _bike.GetData().Speed.ToString("##.#");
+                    _pvm.Distance = _bike.GetData().Distance.ToString("####.#");
+                    _pvm.Time = _bike.GetData().TotalElapsed.ToString("hh\\:mm\\:ss");
                 }
 
-                await Engine.SendTextToInformationPannel(bike.GetData().Speed.ToString("##.#"), bike.GetData().Distance.ToString("####.#"), bike.GetData().TotalElapsed, heart.GetData().HeartRate.ToString(), _resistance.ToString());
+                await Engine.SendTextToInformationPannel(_bike.GetData().Speed.ToString("##.#"),
+                    _bike.GetData().Distance.ToString("####.#"), _bike.GetData().TotalElapsed,
+                    _heart.GetData().HeartRate.ToString(), _resistance.ToString());
 
                 await Task.Delay(1000);
             }
         }
-
         
-        public void setResistance(int resistance)
+        public void SetResistance(int resistance)
+        {
+            byte[] data = (new byte[]
+                { 164, 9, 78, 5, 48, 255, 255, 255, 255, 255, 255, (byte)((byte)resistance * 2), 0 });
+            byte checksum = data[0];
+            for (int i = 1; i < 12; i++)
             {
-                byte[] data = (new byte[]
-                    { 164, 9, 78, 5, 48, 255, 255, 255, 255, 255, 255, (byte)((byte)resistance * 2), 0 });
-                byte checksum = data[0];
-                for (int i = 1; i < 12; i++)
-                {
-                    checksum ^= data[i];
-                }
-
-                data[12] = (byte)checksum;
-
-                _resistance = resistance;
-                
-                bike.SendMessage(data);
+                checksum ^= data[i];
             }
 
-            public BikeData getBikeData()
-            {
-                return bike.GetData();
-            }
+            data[12] = (byte)checksum;
 
-            internal HeartData getHearthData()
-            {
+            _resistance = resistance;
 
-                return heart.GetData();
-            }
+            _bike.SendMessage(data);
+        }
+
+        public BikeData GetBikeData()
+        {
+            return _bike.GetData();
+        }
+
+        internal HeartData GetHearthData()
+        {
+            return _heart.GetData();
         }
     }
-
-    
+}

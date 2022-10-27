@@ -1,10 +1,8 @@
-﻿using System;
-using System.Threading;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using RemoteHealthcare.Common.Logger;
 
-namespace RemoteHealthcare.GUIs.Doctor
+namespace RemoteHealthcare.GUIs.Doctor.Views
 {
     /// <summary>
     /// Interaction logic for LoginWindow.xaml

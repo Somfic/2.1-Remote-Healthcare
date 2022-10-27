@@ -1,11 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MvvmHelpers;
-using MvvmHelpers.Commands;
-using RemoteHealthcare.GUIs.Doctor.Commands;
-using RemoteHealthcare.GUIs.Doctor.ViewModels;
 
-namespace RemoteHealthcare.GUIs.Doctor;
+namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class NavigateCommand : BaseCommand
 {
@@ -23,7 +19,7 @@ public class NavigateCommand : BaseCommand
         ExecuteAsync();
     }
 
-    public async override Task ExecuteAsync()
+    public override async Task ExecuteAsync()
     {
         _navigationStore.CurrentViewModel = _viewModel;
     }

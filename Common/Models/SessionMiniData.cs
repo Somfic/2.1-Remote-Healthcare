@@ -18,6 +18,5 @@ namespace RemoteHealthcare.Common.Models
             Heartrate = heartrate;
             Elapsed = elapsed;
         }
-
     }
 }

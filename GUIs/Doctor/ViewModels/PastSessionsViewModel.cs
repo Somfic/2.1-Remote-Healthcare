@@ -6,6 +6,8 @@ using MvvmHelpers;
 using LiveCharts;
 using LiveCharts.Wpf;
 using RemoteHealthcare.Common.Logger;
+using RemoteHealthcare.Common.Models;
+using RemoteHealthcare.GUIs.Doctor.Views;
 using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;

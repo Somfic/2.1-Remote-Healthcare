@@ -14,8 +14,8 @@ public class BluetoothDevice
     private readonly string _serviceName;
     private readonly string _sendCharacteristic;
     private BLE _bluetoothConnection;
-    private int _idByte;
-    private int _id;
+    private readonly int _idByte;
+    private readonly int _id;
 
     public BluetoothDevice(string deviceName, string serviceName, string serviceCharacteristic,string sendCharacteristic, int idByte, int id)
     {
@@ -71,14 +71,12 @@ public class BluetoothDevice
             }
 
             errorCode = await _bluetoothConnection.OpenDevice(_deviceName);
-
-            var services = _bluetoothConnection.GetServices;
+            
             errorCode = await _bluetoothConnection.SetService(_serviceName);
 
             _bluetoothConnection.SubscriptionValueChanged += (sender, e) =>
             {
                 Console.WriteLine(BitConverter.ToString(e.Data) );
-                
                 
                 if (e.Data[_idByte] == _id)
                 {

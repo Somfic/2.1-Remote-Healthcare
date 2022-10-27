@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="RemoteHealthcare.GUIs.Doctor.LoginWindow"
+﻿<UserControl x:Class="RemoteHealthcare.GUIs.Doctor.Views.LoginWindow"
         x:Name="Window"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

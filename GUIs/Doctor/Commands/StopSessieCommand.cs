@@ -24,7 +24,7 @@ public class StopSessieCommand : BaseCommand
     {
         _client._client.SendAsync(new DataPacket<SessionStopPacketRequest>
         {
-            OpperationCode = OperationCodes.SESSION_STOP,
+            OpperationCode = OperationCodes.SessionStop,
             data = new SessionStopPacketRequest()
             {
                 selectedPatient = _viewModel.CurrentUser.UserId

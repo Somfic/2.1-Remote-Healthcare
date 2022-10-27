@@ -27,7 +27,7 @@ public class EmergencyStopCommand : BaseCommand
     {
         _client._client.SendAsync(new DataPacket<EmergencyStopPacket>
         {
-            OpperationCode = OperationCodes.EMERGENCY_STOP,
+            OpperationCode = OperationCodes.EmergencyStop,
             data = new EmergencyStopPacket()
             {
                 statusCode = StatusCodes.OK,

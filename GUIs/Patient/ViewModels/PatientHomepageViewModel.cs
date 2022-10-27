@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using NetworkEngine.Socket;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.NetworkEngine;
 
@@ -18,46 +17,41 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 {
     public class PatientHomepageViewModel : ObservableObject
     {
-        public ObservableCollection<string>_messages;
+        private ICommand Send { get; }
+        private ICommand ConnectToVr { get; }
         
         private string _message;
-        private string _messagerecieved;
         private string _speed= "0km/h";
         private string _distance= "0km";
         private string _time= "0 min";
-        private string _heartrate = "0";
-        private VrConnection _vr;
-        public EngineConnection e;
+        private string _heartRate = "0";
+        private readonly VrConnection _vr;
+        public EngineConnection Engine;
         private string _session;
         
+        private ObservableCollection<string> _messages;
         private readonly NavigationStore _navigationStore;
-        public ObservableObject CurrentViewModel => _navigationStore.CurrentViewModel;
-        
-        private Client.Client _client;
+        private readonly Client.Client _client;
 
         public PatientHomepageViewModel(NavigationStore navigationStore, Client.Client client)
         {
-            
             _client = client;
-            _vr = client._vrConnection;
+            _vr = client.VrConnection;
             _messages = new ObservableCollection<string>();
            
-            test = new Command(reconnectToEngine);
+            ConnectToVr = new Command(ReconnectToEngine);
             Send = new Command(SendMessage);
             
             _navigationStore = navigationStore;
             _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
         }
         
-
         private void OnCurrentViewModelChanged()
         {
-            _client.p = this;
+            _client.P = this;
             OnPropertyChanged(nameof(_navigationStore.CurrentViewModel));
         }
         
-        
-
         public string Speed
         {
             get => _speed;
@@ -88,18 +82,17 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             }
         }
 
-        public string Heartrate
+        public string HeartRate
         {
-            get => _heartrate;
+            get => _heartRate;
 
             set
             {
-                _heartrate = value + " bpm";
+                _heartRate = value + " bpm";
                 OnPropertyChanged();
             }
         }
-
-
+        
         public ObservableCollection<string> Messages
         {
             get => _messages;
@@ -110,7 +103,6 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 OnPropertyChanged();
             }
         }
-
         
         public string Message
         {
@@ -127,23 +119,20 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             get => _session;
             set
             {
-                _session = value = e._isConnected.ToString();
+                _session = Engine.IsConnected.ToString();
                 OnPropertyChanged();
             }
         }
-        
 
-        public ICommand Send { get; }
-        public ICommand test { get; }
-        void SendMessage()
+        private void SendMessage()
         {
             var req = new DataPacket<ChatPacketRequest>
             {
-                OpperationCode = OperationCodes.CHAT,
+                OpperationCode = OperationCodes.Chat,
                 data = new ChatPacketRequest()
                 {
-                    senderId = _client.userId,
-                    senderName = _client._username,
+                    senderId = _client.UserId,
+                    senderName = _client.Username,
                     receiverId = null,
                     message = _message
                 }
@@ -153,21 +142,13 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             _messages.Add("You: "+ _message);
             Message = "";
         }
-        
-        void reconnectToEngine()
-        {
-            if (e._isConnected)
-            {
-                e.ConnectAsync();
-            }
-           
-           
-        }
 
-        public void emergencyStop()
+        private void ReconnectToEngine()
         {
-            //message box with emergency stop
-            MessageBox.Show("emergency stop!");
+            if (Engine.IsConnected)
+            {
+                Engine.ConnectAsync();
+            }
         }
     }
 

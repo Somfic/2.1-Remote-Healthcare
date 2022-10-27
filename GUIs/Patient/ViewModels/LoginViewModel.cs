@@ -8,7 +8,6 @@ using System.Windows.Input;
 using MvvmHelpers;
 using MvvmHelpers.Commands;
 using System.Windows.Input;
-using NetworkEngine.Socket;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Data.Providers;
 using RemoteHealthcare.Common.Logger;
@@ -21,10 +20,12 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         
         private string _username;
         private SecureString _securePassword;
-        private string _bikeID;
-        private string _vrid;
-        private Client.Client _client;
-        private VrConnection vrConnection;
+        private string _bikeId;
+        private string _vrId;
+        private readonly Client.Client _client;
+        private VrConnection _vrConnection;
+
+        public ICommand LogIn { get; }
 
         private readonly NavigationStore _navigationStore;
         public ObservableObject CurrentViewModel => _navigationStore.CurrentViewModel;
@@ -36,8 +37,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             
             LogIn = new Command(LogInPatient);
 
-            _client = new Client.Client(null);
-
+            _client = new Client.Client();
         }
         
         private void OnCurrentViewModelChanged()
@@ -59,26 +59,28 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
         public string BikeId
         {
-            get => _bikeID;
-            set => _bikeID = value;
+            get => _bikeId;
+            set => _bikeId = value;
         }
 
         public string VrId
         {
-            get => _vrid;
-            set => _vrid = value;
+            get => _vrId;
+            set => _vrId = value;
         }
-        
-        public ICommand LogIn { get; }
-        
-      async void LogInPatient(object window)
+
+        /// <summary>
+        /// It connects to the server, logs in the patient, connects to the engine, and starts the VR connection
+        /// </summary>
+        /// <param name="window">The window that is currently open.</param>
+        async void LogInPatient(object window)
         {
             await _client._client.ConnectAsync("127.0.0.1", 15243);
             Console.WriteLine("Got window, logging in patient");
-            if (!_client._loggedIn)
+            if (!_client.LoggedIn)
             {
-                _client._username = Username;
-                _client._password = SecureStringToString(SecurePassword);
+                _client.Username = Username;
+                _client.Password = SecureStringToString(SecurePassword);
                 
                 try {
                     new Thread(async () => { await _client.PatientLogin(); }).Start();
@@ -89,33 +91,29 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
                 await Task.Delay(1000);
                
-                if (_client._loggedIn)
+                if (_client.LoggedIn)
                 {
                     var engine = new EngineConnection();
-                    var bike = await DataProvider.GetBike(_bikeID);
+                    var bike = await DataProvider.GetBike(_bikeId);
                     var heart = await DataProvider.GetHeart();
-                    vrConnection = new VrConnection(bike, heart, engine);
-                    _client._vrConnection = vrConnection;
+                    _vrConnection = new VrConnection(bike, heart, engine);
+                    _client.VrConnection = _vrConnection;
 
                     PatientHomepageViewModel pvm = new PatientHomepageViewModel(_navigationStore, _client);
                     
                     _navigationStore.CurrentViewModel = pvm;
-                    pvm.e = engine;
+                    pvm.Engine = engine;
                     
                     try
                     {
-                        await engine.ConnectAsync(_vrid);
-                        new Thread(async () => { vrConnection.Start(pvm); }).Start();
+                        await engine.ConnectAsync(_vrId);
+                        new Thread(async () => { _vrConnection.Start(pvm); }).Start();
                         await Task.Delay(-1);
                     }
                     catch (Exception ex)
                     {
                         var log = new Log(typeof(LoginViewModel));
                         log.Critical(ex, "Program stopped because of exception");
-                        
-
-
-
                     }
                 }
                 else

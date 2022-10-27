@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:viewModels="clr-namespace:RemoteHealthcare.GUIs.Doctor.ViewModels"
     xmlns:doctor="clr-namespace:RemoteHealthcare.GUIs.Doctor"
+    xmlns:views="clr-namespace:RemoteHealthcare.GUIs.Doctor.Views"
     Title="Remote Healthcare Dokter" 
     Height="450" 
     Width="800"
@@ -14,10 +15,10 @@
     <ContentControl Content="{Binding CurrentViewModel}">
         <ContentControl.Resources>
             <DataTemplate DataType="{x:Type viewModels:LoginWindowViewModel}">
-                <doctor:LoginWindow />
+                <views:LoginWindow />
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:DoctorViewModel}">
-                <doctor:DoctorView />
+                <views:DoctorView />
             </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>

@@ -13,7 +13,6 @@ public class SocketClient : ISocket
     
     public Guid Id { get; } = Guid.NewGuid();
     public Dictionary<string, Action<DataPacket>> callbacks;
-
     
     private readonly Log _log = new(typeof(SocketClient));
 

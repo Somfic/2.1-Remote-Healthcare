@@ -1,5 +1,3 @@
-
-
 using RemoteHealthcare.Common.Bluetooth;
 
 namespace RemoteHealthcare.Common.Data.Providers.Heart;
@@ -18,7 +16,5 @@ public class BluetoothHeartDataProvider : HeartDataProvider
     {
         SetId(_heartSensor.ServiceName);
         SetHeartRate(_heartSensor.ReceivedData[1]);
-   
-        
     }
 }

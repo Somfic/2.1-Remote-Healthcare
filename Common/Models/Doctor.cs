@@ -1,22 +1,21 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace RemoteHealthcare.Server.Models;
+namespace RemoteHealthcare.Common.Models;
 
 public class Doctor
 {
-    
-    public List<SessionData> _sessions { get; set; }
+    private List<SessionData> _sessions { get; set; }
     public string Username { get; set; }
     public string UserId { get; set; }
     public string Password { get; set; }
 
-    public Doctor(string user, string pass, string UserId)
+    public Doctor(string user, string pass, string userId)
     {
-        this.Username = user;
-        this.Password = pass;
-        this.UserId = UserId;
-        this._sessions = new List<SessionData>();
+        Username = user;
+        Password = pass;
+        this.UserId = userId;
+        _sessions = new List<SessionData>();
     }
 
     public void SaveSessionData(string foldername)

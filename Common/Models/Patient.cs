@@ -1,32 +1,25 @@
 ﻿using LiveCharts;
 using MvvmHelpers;
-using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common.Logger;
 
-namespace RemoteHealthcare.Server.Models;
-
+namespace RemoteHealthcare.Common.Models;
 
 [Serializable]
 public class Patient : ObservableObject
 {
-    private Log _log = new Log(typeof(Patient));
     public List<SessionData> Sessions { get; set; }
-
     public string Username { get; set; }
     public string UserId { get; set; }
     public string Password { get; set; }
-    
-    public float currentSpeed { get; set; }
-    public float currentDistance { get; set; }
-    public TimeSpan currentElapsedTime { get; set; }
-    public int currentBPM { get; set; }
+    public float CurrentSpeed { get; set; }
+    public float CurrentDistance { get; set; }
+    public TimeSpan CurrentElapsedTime { get; set; }
+    public int CurrentBpm { get; set; }
 
-    public ChartValues<float> speedData = new();
-    
-    
-    public ChartValues<int> bpmData = new();
+    public ChartValues<float> SpeedData = new();
+    public ChartValues<int> BpmData = new();
 
     public Patient(string userId, string password, string? username = null)
     {
@@ -36,9 +29,8 @@ public class Patient : ObservableObject
             Username = username;
         Sessions = new List<SessionData>();
         
-        
         string pathString = Path.Combine(Environment.CurrentDirectory.Substring(0, 
-            Environment.CurrentDirectory.LastIndexOf("bin")), "allSessions", UserId);
+            Environment.CurrentDirectory.LastIndexOf("bin", StringComparison.Ordinal)), "allSessions", UserId);
 
         if (!Directory.Exists(pathString))
         {
@@ -56,8 +48,7 @@ public class Patient : ObservableObject
         pathString = Path.Combine(pathString.Substring(0, pathString.LastIndexOf("bin")));
 
         pathString = Path.Combine(pathString, "allSessions");
-
-
+        
         if (!Directory.Exists(pathString))
             Directory.CreateDirectory(pathString);
 

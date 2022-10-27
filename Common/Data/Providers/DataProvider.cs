@@ -1,8 +1,6 @@
 using RemoteHealthcare.Common.Data.Providers.Bike;
 using RemoteHealthcare.Common.Data.Providers.Heart;
 using RemoteHealthcare.Common.Logger;
-
-
 namespace RemoteHealthcare.Common.Data.Providers;
 
 public static class DataProvider

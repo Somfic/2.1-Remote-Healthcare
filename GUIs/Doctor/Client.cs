@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
+using RemoteHealthcare.Common.Models;
 using RemoteHealthcare.Common.Socket.Client;
 using RemoteHealthcare.GUIs.Doctor.ViewModels;
 using RemoteHealthcare.Server.Models;
@@ -49,15 +50,15 @@ namespace RemoteHealthcare.GUIs.Doctor
             Sessions = new List<SessionData>();
 
             //Adds for each key an callback methode in the dictionary 
-            _callbacks.Add(OperationCodes.LOGIN, LoginFeature);
-            _callbacks.Add(OperationCodes.USERS, RequestConnectionsFeature);
-            _callbacks.Add(OperationCodes.CHAT, ChatHandler);
-            _callbacks.Add(OperationCodes.SESSION_START, SessionStartHandler);
-            _callbacks.Add(OperationCodes.SESSION_STOP, SessionStopHandler);
-            _callbacks.Add(OperationCodes.EMERGENCY_STOP, EmergencyStopHandler);
-            _callbacks.Add(OperationCodes.GET_PATIENT_DATA, GetPatientDataHandler);
-            _callbacks.Add(OperationCodes.BIKEDATA, GetBikeData);
-            _callbacks.Add(OperationCodes.GET_PATIENT_SESSSIONS, GetPatientSessionsHandler);
+            _callbacks.Add(OperationCodes.Login, LoginFeature);
+            _callbacks.Add(OperationCodes.Users, RequestConnectionsFeature);
+            _callbacks.Add(OperationCodes.Chat, ChatHandler);
+            _callbacks.Add(OperationCodes.SessionStart, SessionStartHandler);
+            _callbacks.Add(OperationCodes.SessionStop, SessionStopHandler);
+            _callbacks.Add(OperationCodes.EmergencyStop, EmergencyStopHandler);
+            _callbacks.Add(OperationCodes.GetPatientData, GetPatientDataHandler);
+            _callbacks.Add(OperationCodes.Bikedata, GetBikeData);
+            _callbacks.Add(OperationCodes.GetPatientSesssions, GetPatientSessionsHandler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -85,7 +86,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                     {
                         var req = new DataPacket<SessionStartPacketRequest>
                         {
-                            OpperationCode = OperationCodes.SESSION_START,
+                            OpperationCode = OperationCodes.SessionStart,
                         };
                         _log.Warning($"sending {req.ToJson()}");
 
@@ -95,7 +96,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                     {
                         DataPacket<SessionStopPacketRequest> req = new DataPacket<SessionStopPacketRequest>
                         {
-                            OpperationCode = OperationCodes.SESSION_STOP,
+                            OpperationCode = OperationCodes.SessionStop,
                         };
                         _log.Warning($"sending {req.ToJson()}");
 
@@ -105,7 +106,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                     {
                         var req = new DataPacket<EmergencyStopPacket>
                         {
-                            OpperationCode = OperationCodes.EMERGENCY_STOP,
+                            OpperationCode = OperationCodes.EmergencyStop,
                         };
                         _log.Warning($"sending {req.ToJson()}");
 
@@ -124,7 +125,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             _log.Debug("SendChatAsync(): entered");
             var req = new DataPacket<ChatPacketRequest>
             {
-                OpperationCode = OperationCodes.CHAT,
+                OpperationCode = OperationCodes.Chat,
                 data = new ChatPacketRequest()
                 {
                     senderId = _userId,
@@ -143,7 +144,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             var req = new DataPacket<SetResistancePacket>
             {
-                OpperationCode = OperationCodes.SET_RESISTANCE,
+                OpperationCode = OperationCodes.SetResistance,
                 data = new SetResistancePacket()
                 {
                     receiverId = target,
@@ -181,7 +182,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             _log.Debug(_connected.Count.ToString());
             var req = new DataPacket<ConnectedClientsPacketRequest>
             {
-                OpperationCode = OperationCodes.USERS,
+                OpperationCode = OperationCodes.Users,
                 data = new ConnectedClientsPacketRequest()
                 {
                     requester = _userId
@@ -196,7 +197,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
             {
-                OpperationCode = OperationCodes.LOGIN,
+                OpperationCode = OperationCodes.Login,
                 data = new LoginPacketRequest()
                 {
                     userName = _userName,
@@ -214,7 +215,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             DataPacket<GetAllPatientsDataRequest> patientReq = new DataPacket<GetAllPatientsDataRequest>
             {
-                OpperationCode = OperationCodes.GET_PATIENT_DATA
+                OpperationCode = OperationCodes.GetPatientData
             };
 
             await _client.SendAsync(patientReq);
@@ -351,8 +352,8 @@ namespace RemoteHealthcare.GUIs.Doctor
                 DoctorViewModel.Speed = data.speed;
                 DoctorViewModel.ElapsedTime = data.elapsed;
                 DoctorViewModel.Distance = data.distance;
-                DoctorViewModel.CurrentUser.speedData.Add(data.speed);
-                DoctorViewModel.CurrentUser.bpmData.Add(data.heartRate);
+                DoctorViewModel.CurrentUser.SpeedData.Add(data.speed);
+                DoctorViewModel.CurrentUser.BpmData.Add(data.heartRate);
             }
             else
             {
@@ -360,12 +361,12 @@ namespace RemoteHealthcare.GUIs.Doctor
                 {
                     if (patient.UserId.Equals(data.id))
                     {
-                        patient.currentDistance = data.distance;
-                        patient.currentSpeed = data.speed;
-                        patient.currentElapsedTime = data.elapsed;
-                        patient.currentBPM = data.heartRate;
-                        patient.speedData.Add(data.speed);
-                        patient.bpmData.Add(data.heartRate);
+                        patient.CurrentDistance = data.distance;
+                        patient.CurrentSpeed = data.speed;
+                        patient.CurrentElapsedTime = data.elapsed;
+                        patient.CurrentBpm = data.heartRate;
+                        patient.SpeedData.Add(data.speed);
+                        patient.BpmData.Add(data.heartRate);
                     }
                 }
             }

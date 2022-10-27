@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common.Logger;
+using RemoteHealthcare.Common.Models;
 
 namespace RemoteHealthcare.Server.Models;
 
