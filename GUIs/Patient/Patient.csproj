@@ -29,9 +29,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="BLELibrary.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
       <None Update="Images\logos.JPG">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>

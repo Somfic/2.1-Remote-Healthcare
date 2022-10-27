@@ -18,8 +18,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Update="BLELibrary.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
       <Reference Include="BLELibrary">
-        <HintPath>..\Client\BLELibrary.dll</HintPath>
+        <HintPath>BLELibrary.dll</HintPath>
       </Reference>
     </ItemGroup>
 
