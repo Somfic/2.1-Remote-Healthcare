@@ -21,7 +21,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private SecureString _securePassword;
         private string _bikeID;
         private string _vrid;
-        private Client.Client _client;
+        private readonly Client.Client _client;
         private VrConnection vrConnection;
 
         private readonly NavigationStore _navigationStore;
@@ -68,8 +68,8 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         }
         
         public ICommand LogIn { get; }
-        
-      async void LogInPatient(object window)
+
+        private async void LogInPatient(object window)
         {
             await _client._client.ConnectAsync("127.0.0.1", 15243);
             if (!_client.LoggedIn)

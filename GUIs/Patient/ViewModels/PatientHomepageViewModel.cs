@@ -19,14 +19,14 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private string _distance= "0km";
         private string _time= "0 min";
         private string _heartrate = "0";
-        private VrConnection _vr;
+        private readonly VrConnection _vr;
         public EngineConnection e;
         private string _session;
         
         private readonly NavigationStore _navigationStore;
         public ObservableObject CurrentViewModel => _navigationStore.CurrentViewModel;
         
-        private Client.Client _client;
+        private readonly Client.Client _client;
 
         public PatientHomepageViewModel(NavigationStore navigationStore, Client.Client client)
         {
@@ -128,7 +128,8 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
         public ICommand Send { get; }
         public ICommand ReconnectVr { get; }
-        void SendMessage()
+
+        private void SendMessage()
         {
             var req = new DataPacket<ChatPacketRequest>
             {
@@ -146,8 +147,8 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             _messages.Add("You: "+ _message);
             Message = "";
         }
-        
-        void reconnectToEngine()
+
+        private void reconnectToEngine()
         {
             if (e.IsConnected)
             {

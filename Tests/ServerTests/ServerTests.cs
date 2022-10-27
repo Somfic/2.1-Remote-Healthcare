@@ -6,7 +6,7 @@ namespace RemoteHealthcare.Tests.ServerTests;
 
 public class ServerTests
 {
-    string _message = "{\"OpperationCode\":\"login\",\"data\":{\"username\":\"06111\",\"password\":\"welkom01\",\"isDoctor\":false}}";
+    private readonly string _message = "{\"OpperationCode\":\"login\",\"data\":{\"username\":\"06111\",\"password\":\"welkom01\",\"isDoctor\":false}}";
 
     
     [Test]

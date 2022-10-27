@@ -7,8 +7,8 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class EmergencyStopCommand : BaseCommand
 {
-    private Client _client;
-    private DoctorViewModel _viewModel;
+    private readonly Client _client;
+    private readonly DoctorViewModel _viewModel;
 
     public EmergencyStopCommand(Client client, DoctorViewModel doctorViewModel)
     {

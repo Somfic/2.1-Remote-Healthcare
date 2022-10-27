@@ -11,7 +11,7 @@ namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class PastSessionsViewModel : ObservableObject
 {
-    private Client _client;
+    private readonly Client _client;
 
     private string _distance;
     private TimeSpan _totalTime;

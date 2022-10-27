@@ -35,7 +35,7 @@ public class EngineConnection
     private string _chatPannelId;
     private string _bikeId;
     private string _terrainNodeId;
-    private string _filePath;
+    private readonly string _filePath;
     private string _cameraId;
     private string _leftControllerId;
     private string _rightControllerId;
@@ -46,7 +46,7 @@ public class EngineConnection
     private int _firstz;
     private bool _first;
 
-    private List<string> _messages = new();
+    private readonly List<string> _messages = new();
 
     public EngineConnection()
     {

@@ -8,8 +8,8 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 public class RequestPastSessions : BaseCommand
 {
     private Log _log = new(typeof(RequestPastSessions));
-    private Client _client;
-    private DoctorViewModel _viewModel;
+    private readonly Client _client;
+    private readonly DoctorViewModel _viewModel;
 
     public RequestPastSessions(Client client, DoctorViewModel doctorViewModel)
     {

@@ -6,8 +6,8 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class StopSessieCommand : BaseCommand
 {
-    private Client _client;
-    private DoctorViewModel _viewModel;
+    private readonly Client _client;
+    private readonly DoctorViewModel _viewModel;
     
     public StopSessieCommand(Client client, DoctorViewModel viewModel)
     {

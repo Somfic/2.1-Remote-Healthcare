@@ -26,7 +26,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         public DoctorViewModel DoctorViewModel;
         public PastSessionsViewModel PastSessionsViewModel;
 
-        private Log _log = new(typeof(Client));
+        private readonly Log _log = new(typeof(Client));
         public string Password { get; set; }
         public string Username { get; set; }
         public bool LoggedIn { get; set; }
@@ -34,7 +34,7 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         public bool HasSessionResponce;
 
-        private Dictionary<string, Action<DataPacket>> _callbacks;
+        private readonly Dictionary<string, Action<DataPacket>> _callbacks;
 
 
         public Client()

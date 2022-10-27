@@ -9,8 +9,8 @@ namespace NetworkEngine.Socket
 {
     public class VrConnection
     {
-        BikeDataProvider bike;
-        HeartDataProvider heart;
+        private readonly BikeDataProvider bike;
+        private readonly HeartDataProvider heart;
 
         private PatientHomepageViewModel _pvm;
         public EngineConnection Engine;

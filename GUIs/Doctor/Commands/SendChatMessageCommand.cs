@@ -5,8 +5,8 @@ namespace RemoteHealthcare.GUIs.Doctor.Commands;
 
 public class SendChatMessageCommand : BaseCommand
 {
-    private Client _client;
-    private DoctorViewModel _viewModel;
+    private readonly Client _client;
+    private readonly DoctorViewModel _viewModel;
     
     public SendChatMessageCommand(Client client, DoctorViewModel doctorViewModel)
     {

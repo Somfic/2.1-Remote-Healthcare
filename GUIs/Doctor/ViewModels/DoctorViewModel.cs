@@ -13,7 +13,7 @@ namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
 public class DoctorViewModel : ObservableObject
 {
-    private Client _client;
+    private readonly Client _client;
     private Log _log = new Log(typeof(DoctorViewModel));
     public ICommand EmergencyStop { get; }
     public ICommand SendChatMessage { get; }

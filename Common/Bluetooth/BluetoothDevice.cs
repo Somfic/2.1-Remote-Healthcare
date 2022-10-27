@@ -12,8 +12,8 @@ public class BluetoothDevice
     private readonly string _serviceName;
     private readonly string _sendCharacteristic;
     private BLE _bluetoothConnection;
-    private int _idByte;
-    private int _id;
+    private readonly int _idByte;
+    private readonly int _id;
 
     public BluetoothDevice(string deviceName, string serviceName, string serviceCharacteristic,string sendCharacteristic, int idByte, int id)
     {

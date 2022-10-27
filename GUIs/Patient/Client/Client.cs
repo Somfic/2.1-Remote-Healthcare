@@ -15,18 +15,18 @@ namespace RemoteHealthcare.GUIs.Patient.Client
     public class Client
     {
         public SocketClient _client = new(true);
-        private Log _log = new(typeof(Client));
+        private readonly Log _log = new(typeof(Client));
 
         public bool LoggedIn;
         public string Password;
         public string Username;
         public string UserId;
         private string _doctorId;
-        private string _sessionId;
+        private readonly string _sessionId;
         public PatientHomepageViewModel p;
         private bool _sessienRunning;
 
-        private Dictionary<string, Action<DataPacket>> _callbacks;
+        private readonly Dictionary<string, Action<DataPacket>> _callbacks;
         public VrConnection _vrConnection;
 
         public Client()
