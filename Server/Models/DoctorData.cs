@@ -22,12 +22,12 @@ public class DoctorData
     /// </returns>
     public bool MatchLoginData(Doctor d)
     {
-        if ((Doctor == null) || (!Doctor.Username.Equals(d.Username) && !Doctor.Password.Equals(d.Password) &&
-                                 !Doctor.UserId.Equals(d.UserId)))
+        if ((Doctor == null))
         {
             return false;
         }
 
-        return true;
+        return ((Doctor.Username.Equals(d.Username) && Doctor.Password.Equals(d.Password) &&
+                 Doctor.UserId.Equals(d.UserId)));
     }
 }
