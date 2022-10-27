@@ -1,0 +1,27 @@
+﻿{
+  "id": "tunnel/send",
+  "data": {
+    "dest": "",
+    "data": {
+      "id": "scene/node/add",
+      "serial": "11",
+      "data": {
+        "name": "ChatPannel",
+        "parent": "guid",
+        "components": {
+          "transform": {
+            "position": [ -80, 115, 80 ],
+            "scale": 1,
+            "rotation": [ -15, 130, 0 ]
+          },
+          "panel": {
+            "size": [ 50, 50 ],
+            "resolution": [ 750, 750 ],
+            "background": [ 0, 0, 0, 0.15 ],
+            "castShadow": true
+          }
+        }
+      }
+    }
+  }
+}
