@@ -447,6 +447,7 @@ namespace RemoteHealthcare.Server.Client
         //the methode for the emergency stop request
         private void EmergencyStopHandler(DataPacket obj)
         {
+            CalculateTarget(obj.GetData<EmergencyStopPacket>().clientId)._patient.SaveSessionData(Environment.CurrentDirectory);
             CalculateTarget(obj.GetData<EmergencyStopPacket>().clientId).SendData(obj);
         }
 
