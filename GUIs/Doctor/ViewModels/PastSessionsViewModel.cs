@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Media;
 using MvvmHelpers;
 using LiveCharts;
@@ -182,14 +183,14 @@ public class PastSessionsViewModel : ObservableObject
 
     private string CalculateTotalDistance()
     {
-        int dist = 0;
+        return _currentSession.MiniDatas.Last().Distance.ToString();
+        /*int dist = 0;
         int? prefValue = null;
 
         foreach (var data in _currentSession.MiniDatas)
         {
             int currentValue = data.Distance;
-
-
+            
             if (prefValue == null)
             {
                 prefValue = 0;
@@ -203,7 +204,6 @@ public class PastSessionsViewModel : ObservableObject
 
             prefValue = currentValue;
         }
-
-        return $"{dist}";
+        return $"{dist}";*/
     }
 }
