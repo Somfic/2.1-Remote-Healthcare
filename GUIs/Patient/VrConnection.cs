@@ -53,6 +53,8 @@ namespace NetworkEngine.Socket
                 }
                 await Task.Delay(1000);
             }
+            
+            }
         }
         
         public void setResistance(int resistance)
