@@ -8,27 +8,29 @@ namespace RemoteHealthcare.Server;
 
 public class Server
 {
-    public static readonly int Port = 15243;
+    private readonly int _port = 15243;
 
     private readonly SocketServer _server = new(true);
     private readonly Log _log = new(typeof(Server));
     public static PatientData _patientData { get; set; }
     public static DoctorData _doctorData { get; set; }
     public static List<ServerClient> _connectedClients { get; private set; } = new();
-    
-    public static IReadOnlyList<ServerClient> Clients => _connectedClients.AsReadOnly();
 
 
+    /// <summary>
+    /// The server is listening for connections on port `Port` and when a client connects, the server will call the
+    /// `OnClientConnectedAsync` function
+    /// </summary>
     public async Task StartAsync()
     {
         _server.OnClientConnected += async (sender, e) => await OnClientConnectedAsync(e);
         _server.OnClientDisconnected += async (sender, e) => await OnClientDisconnectedAsync(e);
 
-        await _server.ConnectAsync("127.0.0.1", Port);
+        await _server.ConnectAsync("127.0.0.1", _port);
         
         _patientData = new PatientData();
         _doctorData = new DoctorData();
-        _log.Information($"Server running on port {Port}");
+        _log.Information($"Server running on port {_port}");
     }
 
     private async Task OnClientDisconnectedAsync(SocketClient socketClient)
@@ -40,7 +42,6 @@ public class Server
     {
         _log.Information($"Client connected: {client.Socket}");
         _connectedClients.Add(new ServerClient(client));
-
     }
 
     internal static void Disconnect(ServerClient client)
@@ -49,27 +50,5 @@ public class Server
             return;
         Log.Send().Debug("Disconnecting a client now");
         _connectedClients.Remove(client);
-    }
-
-    internal static void printUsers()
-    {
-        Log.Send().Debug("ALLE HUIDIGDE USER NA DE DISCONNECT ZIJN:");
-        foreach (SocketClient user in SocketServer.Clients)
-        {
-            Log.Send().Debug("Socketserver Client:  " + user);
-        }
-        
-        Log.Send().Debug("");
-        Log.Send().Debug("ALLE HUIDIGE ServerClients-USER NA DE DISCONNECT ZIJN:");
-        
-        foreach (ServerClient user in _connectedClients)
-        {
-            Log.Send().Debug("_connected Clients:  " +user);
-        }
-    }
-
-    private async Task BroadcastAsync(string message)
-    {
-        await _server.BroadcastAsync(message);
     }
 }
