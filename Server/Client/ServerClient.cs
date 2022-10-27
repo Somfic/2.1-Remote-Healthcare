@@ -46,17 +46,17 @@ namespace RemoteHealthcare.Server.Client
             //Fill the dictionary _callbacks with the right values
             _callbacks = new Dictionary<string, Action<DataPacket>>
             {
-                { OperationCodes.LOGIN, LoginFeature },
-                { OperationCodes.USERS, RequestConnectionsFeature },
-                { OperationCodes.CHAT, ChatHandler },
-                { OperationCodes.SESSION_START, SessionStartHandler },
-                { OperationCodes.SESSION_STOP, SessionStopHandler },
-                { OperationCodes.DISCONNECT, DisconnectHandler },
-                { OperationCodes.EMERGENCY_STOP, EmergencyStopHandler },
-                { OperationCodes.GET_PATIENT_DATA, GetPatientDataHandler },
-                { OperationCodes.BIKEDATA, GetBikeData },
-                { OperationCodes.GET_PATIENT_SESSSIONS, GetPatientSessionHandler },
-                { OperationCodes.SET_RESISTANCE, SetResistance }
+                { OperationCodes.Login, LoginFeature },
+                { OperationCodes.Users, RequestConnectionsFeature },
+                { OperationCodes.Chat, ChatHandler },
+                { OperationCodes.SessionStart, SessionStartHandler },
+                { OperationCodes.SessionStop, SessionStopHandler },
+                { OperationCodes.Disconnect, DisconnectHandler },
+                { OperationCodes.EmergencyStop, EmergencyStopHandler },
+                { OperationCodes.GetPatientData, GetPatientDataHandler },
+                { OperationCodes.Bikedata, GetBikeData },
+                { OperationCodes.GetPatientSesssions, GetPatientSessionHandler },
+                { OperationCodes.SetResistance, SetResistance }
             };
         }
 

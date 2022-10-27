@@ -4,7 +4,7 @@ using System.Windows.Media;
 using MvvmHelpers;
 using LiveCharts;
 using LiveCharts.Wpf;
-using RemoteHealthcare.Server.Models;
+using RemoteHealthcare.Common.Models;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
