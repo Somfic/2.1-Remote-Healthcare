@@ -1,33 +1,33 @@
 ﻿using RemoteHealthcare.Common.Logger;
 
 namespace RemoteHealthcare.Server.Models;
+
 public class DoctorData
 {
     private readonly Log _log = new(typeof(DoctorData));
-    
-    public Doctor _doctor { get; set; }
+
+    public Doctor Doctor { get; set; }
 
     public DoctorData()
     {
     }
 
+    /// <summary>
+    /// It checks if the given doctor is null or if the username, password, and userid are not equal to the doctor's username,
+    /// password, and userid.
+    /// </summary>
+    /// <param name="d">The doctor object that is being passed in.</param>
+    /// <returns>
+    /// A boolean value.
+    /// </returns>
     public bool MatchLoginData(Doctor d)
     {
-        if (_doctor == null)
+        if ((Doctor == null) || (!Doctor.Username.Equals(d.Username) && !Doctor.Password.Equals(d.Password) &&
+                                 !Doctor.UserId.Equals(d.UserId)))
+        {
             return false;
-        
-        if (_doctor.Username.Equals(d.Username) && _doctor.Password.Equals(d.Password) &&
-            _doctor.UserId.Equals(d.UserId))
-            return true;
-        else 
-            return false;
-    }
+        }
 
-    public void SaveDoctorData()
-    {
-        string folderName = Environment.CurrentDirectory;
-        _log.Debug(folderName);
-        folderName = Path.Combine(folderName.Substring(0, folderName.LastIndexOf("bin")) + "DoctorDataFiles");
-        _doctor.SaveSessionData(folderName);
+        return true;
     }
 }

@@ -91,14 +91,14 @@ public class EngineConnection
 
         if (!_clients.Any(x => x.user.ToLower().Contains(user.ToLower())))
         {
-            _log.Warning(
+            _log.Error(
                 $"User '{user}' could not be found. Available users: {string.Join(", ", _clients.Select(x => x.user))}");
             throw new ArgumentException("User could not be found");
         }
 
         var foundUser = _clients.First(x => x.user.ToLower().Contains(user.ToLower()));
         _userId = foundUser.uid;
-        _log.Debug($"Connecting to {foundUser.user} ({foundUser.uid}) ... ");
+        _log.Debug($"Connecting to {foundUser.user} ({foundUser.uid})");
 
         await _socket.SendAsync(new { id = "tunnel/create", data = new { session = _userId, key = password } });
 
@@ -219,7 +219,7 @@ public class EngineConnection
                     }
 
                     _tunnelId = result.Data.Id;
-                    _log.Information($"Connected to {user}");
+                    _log.Debug($"Connected to {user}");
                     break;
                 }
 
@@ -248,48 +248,46 @@ public class EngineConnection
                             _leftControllerId = result.Data.Data.Data.Children.First(x => x.Name == "LeftHand").Uuid;
                             _rightControllerId = result.Data.Data.Data.Children.First(x => x.Name == "RightHand").Uuid;
                             _monkeyHeadId = result.Data.Data.Data.Children.First(x => x.Name == "Head").Uuid;
-                            _log.Information("Head Id = " + _monkeyHeadId);
+                            _log.Debug("Head Id = " + _monkeyHeadId);
                             break;
                         }
 
                         case "2":
                         {
                             _bikeId = result.Data.Data.Data.Uuid;
-                            _log.Critical("Bike Id = " + _bikeId);
-                            _log.Information(JObject.Parse(json).ToString());
+                            _log.Debug(JObject.Parse(json).ToString());
                             break;
                         }
 
                         case "3":
                         {
                             _routeId = result.Data.Data.Data.Uuid;
-                            _log.Information("Route ID is: " + _routeId);
-                            _log.Information(JObject.Parse(json).ToString());
+                            _log.Debug("Route ID is: " + _routeId);
+                            _log.Debug(JObject.Parse(json).ToString());
                             break;
                         }
 
                         case "4":
                         {
                             _roadNodeId = result.Data.Data.Data.Uuid;
-                            _log.Information("Road Node ID is: " + _roadNodeId);
+                            _log.Debug("Road Node ID is: " + _roadNodeId);
                             break;
                         }
 
                         case "5":
                         {
                             _terrainNodeId = result.Data.Data.Data.Uuid;
-                            _log.Information("Terrain Node ID is: " + _terrainNodeId);
+                            _log.Debug("Terrain Node ID is: " + _terrainNodeId);
                             break;
                         }
                         case "10":
                         {
                             _informationPannelId = result.Data.Data.Data.Uuid;
-                            _log.Information("Pannel Node ID is: " + _informationPannelId);
+                            _log.Debug("Pannel Node ID is: " + _informationPannelId);
                             break;
                         }
                         case "9":
                         {
-                            // _log.Information(result.Data.Data.Data.P);
                             GetBikePos(raw.data.data.data[0].components[0].position[0].ToString(),
                                 raw.data.data.data[0].components[0].position[2].ToString());
                             break;
@@ -297,13 +295,7 @@ public class EngineConnection
                         case "11":
                         {
                             _chatPannelId = result.Data.Data.Data.Uuid;
-                            _log.Information("Pannel Node ID is: " + _chatPannelId);
-                            break;
-                        }
-                        default:
-                        {
-                            //_log.Information(JObject.Parse(json).ToString()); 
-                            ///fixme
+                            _log.Debug("Pannel Node ID is: " + _chatPannelId);
                             break;
                         }
                     }
@@ -322,7 +314,7 @@ public class EngineConnection
         catch (Exception ex)
         {
             _log.Error(ex, "Error while processing incoming message");
-            _log.Debug($"Message JSON: {json}");
+            _log.Information($"Message JSON: {json}");
         }
     }
 
@@ -445,7 +437,7 @@ public class EngineConnection
 
     public async Task Heightmap(string dest)
     {
-        string path = Path.Combine(_filePath, "Image", "Heightmap.png");
+        string path = Path.Combine(_filePath, "Images", "Heightmap.png");
 
         using (Bitmap heightmap = new Bitmap(Image.FromFile(path)))
         {
@@ -536,7 +528,6 @@ public class EngineConnection
         jObject["data"]["data"]["data"]["parent"] = _bikeId;
 
         var json = JsonConvert.SerializeObject(jObject);
-        _log.Error("AddInfomationPannelNode");
         await _socket.SendAsync(json);
     }
 

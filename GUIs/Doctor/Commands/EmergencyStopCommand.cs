@@ -12,7 +12,7 @@ public class EmergencyStopCommand : BaseCommand
 {
     private Client _client;
     private DoctorViewModel _viewModel;
-    
+
     public EmergencyStopCommand(Client client, DoctorViewModel doctorViewModel)
     {
         _client = client;
@@ -25,16 +25,19 @@ public class EmergencyStopCommand : BaseCommand
     /// <param name="parameter">This is the parameter that is passed in from the view.</param>
     public override void Execute(object? parameter)
     {
-        _client._client.SendAsync(new DataPacket<EmergencyStopPacket>
+        if (_viewModel.CurrentUser != null)
         {
-            OpperationCode = OperationCodes.EMERGENCY_STOP,
-            data = new EmergencyStopPacket()
+            _client._client.SendAsync(new DataPacket<EmergencyStopPacket>
             {
-                statusCode = StatusCodes.OK,
-                clientId = _viewModel.CurrentUser.UserId,
-            }
-        });
-        MessageBox.Show("Emergency stop was pressed, Please check on the patient before continuing.");
+                OpperationCode = OperationCodes.EMERGENCY_STOP,
+                data = new EmergencyStopPacket()
+                {
+                    statusCode = StatusCodes.OK,
+                    clientId = _viewModel.CurrentUser.UserId,
+                }
+            });
+            MessageBox.Show("Emergency stop was pressed, Please check on the patient before continuing.");
+        }
     }
 
     public override async Task ExecuteAsync()

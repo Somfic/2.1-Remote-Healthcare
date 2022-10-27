@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using LiveCharts;
@@ -36,7 +35,7 @@ public class DoctorViewModel : ObservableObject
     {
         _client = client;
         _client.AddDoctorViewmodel(this);
-        _patients = new ObservableCollection<Patient>(_client._patientList);
+        _patients = new ObservableCollection<Patient>(_client.PatientList);
         _chatMessages = new ObservableCollection<string>();
         EmergencyStop = new EmergencyStopCommand(_client, this);
         SendChatMessage = new SendChatMessageCommand(_client, this);
@@ -97,7 +96,6 @@ public class DoctorViewModel : ObservableObject
                 }
             };
             OnPropertyChanged();
-            _log.Debug("OnPropertyChanged() has been called.");
         }
     }
 
@@ -188,13 +186,5 @@ public class DoctorViewModel : ObservableObject
             _chartDataBPM = value;
             OnPropertyChanged();
         }
-    }
-
-    public void AddMessage(string message)
-    {
-        _log.Information($"addmessage, {_chatMessages.Count}; {message}");
-        BindingOperations.EnableCollectionSynchronization(_chatMessages, message);
-        _log.Information($"added message, {_chatMessages.Count}");
-        // chatMessages.Add(message);
     }
 }

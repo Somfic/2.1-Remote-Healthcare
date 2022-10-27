@@ -42,7 +42,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             _vr = client._vrConnection;
             _messages = new ObservableCollection<string>();
            
-            test = new Command(reconnectToEngine);
+            ReconnectVr = new Command(reconnectToEngine);
             Send = new Command(SendMessage);
             
             _navigationStore = navigationStore;
@@ -134,7 +134,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         
 
         public ICommand Send { get; }
-        public ICommand test { get; }
+        public ICommand ReconnectVr { get; }
         void SendMessage()
         {
             var req = new DataPacket<ChatPacketRequest>
@@ -142,8 +142,8 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                 OpperationCode = OperationCodes.CHAT,
                 data = new ChatPacketRequest()
                 {
-                    senderId = _client.userId,
-                    senderName = _client._username,
+                    senderId = _client.UserId,
+                    senderName = _client.Username,
                     receiverId = null,
                     message = _message
                 }
@@ -160,14 +160,12 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             {
                 e.ConnectAsync();
             }
-           
-           
         }
 
         public void emergencyStop()
         {
             //message box with emergency stop
-            MessageBox.Show("emergency stop!");
+            MessageBox.Show("De noodstop is ingedrukt, een assistent zal spoedig mogelijk bij u komen.");
         }
     }
 

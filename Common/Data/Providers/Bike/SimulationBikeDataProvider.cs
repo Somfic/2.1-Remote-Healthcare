@@ -30,7 +30,7 @@ public class SimulationBikeDataProvider : BikeDataProvider
         if (_timer.Elapsed.TotalSeconds >= 64)
             _timer.Restart();
 
-        SetElapsed(_timer.Elapsed); // todo: rond af op 0,25 seconden
+        SetElapsed(_timer.Elapsed);
 
         // Total elapsed
         SetTotalElapsed(_totalElapsed.Elapsed);
@@ -42,9 +42,8 @@ public class SimulationBikeDataProvider : BikeDataProvider
         SetSpeed((float)Math.Max(5, Math.Min(234, newSpeed)));
 
         // Distance
-        var newDistance = (float)(GetData().Distance + GetData().Speed * _timerSinceLastProcess.Elapsed.TotalSeconds) %
-                          256f;
-        SetDistance(newDistance);
+        float newDistance = (float)(GetData().Distance + GetData().Speed * _timerSinceLastProcess.Elapsed.TotalSeconds);
+        SetDistance(newDistance); 
 
         // Heart rate
         SetHeartRate((int)Math.Round(newSpeed + 80));

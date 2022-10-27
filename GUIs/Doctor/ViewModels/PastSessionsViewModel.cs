@@ -1,25 +1,22 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
+using System.Linq;
 using System.Windows.Media;
 using MvvmHelpers;
 using LiveCharts;
 using LiveCharts.Wpf;
-using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
-public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
+public class PastSessionsViewModel : ObservableObject
 {
     private Client _client;
-    private Log _log = new Log(typeof(PastSessionsWindow));
 
     private string _distance;
     private TimeSpan _totalTime;
 
     private SessionData _currentSession;
-    private string _chatMessage;
     private ObservableCollection<SessionData> _sessions;
     private ChartValues<float> _bpm;
     private ChartValues<float> _speed;
@@ -186,14 +183,14 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
 
     private string CalculateTotalDistance()
     {
-        int dist = 0;
+        return _currentSession.MiniDatas.Last().Distance.ToString();
+        /*int dist = 0;
         int? prefValue = null;
 
         foreach (var data in _currentSession.MiniDatas)
         {
             int currentValue = data.Distance;
-
-
+            
             if (prefValue == null)
             {
                 prefValue = 0;
@@ -207,7 +204,6 @@ public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
 
             prefValue = currentValue;
         }
-
-        return $"{dist}";
+        return $"{dist}";*/
     }
 }

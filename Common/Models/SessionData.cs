@@ -21,7 +21,6 @@ public class SessionData : ObservableObject
         SessionId = sessionID;
         DeviceType = deviceType;
         Id = id;
-        
     }
 
     public bool addData(JObject data)
