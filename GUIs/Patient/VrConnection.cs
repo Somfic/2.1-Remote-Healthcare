@@ -50,7 +50,7 @@ namespace NetworkEngine.Socket
                 _pvm.Time = bike.GetData().TotalElapsed.ToString("hh\\:mm\\:ss");
                     await Task.Delay(1000);
           
-                }
+                
             }
             
             }
