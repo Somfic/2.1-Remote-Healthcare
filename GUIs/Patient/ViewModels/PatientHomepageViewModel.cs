@@ -15,7 +15,7 @@ using RemoteHealthcare.NetworkEngine;
 
 namespace RemoteHealthcare.GUIs.Patient.ViewModels
 {
-    public class PatientHomepageViewModel : BaseViewModel
+    public class PatientHomepageViewModel : ObservableObject
     {
         public ObservableCollection<string>_messages;
         
@@ -24,13 +24,13 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private string _speed= "45km/h";
         private string _distance= "22km";
         private string _time= "33 min";
-        private string _heartrate;
+        private string _heartrate = "000";
         private VrConnection _vr;
         public EngineConnection e;
         private string _session;
         
         private readonly NavigationStore _navigationStore;
-        public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
+        public ObservableObject CurrentViewModel => _navigationStore.CurrentViewModel;
         
         private Client.Client _client;
 
@@ -54,15 +54,19 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             _client.p = this;
             OnPropertyChanged(nameof(_navigationStore.CurrentViewModel));
         }
-        
 
+        public void updateData(string speed)
+        {
+            Speed = speed;
+        }
+        
         public string Speed
         {
             get => _speed;
             set
             {
-                _speed = value+ "km/h";
-                OnPropertyChanged("Speed");
+                _speed = value;
+                OnPropertyChanged();
             }
         }
         
@@ -71,8 +75,8 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             get => _distance;
             set
             {
-                _distance = value+ "m";
-                OnPropertyChanged("Distance");
+                _distance = value;
+                OnPropertyChanged();
             }
         }
 
@@ -82,7 +86,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             set
             {
                 _time = value;
-                OnPropertyChanged("Time");
+                OnPropertyChanged();
             }
         }
 
@@ -92,8 +96,8 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
             set
             {
-                _heartrate = value+ " bpm";
-                OnPropertyChanged("Heartrate");
+                _heartrate = value;
+                OnPropertyChanged();
             }
         }
 
@@ -105,7 +109,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             set
             {
                 _messages = value;
-                OnPropertyChanged("Messages");
+                OnPropertyChanged();
             }
         }
 
@@ -116,11 +120,8 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             set
             {
                 _message = value; 
-                OnPropertyChanged("Message");
+                OnPropertyChanged();
             }
-            
-
-
         }
 
         public string Session
@@ -129,7 +130,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             set
             {
                 _session = value;
-                OnPropertyChanged("Session");
+                OnPropertyChanged();
             }
         }
         

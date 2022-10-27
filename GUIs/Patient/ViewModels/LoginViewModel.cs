@@ -16,7 +16,7 @@ using RemoteHealthcare.NetworkEngine;
 
 namespace RemoteHealthcare.GUIs.Patient.ViewModels
 {
-    public class LoginViewModel : BaseViewModel
+    public class LoginViewModel : ObservableObject
     {
         
         private string _username;
@@ -27,7 +27,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         private VrConnection vrConnection;
 
         private readonly NavigationStore _navigationStore;
-        public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
+        public ObservableObject CurrentViewModel => _navigationStore.CurrentViewModel;
         
         public LoginViewModel(NavigationStore navigationStore)
         {
@@ -96,11 +96,12 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                     var heart = await DataProvider.GetHeart();
                     vrConnection = new VrConnection(bike, heart, engine);
                     _client._vrConnection = vrConnection;
-                
-                
-                PatientHomepageViewModel pvm = new PatientHomepageViewModel(_navigationStore, _client);
+
+                    PatientHomepageViewModel pvm = new PatientHomepageViewModel(_navigationStore, _client);
+                    
                     _navigationStore.CurrentViewModel = pvm;
                     pvm.e = engine;
+                    
                     try
                     {
                         await engine.ConnectAsync(_vrid);

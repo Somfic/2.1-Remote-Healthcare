@@ -131,8 +131,11 @@ namespace RemoteHealthcare.GUIs.Patient.Client
             Console.WriteLine("Sessie gestopt");
             _sessienRunning = false;
             _vrConnection.session = false;
+            
+            //_thread.Abort();
         }
 
+        private Thread _thread;
         //the methode for the session start request
         public void SessionStartHandler(DataPacket obj)
         {

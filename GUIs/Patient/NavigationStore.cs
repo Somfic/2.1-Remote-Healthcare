@@ -1,11 +1,12 @@
 ﻿using System;
+using MvvmHelpers;
 
 namespace RemoteHealthcare.GUIs.Patient 
 {
     public class NavigationStore
     {
-        private BaseViewModel _currentViewModel;
-        public BaseViewModel CurrentViewModel
+        private ObservableObject _currentViewModel;
+        public ObservableObject CurrentViewModel
         {
             get => _currentViewModel;
             set

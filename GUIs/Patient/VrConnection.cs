@@ -2,7 +2,9 @@
 
 using System;
 using System.Data;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
+using System.Threading.Tasks;
 using RemoteHealthcare.Common.Data;
 using RemoteHealthcare.Common.Data.Providers.Bike;
 using RemoteHealthcare.Common.Data.Providers.Heart;
@@ -40,18 +42,25 @@ namespace NetworkEngine.Socket
                     await heart.ProcessRawData();
                     await bike.ProcessRawData();
                     await Engine.ChangeBikeSpeed(bike.GetData().Speed);
-                _pvm.Heartrate = heart.GetData().HeartRate.ToString();
-                _pvm.Speed = bike.GetData().Speed.ToString("##.#");
-                _pvm.Distance = bike.GetData().Distance.ToString("####.#");
-                _pvm.Time = bike.GetData().TotalElapsed.ToString("hh\\:mm\\:ss");
-                Console.WriteLine("Heart: " + heart.GetData().HeartRate);
+                    
+                    //_pvm.updateData(bike.GetData().Speed.ToString());
+                    
+                    _pvm.Heartrate = heart.GetData().HeartRate.ToString();
+                    _pvm.Speed = bike.GetData().Speed.ToString();
+                    _pvm.Distance = bike.GetData().Distance.ToString();
+                    _pvm.Time = bike.GetData().TotalElapsed.ToString();
+                    
+                    Console.WriteLine("Heart: " + heart.GetData().HeartRate);
+                    //Task.wai(1000);
+
                 } else {
-                    Engine.ChangeBikeSpeed(0);
+                    //Engine.ChangeBikeSpeed(0);
+                    // Thread.Sleep(1000);
                 }
-                Thread.Sleep(300);
+                //Thread.Sleep(1000);
             }
         }
-
+        
         public void setResistance(int resistance)
         {
             byte[] data = (new byte[] { 164, 9, 78, 5, 48, 255, 255, 255, 255, 255, 255, (byte)((byte)resistance * 2), 0 });
