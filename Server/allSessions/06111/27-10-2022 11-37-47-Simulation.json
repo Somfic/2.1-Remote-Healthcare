@@ -1,0 +1,115 @@
+{
+  "SessionId": "27-10-2022 11:37:47",
+  "DeviceType": "Bike",
+  "Id": "Simulation",
+  "MiniDatas": [
+    {
+      "Distance": 73,
+      "Speed": 6,
+      "Heartrate": 97,
+      "Elapsed": 2
+    },
+    {
+      "Distance": 81,
+      "Speed": 10,
+      "Heartrate": 72,
+      "Elapsed": 3
+    },
+    {
+      "Distance": 91,
+      "Speed": 9,
+      "Heartrate": 97,
+      "Elapsed": 4
+    },
+    {
+      "Distance": 100,
+      "Speed": 9,
+      "Heartrate": 74,
+      "Elapsed": 5
+    },
+    {
+      "Distance": 107,
+      "Speed": 6,
+      "Heartrate": 91,
+      "Elapsed": 6
+    },
+    {
+      "Distance": 115,
+      "Speed": 12,
+      "Heartrate": 82,
+      "Elapsed": 7
+    },
+    {
+      "Distance": 125,
+      "Speed": 6,
+      "Heartrate": 99,
+      "Elapsed": 8
+    },
+    {
+      "Distance": 134,
+      "Speed": 12,
+      "Heartrate": 76,
+      "Elapsed": 9
+    },
+    {
+      "Distance": 150,
+      "Speed": 19,
+      "Heartrate": 93,
+      "Elapsed": 10
+    },
+    {
+      "Distance": 166,
+      "Speed": 15,
+      "Heartrate": 78,
+      "Elapsed": 11
+    },
+    {
+      "Distance": 181,
+      "Speed": 16,
+      "Heartrate": 69,
+      "Elapsed": 12
+    },
+    {
+      "Distance": 199,
+      "Speed": 17,
+      "Heartrate": 80,
+      "Elapsed": 13
+    },
+    {
+      "Distance": 219,
+      "Speed": 23,
+      "Heartrate": 71,
+      "Elapsed": 14
+    },
+    {
+      "Distance": 239,
+      "Speed": 16,
+      "Heartrate": 62,
+      "Elapsed": 15
+    },
+    {
+      "Distance": 251,
+      "Speed": 6,
+      "Heartrate": 73,
+      "Elapsed": 16
+    },
+    {
+      "Distance": 1,
+      "Speed": 9,
+      "Heartrate": 64,
+      "Elapsed": 17
+    },
+    {
+      "Distance": 8,
+      "Speed": 5,
+      "Heartrate": 75,
+      "Elapsed": 18
+    },
+    {
+      "Distance": 14,
+      "Speed": 5,
+      "Heartrate": 66,
+      "Elapsed": 20
+    }
+  ]
+}

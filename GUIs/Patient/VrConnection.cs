@@ -30,10 +30,10 @@ namespace NetworkEngine.Socket
 
         public bool session;
         
-        public async void Start(PatientHomepageViewModel p)
+        public async Task Start(PatientHomepageViewModel p)
         {
             await bike.ProcessRawData();
-
+            
             _pvm = p;
             while (true)
             {
@@ -43,21 +43,15 @@ namespace NetworkEngine.Socket
                     await bike.ProcessRawData();
                     await Engine.ChangeBikeSpeed(bike.GetData().Speed);
                     
-                    //_pvm.updateData(bike.GetData().Speed.ToString());
-                    
                     _pvm.Heartrate = heart.GetData().HeartRate.ToString();
-                    _pvm.Speed = bike.GetData().Speed.ToString();
-                    _pvm.Distance = bike.GetData().Distance.ToString();
-                    _pvm.Time = bike.GetData().TotalElapsed.ToString();
+                    _pvm.Speed = bike.GetData().Speed.ToString("##.#");
+                    _pvm.Distance = bike.GetData().Distance.ToString("####.#");
+                    _pvm.Time = bike.GetData().TotalElapsed.ToString("hh\\:mm\\:ss");
                     
-                    Console.WriteLine("Heart: " + heart.GetData().HeartRate);
-                    //Task.wai(1000);
-
                 } else {
-                    //Engine.ChangeBikeSpeed(0);
-                    // Thread.Sleep(1000);
+                    await Engine.ChangeBikeSpeed(0);
                 }
-                //Thread.Sleep(1000);
+                await Task.Delay(1000);
             }
         }
         
