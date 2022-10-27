@@ -189,12 +189,4 @@ public class DoctorViewModel : ObservableObject
             OnPropertyChanged();
         }
     }
-
-    public void AddMessage(string message)
-    {
-        _log.Information($"addmessage, {_chatMessages.Count}; {message}");
-        BindingOperations.EnableCollectionSynchronization(_chatMessages, message);
-        _log.Information($"added message, {_chatMessages.Count}");
-        // chatMessages.Add(message);
-    }
 }
