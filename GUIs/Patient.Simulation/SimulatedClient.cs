@@ -51,6 +51,11 @@ public class SimulatedClient
 
     public event EventHandler OnLogin;
 
+    /// <summary>
+    /// > Connect to the server and initialise the data providers
+    /// </summary>
+    /// <param name="host">The IP address of the server.</param>
+    /// <param name="port">The port number to connect to.</param>
     public async Task ConnectAsync(string host, int port)
     {
         await _bikeDataProvider.Initialise();
@@ -61,6 +66,12 @@ public class SimulatedClient
         _log.Debug($"[#{Id}] Connected to server");
     }
 
+    /// <summary>
+    /// > This function sends a login request to the server
+    /// </summary>
+    /// <param name="username">The username of the user</param>
+    /// <param name="password">The password of the user</param>
+    /// <param name="isDoctor">If the user is a doctor or not.</param>
     public async Task LoginAsync(string username, string password, bool isDoctor = false)
     {
        var loginReq = new DataPacket<LoginPacketRequest>
@@ -77,6 +88,9 @@ public class SimulatedClient
         await _socket.SendAsync(loginReq);
     }
 
+    /// <summary>
+    /// > Send fake data to the server
+    /// </summary>
     public async Task SendBikeData()
     {
         _log.Debug($"[#{Id}] Sending fake data");
@@ -105,6 +119,10 @@ public class SimulatedClient
         await _socket.SendAsync(dataReq);
     }
 
+    /// <summary>
+    /// It sends a chat message to the server
+    /// </summary>
+    /// <param name="message">The message to send</param>
     public async Task SendChat(string message)
     {
         var chatReq = new DataPacket<ChatPacketRequest>
