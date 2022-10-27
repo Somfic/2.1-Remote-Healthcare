@@ -44,18 +44,15 @@ namespace NetworkEngine.Socket
                     await Engine.ChangeBikeSpeed(bike.GetData().Speed);
                     
                     //_pvm.updateData(bike.GetData().Speed.ToString());
-                    
-                    _pvm.Heartrate = heart.GetData().HeartRate.ToString();
-                    _pvm.Speed = bike.GetData().Speed.ToString();
-                    _pvm.Distance = bike.GetData().Distance.ToString();
-                    _pvm.Time = bike.GetData().TotalElapsed.ToString();
-                    
+                _pvm.Heartrate = heart.GetData().HeartRate.ToString();
+                _pvm.Speed = bike.GetData().Speed.ToString("##.#");
+                _pvm.Distance = bike.GetData().Distance.ToString("####.#");
+                _pvm.Time = bike.GetData().TotalElapsed.ToString("hh\\:mm\\:ss");
                     await Task.Delay(1000);
-                    Console.WriteLine("Heart: " + heart.GetData().HeartRate);
+          
                 }
-
-                // Task.Delay(1000);
-                // Thread.Sleep(1000);
+            }
+            
             }
         }
         

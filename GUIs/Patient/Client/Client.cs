@@ -112,6 +112,8 @@ namespace RemoteHealthcare.GUIs.Patient.Client
         {
             EmergencyStopPacket data = obj.GetData<EmergencyStopPacket>();
             _log.Critical(data.message);
+            SessionStopHandler(obj);
+            p.emergencyStop();
         }
 
         private void SetResistanceHandeler(DataPacket obj)

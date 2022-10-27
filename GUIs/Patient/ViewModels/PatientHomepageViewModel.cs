@@ -171,6 +171,10 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             });
         }
 
+        public void emergencyStop()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 
