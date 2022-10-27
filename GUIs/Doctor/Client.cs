@@ -4,8 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
-using System.Windows.Navigation;
 using MvvmHelpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -24,28 +22,28 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         private List<string> _connected;
 
-        public List<Patient> _patientList;
+        public List<Patient> PatientList;
         public List<SessionData> Sessions;
 
         public DoctorViewModel DoctorViewModel;
         public PastSessionsViewModel PastSessionsViewModel;
 
         private Log _log = new(typeof(Client));
-        public string password { get; set; }
-        public string _userName { get; set; }
-        public bool loggedIn { get; set; }
+        public string Password { get; set; }
+        public string Username { get; set; }
+        public bool LoggedIn { get; set; }
         private string _userId;
 
-        public bool hasSessionResponce;
+        public bool HasSessionResponce;
 
-        private Dictionary<string, Action<DataPacket>> _callbacks = new();
+        private Dictionary<string, Action<DataPacket>> _callbacks;
 
 
         public Client()
         {
-            loggedIn = false;
-            hasSessionResponce = false;
-            _patientList = new List<Patient>();
+            LoggedIn = false;
+            HasSessionResponce = false;
+            PatientList = new List<Patient>();
             _callbacks = new Dictionary<string, Action<DataPacket>>();
             Sessions = new List<SessionData>();
 
@@ -67,59 +65,6 @@ namespace RemoteHealthcare.GUIs.Doctor
             };
         }
 
-        public async Task RunAsync()
-        {
-            while (true)
-            {
-                //if the user isn't logged in, the user cant send any command to the server
-                if (loggedIn)
-                {
-                    _log.Information("Voer een commando in om naar de server te sturen: \r\n" +
-                                     "[BERICHT] [START SESSIE] [STOP SESSIE] [NOODSTOP]");
-                    string userCommand = "";
-
-                    if (userCommand.ToLower().Equals("bericht"))
-                    {
-                        await requestClients();
-                    }
-                    else if (userCommand.ToLower().Equals("start") && userCommand.ToLower().Equals("sessie"))
-                    {
-                        var req = new DataPacket<SessionStartPacketRequest>
-                        {
-                            OpperationCode = OperationCodes.SessionStart,
-                        };
-                        _log.Warning($"sending {req.ToJson()}");
-
-                        await _client.SendAsync(req);
-                    }
-                    else if (userCommand.ToLower().Contains(("stop")) && userCommand.ToLower().Contains("Sessie"))
-                    {
-                        DataPacket<SessionStopPacketRequest> req = new DataPacket<SessionStopPacketRequest>
-                        {
-                            OpperationCode = OperationCodes.SessionStop,
-                        };
-                        _log.Warning($"sending {req.ToJson()}");
-
-                        await _client.SendAsync(req);
-                    }
-                    else if (userCommand.ToLower().Equals("noodstop"))
-                    {
-                        var req = new DataPacket<EmergencyStopPacket>
-                        {
-                            OpperationCode = OperationCodes.EmergencyStop,
-                        };
-                        _log.Warning($"sending {req.ToJson()}");
-
-                        await _client.SendAsync(req);
-                    }
-                    else
-                    {
-                        _log.Warning("Het commando dat u heeft ingevoerd is incorrect.");
-                    }
-                }
-            }
-        }
-
         public async Task SendChatAsync(string? target = null, string? chatInput = null)
         {
             _log.Debug("SendChatAsync(): entered");
@@ -129,7 +74,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                 data = new ChatPacketRequest()
                 {
                     senderId = _userId,
-                    senderName = _userName,
+                    senderName = Username,
                     receiverId = target,
                     message = chatInput
                 }
@@ -155,44 +100,6 @@ namespace RemoteHealthcare.GUIs.Doctor
             await _client.SendAsync(req);
         }
 
-        /// <summary>
-        /// It checks if all the targets are in the connections list
-        /// </summary>
-        /// <param name="targets">A list of strings that represent the targets you want to check for.</param>
-        /// <param name="connections">A list of all the connections that are currently active.</param>
-        /// <returns>
-        /// True if all targets are in connections list, false if not so.
-        /// </returns>
-        private bool CheckTargets(List<string> targets, List<string> connections)
-        {
-            foreach (string target in targets)
-            {
-                if (!connections.Contains(target))
-                    return false;
-            }
-
-            return true;
-        }
-
-        private async Task requestClients()
-        {
-            _log.Debug(_connected.Count.ToString());
-            if (_connected != null)
-                _connected.Clear();
-            _log.Debug(_connected.Count.ToString());
-            var req = new DataPacket<ConnectedClientsPacketRequest>
-            {
-                OpperationCode = OperationCodes.Users,
-                data = new ConnectedClientsPacketRequest()
-                {
-                    requester = _userId
-                }
-            };
-            _log.Warning($"sending {req.ToJson()}");
-
-            await _client.SendAsync(req);
-        }
-
         public async Task AskForLoginAsync()
         {
             DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
@@ -200,8 +107,8 @@ namespace RemoteHealthcare.GUIs.Doctor
                 OpperationCode = OperationCodes.Login,
                 data = new LoginPacketRequest()
                 {
-                    userName = _userName,
-                    password = password,
+                    userName = Username,
+                    password = Password,
                     isDoctor = true
                 }
             };
@@ -279,16 +186,19 @@ namespace RemoteHealthcare.GUIs.Doctor
             }
         }
 
-        //the methode for the login request
+        /// <summary>
+        /// This function is called when the client receives a response from the server after sending a login request
+        /// </summary>
+        /// <param name="DataPacket">This is the packet that is received from the server.</param>
         private void LoginFeature(DataPacket packetData)
         {
             _log.Debug($"Responce: {packetData.ToJson()}");
             if (((int)packetData.GetData<LoginPacketResponse>().statusCode).Equals(200))
             {
                 _userId = packetData.GetData<LoginPacketResponse>().userId;
-                _userName = packetData.GetData<LoginPacketResponse>().userName;
-                _log.Information($"Succesfully logged in to the user: {_userName}; {password}; {_userId}.");
-                loggedIn = true;
+                Username = packetData.GetData<LoginPacketResponse>().userName;
+                _log.Information($"Succesfully logged in to the user: {Username}; {Password}; {_userId}.");
+                LoggedIn = true;
             }
             else
             {
@@ -301,7 +211,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         /// <summary>
         /// It gets all the patient data from the server and adds it to a list
         /// </summary>
-        /// <param name="DataPacket">This is the object that is sent from the server to the client. It contains the data
+        /// <param name="packetData">This is the object that is sent from the server to the client. It contains the data
         /// that is sent from the server.</param>
         private void GetPatientDataHandler(DataPacket packetData)
         {
@@ -313,10 +223,14 @@ namespace RemoteHealthcare.GUIs.Doctor
             foreach (JObject jObject in jObjects)
             {
                 Patient patient = jObject.ToObject<Patient>();
-                _patientList.Add(patient);
+                PatientList.Add(patient);
             }
         }
 
+        /// <summary>
+        /// This function is called when the server responds to the client's request for all the sessions of a patient
+        /// </summary>
+        /// <param name="DataPacket">This is the data that is sent from the server.</param>
         private void GetPatientSessionsHandler(DataPacket packetData)
         {
             JObject[] jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
@@ -329,7 +243,7 @@ namespace RemoteHealthcare.GUIs.Doctor
                 Sessions.Add(session);
             }
 
-            hasSessionResponce = true;
+            HasSessionResponce = true;
         }
 
         public void AddDoctorViewmodel(DoctorViewModel viewModel)
@@ -342,6 +256,13 @@ namespace RemoteHealthcare.GUIs.Doctor
             this.PastSessionsViewModel = viewModel;
         }
 
+        /// <summary>
+        /// This function is called when the server receives a packet of type BikeDataPacketDoctor. It checks if the packet
+        /// is for the current user, and if so, it updates the DoctorViewModel with the data. If the packet is not for the
+        /// current user, it updates the PatientList with the data
+        /// </summary>
+        /// <param name="DataPacket">This is the object that is sent from the client to the server. It contains the data
+        /// that is sent from the client.</param>
         private void GetBikeData(DataPacket obj)
         {
             BikeDataPacketDoctor data = obj.GetData<BikeDataPacketDoctor>();
@@ -357,7 +278,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             }
             else
             {
-                foreach (Patient patient in _patientList)
+                foreach (Patient patient in PatientList)
                 {
                     if (patient.UserId.Equals(data.id))
                     {

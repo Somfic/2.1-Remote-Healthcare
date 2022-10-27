@@ -28,18 +28,18 @@ public class LoginCommand : BaseCommand
     /// </summary>
     public override async Task ExecuteAsync()
     {
-        await _loginWindowViewModel._client._client.ConnectAsync("127.0.0.1", 15243);
+        await _loginWindowViewModel.Client._client.ConnectAsync("127.0.0.1", 15243);
 
-        if (!_loginWindowViewModel._client.loggedIn)
+        if (!_loginWindowViewModel.Client.LoggedIn)
         {
-            _loginWindowViewModel._client._userName = _loginWindowViewModel.Username;
-            _loginWindowViewModel._client.password = _loginWindowViewModel.SecureStringToString(_loginWindowViewModel.SecurePassword);
+            _loginWindowViewModel.Client.Username = _loginWindowViewModel.Username;
+            _loginWindowViewModel.Client.Password = _loginWindowViewModel.SecureStringToString(_loginWindowViewModel.SecurePassword);
             
             try
             {
                 new Thread(async () =>
                 {
-                    await _loginWindowViewModel._client.AskForLoginAsync();
+                    await _loginWindowViewModel.Client.AskForLoginAsync();
                 }).Start();
             } catch (Exception exception)
             {
@@ -49,9 +49,9 @@ public class LoginCommand : BaseCommand
 
             await Task.Delay(1000);
             
-            if (_loginWindowViewModel._client.loggedIn)
+            if (_loginWindowViewModel.Client.LoggedIn)
             {
-                await _loginWindowViewModel._client.RequestPatientDataAsync();
+                await _loginWindowViewModel.Client.RequestPatientDataAsync();
                 await Task.Delay(1000);
 
                 _navigationService.Navigate();

@@ -1,27 +1,21 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Windows.Media;
 using MvvmHelpers;
 using LiveCharts;
 using LiveCharts.Wpf;
-using RemoteHealthcare.Common.Logger;
-using RemoteHealthcare.Common.Models;
-using RemoteHealthcare.GUIs.Doctor.Views;
 using RemoteHealthcare.Server.Models;
 
 namespace RemoteHealthcare.GUIs.Doctor.ViewModels;
 
-public class PastSessionsViewModel : ObservableObject, INotifyPropertyChanged
+public class PastSessionsViewModel : ObservableObject
 {
     private Client _client;
-    private Log _log = new Log(typeof(PastSessionsWindow));
 
     private string _distance;
     private TimeSpan _totalTime;
 
     private SessionData _currentSession;
-    private string _chatMessage;
     private ObservableCollection<SessionData> _sessions;
     private ChartValues<float> _bpm;
     private ChartValues<float> _speed;

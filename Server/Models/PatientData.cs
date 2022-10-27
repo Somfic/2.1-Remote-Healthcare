@@ -20,18 +20,19 @@ public class PatientData
             new("Co Nelen", "1234", "3245")
         };*/
 
-        Patients = readUsersFromJson();
+        Patients = ReadUsersFromJson();
     }
 
-    public List<Patient> readUsersFromJson()
+    private List<Patient> ReadUsersFromJson()
     {
         string path = Path.Combine(Directory.GetCurrentDirectory(), "AllUsers.json");
-        
+
         string returnAllUsersFromText = File.ReadAllText(path);
 
         _log.Debug(returnAllUsersFromText);
 
-        List<Patient> data = JsonConvert.DeserializeObject<List<Patient>>(returnAllUsersFromText);
+        List<Patient> data = JsonConvert.DeserializeObject<List<Patient>>(returnAllUsersFromText) ??
+                             throw new InvalidOperationException();
 
         return data;
     }
@@ -94,8 +95,8 @@ public class PatientData
 
         for (int i = 0; i < Directory.GetFiles(pathString).Length; i++)
         {
-            using (JsonTextReader reader = new JsonTextReader(File.OpenText(Directory.GetFiles(pathString)[i])))
-                jObjects[i] = (JObject)JToken.ReadFrom(reader);
+            using JsonTextReader reader = new JsonTextReader(File.OpenText(Directory.GetFiles(pathString)[i]));
+            jObjects[i] = (JObject)JToken.ReadFrom(reader);
         }
 
         return jObjects;
