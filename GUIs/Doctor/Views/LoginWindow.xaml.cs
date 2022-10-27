@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using RemoteHealthcare.Common.Logger;
 

@@ -1,13 +1,6 @@
 ﻿using MvvmHelpers;
 using MvvmHelpers.Commands;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using NetworkEngine.Socket;
@@ -127,7 +120,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             get => _session;
             set
             {
-                _session = value = e._isConnected.ToString();
+                _session = value = e.IsConnected.ToString();
                 OnPropertyChanged();
             }
         }
@@ -139,13 +132,13 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         {
             var req = new DataPacket<ChatPacketRequest>
             {
-                OpperationCode = OperationCodes.CHAT,
+                OpperationCode = OperationCodes.Chat,
                 data = new ChatPacketRequest()
                 {
-                    senderId = _client.UserId,
-                    senderName = _client.Username,
-                    receiverId = null,
-                    message = _message
+                    SenderId = _client.UserId,
+                    SenderName = _client.Username,
+                    ReceiverId = null,
+                    Message = _message
                 }
             };
             _vr.Engine.SendTextToChatPannel($"U: {_message}");
@@ -156,7 +149,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
         
         void reconnectToEngine()
         {
-            if (e._isConnected)
+            if (e.IsConnected)
             {
                 e.ConnectAsync();
             }

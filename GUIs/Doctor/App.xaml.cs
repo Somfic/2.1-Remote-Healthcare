@@ -10,7 +10,7 @@ namespace RemoteHealthcare.GUIs.Doctor
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            NavigationStore navigationStore = new NavigationStore();
+            var navigationStore = new NavigationStore();
 
             navigationStore.CurrentViewModel = new LoginWindowViewModel(navigationStore);
                 

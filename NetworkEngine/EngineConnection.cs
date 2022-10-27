@@ -23,7 +23,7 @@ public class EngineConnection
     private string _groundPlaneId;
     private string _routeId;
     private string _roadNodeId;
-    public bool _isConnected;
+    public bool IsConnected;
 
     private JArray _hightForHouse;
     private bool[,] _roadArray;
@@ -66,7 +66,7 @@ public class EngineConnection
         {
             if (_clients != null)
                 return _clients.Select(x => x.user).ToArray();
-            _isConnected = true;
+            IsConnected = true;
             await Task.Delay(50);
         }
     }
@@ -141,7 +141,7 @@ public class EngineConnection
         
 
         await Task.Delay(1000);
-        await AddInformationPannelNode(_tunnelId);
+        await AddInformationPanelNode(_tunnelId);
 
         await Task.Delay(1000);
         await AddChatPannelNode(_tunnelId);
@@ -157,7 +157,7 @@ public class EngineConnection
         await RoadLoad();
         
         await Task.Delay(1000);
-        await Addhouses(_tunnelId, 100);
+        await AddHouses(_tunnelId, 100);
 
        
     }
@@ -167,8 +167,8 @@ public class EngineConnection
     {
         _roadArray = new bool[256, 256];
 
-        string s = Path.Combine(_filePath, "Roadload", "road.ser");
-        BinaryFormatter b = new BinaryFormatter();
+        var s = Path.Combine(_filePath, "Roadload", "road.ser");
+        var b = new BinaryFormatter();
         if (!File.Exists(s))
         {
             await ChangeBikeSpeed(50);
@@ -225,7 +225,7 @@ public class EngineConnection
 
                 case "tunnel/send":
                 {
-                    string resultSerial = "";
+                    var resultSerial = "";
                     var result = new DataResponse<TunnelSendResponse>();
                     // var result = JsonConvert.DeserializeObject<DataResponse<TunnelSendResponse>>(json);
                     // string resultSerial = result.Data.Data.Serial;
@@ -327,7 +327,7 @@ public class EngineConnection
 
     public async Task NodeInfo(string dest)
     {
-        string path = Path.Combine(_filePath, "Json", "NodeInfo.json");
+        var path = Path.Combine(_filePath, "Json", "NodeInfo.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
 
@@ -338,7 +338,7 @@ public class EngineConnection
 
     public async Task CreateTerrainNode(string dest, dynamic? data = null)
     {
-        string path = Path.Combine(_filePath, "Json", "CreateTerrainNode.json");
+        var path = Path.Combine(_filePath, "Json", "CreateTerrainNode.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
 
@@ -348,7 +348,7 @@ public class EngineConnection
 
     public async Task GetScene(string dest, dynamic? data = null)
     {
-        string path = Path.Combine(_filePath, "Json", "GetScene.json");
+        var path = Path.Combine(_filePath, "Json", "GetScene.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
 
@@ -359,7 +359,7 @@ public class EngineConnection
     public async Task ChangeBikeSpeed(double speed)
 
     {
-        string path = Path.Combine(_filePath, "Json", "ChangeBikeSpeed.json");
+        var path = Path.Combine(_filePath, "Json", "ChangeBikeSpeed.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = _tunnelId;
         jObject["data"]["data"]["data"]["node"] = _bikeId;
@@ -381,7 +381,7 @@ public class EngineConnection
 
     public async Task RemoveNode(string nodeId)
     {
-        string path = Path.Combine(_filePath, "Json", "RemoveNode.json");
+        var path = Path.Combine(_filePath, "Json", "RemoveNode.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = _tunnelId;
         jObject["data"]["data"]["data"]["id"] = nodeId;
@@ -394,7 +394,7 @@ public class EngineConnection
     {
         /* Getting the path of the current directory and then adding the path of the testSave folder and the Time.json 
         file to it. */
-        string path = Path.Combine(_filePath, "Json", "Time.json");
+        var path = Path.Combine(_filePath, "Json", "Time.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = id;
         jObject["data"]["data"]["data"]["time"] = time;
@@ -405,7 +405,7 @@ public class EngineConnection
 
     public async Task SendTerrain(string dest, dynamic? data = null)
     {
-        string path = Path.Combine(_filePath, "Json", "Terrain.json");
+        var path = Path.Combine(_filePath, "Json", "Terrain.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
         var heights = jObject["data"]["data"]["data"]["heights"] as JArray;
@@ -419,7 +419,7 @@ public class EngineConnection
         else
         {
             double[] heightmap = data;
-            int x = 0;
+            var x = 0;
             for (var i = 0; i < 256; i++)
             {
                 for (var j = 0; j < 256; j++)
@@ -437,13 +437,13 @@ public class EngineConnection
 
     public async Task Heightmap(string dest)
     {
-        string path = Path.Combine(_filePath, "Images", "Heightmap.png");
+        var path = Path.Combine(_filePath, "Images", "Heightmap.png");
 
-        using (Bitmap heightmap = new Bitmap(Image.FromFile(path)))
+        using (var heightmap = new Bitmap(Image.FromFile(path)))
         {
-            double[,] heights = new double[heightmap.Width, heightmap.Height];
-            for (int x = 0; x < heightmap.Width; x++)
-            for (int y = 0; y < heightmap.Height; y++)
+            var heights = new double[heightmap.Width, heightmap.Height];
+            for (var x = 0; x < heightmap.Width; x++)
+            for (var y = 0; y < heightmap.Height; y++)
                 heights[x, y] = ((heightmap.GetPixel(x, y).R / 256.0f) * 25.0f - 5);
 
             SendTerrain(dest, heights.Cast<double>().ToArray());
@@ -452,7 +452,7 @@ public class EngineConnection
 
     public async Task AddRoute(string dest)
     {
-        string path = Path.Combine(_filePath, "Json", "AddRoute.json");
+        var path = Path.Combine(_filePath, "Json", "AddRoute.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
 
@@ -462,7 +462,7 @@ public class EngineConnection
 
     public async Task AddRoad(string dest, string routeId)
     {
-        string path = Path.Combine(_filePath, "Json", "AddRoad.json");
+        var path = Path.Combine(_filePath, "Json", "AddRoad.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
         jObject["data"]["dest"] = dest;
         jObject["data"]["data"]["data"]["route"] = routeId;
@@ -473,7 +473,7 @@ public class EngineConnection
 
     public async Task AddBikeModel(string dest)
     {
-        string path = Path.Combine(_filePath, "Json", "CreateBikeNode.json");
+        var path = Path.Combine(_filePath, "Json", "CreateBikeNode.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = dest;
@@ -485,7 +485,7 @@ public class EngineConnection
 
     public async Task PlaceBikeOnRoute(string dest)
     {
-        string path = Path.Combine(_filePath, "Json", "FollowRoute.json");
+        var path = Path.Combine(_filePath, "Json", "FollowRoute.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = dest;
@@ -498,7 +498,7 @@ public class EngineConnection
 
     public async Task ResetScene(string dest)
     {
-        string path = Path.Combine(_filePath, "Json", "ResetScene.json");
+        var path = Path.Combine(_filePath, "Json", "ResetScene.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = dest;
@@ -509,7 +509,7 @@ public class EngineConnection
 
     public async Task AddTerrainLayer(string dest)
     {
-        string path = Path.Combine(_filePath, "Json", "AddTerrainLayer.json");
+        var path = Path.Combine(_filePath, "Json", "AddTerrainLayer.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = dest;
@@ -519,9 +519,9 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
-    public async Task AddInformationPannelNode(string dest)
+    public async Task AddInformationPanelNode(string dest)
     {
-        string path = Path.Combine(_filePath, "Json", "CreateInformationPannelNode.json");
+        var path = Path.Combine(_filePath, "Json", "CreateInformationPannelNode.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = dest;
@@ -533,7 +533,7 @@ public class EngineConnection
 
     public async Task AddChatPannelNode(string dest)
     {
-        string path = Path.Combine(_filePath, "Json", "CreateChatPannelNode.json");
+        var path = Path.Combine(_filePath, "Json", "CreateChatPannelNode.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = dest;
@@ -545,18 +545,18 @@ public class EngineConnection
 
     public async Task GetBikePos(string inputx, string inputz)
     {
-        string x = inputx;
-        string z = inputz;
-        int x1 = (int)Convert.ToDecimal(x);
-        int z1 = (int)Convert.ToDecimal(z);
+        var x = inputx;
+        var z = inputz;
+        var x1 = (int)Convert.ToDecimal(x);
+        var z1 = (int)Convert.ToDecimal(z);
         _roadcount++;
         
         if (!(_firstx == x1 && _firstz == z1))
 
         {
-            for (int i = x1 - 10; i < x1 + 10; i++)
+            for (var i = x1 - 10; i < x1 + 10; i++)
             {
-                for (int j = z1 - 10; j < z1 + 10; j++)
+                for (var j = z1 - 10; j < z1 + 10; j++)
                 {
                     if (j > -128 && j < 128 && i > -128 && i < 128)
                         _roadArray[i + 128, j + 128] = true;
@@ -577,15 +577,15 @@ public class EngineConnection
     }
 
 
-    public async Task Addhouses(string dest, int amount)
+    public async Task AddHouses(string dest, int amount)
     {
-        Random r = new Random();
+        var r = new Random();
 
-        for (int i = 0; i < amount; i++)
+        for (var i = 0; i < amount; i++)
         {
-            string path = Path.Combine(_filePath, "Json", "AddHouses.json");
+            var path = Path.Combine(_filePath, "Json", "AddHouses.json");
             var jObject = JObject.Parse(File.ReadAllText(path));
-            String s = "";
+            var s = "";
             switch (r.Next(2))
             {
                 case 0:
@@ -599,9 +599,9 @@ public class EngineConnection
             jObject["data"]["data"]["data"]["components"]["model"]["file"] = s;
 
 
-            int x = r.Next(-128, 128);
-            int z = r.Next(-128, 128);
-            int y = (int)_hightForHouse[(z + 128) * 256 + (x + 128)];
+            var x = r.Next(-128, 128);
+            var z = r.Next(-128, 128);
+            var y = (int)_hightForHouse[(z + 128) * 256 + (x + 128)];
             // int y = 0;
 
             if (!_roadArray[x + 128, z + 128])
@@ -627,7 +627,7 @@ public class EngineConnection
 
     public async Task MoveCameraPosition()
     {
-        string path = Path.Combine(_filePath, "Json", "UpdateCameraNode.json");
+        var path = Path.Combine(_filePath, "Json", "UpdateCameraNode.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = _tunnelId;
@@ -640,7 +640,7 @@ public class EngineConnection
 
     public async Task MoveHeadPosition()
     {
-        string path = Path.Combine(_filePath, "Json", "UpdateHeadNode.json");
+        var path = Path.Combine(_filePath, "Json", "UpdateHeadNode.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = _tunnelId;
@@ -651,34 +651,34 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
-    public async Task SendTextToInformationPannel(string speed, string distance, TimeSpan timespan, string bpm,
+    public async Task SendTextToInformationPanel(string speed, string distance, TimeSpan timespan, string bpm,
         string resistance)
     {
         var text =
             $"Snelheid: {speed} \\nAfstand: {distance} \\nTijd: {timespan.Minutes + ":" + timespan.Seconds} \\nHartslag: {bpm} \\nWeerstand: {resistance}";
         await SetBackgroundColor(1, 1, 1, 0.2f, _informationPannelId);
-        await ClearPannel(_informationPannelId);
-        await AddTextToPannel(text, _informationPannelId);
-        await SwapPannel(_informationPannelId);
+        await ClearPanel(_informationPannelId);
+        await AddTextToPanel(text, _informationPannelId);
+        await SwapPanel(_informationPannelId);
     }
 
     public async Task SendTextToChatPannel(string message)
     {
         _messages.Insert(0, message);
-        string displayMessage = displayMessages();
+        var displayMessage = DisplayMessages();
         await SetBackgroundColor(1, 1, 1, 0.15f, _chatPannelId);
-        await ClearPannel(_chatPannelId);
-        await AddTextToPannel(displayMessage, _chatPannelId, 70);
-        await SwapPannel(_chatPannelId);
+        await ClearPanel(_chatPannelId);
+        await AddTextToPanel(displayMessage, _chatPannelId, 70);
+        await SwapPanel(_chatPannelId);
     }
 
-    private string displayMessages()
+    private string DisplayMessages()
     {
-        string result = "";
+        var result = "";
         
-        for (int i = 0; i < 5; i++)
+        for (var i = 0; i < 5; i++)
         {
-            int index = 4 - i;
+            var index = 4 - i;
             if (index >= _messages.Count)
             {
                 result += "\\n";
@@ -691,9 +691,9 @@ public class EngineConnection
         return result;
     }
 
-    public async Task ClearPannel(string id)
+    public async Task ClearPanel(string id)
     {
-        string path = Path.Combine(_filePath, "Json", "ClearPannel.json");
+        var path = Path.Combine(_filePath, "Json", "ClearPannel.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = _tunnelId;
@@ -705,7 +705,7 @@ public class EngineConnection
 
     public async Task SetBackgroundColor(float r, float g, float b, float t, string id)
     {
-        string path = Path.Combine(_filePath, "Json", "ChangeBackgroundColor.json");
+        var path = Path.Combine(_filePath, "Json", "ChangeBackgroundColor.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         var postpar = jObject["data"]["data"]["data"]["color"] as JArray;
@@ -724,9 +724,9 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
-    public async Task AddTextToPannel(string text, string id, int? size = 100)
+    public async Task AddTextToPanel(string text, string id, int? size = 100)
     {
-        string path = Path.Combine(_filePath, "Json", "DrawTextOnPannel.json");
+        var path = Path.Combine(_filePath, "Json", "DrawTextOnPannel.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = _tunnelId;
@@ -738,9 +738,9 @@ public class EngineConnection
         await _socket.SendAsync(json);
     }
 
-    public async Task SwapPannel(string id)
+    public async Task SwapPanel(string id)
     {
-        string path = Path.Combine(_filePath, "Json", "SwapPannel.json");
+        var path = Path.Combine(_filePath, "Json", "SwapPannel.json");
         var jObject = JObject.Parse(File.ReadAllText(path));
 
         jObject["data"]["dest"] = _tunnelId;

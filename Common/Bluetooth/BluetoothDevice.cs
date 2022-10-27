@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
 using Avans.TI.BLE;
 using RemoteHealthcare.Common.Logger;
 
@@ -33,8 +31,8 @@ public class BluetoothDevice
     public async Task SendMessage(byte[] bytes)
     {
         if (bytes.Length == 13) {
-            byte checksum = bytes[0];
-            for (int i = 1; i < 12; i++)
+            var checksum = bytes[0];
+            for (var i = 1; i < 12; i++)
             {
                 checksum ^= bytes[i];
             }

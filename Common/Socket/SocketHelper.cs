@@ -1,6 +1,5 @@
 using System.Security.Cryptography;
 using System.Text;
-using RemoteHealthcare.Common.Logger;
 using MemoryStream = System.IO.MemoryStream;
 
 namespace RemoteHealthcare.Common.Socket;

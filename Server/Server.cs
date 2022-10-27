@@ -12,9 +12,9 @@ public class Server
 
     private readonly SocketServer _server = new(true);
     private readonly Log _log = new(typeof(Server));
-    public static PatientData _patientData { get; set; }
-    public static DoctorData _doctorData { get; set; }
-    public static List<ServerClient> _connectedClients { get; private set; } = new();
+    public static PatientData PatientData { get; set; }
+    public static DoctorData DoctorData { get; set; }
+    public static List<ServerClient> ConnectedClients { get; private set; } = new();
 
 
     /// <summary>
@@ -28,27 +28,27 @@ public class Server
 
         await _server.ConnectAsync("127.0.0.1", _port);
         
-        _patientData = new PatientData();
-        _doctorData = new DoctorData();
+        PatientData = new PatientData();
+        DoctorData = new DoctorData();
         _log.Information($"Server running on port {_port}");
     }
 
     private async Task OnClientDisconnectedAsync(SocketClient socketClient)
     {
-        _connectedClients.Remove(_connectedClients.Find(x => x.Client.Id == socketClient.Id));
+        ConnectedClients.Remove(ConnectedClients.Find(x => x.Client.Id == socketClient.Id));
     }
 
     private async Task OnClientConnectedAsync(SocketClient client)
     {
         _log.Information($"Client connected: {client.Socket}");
-        _connectedClients.Add(new ServerClient(client));
+        ConnectedClients.Add(new ServerClient(client));
     }
 
     internal static void Disconnect(ServerClient client)
     {
-        if (!_connectedClients.Contains(client))
+        if (!ConnectedClients.Contains(client))
             return;
         Log.Send().Information("Disconnecting a client now");
-        _connectedClients.Remove(client);
+        ConnectedClients.Remove(client);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using System.Windows.Media;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.GUIs.Doctor.ViewModels;
@@ -28,17 +27,17 @@ public class RequestPastSessions : BaseCommand
     /// </summary>
     public override async Task ExecuteAsync()
     {
-        string userId = _viewModel.CurrentUser.UserId;
+        var userId = _viewModel.CurrentUser.UserId;
         if (userId != null)
         {
             _client.HasSessionResponce = false;
 
             _client._client.SendAsync(new DataPacket<AllSessionsFromPatientRequest>
             {
-                OpperationCode = OperationCodes.GET_PATIENT_SESSSIONS,
+                OpperationCode = OperationCodes.GetPatientSesssions,
                 data = new AllSessionsFromPatientRequest()
                 {
-                    userId = userId
+                    UserId = userId
                 }
             });
 

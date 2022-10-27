@@ -1,6 +1,5 @@
 ﻿using LiveCharts;
 using MvvmHelpers;
-using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common.Logger;
@@ -18,15 +17,15 @@ public class Patient : ObservableObject
     public string UserId { get; set; }
     public string Password { get; set; }
     
-    public float currentSpeed { get; set; }
-    public float currentDistance { get; set; }
-    public TimeSpan currentElapsedTime { get; set; }
-    public int currentBPM { get; set; }
+    public float CurrentSpeed { get; set; }
+    public float CurrentDistance { get; set; }
+    public TimeSpan CurrentElapsedTime { get; set; }
+    public int CurrentBpm { get; set; }
 
-    public ChartValues<float> speedData = new();
+    public ChartValues<float> SpeedData = new();
     
     
-    public ChartValues<int> bpmData = new();
+    public ChartValues<int> BpmData = new();
 
     public Patient(string userId, string password, string? username = null)
     {
@@ -37,7 +36,7 @@ public class Patient : ObservableObject
         Sessions = new List<SessionData>();
         
         
-        string pathString = Path.Combine(Environment.CurrentDirectory.Substring(0, 
+        var pathString = Path.Combine(Environment.CurrentDirectory.Substring(0, 
             Environment.CurrentDirectory.LastIndexOf("bin")), "allSessions", UserId);
 
         if (!Directory.Exists(pathString))

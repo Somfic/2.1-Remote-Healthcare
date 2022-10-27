@@ -6,7 +6,7 @@ namespace RemoteHealthcare.Tests.ServerTests;
 
 public class ServerTests
 {
-    string message = "{\"OpperationCode\":\"login\",\"data\":{\"username\":\"06111\",\"password\":\"welkom01\",\"isDoctor\":false}}";
+    string _message = "{\"OpperationCode\":\"login\",\"data\":{\"username\":\"06111\",\"password\":\"welkom01\",\"isDoctor\":false}}";
 
     
     [Test]
@@ -41,13 +41,13 @@ public class ServerTests
         
         var client = new SocketClient(true);
         await client.ConnectAsync("127.0.0.1", 12346);
-        await client.SendAsync(message);
+        await client.SendAsync(_message);
 
         var stopwatch = Stopwatch.StartNew();
         while(receivedMessage == "" && stopwatch.ElapsedMilliseconds < 10000)
             await Task.Delay(10);
 
-        Assert.That(receivedMessage, Is.EqualTo(message));
+        Assert.That(receivedMessage, Is.EqualTo(_message));
     }
 
     [Test]
@@ -62,12 +62,12 @@ public class ServerTests
         var receivedMessage = "";
         client.OnMessage += (sender, e) => receivedMessage = e;
         
-        await server.BroadcastAsync(message);
+        await server.BroadcastAsync(_message);
 
         var stopwatch = Stopwatch.StartNew();
         while(receivedMessage == "" && stopwatch.ElapsedMilliseconds < 10000)
             await Task.Delay(10);
 
-        Assert.That(receivedMessage, Is.EqualTo(message));
+        Assert.That(receivedMessage, Is.EqualTo(_message));
     }
 }

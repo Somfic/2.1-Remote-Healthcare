@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common.Models;
-using System.Timers;
 using MvvmHelpers;
 
 namespace RemoteHealthcare.Server.Models;
@@ -14,16 +13,16 @@ public class SessionData : ObservableObject
 
     public List<SessionMiniData> MiniDatas {get; set;}
 
-    public SessionData(string sessionID, string deviceType, string id)
+    public SessionData(string sessionId, string deviceType, string id)
     {
         MiniDatas = new List<SessionMiniData>();
 
-        SessionId = sessionID;
+        SessionId = sessionId;
         DeviceType = deviceType;
         Id = id;
     }
 
-    public bool addData(JObject data)
+    public bool AddData(JObject data)
     {
         if (!SessionId.Equals(data["sessionId"].ToObject<string>()) || !DeviceType.Equals(data["deviceType"].ToObject<string>()) || !Id.Equals(data["id"].ToObject<string>()))
         {
@@ -34,9 +33,9 @@ public class SessionData : ObservableObject
         
     }
 
-    public bool addData(string sessionID, int speed, int distance, int heartrate, int elapsed, string deviceType, string id)
+    public bool AddData(string sessionId, int speed, int distance, int heartrate, int elapsed, string deviceType, string id)
     {
-        if (!SessionId.Equals(sessionID) || !DeviceType.Equals(deviceType) || !Id.Equals(id))
+        if (!SessionId.Equals(sessionId) || !DeviceType.Equals(deviceType) || !Id.Equals(id))
         {
             return false;
         }

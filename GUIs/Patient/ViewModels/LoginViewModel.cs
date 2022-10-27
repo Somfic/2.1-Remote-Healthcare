@@ -7,9 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using MvvmHelpers;
 using MvvmHelpers.Commands;
-using System.Windows.Input;
 using NetworkEngine.Socket;
-using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Data.Providers;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.NetworkEngine;
@@ -96,7 +94,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                     vrConnection = new VrConnection(bike, heart, engine);
                     _client._vrConnection = vrConnection;
 
-                    PatientHomepageViewModel pvm = new PatientHomepageViewModel(_navigationStore, _client);
+                    var pvm = new PatientHomepageViewModel(_navigationStore, _client);
                     
                     _navigationStore.CurrentViewModel = pvm;
                     pvm.e = engine;
@@ -122,7 +120,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
       
         public string SecureStringToString(SecureString value)
         {
-            IntPtr valuePtr = IntPtr.Zero;
+            var valuePtr = IntPtr.Zero;
             try {
                 valuePtr = Marshal.SecureStringToGlobalAllocUnicode(value);
                 return Marshal.PtrToStringUni(valuePtr);

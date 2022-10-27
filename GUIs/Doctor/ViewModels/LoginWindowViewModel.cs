@@ -50,7 +50,7 @@ public class LoginWindowViewModel : ObservableObject
     /// </returns>
     public string SecureStringToString(SecureString value)
     {
-        IntPtr valuePtr = IntPtr.Zero;
+        var valuePtr = IntPtr.Zero;
         try
         {
             valuePtr = Marshal.SecureStringToGlobalAllocUnicode(value);

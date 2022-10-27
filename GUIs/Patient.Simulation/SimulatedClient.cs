@@ -28,13 +28,13 @@ public class SimulatedClient
             {
                 case "login":
                     var loginResponse = JsonConvert.DeserializeObject<DataPacket<LoginPacketResponse>>(json);
-                    if (loginResponse.data.statusCode == StatusCodes.OK)
+                    if (loginResponse.data.StatusCode == StatusCodes.Ok)
                     {
                         OnLogin?.Invoke(this, EventArgs.Empty);
                     }
                     else
                     {
-                        _log.Error($"[#{Id}] Could not login: '{loginResponse.data.message}'");
+                        _log.Error($"[#{Id}] Could not login: '{loginResponse.data.Message}'");
                         _socket.DisconnectAsync();
                     }
                     break;
@@ -76,12 +76,12 @@ public class SimulatedClient
     {
        var loginReq = new DataPacket<LoginPacketRequest>
         {
-            OpperationCode = OperationCodes.LOGIN,
+            OpperationCode = OperationCodes.Login,
             data = new LoginPacketRequest()
             {
-                userName = username,
-                password = password,
-                isDoctor = isDoctor
+                UserName = username,
+                Password = password,
+                IsDoctor = isDoctor
             }
         };
 
@@ -102,17 +102,17 @@ public class SimulatedClient
         
         var dataReq = new DataPacket<BikeDataPacket>
         {
-            OpperationCode = OperationCodes.BIKEDATA,
+            OpperationCode = OperationCodes.Bikedata,
 
             data = new BikeDataPacket()
             {
                 SessionId = $"Simulation #{Id}",
-                speed = bikeData.Speed,
-                distance = bikeData.Distance,
-                heartRate = bikeData.HeartRate,
-                elapsed = bikeData.TotalElapsed,
-                deviceType = bikeData.DeviceType.ToString(),
-                id =  $"Simulation #{Id}",
+                Speed = bikeData.Speed,
+                Distance = bikeData.Distance,
+                HeartRate = bikeData.HeartRate,
+                Elapsed = bikeData.TotalElapsed,
+                DeviceType = bikeData.DeviceType.ToString(),
+                Id =  $"Simulation #{Id}",
             }
         };
         
@@ -127,13 +127,13 @@ public class SimulatedClient
     {
         var chatReq = new DataPacket<ChatPacketRequest>
         {
-            OpperationCode = OperationCodes.CHAT,
+            OpperationCode = OperationCodes.Chat,
                             
             data = new ChatPacketRequest()
             {
-                senderId = $"Simulation #{Id}",
-                receiverId = "Dhr145",
-                message = message
+                SenderId = $"Simulation #{Id}",
+                ReceiverId = "Dhr145",
+                Message = message
             }
         };
         

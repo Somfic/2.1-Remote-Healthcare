@@ -25,10 +25,10 @@ public class StartSessieCommand : BaseCommand
 
         _client._client.SendAsync(new DataPacket<SessionStartPacketRequest>
         {
-            OpperationCode = OperationCodes.SESSION_START,
+            OpperationCode = OperationCodes.SessionStart,
             data = new SessionStartPacketRequest()
             {
-                selectedPatient = _viewModel.CurrentUser.UserId
+                SelectedPatient = _viewModel.CurrentUser.UserId
             }
         });
     }

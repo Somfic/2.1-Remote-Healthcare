@@ -24,12 +24,12 @@ public class PatientData
 
     private List<Patient> ReadUsersFromJson()
     {
-        string path = Path.Combine(Directory.GetCurrentDirectory(), "AllUsers.json");
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "AllUsers.json");
 
-        string returnAllUsersFromText = File.ReadAllText(path);
+        var returnAllUsersFromText = File.ReadAllText(path);
 
-        List<Patient> data = JsonConvert.DeserializeObject<List<Patient>>(returnAllUsersFromText) ??
-                             throw new InvalidOperationException();
+        var data = JsonConvert.DeserializeObject<List<Patient>>(returnAllUsersFromText) ??
+                   throw new InvalidOperationException();
 
         return data;
     }
@@ -44,7 +44,7 @@ public class PatientData
     /// </returns>
     public bool MatchLoginData(Patient patient)
     {
-        foreach (Patient p in Patients)
+        foreach (var p in Patients)
         {
             if (p.Password == patient.Password && p.UserId == patient.UserId)
             {
@@ -58,9 +58,9 @@ public class PatientData
 
     public JObject[] GetPatientDataAsJObjects()
     {
-        JObject[] jObjects = new JObject[Patients.Count];
+        var jObjects = new JObject[Patients.Count];
 
-        for (int i = 0; i < Patients.Count; i++)
+        for (var i = 0; i < Patients.Count; i++)
         {
             jObjects[i] = Patients[i].GetPatientAsJObject();
         }
@@ -72,11 +72,11 @@ public class PatientData
     {
         pathString = Path.Combine(pathString.Substring(0, pathString.LastIndexOf("bin")), "allSessions", userId);
 
-        JObject[] jObjects = new JObject[Directory.GetFiles(pathString).Length];
+        var jObjects = new JObject[Directory.GetFiles(pathString).Length];
 
-        for (int i = 0; i < Directory.GetFiles(pathString).Length; i++)
+        for (var i = 0; i < Directory.GetFiles(pathString).Length; i++)
         {
-            using JsonTextReader reader = new JsonTextReader(File.OpenText(Directory.GetFiles(pathString)[i]));
+            using var reader = new JsonTextReader(File.OpenText(Directory.GetFiles(pathString)[i]));
             jObjects[i] = (JObject)JToken.ReadFrom(reader);
         }
 

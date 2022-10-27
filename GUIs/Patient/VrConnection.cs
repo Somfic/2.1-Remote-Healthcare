@@ -1,10 +1,4 @@
-﻿
-
-using System;
-using System.Data;
-using System.Runtime.InteropServices.ComTypes;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using RemoteHealthcare.Common.Data;
 using RemoteHealthcare.Common.Data.Providers.Bike;
 using RemoteHealthcare.Common.Data.Providers.Heart;
@@ -51,7 +45,7 @@ namespace NetworkEngine.Socket
                     
                 }
 
-                await Engine.SendTextToInformationPannel(bike.GetData().Speed.ToString("##.#"), bike.GetData().Distance.ToString("####.#"), bike.GetData().TotalElapsed, heart.GetData().HeartRate.ToString(), _resistance.ToString());
+                await Engine.SendTextToInformationPanel(bike.GetData().Speed.ToString("##.#"), bike.GetData().Distance.ToString("####.#"), bike.GetData().TotalElapsed, heart.GetData().HeartRate.ToString(), _resistance.ToString());
 
                 await Task.Delay(1000);
             }
@@ -60,10 +54,10 @@ namespace NetworkEngine.Socket
         
         public void setResistance(int resistance)
             {
-                byte[] data = (new byte[]
+                var data = (new byte[]
                     { 164, 9, 78, 5, 48, 255, 255, 255, 255, 255, 255, (byte)((byte)resistance * 2), 0 });
-                byte checksum = data[0];
-                for (int i = 1; i < 12; i++)
+                var checksum = data[0];
+                for (var i = 1; i < 12; i++)
                 {
                     checksum ^= data[i];
                 }

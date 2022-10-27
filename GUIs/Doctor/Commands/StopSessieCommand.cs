@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.GUIs.Doctor.ViewModels;
 
@@ -24,10 +23,10 @@ public class StopSessieCommand : BaseCommand
     {
         _client._client.SendAsync(new DataPacket<SessionStopPacketRequest>
         {
-            OpperationCode = OperationCodes.SESSION_STOP,
+            OpperationCode = OperationCodes.SessionStop,
             data = new SessionStopPacketRequest()
             {
-                selectedPatient = _viewModel.CurrentUser.UserId
+                SelectedPatient = _viewModel.CurrentUser.UserId
             }
         });
     }

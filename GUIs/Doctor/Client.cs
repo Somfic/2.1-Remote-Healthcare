@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using MvvmHelpers;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RemoteHealthcare.Common;
 using RemoteHealthcare.Common.Logger;
 using RemoteHealthcare.Common.Socket.Client;
@@ -47,15 +46,15 @@ namespace RemoteHealthcare.GUIs.Doctor
             Sessions = new List<SessionData>();
 
             //Adds for each key an callback methode in the dictionary 
-            _callbacks.Add(OperationCodes.LOGIN, LoginFeature);
-            _callbacks.Add(OperationCodes.USERS, RequestConnectionsFeature);
-            _callbacks.Add(OperationCodes.CHAT, ChatHandler);
-            _callbacks.Add(OperationCodes.SESSION_START, SessionStartHandler);
-            _callbacks.Add(OperationCodes.SESSION_STOP, SessionStopHandler);
-            _callbacks.Add(OperationCodes.EMERGENCY_STOP, EmergencyStopHandler);
-            _callbacks.Add(OperationCodes.GET_PATIENT_DATA, GetPatientDataHandler);
-            _callbacks.Add(OperationCodes.BIKEDATA, GetBikeData);
-            _callbacks.Add(OperationCodes.GET_PATIENT_SESSSIONS, GetPatientSessionsHandler);
+            _callbacks.Add(OperationCodes.Login, LoginFeature);
+            _callbacks.Add(OperationCodes.Users, RequestConnectionsFeature);
+            _callbacks.Add(OperationCodes.Chat, ChatHandler);
+            _callbacks.Add(OperationCodes.SessionStart, SessionStartHandler);
+            _callbacks.Add(OperationCodes.SessionStop, SessionStopHandler);
+            _callbacks.Add(OperationCodes.EmergencyStop, EmergencyStopHandler);
+            _callbacks.Add(OperationCodes.GetPatientData, GetPatientDataHandler);
+            _callbacks.Add(OperationCodes.Bikedata, GetBikeData);
+            _callbacks.Add(OperationCodes.GetPatientSesssions, GetPatientSessionsHandler);
 
             _client.OnMessage += (sender, data) =>
             {
@@ -68,13 +67,13 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             var req = new DataPacket<ChatPacketRequest>
             {
-                OpperationCode = OperationCodes.CHAT,
+                OpperationCode = OperationCodes.Chat,
                 data = new ChatPacketRequest()
                 {
-                    senderId = _userId,
-                    senderName = Username,
-                    receiverId = target,
-                    message = chatInput
+                    SenderId = _userId,
+                    SenderName = Username,
+                    ReceiverId = target,
+                    Message = chatInput
                 }
             };
 
@@ -85,11 +84,11 @@ namespace RemoteHealthcare.GUIs.Doctor
         {
             var req = new DataPacket<SetResistancePacket>
             {
-                OpperationCode = OperationCodes.SET_RESISTANCE,
+                OpperationCode = OperationCodes.SetResistance,
                 data = new SetResistancePacket()
                 {
-                    receiverId = target,
-                    resistance = res
+                    ReceiverId = target,
+                    Resistance = res
                 }
             };
 
@@ -98,14 +97,14 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         public async Task AskForLoginAsync()
         {
-            DataPacket<LoginPacketRequest> loginReq = new DataPacket<LoginPacketRequest>
+            var loginReq = new DataPacket<LoginPacketRequest>
             {
-                OpperationCode = OperationCodes.LOGIN,
+                OpperationCode = OperationCodes.Login,
                 data = new LoginPacketRequest()
                 {
-                    userName = Username,
-                    password = Password,
-                    isDoctor = true
+                    UserName = Username,
+                    Password = Password,
+                    IsDoctor = true
                 }
             };
 
@@ -114,9 +113,9 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         public async Task RequestPatientDataAsync()
         {
-            DataPacket<GetAllPatientsDataRequest> patientReq = new DataPacket<GetAllPatientsDataRequest>
+            var patientReq = new DataPacket<GetAllPatientsDataRequest>
             {
-                OpperationCode = OperationCodes.GET_PATIENT_DATA
+                OpperationCode = OperationCodes.GetPatientData
             };
 
             await _client.SendAsync(patientReq);
@@ -139,7 +138,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         //the methode for the emergency stop request
         private void EmergencyStopHandler(DataPacket obj)
         {
-            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
+            _log.Information(obj.GetData<SessionStopPacketResponse>().Message);
         }
 
         //the methode for the session start request
@@ -148,7 +147,7 @@ namespace RemoteHealthcare.GUIs.Doctor
             var sessie = obj.GetData<SessionStartPacketResponse>();
 
             //Change the GUI with an Alert depends on the outcome of the IF-Statement
-            DoctorViewModel.CurrentUserName = (sessie.statusCode.Equals(StatusCodes.OK))
+            DoctorViewModel.CurrentUserName = (sessie.StatusCode.Equals(StatusCodes.Ok))
                 ? DoctorViewModel.CurrentUser.Username
                 : "Gekozen Patient is niet online";
         }
@@ -156,7 +155,7 @@ namespace RemoteHealthcare.GUIs.Doctor
         //the methode for the session stop request
         private void SessionStopHandler(DataPacket obj)
         {
-            _log.Information(obj.GetData<SessionStopPacketResponse>().message);
+            _log.Information(obj.GetData<SessionStopPacketResponse>().Message);
         }
         
         //the methode for printing out the received message
@@ -166,15 +165,15 @@ namespace RemoteHealthcare.GUIs.Doctor
             foreach (var chatMessage in DoctorViewModel._chatMessages)
                 chats.Add(chatMessage);
             
-            chats.Add($"{packetData.GetData<ChatPacketResponse>().senderName}: {packetData.GetData<ChatPacketResponse>().message}");
+            chats.Add($"{packetData.GetData<ChatPacketResponse>().SenderName}: {packetData.GetData<ChatPacketResponse>().Message}");
             DoctorViewModel.ChatMessages = chats;
         }
 
         private void RequestConnectionsFeature(DataPacket packetData)
         {
-            if (((int)packetData.GetData<ConnectedClientsPacketResponse>().statusCode).Equals(200))
+            if (((int)packetData.GetData<ConnectedClientsPacketResponse>().StatusCode).Equals(200))
             {
-                _connected = packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Split(";").ToList();
+                _connected = packetData.GetData<ConnectedClientsPacketResponse>().ConnectedIds.Split(";").ToList();
             }
         }
 
@@ -184,18 +183,18 @@ namespace RemoteHealthcare.GUIs.Doctor
         /// <param name="DataPacket">This is the packet that is received from the server.</param>
         private void LoginFeature(DataPacket packetData)
         {
-            if (((int)packetData.GetData<LoginPacketResponse>().statusCode).Equals(200))
+            if (((int)packetData.GetData<LoginPacketResponse>().StatusCode).Equals(200))
             {
-                _userId = packetData.GetData<LoginPacketResponse>().userId;
-                Username = packetData.GetData<LoginPacketResponse>().userName;
+                _userId = packetData.GetData<LoginPacketResponse>().UserId;
+                Username = packetData.GetData<LoginPacketResponse>().UserName;
                 _log.Information($"Succesfully logged in to the user: {Username}; {Password}; {_userId}.");
                 LoggedIn = true;
             }
             else
             {
-                _log.Error(packetData.GetData<LoginPacketResponse>().statusCode + "; " +
-                           packetData.GetData<LoginPacketResponse>().message);
-                MessageBox.Show(packetData.GetData<LoginPacketResponse>().message);
+                _log.Error(packetData.GetData<LoginPacketResponse>().StatusCode + "; " +
+                           packetData.GetData<LoginPacketResponse>().Message);
+                MessageBox.Show(packetData.GetData<LoginPacketResponse>().Message);
             }
         }
 
@@ -206,11 +205,11 @@ namespace RemoteHealthcare.GUIs.Doctor
         /// that is sent from the server.</param>
         private void GetPatientDataHandler(DataPacket packetData)
         {
-            JObject[] jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
+            var jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
 
-            foreach (JObject jObject in jObjects)
+            foreach (var jObject in jObjects)
             {
-                Patient patient = jObject.ToObject<Patient>();
+                var patient = jObject.ToObject<Patient>();
                 PatientList.Add(patient);
             }
         }
@@ -221,13 +220,13 @@ namespace RemoteHealthcare.GUIs.Doctor
         /// <param name="DataPacket">This is the data that is sent from the server.</param>
         private void GetPatientSessionsHandler(DataPacket packetData)
         {
-            JObject[] jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
+            var jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
 
 
             Sessions.Clear();
-            foreach (JObject jObject in jObjects)
+            foreach (var jObject in jObjects)
             {
-                SessionData session = jObject.ToObject<SessionData>();
+                var session = jObject.ToObject<SessionData>();
                 Sessions.Add(session);
             }
 
@@ -253,29 +252,29 @@ namespace RemoteHealthcare.GUIs.Doctor
         /// that is sent from the client.</param>
         private void GetBikeData(DataPacket obj)
         {
-            BikeDataPacketDoctor data = obj.GetData<BikeDataPacketDoctor>();
+            var data = obj.GetData<BikeDataPacketDoctor>();
 
-            if (DoctorViewModel.CurrentUser.UserId.Equals(data.id))
+            if (DoctorViewModel.CurrentUser.UserId.Equals(data.Id))
             {
-                DoctorViewModel.BPM = data.heartRate;
-                DoctorViewModel.Speed = data.speed;
-                DoctorViewModel.ElapsedTime = data.elapsed;
-                DoctorViewModel.Distance = data.distance;
-                DoctorViewModel.CurrentUser.speedData.Add(data.speed);
-                DoctorViewModel.CurrentUser.bpmData.Add(data.heartRate);
+                DoctorViewModel.BPM = data.HeartRate;
+                DoctorViewModel.Speed = data.Speed;
+                DoctorViewModel.ElapsedTime = data.Elapsed;
+                DoctorViewModel.Distance = data.Distance;
+                DoctorViewModel.CurrentUser.SpeedData.Add(data.Speed);
+                DoctorViewModel.CurrentUser.BpmData.Add(data.HeartRate);
             }
             else
             {
-                foreach (Patient patient in PatientList)
+                foreach (var patient in PatientList)
                 {
-                    if (patient.UserId.Equals(data.id))
+                    if (patient.UserId.Equals(data.Id))
                     {
-                        patient.currentDistance = data.distance;
-                        patient.currentSpeed = data.speed;
-                        patient.currentElapsedTime = data.elapsed;
-                        patient.currentBPM = data.heartRate;
-                        patient.speedData.Add(data.speed);
-                        patient.bpmData.Add(data.heartRate);
+                        patient.CurrentDistance = data.Distance;
+                        patient.CurrentSpeed = data.Speed;
+                        patient.CurrentElapsedTime = data.Elapsed;
+                        patient.CurrentBpm = data.HeartRate;
+                        patient.SpeedData.Add(data.Speed);
+                        patient.BpmData.Add(data.HeartRate);
                     }
                 }
             }
