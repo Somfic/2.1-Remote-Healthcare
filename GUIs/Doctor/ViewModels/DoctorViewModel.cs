@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using LiveCharts;
@@ -36,7 +35,7 @@ public class DoctorViewModel : ObservableObject
     {
         _client = client;
         _client.AddDoctorViewmodel(this);
-        _patients = new ObservableCollection<Patient>(_client._patientList);
+        _patients = new ObservableCollection<Patient>(_client.PatientList);
         _chatMessages = new ObservableCollection<string>();
         EmergencyStop = new EmergencyStopCommand(_client, this);
         SendChatMessage = new SendChatMessageCommand(_client, this);

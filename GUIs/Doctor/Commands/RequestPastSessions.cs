@@ -31,7 +31,7 @@ public class RequestPastSessions : BaseCommand
         string userId = _viewModel.CurrentUser.UserId;
         if (userId != null)
         {
-            _client.hasSessionResponce = false;
+            _client.HasSessionResponce = false;
 
             _client._client.SendAsync(new DataPacket<AllSessionsFromPatientRequest>
             {
@@ -42,7 +42,7 @@ public class RequestPastSessions : BaseCommand
                 }
             });
 
-            while (!_client.hasSessionResponce)
+            while (!_client.HasSessionResponce)
             {
             }
 
