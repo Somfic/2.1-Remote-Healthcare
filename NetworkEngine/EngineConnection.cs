@@ -536,6 +536,7 @@ public class EngineConnection
         jObject["data"]["data"]["data"]["parent"] = _bikeId;
 
         var json = JsonConvert.SerializeObject(jObject);
+        _log.Error("AddInfomationPannelNode");
         await _socket.SendAsync(json);
     }
 

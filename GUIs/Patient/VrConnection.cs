@@ -29,6 +29,7 @@ namespace NetworkEngine.Socket
         }
 
         public bool session;
+        private int _resistance;
 
         public async Task Start(PatientHomepageViewModel p)
         {
@@ -47,8 +48,10 @@ namespace NetworkEngine.Socket
                     _pvm.Speed = bike.GetData().Speed.ToString("##.#");
                     _pvm.Distance = bike.GetData().Distance.ToString("####.#");
                     _pvm.Time = bike.GetData().TotalElapsed.ToString("hh\\:mm\\:ss");
-
+                    
                 }
+
+                await Engine.SendTextToInformationPannel(bike.GetData().Speed.ToString("##.#"), bike.GetData().Distance.ToString("####.#"), bike.GetData().TotalElapsed, heart.GetData().HeartRate.ToString(), _resistance.ToString());
 
                 await Task.Delay(1000);
             }
@@ -67,7 +70,8 @@ namespace NetworkEngine.Socket
 
                 data[12] = (byte)checksum;
 
-                Console.WriteLine(BitConverter.ToString(data));
+                _resistance = resistance;
+                
                 bike.SendMessage(data);
             }
 
