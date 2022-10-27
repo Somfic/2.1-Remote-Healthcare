@@ -112,7 +112,6 @@ public class EmergencyStopPacket : DAbstract
 }
 public class DisconnectPacketRequest : DAbstract
 {
-    //TODO: voorlopig leeg laten
 }
 
 public class SetResistancePacket : DAbstract
@@ -154,7 +153,6 @@ public class BikeDataPacketDoctor : DAbstract
 
 public class GetAllPatientsDataRequest : DAbstract
 {
-    //TODO voorlopig leeg laten
 }
 
 public class GetAllPatientsDataResponse : DAbstract

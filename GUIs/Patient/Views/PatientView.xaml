@@ -29,6 +29,6 @@
         <Label  Foreground="White" FontSize="20" Content="{Binding Heartrate }" HorizontalAlignment="Left" Margin="243,154,0,0" VerticalAlignment="Top"/>
         <Label  Foreground="White" FontSize="20" Content="{Binding Distance}" HorizontalAlignment="Left" Margin="340,154,0,0" VerticalAlignment="Top"/>
         <Label  Foreground="White" FontSize="20" Content="{Binding Time}" HorizontalAlignment="Left" Margin="436,154,0,0" VerticalAlignment="Top"/>
-        <Button Content="Verbind met server" Command="{Binding test}" HorizontalAlignment="Left" Height="50" Margin="122,262,0,0" VerticalAlignment="Top" Width="228"/>
+        <Button Content="Verbind met Vr" Command="{Binding ReconnectVr}" HorizontalAlignment="Left" Height="50" Margin="122,262,0,0" VerticalAlignment="Top" Width="228"/>
     </Grid>
 </UserControl>

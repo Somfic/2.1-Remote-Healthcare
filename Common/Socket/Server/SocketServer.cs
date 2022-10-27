@@ -29,19 +29,19 @@ public class SocketServer : ISocket
 
         try
         {
-            _log.Debug($"Starting server on {ip}:{port} ... ({(_useEncryption ? "encrypted" : "unencrypted")})");
+            _log.Information($"Starting server on {ip}:{port} ... ({(_useEncryption ? "encrypted" : "unencrypted")})");
 
             Socket = new TcpListener(IPAddress.Parse(ip), port);
             Socket.Start(0);
 
-            _log.Debug($"Started server on {ip}:{port}");
+            _log.Information($"Started server on {ip}:{port}");
 
             // Run on a new thread so that the main thread does not have to wait until a connection is made
             Task.Run(async () => await AcceptConnection());
         }
         catch (Exception ex)
         {
-            _log.Warning(ex,$"Could not start server on {ip}:{port}");
+            _log.Error(ex,$"Could not start server on {ip}:{port}");
         }
     }
 
@@ -57,7 +57,7 @@ public class SocketServer : ISocket
 
                 var socket = await Socket.AcceptTcpClientAsync();
                 
-                _log.Debug($"Socket client connected");
+                _log.Information($"Socket client connected");
                 
                  var client = SocketClient.CreateFromSocket(socket, _useEncryption);
                  Localclient = client;
@@ -69,11 +69,11 @@ public class SocketServer : ISocket
             }
             catch (Exception ex)
             {
-                _log.Warning(ex, "Could not accept new socket client connection");
+                _log.Error(ex, "Could not accept new socket client connection");
             }
         }
         
-        _log.Debug("Stopped server");
+        _log.Information("Stopped server");
     }
 
     public event EventHandler<SocketClient>? OnClientConnected;

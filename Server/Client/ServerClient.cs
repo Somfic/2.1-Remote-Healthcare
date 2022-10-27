@@ -66,7 +66,7 @@ namespace RemoteHealthcare.Server.Client
         /// <param name="packetData">This is the data that is being sent from the server.</param>
         private void HandleData(DataPacket packetData)
         {
-            _log.Debug($"Got a packet server: {packetData.OpperationCode}");
+            _log.Debug($"Got a packet: \r\n{packetData.ToJson()}");
 
             //Checks if the OppCode (OperationCode) does exist.
             if (_callbacks.TryGetValue(packetData.OpperationCode, out var action)) 
@@ -441,6 +441,7 @@ namespace RemoteHealthcare.Server.Client
                     message = "Sessie wordt nu gestopt."
                 }
             });
+            _selectedPatient._patient.SaveSessionData(Environment.CurrentDirectory);
         }
 
         //the methode for the emergency stop request

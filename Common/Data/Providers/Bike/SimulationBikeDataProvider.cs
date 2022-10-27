@@ -30,7 +30,7 @@ public class SimulationBikeDataProvider : BikeDataProvider
         if (_timer.Elapsed.TotalSeconds >= 64)
             _timer.Restart();
 
-        SetElapsed(_timer.Elapsed); // todo: rond af op 0,25 seconden
+        SetElapsed(_timer.Elapsed);
 
         // Total elapsed
         SetTotalElapsed(_totalElapsed.Elapsed);

@@ -36,7 +36,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             
             LogIn = new Command(LogInPatient);
 
-            _client = new Client.Client(null);
+            _client = new Client.Client();
 
         }
         
@@ -74,11 +74,10 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
       async void LogInPatient(object window)
         {
             await _client._client.ConnectAsync("127.0.0.1", 15243);
-            Console.WriteLine("Got window, logging in patient");
-            if (!_client._loggedIn)
+            if (!_client.LoggedIn)
             {
-                _client._username = Username;
-                _client._password = SecureStringToString(SecurePassword);
+                _client.Username = Username;
+                _client.Password = SecureStringToString(SecurePassword);
                 
                 try {
                     new Thread(async () => { await _client.PatientLogin(); }).Start();
@@ -89,7 +88,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
 
                 await Task.Delay(1000);
                
-                if (_client._loggedIn)
+                if (_client.LoggedIn)
                 {
                     var engine = new EngineConnection();
                     var bike = await DataProvider.GetBike(_bikeID);
@@ -111,11 +110,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
                     catch (Exception ex)
                     {
                         var log = new Log(typeof(LoginViewModel));
-                        log.Critical(ex, "Program stopped because of exception");
-                        
-
-
-
+                        log.Error(ex, "Program stopped because of exception");
                     }
                 }
                 else

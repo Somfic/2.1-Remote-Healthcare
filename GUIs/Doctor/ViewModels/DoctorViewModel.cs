@@ -96,7 +96,6 @@ public class DoctorViewModel : ObservableObject
                 }
             };
             OnPropertyChanged();
-            _log.Debug("OnPropertyChanged() has been called.");
         }
     }
 

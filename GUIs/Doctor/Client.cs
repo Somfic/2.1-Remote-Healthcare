@@ -66,7 +66,6 @@ namespace RemoteHealthcare.GUIs.Doctor
 
         public async Task SendChatAsync(string? target = null, string? chatInput = null)
         {
-            _log.Debug("SendChatAsync(): entered");
             var req = new DataPacket<ChatPacketRequest>
             {
                 OpperationCode = OperationCodes.CHAT,
@@ -78,8 +77,6 @@ namespace RemoteHealthcare.GUIs.Doctor
                     message = chatInput
                 }
             };
-
-            _log.Warning($"sending {req.ToJson()}");
 
             await _client.SendAsync(req);
         }
@@ -112,8 +109,6 @@ namespace RemoteHealthcare.GUIs.Doctor
                 }
             };
 
-            _log.Warning($"sending {loginReq.ToJson()}");
-
             await _client.SendAsync(loginReq);
         }
 
@@ -130,7 +125,6 @@ namespace RemoteHealthcare.GUIs.Doctor
         //this methode will get the right methode that will be used for the response from the server
         public void HandleData(DataPacket packet)
         {
-            _log.Debug($"Received: {packet.ToJson()}");
             //Checks if the OppCode (OperationCode) does exist.
             if (_callbacks.TryGetValue(packet.OpperationCode, out var action))
             {
@@ -181,7 +175,6 @@ namespace RemoteHealthcare.GUIs.Doctor
             if (((int)packetData.GetData<ConnectedClientsPacketResponse>().statusCode).Equals(200))
             {
                 _connected = packetData.GetData<ConnectedClientsPacketResponse>().connectedIds.Split(";").ToList();
-                _log.Warning($"RequestConnectionsFeature(): {_connected.Count.ToString()}");
             }
         }
 
@@ -191,7 +184,6 @@ namespace RemoteHealthcare.GUIs.Doctor
         /// <param name="DataPacket">This is the packet that is received from the server.</param>
         private void LoginFeature(DataPacket packetData)
         {
-            _log.Debug($"Responce: {packetData.ToJson()}");
             if (((int)packetData.GetData<LoginPacketResponse>().statusCode).Equals(200))
             {
                 _userId = packetData.GetData<LoginPacketResponse>().userId;
@@ -214,9 +206,6 @@ namespace RemoteHealthcare.GUIs.Doctor
         /// that is sent from the server.</param>
         private void GetPatientDataHandler(DataPacket packetData)
         {
-            _log.Debug($"Got all patientdata from server: {packetData.OpperationCode}");
-            _log.Debug($"Received: {packetData.ToJson()}");
-
             JObject[] jObjects = packetData.GetData<GetAllPatientsDataResponse>().JObjects;
 
             foreach (JObject jObject in jObjects)

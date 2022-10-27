@@ -42,12 +42,12 @@ public class SocketClient : ISocket
         {
             attempts++;
             
-            _log.Debug($"Connecting to {ip}:{port} ({(_useEncryption ? "encrypted" : "unencrypted")}) (attempt #{attempts})");
+            _log.Information($"Connecting to {ip}:{port} ({(_useEncryption ? "encrypted" : "unencrypted")}) (attempt #{attempts})");
 
             try
             {
                 await Socket.ConnectAsync(IPAddress.Parse(ip), port);
-                _log.Debug($"Connected to {ip}:{port}");
+                _log.Information($"Connected to {ip}:{port}");
                 Read();
                 break;
             }
@@ -62,7 +62,7 @@ public class SocketClient : ISocket
                     throw;
                 }
 
-                _log.Warning(ex, $"Could not connect to {ip}:{port} ... retrying");
+                _log.Error(ex, $"Could not connect to {ip}:{port} ... retrying");
             }
             
             await Task.Delay(1000);
@@ -126,7 +126,7 @@ public class SocketClient : ISocket
                 }
             }
 
-            _log.Debug($"Client disconnected");
+            _log.Information($"Client disconnected");
             OnDisconnect?.Invoke(this, EventArgs.Empty);
         });
     }

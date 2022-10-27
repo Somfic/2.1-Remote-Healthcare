@@ -45,7 +45,7 @@ try
 }
 catch (Exception ex)
 {
-    log.Critical(ex, "Not all clients could not connect to the server");
+    log.Error(ex, "Not all clients could not connect to the server");
     return;
 }
 
@@ -70,7 +70,7 @@ try
 }
 catch (Exception ex)
 {
-    log.Critical(ex, "Not all clients could not login to the server");
+    log.Error(ex, "Not all clients could not login to the server");
     return;
 }
 

@@ -77,7 +77,7 @@ public class BluetoothDevice
 
             _bluetoothConnection.SubscriptionValueChanged += (sender, e) =>
             {
-                Console.WriteLine(BitConverter.ToString(e.Data) );
+                _log.Debug(BitConverter.ToString(e.Data));
                 
                 
                 if (e.Data[_idByte] == _id)
@@ -94,7 +94,7 @@ public class BluetoothDevice
         }
         catch (Exception ex)
         {
-            _log.Warning(ex, $"Could not connect to bluetooth device {_deviceName} (Error code: {errorCode})");
+            _log.Error(ex, $"Could not connect to bluetooth device {_deviceName} (Error code: {errorCode})");
             throw;
         }
     }
