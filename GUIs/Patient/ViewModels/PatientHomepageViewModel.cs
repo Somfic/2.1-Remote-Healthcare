@@ -42,19 +42,21 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             _vr = client._vrConnection;
             _messages = new ObservableCollection<string>();
            
-            test = new Command(testmethode);
+            test = new Command(reconnectToEngine);
             Send = new Command(SendMessage);
-            _messages.Add("hello world");
             
             _navigationStore = navigationStore;
             _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
         }
+        
 
         private void OnCurrentViewModelChanged()
         {
             _client.p = this;
             OnPropertyChanged(nameof(_navigationStore.CurrentViewModel));
         }
+        
+        
 
         public string Speed
         {
@@ -125,7 +127,7 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             get => _session;
             set
             {
-                _session = value;
+                _session = value = e._isConnected.ToString();
                 OnPropertyChanged();
             }
         }
@@ -152,19 +154,14 @@ namespace RemoteHealthcare.GUIs.Patient.ViewModels
             Message = "";
         }
         
-        void testmethode()
+        void reconnectToEngine()
         {
             if (e._isConnected)
             {
                 e.ConnectAsync();
             }
-            {
-                _vr.Engine.SendTextToChatPannel("test");
-            }
-            _client._client.SendAsync(new DataPacket<SessionStartPacketRequest>
-            {
-                OpperationCode = OperationCodes.SESSION_START,
-            });
+           
+           
         }
 
         public void emergencyStop()
