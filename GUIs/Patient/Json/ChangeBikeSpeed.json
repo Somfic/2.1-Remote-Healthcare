@@ -1,0 +1,13 @@
+﻿{
+  "id": "tunnel/send",
+  "data": {
+    "dest": "",
+    "data": {
+      "id": "route/follow/speed",
+      "data": {
+        "node": "",
+        "speed": 1.0
+      }
+    }
+  }
+}

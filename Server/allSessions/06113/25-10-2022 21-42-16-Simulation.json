@@ -1,0 +1,37 @@
+{
+  "SessionId": "25-10-2022 21:42:16",
+  "DeviceType": "Bike",
+  "Id": "Simulation",
+  "MiniDatas": [
+    {
+      "Distance": 89,
+      "Speed": 6,
+      "Heartrate": 97,
+      "Elapsed": 15
+    },
+    {
+      "Distance": 95,
+      "Speed": 6,
+      "Heartrate": 84,
+      "Elapsed": 16
+    },
+    {
+      "Distance": 103,
+      "Speed": 6,
+      "Heartrate": 85,
+      "Elapsed": 18
+    },
+    {
+      "Distance": 109,
+      "Speed": 6,
+      "Heartrate": 91,
+      "Elapsed": 18
+    },
+    {
+      "Distance": 115,
+      "Speed": 6,
+      "Heartrate": 79,
+      "Elapsed": 19
+    }
+  ]
+}

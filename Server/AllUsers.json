@@ -1,0 +1,77 @@
+[
+  {
+    "UserId": "06111",
+    "Password": "welkom01",
+    "Username": "Redouan"
+  },
+  {
+    "UserId": "06112",
+    "Password": "welkom02",
+    "Username": "Lucas"
+  },
+  {
+    "UserId": "06113",
+    "Password": "welkom03",
+    "Username": "Richard"
+  },
+  {
+    "UserId": "06114",
+    "Password": "welkom04",
+    "Username": "Owen"
+  },
+  
+  
+  
+  
+
+  {
+    "UserId": "sim1",
+    "Password": "simulation",
+    "Username": "Simulation #1"
+  },
+  {
+    "UserId": "sim2",
+    "Password": "simulation",
+    "Username": "Simulation #2"
+  },
+  {
+    "UserId": "sim3",
+    "Password": "simulation",
+    "Username": "Simulation #3"
+  },
+  {
+    "UserId": "sim4",
+    "Password": "simulation",
+    "Username": "Simulation #4"
+  },
+  {
+    "UserId": "sim5",
+    "Password": "simulation",
+    "Username": "Simulation #5"
+  },
+  {
+    "UserId": "sim6",
+    "Password": "simulation",
+    "Username": "Simulation #6"
+  },
+  {
+    "UserId": "sim7",
+    "Password": "simulation",
+    "Username": "Simulation #7"
+  },
+  {
+    "UserId": "sim8",
+    "Password": "simulation",
+    "Username": "Simulation #8"
+  },
+  {
+    "UserId": "sim9",
+    "Password": "simulation",
+    "Username": "Simulation #9"
+  },
+  {
+    "UserId": "sim10",
+    "Password": "simulation",
+    "Username": "Simulation #10"
+  }
+]

@@ -2,9 +2,7 @@ name: .NET
 
 on:
   push:
-    branches: [ "main", "dev" ]
   pull_request:
-    branches: [ "main", "dev" ]
 
 jobs:
   test:
@@ -19,11 +17,24 @@ jobs:
       with:
         dotnet-version: 6.0.x
 
-    - name: Restore dependencies
-      run: dotnet restore
+    - name: Test codebase
+      working-directory: Tests
+      run: dotnet test ServerTests
 
-    - name: Build codebase
-      run: dotnet build --no-restore
+  compile:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+        
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1
 
     - name: Test codebase
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet build
